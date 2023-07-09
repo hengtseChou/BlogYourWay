@@ -1,5 +1,5 @@
-from blog import create_app
-from blog.config import ENV
+from website import create_app
+from website.config import ENV
 
 
 if ENV == 'debug':
@@ -7,10 +7,7 @@ if ENV == 'debug':
 else:
     DEBUG = False
 
-
 app = create_app()
-
-
 
 if __name__ == '__main__':
     if DEBUG:
