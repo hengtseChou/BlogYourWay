@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+	body {
+		background-color: #343a40;
+	}
+
+	.card {
+		margin-top: 150px;
+		max-width: 400px;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 30px;
+		border-radius: 20px;
+		font-family: 'Ubuntu';
+	}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+
+</style>
+{% endblock %}
+
+{% block title %}Login · Your own Blog {% endblock %}
+
+
+{% block body %}
+<div class="card text-white bg-dark shadow">
+	<div class="card-body">
+		<h2 class="text-center mb-4">Login</h2>
+		<form>
+			<div class="input-group mb-4">
+				<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+				<input type="text" class="form-control" placeholder="Username" name="username">
+			</div>
+			<div class="input-group mb-4">
+				<span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+				<input type="password" class="form-control" placeholder="Password" name="password">
+			</div>
+			<button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;">Login</button>
+		</form>
+		<div class="text-center mt-4">
+			Don't have an account? <a href="#">Register</a>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
