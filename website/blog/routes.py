@@ -4,6 +4,8 @@ blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
 
 @blog.route('/', methods = ['GET'])
 def home():
+    # /{hank}/home
+    # get data, post of hank from db
 
     return render_template('home.html', nav=True)
 
@@ -17,3 +19,8 @@ def login():
 
     # login user
 
+@blog.route('/register', methods = ['GET', 'POST'])
+def register():
+
+
+    return render_template('register.html', nav=False)
