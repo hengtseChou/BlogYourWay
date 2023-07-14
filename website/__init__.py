@@ -6,6 +6,7 @@ import os
 # from src.admin.routes import admin
 # from src.extensions.logger import allLogger
 from website.blog.routes import blog, User
+from website.backstage.routes import backstage
 from website.extensions.db import db_users
 
 
@@ -30,6 +31,7 @@ def create_app():
     
     # blueprints
     app.register_blueprint(blog, url_prefix = '/')
+    app.register_blueprint(backstage, url_prefix = '/backstage/')
 
 
     

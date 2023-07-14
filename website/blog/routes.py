@@ -3,7 +3,7 @@ from flask_login import login_user, UserMixin
 import bcrypt
 from website.extensions.db import db_users
 
-blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
+blog = Blueprint('blog', __name__, template_folder='../templates/blog/', static_folder='../static/')
 
 class User(UserMixin):
     # user id is set as username    
@@ -20,7 +20,7 @@ def home():
     # /{hank}/home
     # get data, post of hank from db
 
-    return render_template('home.html', nav=True)
+    return render_template('home.html')
 
 @blog.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -43,7 +43,7 @@ def login():
     user = User(user_data)
     login_user(user)
     flash('Login Succeeded.', category='success')
-    return redirect(url_for('blog.home'))
+    return redirect(url_for('backstage.panel'))
 
 
 
