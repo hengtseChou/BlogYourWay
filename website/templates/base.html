@@ -18,6 +18,22 @@
 
 
 	<title>{% block title %}{% endblock %}</title>
+	<style>
+		.flash-message {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			z-index: 9999;
+			background-color: #fff;
+			border: 1px solid #ccc;
+			padding: 15px;
+			border-radius: 8px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+			max-width: 300px;
+			min-width: 200px;
+			white-space: pre-wrap;
+		}
+	</style>
 </head>
 <body>
 
@@ -64,13 +80,9 @@
 			{% if messages %} 
 				{% for category, message in messages %} 
 					{% if category == 'error' %}
-					<div class="alert alert-danger alter-dismissable fade show" role="alert" id="errorMessage">
-						{{ message }}          
-					</div>
+					<div class="flash-message" role="alert" id="errorMessage">{{ message }}</div>
 					{% else %}
-					<div class="alert alert-success alter-dismissable fade show" role="alert" id="successMessage">
-					{{ message }}          
-					</div>
+					<div class="flash-message" role="alert" id="successMessage">{{ message }}</div>
 					{% endif %}
 				{% endfor %} 
 			{% endif %} 
@@ -89,10 +101,10 @@
       $(document).ready(function(){
         setTimeout(function() {
           $('#errorMessage').fadeOut('fast');
-          }, 2000); // <-- time in milliseconds
+          }, 5000); // <-- time in milliseconds
         setTimeout(function() {
           $('#successMessage').fadeOut('fast');
-          }, 2000); // <-- time in milliseconds
+          }, 5000); // <-- time in milliseconds
       });
       
     </script>

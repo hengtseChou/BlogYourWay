@@ -5,10 +5,10 @@ import os
 # from src.customer.routes import customer
 # from src.admin.routes import admin
 # from src.extensions.logger import allLogger
-from website.blog.routes import blog
+from website.blog.routes import blog, User
+from website.extensions.db import db_users
 
-class User(UserMixin):
-    pass
+
 
 def create_app():
     
@@ -17,11 +17,16 @@ def create_app():
 
     ## login 
     login_manager = LoginManager()
+    login_manager.login_view = 'blog.login'
+    login_manager.login_message = 'Please login to proceed.'
     login_manager.init_app(app)
     
     @login_manager.user_loader
-    def load_user(user_id):
-        return User.get(user_id)
+    def load_user(username):
+        user_data = db_users.find_via('username', username)
+        user = User(user_data)
+        # return none if the ID is not valid
+        return user
     
     # blueprints
     app.register_blueprint(blog, url_prefix = '/')

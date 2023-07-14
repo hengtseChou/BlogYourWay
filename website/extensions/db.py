@@ -24,6 +24,13 @@ class DB_Users(Database):
         
         x = self.collection.insert_one(data)
         return x
+    
+    def find_via(self, key, value, drop_id=True):
+
+        record = self.collection.find_one({key: value})
+        if drop_id:
+            del record['_id']
+        return record
 
 class DB_Posts(Database):
 
