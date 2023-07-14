@@ -33,7 +33,7 @@
 
 
 {% block body %}
-<form>
+<form method="post">
   <div class="card text-white bg-dark shadow" id="step1">
     <div class="card-body">
       <h2 class="text-center mb-4">Register</h2>
@@ -59,19 +59,19 @@
       <h2 class="text-center mb-4">Almost Done..</h2>
       <div class="input-group mb-4">
         <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-        <input type="email" class="form-control" placeholder="Email" name="email">
+        <input type="email" class="form-control" placeholder="Email" name="email" id="email">
       </div>
       <div class="input-group mb-4">
         <span class="input-group-text"><i class="fa-solid fa-house"></i></span>
-        <input type="text" class="form-control" placeholder="Blog's name" name="blogname">
+        <input type="text" class="form-control" placeholder="Blog's name" name="blogname" id="blogname">
       </div>
       <div class="form-check mb-4">
-        <input class="form-check-input" type="checkbox" value="" name="understand" style="background-color: #343a40; border: 0px;">
-        <label class="form-check-label" for="flexCheckDefault">
+        <input class="form-check-input" type="checkbox" name="terms" id="terms" style="background-color: #343a40; border: 0px;">
+        <label class="form-check-label" for="terms">
           I understand this is a fully experimental project, there is no guarantee of complete data preservation.
         </label>
       </div>
-      <button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;">Create</button>
+      <button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;" onclick="return validateStep2()">Create</button>
     </div>
   </div>
 </form>
@@ -85,24 +85,54 @@
 		var username = document.getElementById('username').value;
 		var password = document.getElementById('password').value;
 
+		// both fields not empty
 		if (username.trim() === '' || password.trim() === '') {
 			alert('Enter username and password to continue.');
 			return;
 		}
 
-		// // Hide Step 1, show Step 2
-		// document.getElementById('step1').style.display = 'none';
-		// document.getElementById('step2').style.display = 'block';
+		// password satisfies requirements
+		var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+		if (!passwordRegex.test(password)) {
+			alert('Password must be 8 characters long and contain both uppercase and lowercase letters.');
+			return;
+		}
 
+		// // Hide Step 1, show Step 2
 		document.getElementById("step1").classList.add("hide");
 		document.getElementById('step1').style.display = 'none';
 		
     document.getElementById("step2").style.display = "block";
     setTimeout(function() {
       document.getElementById("step2").classList.remove("hide");
-    }, 100); // Delay to allow transition effect
+    }, 100); 
+	}
 
-		}	
+	function validateStep2() {
+		// Perform input validation for Step 2
+		var email = document.getElementById('email').value;
+		var blogname = document.getElementById('blogname').value;
+		var termsChecked = document.getElementById('terms').checked;
+
+		if (email.trim() === '' || blogname.trim() === '') {
+			alert('Enter email and blog name to continue.');
+			return false;
+		}
+
+		// Check if the email is valid
+		var emailRegex = /^\S+@\S+\.\S+$/;
+		if (!emailRegex.test(email)) {
+			alert('Enter a valid email address.');
+			return false;
+		}
+
+		if (!termsChecked) {
+			alert('You must understand the terms to continue.');
+			return false;
+		}
+
+		return true;
+	}
 
 	document.getElementById('step1').addEventListener('keypress', function(e) {
 		if (e.key === 'Enter') {
