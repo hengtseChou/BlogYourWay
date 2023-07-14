@@ -37,7 +37,7 @@ def login():
     user_data = db_users.find_via('username', login_form['username'])
     # check pw
     if not bcrypt.checkpw(login_form['password'].encode('utf8'), user_data['password'].encode('utf8')):
-        flash('Invalid password. Please try again', category='error')
+        flash('Invalid password. Please try again.', category='error')
         return render_template('login.html') 
     # login user
     user = User(user_data)
