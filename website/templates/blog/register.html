@@ -14,6 +14,12 @@
 		padding: 30px;
 		border-radius: 20px;
 		font-family: 'Ubuntu';
+		transition: opacity 0.7s ease-in-out;
+	}
+
+	.card.hide {
+		opacity: 0;
+		pointer-events: none;
 	}
 
 
@@ -28,47 +34,46 @@
 
 {% block body %}
 <form>
-	<div class="card text-white bg-dark shadow" id="step1">
-		<div class="card-body">
-			<h2 class="text-center mb-4">Register</h2>			
-			<div class="input-group mb-4">
-				<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-				<input type="text" class="form-control" placeholder="Username" name="username" id="username">
-			</div>
-			
-			<div class="input-group mb-2">
-				<span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-				<input type="password" class="form-control" placeholder="Password" name="password" id="password">
-			</div>
-			<small class="form-text text-muted"><p>Password must be 8 characters long, with upper and lower cases letters.</p></small>
-			<button type="button" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;" onclick="validateStep1()">Continue</button>
-			<div class="text-center mt-4">
-				Already have an account? <a href="/login">Login</a>
-			</div>
-		</div>
-	</div>
+  <div class="card text-white bg-dark shadow" id="step1">
+    <div class="card-body">
+      <h2 class="text-center mb-4">Register</h2>
+      <div class="input-group mb-4">
+        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+        <input type="text" class="form-control" placeholder="Username" name="username" id="username">
+      </div>
 
-	<div class="card hide text-white bg-dark shadow" id="step2" style="display: none;">
-		<div class="card-body">
-			<h2 class="text-center mb-4">Almost Done..</h2>
-			<div class="input-group mb-4">
-				<span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-				<input type="email" class="form-control" placeholder="Email" name="email">
-			</div>
-			<div class="input-group mb-4">
-				<span class="input-group-text"><i class="fa-solid fa-house"></i></span>
-				<input type="text" class="form-control" placeholder="Blog's name" name="blogname">
-			</div>
-			<div class="form-check mb-4">
-				<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				<label class="form-check-label" for="flexCheckDefault">
-					I understand this is a fully experimental project, there is no guarantee of complete data preservation.
-				</label>
-				</div>			
-			<button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;">Create</button>
-		</div>
-	</div>
+      <div class="input-group mb-2">
+        <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+        <input type="password" class="form-control" placeholder="Password" name="password" id="password">
+      </div>
+      <small class="form-text text-muted"><p>Password must be 8 characters long, with upper and lower cases letters.</p></small>
+      <button type="button" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;" onclick="validateStep1()">Continue</button>
+      <div class="text-center mt-4">
+        Already have an account? <a href="/login">Login</a>
+      </div>
+    </div>
+  </div>
 
+  <div class="card hide text-white bg-dark shadow" id="step2" style="display: none;">
+    <div class="card-body">
+      <h2 class="text-center mb-4">Almost Done..</h2>
+      <div class="input-group mb-4">
+        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+        <input type="email" class="form-control" placeholder="Email" name="email">
+      </div>
+      <div class="input-group mb-4">
+        <span class="input-group-text"><i class="fa-solid fa-house"></i></span>
+        <input type="text" class="form-control" placeholder="Blog's name" name="blogname">
+      </div>
+      <div class="form-check mb-4">
+        <input class="form-check-input" type="checkbox" value="" name="understand" style="background-color: #343a40; border: 0px;">
+        <label class="form-check-label" for="flexCheckDefault">
+          I understand this is a fully experimental project, there is no guarantee of complete data preservation.
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;">Create</button>
+    </div>
+  </div>
 </form>
 
 {% endblock %}
@@ -85,12 +90,19 @@
 			return;
 		}
 
-		// Hide Step 1, show Step 2
+		// // Hide Step 1, show Step 2
+		// document.getElementById('step1').style.display = 'none';
+		// document.getElementById('step2').style.display = 'block';
+
+		document.getElementById("step1").classList.add("hide");
 		document.getElementById('step1').style.display = 'none';
-		document.getElementById('step2').style.display = 'block';
+		
+    document.getElementById("step2").style.display = "block";
+    setTimeout(function() {
+      document.getElementById("step2").classList.remove("hide");
+    }, 100); // Delay to allow transition effect
 
-
-	}
+		}	
 
 	document.getElementById('step1').addEventListener('keypress', function(e) {
 		if (e.key === 'Enter') {
