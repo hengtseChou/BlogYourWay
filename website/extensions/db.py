@@ -39,6 +39,15 @@ class DB_Posts(Database):
         self.collections = self.db['posts']
 
 
+class DB_Comments(Database):
+
+    def __init__(self):
+        super().__init__()
+        self.collections = self.db['comments']
+
+
+
 
 db_users = DB_Users()
 db_posts = DB_Posts()
+db_comments = DB_Comments()
