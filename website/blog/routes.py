@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import login_user, UserMixin
+from flask_login import login_user, UserMixin, current_user
 import bcrypt
 from website.extensions.db import db_users
 
@@ -26,6 +26,9 @@ def home():
 def login():
 
     if request.method == 'GET':
+        if current_user.is_authenticated:
+            flash('You are already logged in.')
+            return redirect(url_for('backstage.panel'))
         return render_template('login.html')
     
     login_form = request.form.to_dict()

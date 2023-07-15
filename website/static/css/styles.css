@@ -1,3 +1,6 @@
+
+/* navbar.html */
+
 .navbar-custom {
 	background-color: rgba(0, 0, 0, 0.6);
 	padding-top: 20px; /* Adjust the top padding as needed */
@@ -21,7 +24,75 @@
 	font-size: 24px; /* Adjust the font size as needed */
 }
 
+/* panel.html */
+
+.sidebar {
+	position: fixed;
+	top: 80px;
+	left: 0;
+	bottom: 0;
+	background-color: #333;
+	color: #fff;
+	width: 250px;
+	padding: 20px;
+	overflow-y: auto;
+	font-family: 'Ubuntu';
+}
+.sidebar hr {
+	border-top: 1px solid #fff;
+	margin: 20px 0;
+}
+.sidebar .btn {
+	margin-bottom: 10px;
+	text-align: left;
+	background-color: #333;
+	color: white;
+	border: 0px;
+}
+.sidebar .btn:hover {
+	background-color: #6c757d;
+}
+
+.sidebar-small {
+	position: fixed;
+	top: 80px;
+	left: 0;
+	bottom: 0;
+	background-color: #333;
+	color: #fff;
+	width: 80px;
+	padding: 20px;
+	overflow-y: auto;
+	font-family: 'Ubuntu';
+}
+
+.sidebar-small hr {
+	border-top: 1px solid #fff;
+	margin: 20px 0;
+}
+.sidebar-small .btn {
+	margin-bottom: 10px;
+	text-align: left;
+	background-color: #333;
+	color: white;
+	border: 0px;
+}
+.sidebar-small .btn:hover {
+	background-color: #6c757d;
+}
+
+.main-panel {
+	position: relative;
+	margin-top: 80px;
+	margin-left: 250px;
+	width: calc(100vw - 262px);
+	overflow-y: auto;
+	max-height: calc(100vh - 80px); /* Subtract navbar height from viewport height */
+}
+
+/* deal with screen size */
 /* medium width */
+
 @media (max-width: 768px) { 
 	.navbar-custom .navbar-nav {
 		flex-direction: column;
@@ -33,5 +104,10 @@
 
 	.navbar-custom .social-icons {
 		display: none;
+	}
+
+	.main-panel {
+		margin-left: 80px;
+		width: calc(100vw - 92px);
 	}
 }

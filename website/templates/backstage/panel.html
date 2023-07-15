@@ -2,7 +2,6 @@
 
 {% block head %}
 <style>
-	/* Custom styles for the container */
 	html,
 	body {
 		height: 100%;
@@ -16,34 +15,6 @@
 	.row {
 		flex-grow: 1;
 	}
-	.sidebar {
-		position: fixed;
-		top: 80px;
-		left: 0;
-		bottom: 0;
-		background-color: #333;
-		color: #fff;
-		width: 250px;
-		padding: 20px;
-		overflow-y: auto;
-	}
-	.sidebar hr {
-		border-top: 1px solid #fff;
-		margin: 20px 0;
-	}
-	.sidebar .btn {
-		margin-bottom: 10px;
-	}
-
-	.main-panel {
-		position: relative;
-		margin-top: 80px;
-		margin-left: 250px;
-		width: calc(100vw - 262px);
-		overflow-y: auto;
-		max-height: calc(100vh - 80px); /* Subtract navbar height from viewport height */
-	}
-
 </style>
 {% endblock %}
 
@@ -73,16 +44,41 @@
 	<div class="container-fluid">
 		<div class="row">
 			<!-- sidebar -->
-		  <div class="col-2 sidebar">
+		  <div class="d-none d-md-inline col sidebar">
 				<div class="d-flex align-items-center">
 					<img src="/static/img/logo.png" alt="logo" width="28" height="28">
 					<h5 class="ms-3 mt-2">Your own Blog</h5>
 				</div>
 				
 				<hr>
-				<button class="btn btn-dark w-100 px-2">Button 1</button>
-				<button class="btn btn-dark w-100 px-2">Button 2</button>
-				<button class="btn btn-dark w-100 px-2">Button 3</button>
+				<a class="btn w-100 px-2"><span class="mx-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts</a>
+				<a class="btn w-100 px-2"><span class="mx-3"><i class="fa-solid fa-masks-theater"></i></span>Portfolio</a>
+				<a class="btn w-100 px-2"><span class="mx-3"><i class="fa-solid fa-user"></i></span>About</a>
+				<a class="btn w-100 px-2"><span class="mx-3"><i class="fa-solid fa-link"></i></span>Social Links</a>
+				<a class="btn w-100 px-2" href="/backstage/theme"><span class="mx-3"><i class="fa-solid fa-palette"></i></span>Blog Theme</a>
+				<a class="btn w-100 px-2"><span class="mx-3"><i class="fa-solid fa-trash"></i></span>Trash Bin</a>
+				<a class="btn w-100 px-2"><span class="mx-3"><i class="fa-solid fa-gear"></i></span>Settings</a>
+				<a class="btn w-100 px-2"><span class="mx-3"><i class="fa-solid fa-flag"></i></span>Backstage Banner</a>
+
+			</div>
+
+			<div class="d-inline d-md-none col sidebar-small">
+				<div>
+					<img src="/static/img/logo.png" alt="logo" width="28" height="28" style="display: block; margin: auto;">
+				</div>
+				
+				<hr>
+
+				<a class="btn w-100 "><span><i class="fa-solid fa-pen-to-square"></i></span></a>
+				<a class="btn w-100 "><span><i class="fa-solid fa-masks-theater"></i></span></a>
+				<a class="btn w-100 "><span><i class="fa-solid fa-user"></i></span></a>
+				<a class="btn w-100 "><span><i class="fa-solid fa-link"></i></span></a>
+				<a class="btn w-100 " href="/backstage/theme"><span><i class="fa-solid fa-palette"></i></span></a>
+				<a class="btn w-100 "><span><i class="fa-solid fa-trash"></i></span></a>
+				<a class="btn w-100 "><span><i class="fa-solid fa-gear"></i></span></a>
+				<a class="btn w-100 "><span><i class="fa-solid fa-flag"></i></span></a>
+
+
 			</div>
 			<!-- main panel -->
 		  <div class="col">

@@ -11,3 +11,9 @@ def panel():
 
     return render_template('panel.html')
 
+@backstage.route('/theme', methods=['GET', 'POST'])
+@login_required
+def theme():
+
+    return render_template('theme.html')
+

@@ -15,9 +15,15 @@
 				<li class="nav-item">
 					<a class="nav-link" href="#">About</a>
 				</li>
+				{% if current_user.is_authenticated %}
+				<li class="nav-item">
+					<a class="nav-link" href="/backstage/">Control Center</a>
+				</li>
+				{% else %}
 				<li class="nav-item">
 					<a class="nav-link" href="/login">Login</a>
 				</li>
+				{% endif %}
 			</ul>
 			<ul class="navbar-nav social-icons">
 				<li class="nav-item">
