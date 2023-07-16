@@ -1,0 +1,68 @@
+{% extends 'panel.html' %}
+
+{% block panel %}
+<div class="d-flex align-items-center">
+	<h2 class="ms-2">Posts</h2>
+	<button class="btn panel-btn ms-auto me-3" data-bs-toggle="modal" data-bs-target="#myModal">+ New Post</button>
+</div>
+<hr>
+<!-- Modal -->
+<div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Write About Something...</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+			<form method="post" autocomplete="off" id="form">
+	      <div class="modal-body">
+					<div class="mb-3">
+						<label for="title" class="form-label ms-2">Title</label>
+						<input type="text" class="form-control" id="title" name="title">
+					</div>
+					<div class="mb-3">
+						<label for="subtitle" class="form-label ms-2">Subtitle</label>
+						<input type="text" class="form-control" id="subtitle" name="subtitle">
+					</div>	
+					<div class="mb-3">
+						<label for="tags" class="form-label ms-2">Tags</label>
+						<input type="text" class="form-control" id="tags" name="tags" placeholder="Separate your tags with ','">
+					</div>				
+					<textarea id="editor"></textarea>	
+					<input type="text" id="content" name="content" hidden>				
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn panel-btn">Submit</button>
+      </div>
+		</form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+    const easyMDE = new EasyMDE({
+			element: document.getElementById('editor'),
+			toolbar: ["bold", "italic", "heading", "|", 
+								"undo", "redo", "|", 
+								"code", "quote", "unordered-list", "ordered-list", '|',
+								"link", "image", "|", 
+								"preview", "guide"],
+			minHeight: '160px',
+			spellChecker: false
+		});
+    
+    // Get the form element and the hidden input element
+    const form = document.getElementById("form");
+    const hiddenInput = document.getElementById("content");
+    
+    // Add a submit event listener to the form
+    form.addEventListener("submit", function(event) {
+      // Set the value of the hidden input to the editor
+      hiddenInput.value = easyMDE.value();
+    });
+  });</script>
+{% endblock %}

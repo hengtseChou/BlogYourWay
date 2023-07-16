@@ -58,17 +58,19 @@ def register():
     
     # registeration
     # check if user exists
-    data = request.form.to_dict()    
-    if db_users.exists('username', data['username']):
+    new_user = request.form.to_dict()    
+    if db_users.exists('username', new_user['username']):
         flash('Username already exists. Please try another one.', category='error')
         return render_template('register.html')
     # create user in db
 
-    hashed_pw = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt(12))
+    hashed_pw = bcrypt.hashpw(new_user['password'].encode('utf-8'), bcrypt.gensalt(12))
     hashed_pw = hashed_pw.decode('utf-8')
-    data['password'] = hashed_pw
-    del data['terms']
-    db_users.create_user(data)
+    new_user['password'] = hashed_pw
+    new_user['posts_count'] = 0
+    new_user['total_views'] = 0
+    del new_user['terms']
+    db_users.create_user(new_user)
 
     # succeeded and return to login page
     flash('Registeration succeeded.', category='success')    

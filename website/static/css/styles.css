@@ -72,10 +72,11 @@
 }
 .sidebar-small .btn {
 	margin-bottom: 10px;
-	text-align: left;
+	text-align: center;
 	background-color: #333;
 	color: white;
 	border: 0px;
+	font-size: 18px;
 }
 .sidebar-small .btn:hover {
 	background-color: #6c757d;
@@ -88,6 +89,17 @@
 	width: calc(100vw - 262px);
 	overflow-y: auto;
 	max-height: calc(100vh - 80px); /* Subtract navbar height from viewport height */
+}
+
+.panel-btn {
+	text-align: left;
+	background-color: #333;
+	color: white;
+	border: 0px;
+}
+.panel-btn:hover {
+	background-color: #6c757d;
+	color: white;
 }
 
 /* deal with screen size */
