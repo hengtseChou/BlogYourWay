@@ -50,18 +50,18 @@ def post_control():
     # query through posts
     # 20 posts for each page  
 
-    posts_not_archieved = db_posts.collection.count_documents({'username':current_user.username,
+    posts_not_archieved = db_posts.collection.count_documents({'author':current_user.username,
                                                                'archieved': False})
     max_skip = (posts_not_archieved // 20 - 1) * 20
 
     if page == 1:
         posts = db_posts.collection.find({
-            'username': current_user.username,
+            'author': current_user.username,
             'archieved': False
         }).limit(20).sort('created_at', -1) # descending: newest
     elif page > 1:
         posts = db_posts.collection.find({
-            'username': current_user.username,
+            'author': current_user.username,
             'archieved': False
         }).skip(min(page*20, max_skip)).limit(20).sort('created_at', -1)
 

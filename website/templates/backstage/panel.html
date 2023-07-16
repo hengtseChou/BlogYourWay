@@ -16,9 +16,7 @@
 		flex-grow: 1;
 	}
 
-	textarea {
-		font-family: 'Ubuntu', 'Noto Serif TC';
-	}
+
 	/* sidebar, sidebar-small, main-panel: in styles.css */
 </style>
 {% endblock %}
@@ -27,7 +25,7 @@
 
 {% block body %}
   <!-- Navbar -->
-	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" style="padding-top: 20px; padding-bottom: 20px; font-family: 'Ubuntu';">
+	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" style="padding-top: 20px; padding-bottom: 20px; font-family: 'Ubuntu', 'Arial', sans-serif;">
 		<div class="container">
 			<a class="navbar-brand" href="/">{{ current_user.blogname }}</a>
 			<button class="navbar-toggler me-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,7 +79,7 @@
 			<!-- main panel -->
 		  <div class="col">
 				<div class="main-panel">
-					<div class="container-fluid pt-3 ps-2 pe-5" style="font-family:'Ubuntu', 'Noto Sans TC', sans-serif;">
+					<div class="container-fluid pt-3 ps-2 pe-5" style="font-family:'Ubuntu', 'Noto Sans TC', 'Arial', sans-serif;">
 						{% block panel %}{% endblock %}
 					</div>
 				</div>
