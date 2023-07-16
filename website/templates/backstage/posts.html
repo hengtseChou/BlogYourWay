@@ -33,7 +33,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn panel-btn">Submit</button>
+        <button type="submit" class="btn panel-btn" onclick="return validateNewPost()">Submit</button>
       </div>
 		</form>
     </div>
@@ -43,17 +43,29 @@
 
 {% block script %}
 <script>
-	document.addEventListener("DOMContentLoaded", function() {
-    const easyMDE = new EasyMDE({
-			element: document.getElementById('editor'),
-			toolbar: ["bold", "italic", "heading", "|", 
-								"undo", "redo", "|", 
-								"code", "quote", "unordered-list", "ordered-list", '|',
-								"link", "image", "|", 
-								"preview", "guide"],
-			minHeight: '160px',
-			spellChecker: false
-		});
+
+	const easyMDE = new EasyMDE({
+		element: document.getElementById('editor'),
+		toolbar: ["bold", "italic", "heading", "|", 
+							"undo", "redo", "|", 
+							"code", "quote", "unordered-list", "ordered-list","horizontal-rule" ,'|',
+							"link", "image", "|", 
+							"preview", "guide"],
+		minHeight: '160px',
+		spellChecker: false
+	});
+
+	function validateNewPost() {
+		var title = document.getElementById('title').value;
+		if (title.trim() === '') {
+			alert('You must enter the title for the post.');
+			return false;
+		}
+
+		return true;
+	}
+
+	document.addEventListener("DOMContentLoaded", function() {    
     
     // Get the form element and the hidden input element
     const form = document.getElementById("form");
@@ -64,5 +76,13 @@
       // Set the value of the hidden input to the editor
       hiddenInput.value = easyMDE.value();
     });
-  });</script>
+
+		form.addEventListener("keypress", function(event) {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+			}
+		});
+
+	});	
+</script>
 {% endblock %}

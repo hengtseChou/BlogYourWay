@@ -134,9 +134,9 @@
 		return true;
 	}
 
-	document.getElementById('step1').addEventListener('keypress', function(e) {
-		if (e.key === 'Enter') {
-			e.preventDefault();
+	document.getElementById('step1').addEventListener('keypress', function(event) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
 			validateStep1();
 		}
 	});

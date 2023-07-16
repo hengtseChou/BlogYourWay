@@ -11,6 +11,7 @@ class User(UserMixin):
         for key, value in user_data.items():
             if key == 'username':
                 self.id = value
+                self.username = value
                 continue
             setattr(self, key, value)
         
