@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_login import LoginManager, UserMixin
 import os
 
@@ -28,6 +28,11 @@ def create_app():
         user = User(user_data)
         # return none if the ID is not valid
         return user
+    
+    # Register the custom 404 error page
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('404.html'), 404
     
     # blueprints
     app.register_blueprint(blog, url_prefix = '/')

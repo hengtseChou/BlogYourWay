@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+	body {
+		background-color: #333;
+		color: #fff;
+		text-align: center;
+		padding-top: 100px;
+	}
+	h1 {
+		font-size: 6rem;
+	}
+	p {
+		font-size: 1.5rem;
+	}
+	a {
+		color: #fff;
+	}
+</style>
+{% endblock %}
+
+{% block title %}404 Not Found · Little Blog{% endblock %}
+
+{% block body%}
+
+<div class="container" style="font-family: 'Ubuntu', 'Arial', sans-serif;">
+	<div class="row">
+		<div class="col-md-12">
+			<h1>404</h1>
+			<p class="mt-4">Oops! The page you are looking for could not be found.</p>
+			<p onclick="window.history.go(-1); return false;"><u>Go to the previous page</u></p>
+		</div>
+	</div>
+</div>
+{% endblock %}
