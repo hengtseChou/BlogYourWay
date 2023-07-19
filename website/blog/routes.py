@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
 from flask_login import login_user, UserMixin, current_user
 import bcrypt
-from website.extensions.db import db_users
+from datetime import datetime
+from website.extensions.db import db_users, db_posts
+from website.blog.utils import parse_markdown_to_text
 
-blog = Blueprint('blog', __name__, template_folder='../templates/blog/', static_folder='../static/')
+blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
 
 class User(UserMixin):
     # user id is set as username    
@@ -16,12 +18,31 @@ class User(UserMixin):
             setattr(self, key, value)
         
 
-@blog.route('/', methods = ['GET'])
-def home():
+@blog.route('/<username>/home', methods = ['GET'])
+def home(username):
     # /{hank}/home
     # get data, post of hank from db
 
-    return render_template('home.html')
+    if db_users.exists('username', username):
+        user = db_users.collection.find_one({'username': username})
+        featured_posts = db_posts.collection.find({
+            'author': username, 
+            'featured': True,
+            'archived': False
+        }).sort('created_at', -1).limit(8)
+        featured_posts = list(featured_posts)
+        # print(featured_posts)
+        for post in featured_posts:
+            post['content'] = parse_markdown_to_text(post['content'])
+            if len(post['content']) > 100:
+                post['content'] = post['content'][:100] + '...'
+            post['created_at'] = post['created_at'].strftime("%d %B %Y")
+
+        return render_template('home.html', user=user, posts=featured_posts)
+    
+
+    else:
+        abort(404)
     
 
 @blog.route('/login', methods = ['GET', 'POST'])
