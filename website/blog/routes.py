@@ -31,7 +31,6 @@ def home(username):
             'archived': False
         }).sort('created_at', -1).limit(8)
         featured_posts = list(featured_posts)
-        # print(featured_posts)
         for post in featured_posts:
             post['content'] = parse_markdown_to_text(post['content'])
             if len(post['content']) > 100:
