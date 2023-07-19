@@ -6,30 +6,41 @@
 	<button class="btn panel-btn ms-auto me-3" data-bs-toggle="modal" data-bs-target="#myModal">+ New Post</button>
 </div>
 <hr>
+<!-- description -->
+<p class="ms-2">Featured posts will be on your home page, sorted by time order. </p>
+<!-- description ends -->
 <table class="table">
 	<thead>
 		<tr>
-			<th style="width: 40%">Title</th>
+			<th style="width: 44%">Title</th>
 			<th style="width: 20%">Created At</th>
-			<th style="width: 10%">Clicks</th>
-			<th style="width: 10%">Comments</th>
-			<th style="width: 10%">Featured</th>
-			<th style="width: 10%">Archieve</th>
+			<th style="width: 10%" class="text-center">Clicks</th>
+			<th style="width: 10%" class="text-center">Comments</th>
+			<th style="width: 8%" class="text-center">Feature</th>
+			<th style="width: 8%" class="text-center">Archive</th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for post in posts %}
 		<tr>
+			<!-- to-do: add post's link to post's title -->
 			<td>{{ post['title'] }}
 			{% if post['featured'] %}
-			
+			<span class="badge rounded-pill bg-success mx-2">Featured</span>
 			{% endif %}
 			</td>
 			<td class="datetime">{{ post['created_at'] }}</td>
-			<td>{{ post['clicks'] }}</td>
-			<td>{{ post['comments'] }}</td>
-			<td></td>
-			<td></td>
+			<td class="text-right text-end pe-5">{{ post['clicks'] }}</td>
+			<td class="text-right text-end pe-5">{{ post['comments'] }}</td>
+			{% if post['featured'] %}
+			{% set base_link = '/backstage/edit-featured?featured=to_false&uid=' %}
+			<td class="text-center"><a href='{{ base_link ~ post.uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
+			{% else %}
+			{% set base_link = '/backstage/edit-featured?featured=to_true&uid=' %}
+			<td class="text-center"><a href='{{ base_link ~ post.uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
+			{% endif %}
+			{% set base_link2 = '/backstage/edit-archived?archived=to_true&uid=' %}
+			<td class="text-center"><a href="{{ base_link2 ~ post.uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
 		</tr>		
 		{% endfor %}
 	</tbody>
@@ -126,7 +137,7 @@
     const form = document.getElementById("form");
     const hiddenInput = document.getElementById("content");
 
-		convertDateTimeToString();
+	convertDateTimeToString();
     
     // Add a submit event listener to the form
     form.addEventListener("submit", function(event) {
@@ -134,11 +145,11 @@
       hiddenInput.value = easyMDE.value();
     });
 
-		form.addEventListener("keypress", function(event) {
-			if (event.key === 'Enter') {
-				event.preventDefault();
-			}
-		});
+	form.addEventListener("keypress", function(event) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	});
 
 	});	
 </script>
