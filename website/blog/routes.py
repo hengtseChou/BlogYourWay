@@ -22,6 +22,7 @@ def home():
     # get data, post of hank from db
 
     return render_template('home.html')
+    
 
 @blog.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -47,7 +48,7 @@ def login():
     user = User(user_data)
     login_user(user)
     flash('Login Succeeded.', category='success')
-    return redirect(url_for('backstage.panel'))
+    return redirect(url_for('backstage.overview'))
 
 
 
@@ -69,7 +70,8 @@ def register():
     hashed_pw = hashed_pw.decode('utf-8')
     new_user['password'] = hashed_pw
     new_user['posts_count'] = 0
-    new_user['total_views'] = 0
+    new_user['clicks'] = {'total':0, 'home':0, 'blog':0, 'portfolio':0, 'about':0}
+    # about(bio, profile pic, about), theme, social links
     del new_user['terms']
     db_users.create_user(new_user)
 

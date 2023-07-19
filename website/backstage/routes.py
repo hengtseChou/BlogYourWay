@@ -8,13 +8,19 @@ from website.config import ENV
 backstage = Blueprint('backstage', __name__, template_folder='../templates/backstage/', static_folder='../static/')
 
 
-@backstage.route('/', methods=['GET', 'POST'])
-@login_required
-def panel():
+# @backstage.route('/', methods=['GET', 'POST'])
+# @login_required
+# def panel():
 
-    return render_template('panel.html')
+#     return render_template('panel.html')
 
 ### tabs
+
+@backstage.route('/overview', methods=['GET', 'POST'])
+@login_required
+def overview():
+
+    return render_template('overview.html')
 
 @backstage.route('/posts', methods=['GET', 'POST'])
 @login_required
