@@ -1,5 +1,6 @@
 from website import create_app
 from website.config import ENV
+import os
 
 
 if ENV == 'debug':
@@ -11,6 +12,6 @@ app = create_app()
 
 if __name__ == '__main__':
     if DEBUG:
-        app.run(debug=True)
+        app.run(debug=True, port=os.getenv("PORT", default=5000), host='0.0.0.0')
     else:
-        app.run()
+        app.run(port=os.getenv("PORT", default=5000), host='0.0.0.0')

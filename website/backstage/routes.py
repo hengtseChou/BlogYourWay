@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from flask_login import login_required, logout_user, current_user
 from datetime import datetime, timedelta
-from uuid import uuid4
+import random
+import string
 from website.extensions.db import db_users, db_posts
 from website.config import ENV
 
@@ -40,17 +41,23 @@ def post_control():
         # set other attributes
         author = db_users.find_via('username', current_user.username)
         new_post['author'] = current_user.username
-        # new_post['post_id'] = author['posts_count'] + 1
-        new_post['tags'] = [tag.strip() for tag in new_post['tags'].split(',')]
+        # process tags
+        if new_post['tags'] == '':
+            new_post['tags'] = []
+        else:
+            new_post['tags'] = [tag.strip() for tag in new_post['tags'].split(',')]
+        for tag in new_post['tags']:
+            tag = tag.replace(" ", "-")
         db_users.update_values(current_user.username, 'posts_count', current_user.posts_count + 1)
         new_post['clicks'] = 0
         new_post['comments'] = 0
         new_post['archived'] = False
         new_post['featured'] = False
         # uid is used to link posts and comments
-        uid = str(uuid4())
+        alphabet = string.ascii_lowercase + string.digits
+        uid = ''.join(random.choices(alphabet, k=8))
         while db_posts.exists('uid', uid):
-            uid = str(uuid4())
+            uid = ''.join(random.choices(alphabet, k=8))
         new_post['uid'] = uid
         db_posts.new_post(new_post)
         flash('New post published successfully!', category='success')
@@ -166,7 +173,8 @@ def delete():
 @login_required
 def logout():
 
+    username = current_user.username
     logout_user()
-    return redirect(url_for('blog.home'))
+    return redirect(url_for('blog.home', username=username))
 
 

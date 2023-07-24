@@ -24,7 +24,7 @@
 		{% for post in posts %}
 		<tr>
 			<!-- to-do: add post's link to post's title -->
-			<td>{{ post['title'] }}
+			<td class="align-middle">{{ post['title'] }}
 			{% if post['featured'] %}
 			<span class="badge rounded-pill bg-success mx-2">Featured</span>
 			{% endif %}
@@ -62,16 +62,16 @@
 					<div class="mb-3">
 						<label for="subtitle" class="form-label ms-2">Subtitle</label>
 						<input type="text" class="form-control" id="subtitle" name="subtitle">
-					</div>							
-					<textarea id="editor" name="content" style="white-space: pre-line;" placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+					</div>		
 					<div class="mb-3">
 						<label for="tags" class="form-label ms-2">Tags</label>
 						<input type="text" class="form-control" id="tags" name="tags" placeholder="Separate your tags with ','">
-					</div>
-					<div class="mb-3">
+					</div>					
+					<textarea id="editor" name="content" style="white-space: pre-line;" placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+					<!-- <div class="mb-3">
 						<label for="slug" class="form-label ms-2">URL Slug</label>
 						<input type="text" class="form-control" id="slug" name="slug" placeholder="make-your-url-understandable">
-					</div>	
+					</div>	 -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>

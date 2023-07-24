@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_user, UserMixin, current_user
 import bcrypt
 from datetime import datetime
+from urllib.parse import unquote
 from website.extensions.db import db_users, db_posts
 from website.blog.utils import parse_markdown_to_text
 
@@ -98,5 +99,16 @@ def register():
     # succeeded and return to login page
     flash('Registeration succeeded.', category='success')    
     return redirect(url_for('blog.login'))
+
+
+@blog.route('/<username>/tags', methods=['GET'])
+def tag_posts(username):
+
+    tag = request.args.get('tag')
+    tag_decoded = unquote(tag)
+
+    # ... main: posts with tags; side: recent post titles
+
+    return tag_decoded
     
 
