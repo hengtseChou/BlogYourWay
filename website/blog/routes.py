@@ -85,8 +85,8 @@ def register():
     if db_users.exists('username', new_user['username']):
         flash('Username already exists. Please try another one.', category='error')
         return render_template('register.html')
+    
     # create user in db
-
     hashed_pw = bcrypt.hashpw(new_user['password'].encode('utf-8'), bcrypt.gensalt(12))
     hashed_pw = hashed_pw.decode('utf-8')
     new_user['password'] = hashed_pw

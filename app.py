@@ -12,6 +12,6 @@ app = create_app()
 
 if __name__ == '__main__':
     if DEBUG:
-        app.run(debug=True, port=os.getenv("PORT", default=5000), host='0.0.0.0')
+        app.run(debug=True)
     else:
-        app.run(port=os.getenv("PORT", default=5000), host='0.0.0.0')
+        app.run()
