@@ -12,6 +12,6 @@ app = create_app()
 
 if __name__ == '__main__':
     if DEBUG:
-        app.run(debug=True)
+        app.run(debug=True, port=5000)
     else:
-        app.run()
+        app.run(port=5000)
