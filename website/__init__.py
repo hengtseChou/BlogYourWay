@@ -1,5 +1,6 @@
 from flask import Flask, render_template
-from flask_login import LoginManager, UserMixin
+from flask_login import LoginManager
+from flask_talisman import Talisman
 import os
 
 # from src.customer.routes import customer
@@ -38,6 +39,7 @@ def create_app():
     app.register_blueprint(blog, url_prefix = '/')
     app.register_blueprint(backstage, url_prefix = '/backstage/')
 
+    Talisman(app, content_security_policy={'img-src': '*'})
 
     
     return app

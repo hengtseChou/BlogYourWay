@@ -3,8 +3,8 @@ from flask_login import login_user, UserMixin, current_user
 import bcrypt
 from datetime import datetime
 from urllib.parse import unquote
+from markdown import markdown
 from website.extensions.db import db_users, db_posts
-from website.blog.utils import parse_markdown_to_text
 
 blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
 
@@ -102,8 +102,8 @@ def register():
     return redirect(url_for('blog.login'))
 
 
-@blog.route('/<username>/tags', methods=['GET'])
-def tag_posts(username):
+@blog.route('/<username>/tags/<tag>', methods=['GET'])
+def tag(username, tag):
 
     tag = request.args.get('tag')
     tag_decoded = unquote(tag)
@@ -111,5 +111,18 @@ def tag_posts(username):
     # ... main: posts with tags; side: recent post titles
 
     return tag_decoded
+
+
+@blog.route('/<username>/posts/<post_uid>', methods=['GET'])
+def post(username, post_uid):
+
+    author = db_users.find_one({'username': username})
+
+    target_post = dict(db_posts.find_one({'uid': post_uid}))
+    target_post['content'] = markdown(target_post['content'])
+
+    return render_template('blogpost.html', 
+                           user=author,
+                           post=target_post)
     
 

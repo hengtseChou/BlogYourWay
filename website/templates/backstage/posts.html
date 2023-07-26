@@ -105,6 +105,13 @@
 			alert('You must enter the title for the post.');
 			return false;
 		}
+
+		var subtitle = document.getElementById('subtitle').value;
+		if (subtitle.trim() === '') {
+			alert('You must enter the subtitle for the post.');
+			return false;
+		}
+
 		var slug = document.getElementById('slug').value;
 		var slugPattern = /^[a-z0-9-]+$/;
 		if (slugPattern.test(slug)) {
