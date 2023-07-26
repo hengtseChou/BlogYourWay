@@ -30,8 +30,8 @@
 			{% endif %}
 			</td>
 			<td class="datetime">{{ post['created_at'] }}</td>
-			<td class="text-right text-end pe-5">{{ post['clicks'] }}</td>
-			<td class="text-right text-end pe-5">{{ post['comments'] }}</td>
+			<td class="text-right text-center number">{{ post['clicks'] }}</td>
+			<td class="text-right text-center number">{{ post['comments'] }}</td>
 			{% if post['featured'] %}
 			{% set base_link = '/backstage/edit-featured?featured=to_false&uid=' %}
 			<td class="text-center"><a href='{{ base_link ~ post.uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
@@ -139,20 +139,27 @@
 		});
 	}
 
-	// Call the function when the page finishes loading
-	// window.addEventListener('load', convertDateTimeToString);
-	document.addEventListener("DOMContentLoaded", function() {    
-    
-    // Get the form element and the hidden input element
-    const form = document.getElementById("form");
-
-	convertDateTimeToString(); 
-
-	form.addEventListener("keypress", function(event) {
-		if (event.key === 'Enter') {
-			event.preventDefault();
+	function formatNumber() {
+		const numberElements = document.getElementsByClassName("number");
+		for (let i = 0; i < numberElements.length; i++) {
+			const originalNumber = numberElements[i].textContent;
+			const formattedNumber = originalNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			numberElements[i].textContent = formattedNumber;
 		}
-	});
+	}
+
+
+	document.addEventListener("DOMContentLoaded", function() {  
+		
+		convertDateTimeToString();
+		formatNumber();    
+    
+    const form = document.getElementById("form");
+		form.addEventListener("keypress", function(event) {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+			}
+		});
 
 	});	
 </script>

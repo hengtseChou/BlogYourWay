@@ -5,8 +5,8 @@ import os
 # from src.customer.routes import customer
 # from src.admin.routes import admin
 # from src.extensions.logger import allLogger
-from website.blog.routes import blog, User
-from website.backstage.routes import backstage
+from website.blog.views import blog, User
+from website.backstage.views import backstage
 from website.extensions.db import db_users
 
 
