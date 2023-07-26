@@ -48,7 +48,10 @@ def post_control():
             new_post['tags'] = [tag.strip() for tag in new_post['tags'].split(',')]
         for tag in new_post['tags']:
             tag = tag.replace(" ", "-")
-        db_users.update_values(current_user.username, 'posts_count', current_user.posts_count + 1)
+        db_users.update_user(
+            current_user.username, 
+            {'posts_count': current_user.posts_count + 1}
+        )
         new_post['clicks'] = 0
         new_post['comments'] = 0
         new_post['archived'] = False
@@ -120,7 +123,7 @@ def edit_featured():
         post_uid = request.args.get('uid')
 
         db_posts.update_one(filter={'uid': post_uid}, 
-                            update={'$set': {'featured': featured_status_new}})
+                            update={'featured': featured_status_new})
     
     else: 
         flash('Access Denied. ', category='error')
@@ -134,14 +137,14 @@ def edit_archived():
         post_uid = request.args.get('uid')
 
         db_posts.update_one(filter={'uid': post_uid}, 
-                            update={'$set': {'archived': True}})
+                            update={'archived': True})
         return redirect(url_for('backstage.post_control'))
     
     elif session['at'] == 'archive':
         post_uid = request.args.get('uid')
 
         db_posts.update_one(filter={'uid': post_uid}, 
-                            update={'$set': {'archived': False}})
+                            update={'archived': False})
         return redirect(url_for('backstage.archive_control'))
 
     

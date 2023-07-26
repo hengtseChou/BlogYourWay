@@ -23,7 +23,7 @@ class Database(object):
         return collection.insert_one(data)
     
     def update_one(self, collection, filter, update):
-        return collection.update_one(filter, update)
+        return collection.update_one(filter, {'$set': update})
     
     def delete_one(self, collection, query):
         return collection.delete_one(query)
@@ -51,18 +51,11 @@ class DB_Users(Database):
         
         self.collection.insert_one(data)
     
-    def update_values(self, username, key, value):
+    def update_user(self, username, update:dict):
         # pass list to update multiple keys at once
-        if isinstance(key, str):
-            new_value = {"$set": { key: value}}
-            self.collection.update_one({'username': username}, new_value)
-
-        elif isinstance(key, list) and isinstance(value, list):
-            new_values = {"$set": {}}
-            for i in range(len(key)):
-                new_values['$set'][key[i]] = value[i]
-            self.collection.update_one({'username': username}, new_values)
-
+        
+        return self.collection.update_one({'username': username}, {"$set": update})
+        
 class DB_Posts(Database):
 
     def __init__(self):

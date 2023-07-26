@@ -66,12 +66,17 @@
 					<div class="mb-3">
 						<label for="tags" class="form-label ms-2">Tags</label>
 						<input type="text" class="form-control" id="tags" name="tags" placeholder="Separate your tags with ','">
+					</div>
+					<div class="mb-3">
+						<label for="banner" class="form-label ms-2">Banner image</label>
+						<input type="text" class="form-control" id="banner" name="banner_url" placeholder="Insert image url here.">
+					</div>
+					<div class="mb-3">
+						<label for="editor" class="form-label ms-2">Markdown Editor</label>
+						<textarea id="editor" name="content" style="white-space: pre-line;" placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
 					</div>					
-					<textarea id="editor" name="content" style="white-space: pre-line;" placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
-					<!-- <div class="mb-3">
-						<label for="slug" class="form-label ms-2">URL Slug</label>
-						<input type="text" class="form-control" id="slug" name="slug" placeholder="make-your-url-understandable">
-					</div>	 -->
+					
+					
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
@@ -94,7 +99,7 @@
 							"code", "quote", "unordered-list", "ordered-list","horizontal-rule" ,'|',
 							"link", "image", "|", 
 							"preview", "guide"],
-		minHeight: '160px',
+		minHeight: '200px',
 		spellChecker: false
 	});
 	
@@ -108,14 +113,25 @@
 
 		var subtitle = document.getElementById('subtitle').value;
 		if (subtitle.trim() === '') {
-			alert('You must enter the subtitle for the post.');
+			alert('Add a short description for this post as a subtitle.');
 			return false;
 		}
 
-		var slug = document.getElementById('slug').value;
-		var slugPattern = /^[a-z0-9-]+$/;
-		if (slugPattern.test(slug)) {
-			alert('This is not a valid URL slug. Try again!');
+		var tags = document.getElementById('tags').value;
+		if (tags.trim() === '') {
+			alert('You must add some tags for the post.');
+			return false;
+		}
+
+		var banner = document.getElementById('banner').value;
+		if (banner.trim() === '') {
+			alert('You must add a banner image for the post.');
+			return false;
+		}
+
+		
+		if (easyMDE.value().trim() === '') {
+			alert('You did not write anything!');
 			return false;
 		}
 

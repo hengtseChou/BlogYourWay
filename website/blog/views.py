@@ -3,10 +3,17 @@ from flask_login import login_user, UserMixin, current_user
 import bcrypt
 from datetime import datetime
 from urllib.parse import unquote
-from markdown import markdown
+import markdown
 from website.extensions.db import db_users, db_posts
+from website.blog.utils import modify_post_format
 
 blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
+
+md = markdown.Markdown(
+    extensions=[
+        'markdown_captions'
+    ]
+)
 
 class User(UserMixin):
     # user id is set as username    
@@ -119,7 +126,14 @@ def post(username, post_uid):
     author = db_users.find_one({'username': username})
 
     target_post = dict(db_posts.find_one({'uid': post_uid}))
-    target_post['content'] = markdown(target_post['content'])
+    target_post['content'] = md.convert(target_post['content'])
+    target_post['content'] = modify_post_format(target_post['content'])
+    target_post['last_updated'] = target_post['last_updated'].strftime("%Y-%m-%d")
+    print(target_post['content'])
+    db_posts.update_one(
+        {'uid': post_uid},
+        {'clicks': target_post['clicks'] + 1}
+    )
 
     return render_template('blogpost.html', 
                            user=author,

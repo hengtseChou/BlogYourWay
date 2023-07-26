@@ -2,6 +2,28 @@
 
 {% block head %}
 <style>
+	img.profile {
+		width: 4rem;
+		height: 4rem;
+		border-radius:50%
+	}
+
+
+	.author-link {
+		text-decoration: none;
+		color: #333;
+	}
+
+	/* Add underline on hover */
+	.author-link:hover {
+		text-decoration: underline;
+		color: #333;
+	}
+
+	
+	.date-text {
+		color: rgb(100, 100, 100)
+	}
 
 </style>
 {% endblock %}
@@ -11,5 +33,26 @@
 {% block body%}
 
 {% include 'navbar.html' %}
+<div class="banner-container" style="background-image: url('{{ post.banner_url }}')"></div>
+<div class="row mt-5">
+	<div class="col-12 col-md-7 mx-auto">
+		<div style="font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;">
+			<h1 class="text-center fw-bold">{{ post.title }}</h1>
+			<div class="d-flex align-items-center justify-content-center mt-3 mb-5">
+				<a href="/{{ post.author }}/about">
+					<img src="/static/img/default_profile.png" alt="" class="profile me-2">
+				</a>
+				<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
+				<div class="date-text"><h4> · Last updated: {{ post.last_updated }}</h4></div>
+			</div>
+		</div>
+		<hr>
+		<div style="font-family: 'Noto Serif TC', serif;">
+			{{ post.content | safe }}
+		</div>
+	</div>	
+</div>
+
+
 
 {% endblock %}
