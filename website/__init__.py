@@ -24,7 +24,7 @@ def create_app():
     
     @login_manager.user_loader
     def load_user(username):
-        user_data = db_users.find_via('username', username)
+        user_data = db_users.find_one({'username': username})
         user = User(user_data)
         # return none if the ID is not valid
         return user

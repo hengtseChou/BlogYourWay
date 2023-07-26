@@ -39,7 +39,7 @@ def post_control():
         elif ENV == 'prod':
             new_post['created_at'] = new_post['last_updated'] = datetime.now() + timedelta(hours=8)
         # set other attributes
-        author = db_users.find_via('username', current_user.username)
+        author = db_users.find_one({'username': current_user.username})
         new_post['author'] = current_user.username
         # process tags
         if new_post['tags'] == '':
@@ -66,17 +66,17 @@ def post_control():
     # query through posts
     # 20 posts for each page  
 
-    posts_not_archieved = db_posts.collection.count_documents({'author':current_user.username,
+    posts_not_archieved = db_posts.count_documents({'author':current_user.username,
                                                                'archieved': False})
     max_skip = (posts_not_archieved // 20 - 1) * 20
 
     if page == 1:
-        posts = db_posts.collection.find({
+        posts = db_posts.find({
             'author': current_user.username,
             'archived': False
         }).sort('created_at', -1).limit(20) # descending: newest
     elif page > 1:
-        posts = db_posts.collection.find({
+        posts = db_posts.find({
             'author': current_user.username,
             'archived': False
         }).sort('created_at', -1).skip(min(page*20, max_skip)).limit(20)
@@ -91,7 +91,7 @@ def archive_control():
     session['at'] = 'archive'
 
     # query through posts
-    posts = db_posts.collection.find({
+    posts = db_posts.find({
             'author': current_user.username,
             'archived': True
     }).sort('created_at', -1) # descending: newest
@@ -119,8 +119,8 @@ def edit_featured():
             featured_status_new = False
         post_uid = request.args.get('uid')
 
-        db_posts.collection.update_one(filter={'uid': post_uid}, 
-                                    update={'$set': {'featured': featured_status_new}})
+        db_posts.update_one(filter={'uid': post_uid}, 
+                            update={'$set': {'featured': featured_status_new}})
     
     else: 
         flash('Access Denied. ', category='error')
@@ -133,15 +133,15 @@ def edit_archived():
     if session['at'] == 'posts':        
         post_uid = request.args.get('uid')
 
-        db_posts.collection.update_one(filter={'uid': post_uid}, 
-                                    update={'$set': {'archived': True}})
+        db_posts.update_one(filter={'uid': post_uid}, 
+                            update={'$set': {'archived': True}})
         return redirect(url_for('backstage.post_control'))
     
     elif session['at'] == 'archive':
         post_uid = request.args.get('uid')
 
-        db_posts.collection.update_one(filter={'uid': post_uid}, 
-                                    update={'$set': {'archived': False}})
+        db_posts.update_one(filter={'uid': post_uid}, 
+                            update={'$set': {'archived': False}})
         return redirect(url_for('backstage.archive_control'))
 
     
@@ -158,7 +158,7 @@ def delete():
     if session['at'] == 'archive':
 
         if target == 'post':
-            db_posts.collection.delete_one({'uid': uid})
+            db_posts.delete_one({'uid': uid})
             flash('Post deleted!', category='success')
             return redirect(url_for('backstage.archive_control'))
         elif target == 'work':

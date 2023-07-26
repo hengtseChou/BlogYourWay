@@ -25,20 +25,21 @@ def home(username):
     # get data, post of hank from db
 
     if db_users.exists('username', username):
-        user = db_users.collection.find_one({'username': username})
-        featured_posts = db_posts.collection.find({
+        user = db_users.find_one({'username': username})
+        featured_posts = db_posts.find({
             'author': username, 
             'featured': True,
             'archived': False
         }).sort('created_at', -1).limit(8)
         featured_posts = list(featured_posts)
+        feature_idx = 1
         for post in featured_posts:
-            post['content'] = parse_markdown_to_text(post['content'])
-            if len(post['content']) > 100:
-                post['content'] = post['content'][:100] + '...'
-            post['created_at'] = post['created_at'].strftime("%d %B %Y")
+            del post['content']
+            post['idx'] = feature_idx
+            feature_idx += 1            
+            post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
 
-        return render_template('home.html', user=user, posts=featured_posts)
+        return render_template('home.html', user=user, posts=featured_posts, num_of_posts=len(featured_posts))
     
 
     else:
@@ -60,7 +61,7 @@ def login():
         flash('Username not found. Please try again.', category='error')
         return render_template('login.html')
 
-    user_data = db_users.find_via('username', login_form['username'])
+    user_data = db_users.find_one({'username': login_form['username']})
     # check pw
     if not bcrypt.checkpw(login_form['password'].encode('utf8'), user_data['password'].encode('utf8')):
         flash('Invalid password. Please try again.', category='error')

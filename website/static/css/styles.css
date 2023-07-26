@@ -3,6 +3,7 @@
 
 .navbar-custom {
 	background-color: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(3px);
 	padding-top: 20px; /* Adjust the top padding as needed */
 	padding-bottom: 20px; /* Adjust the bottom padding as needed */
 	font-family: 'Ubuntu', 'Arial', sans-serif;

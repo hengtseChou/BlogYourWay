@@ -12,6 +12,21 @@ class Database(object):
         if exists:
             return True
         return False
+    
+    def find(self, collection, query):
+        return collection.find(query)
+    
+    def find_one(self, collection, query):
+        return collection.find_one(query)
+    
+    def insert_one(self, collection, data):
+        return collection.insert_one(data)
+    
+    def update_one(self, collection, filter, update):
+        return collection.update_one(filter, update)
+    
+    def delete_one(self, collection, query):
+        return collection.delete_one(query)
 
 class DB_Users(Database):
 
@@ -22,17 +37,19 @@ class DB_Users(Database):
     def exists(self, key, value):
         return super().exists(self.collection, key, value)
     
+    def find(self, query):
+        return super().find(self.collection, query)
+    
+    def find_one(self, query):
+        return super().find_one(self.collection, query)
+    
+    def insert_one(self, data):
+        return super().insert_one(self.collection, data)
+    
+    ## own methods    
     def create_user(self, data):
         
-        x = self.collection.insert_one(data)
-        return x
-    
-    def find_via(self, key, value, drop_id=True):
-
-        record = self.collection.find_one({key: value})
-        if drop_id:
-            del record['_id']
-        return record
+        self.collection.insert_one(data)
     
     def update_values(self, username, key, value):
         # pass list to update multiple keys at once
@@ -52,12 +69,30 @@ class DB_Posts(Database):
         super().__init__()
         self.collection = self.db['posts']
 
+    def find(self, query):
+        return super().find(self.collection, query)
+
+    def find_one(self, query):
+        return super().find_one(self.collection, query)
+    
+    def update_one(self, filter, update):
+        return super().update_one(self.collection, filter, update)
+    
+    def delete_one(self, query):
+        return super().delete_one(self.collection, query)
+    
+    ## own methods
+
     def new_post(self, new_post):
 
         self.collection.insert_one(new_post)
 
     def exists(self, key, value):
         return super().exists(self.collection, key, value)
+    
+    def count_documents(self, query):
+
+        return self.collection.count_documents(query)
     
 
 
