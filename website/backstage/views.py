@@ -27,7 +27,7 @@ def overview():
 @login_required
 def post_control():
 
-    session['at'] = 'posts'
+    session['user_status'] = 'posts'
     page = request.args.get('page', default = 1, type = int)
     POSTS_EACH_PAGE = 10
 
@@ -103,11 +103,23 @@ def post_control():
                            older_posts=enable_older_post, 
                            newer_posts=enable_newer_post)
 
+@backstage.route('/about', methods=['GET', 'POST'])
+@login_required
+def about_control():
+
+    session['user_status'] = 'about'
+
+    user = db_users.find_one({'username': current_user.username})
+
+    if request.method == 'GET':
+
+        return render_template('about.html', user=user)
+
 @backstage.route('/archive', methods=['GET'])
 @login_required
 def archive_control():
 
-    session['at'] = 'archive'
+    session['user_status'] = 'archive'
 
     # query through posts
     posts = db_posts.find({
@@ -125,7 +137,11 @@ def theme():
 
 @backstage.route('/posts/edit/<post_uid>', methods=['GET', 'POST'])
 @login_required
-def edit_post(post_uid):    
+def edit_post(post_uid):  
+
+    if session['user_status'] != 'posts':
+        flash('Access Denied!', category='error')
+        return redirect(url_for('backstage.post_control'))  
 
     if request.method == 'GET':
 
@@ -165,7 +181,7 @@ def edit_post(post_uid):
 @login_required
 def edit_featured():
 
-    if session['at'] == 'posts':
+    if session['user_status'] == 'posts':
 
         if request.args.get('featured') == 'to_true':
             featured_status_new = True
@@ -184,14 +200,14 @@ def edit_featured():
 @login_required
 def edit_archived():
 
-    if session['at'] == 'posts':        
+    if session['user_status'] == 'posts':        
         post_uid = request.args.get('uid')
 
         db_posts.update_one(filter={'uid': post_uid}, 
                             update={'archived': True})
         return redirect(url_for('backstage.post_control'))
     
-    elif session['at'] == 'archive':
+    elif session['user_status'] == 'archive':
         post_uid = request.args.get('uid')
 
         db_posts.update_one(filter={'uid': post_uid}, 
@@ -209,7 +225,7 @@ def delete():
     target = request.args.get('type')
     uid = request.args.get('uid')
 
-    if session['at'] == 'archive':
+    if session['user_status'] == 'archive':
 
         if target == 'post':
             db_posts.delete_one({'uid': uid})

@@ -1,0 +1,63 @@
+{% extends 'panel.html' %}
+
+{% block panel %}
+<div class="d-flex align-items-center">
+	<h2 class="ms-2">About</h2>
+</div>
+<hr>
+<form method="post" autocomplete="off" id="form" class="row">
+	<div class="col-9">
+		<div class="mb-3">
+			<label for="title" class="form-label ms-2">Add/update an image to your profile</label>
+			<input type="text" class="form-control" id="profile_img_url" name="profile_img_url" value="{{ user.profile_img_url }}" placeholder="Insert image url here">
+		</div>		
+		<div class="mb-3">
+			<label for="banner" class="form-label ms-2">Short bio</label>
+			<input type="text" class="form-control" id="banner" name="banner_url" placeholder="Bio on your home page" value="{{ user.bio }}">
+		</div>
+		<div class="mb-3">
+			<label for="editor">Edit content in your About page</label>
+			<textarea id="editor" name="content" style="white-space: pre-line;" 
+								placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+		</div>
+		<div class="text-end mb-5">
+			<a href="/backstage/posts" class="btn btn-light text-center" style="width: 20%;">Cancel</a>
+			<button type="submit" class="btn panel-btn text-center" style="width: 20%;">Save Changes</button>
+		</div>
+	</div>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+
+	const easyMDE = new EasyMDE({
+		element: document.getElementById('editor'),
+		autofocus: true,
+		toolbar: ["bold", "italic", "heading", "|", 
+							"undo", "redo", "|", 
+							"code", "quote", "unordered-list", "ordered-list","horizontal-rule" ,'|',
+							"link", "image", "|", 
+							"preview", "guide"],
+		minHeight: '200px',
+		spellChecker: false
+	});
+
+
+
+	document.addEventListener("DOMContentLoaded", function() {  
+
+
+		easyMDE.value('{{ user.about| tojson }}'.slice(1, -1));	
+  
+    
+    const form = document.getElementById("form");
+		form.addEventListener("keypress", function(event) {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+			}
+		});
+
+	});	
+</script>
+{% endblock %}

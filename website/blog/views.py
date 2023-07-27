@@ -30,27 +30,34 @@ class User(UserMixin):
 def home(username):
     # /{hank}/home
     # get data, post of hank from db
+    if not db_users.exists('username', username):
+        abort(404)
 
-    if db_users.exists('username', username):
-        user = db_users.find_one({'username': username})
-        featured_posts = db_posts.find({
-            'author': username, 
-            'featured': True,
-            'archived': False
-        }).sort('created_at', -1).limit(8)
-        featured_posts = list(featured_posts)
-        feature_idx = 1
-        for post in featured_posts:
-            del post['content']
-            post['idx'] = feature_idx
-            feature_idx += 1            
-            post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
+    user = db_users.find_one({'username': username})
+    featured_posts = db_posts.find({
+        'author': username, 
+        'featured': True,
+        'archived': False
+    }).sort('created_at', -1).limit(8)
+    featured_posts = list(featured_posts)
+    feature_idx = 1
+    for post in featured_posts:
+        del post['content']
+        post['idx'] = feature_idx
+        feature_idx += 1            
+        post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
 
-        return render_template('home.html', user=user, posts=featured_posts, num_of_posts=len(featured_posts))
+    clicks = user['clicks']
+    clicks['home'] = clicks['home'] + 1
+    db_users.update_one(
+        {'username': username}, 
+        {'clicks': clicks}
+    )
+
+    return render_template('home.html', user=user, posts=featured_posts, num_of_posts=len(featured_posts))
     
 
-    else:
-        abort(404)
+
     
 
 @blog.route('/login', methods = ['GET', 'POST'])
@@ -100,6 +107,9 @@ def register():
     new_user['password'] = hashed_pw
     new_user['posts_count'] = 0
     new_user['clicks'] = {'total':0, 'home':0, 'blog':0, 'portfolio':0, 'about':0}
+    new_user['profile_img_url'] = ""
+    new_user['short_bio'] = ""
+    new_user['about'] = ""
     # about(bio, profile pic, about), theme, social links
     del new_user['terms']
     db_users.create_user(new_user)
@@ -129,10 +139,13 @@ def post(username, post_uid):
     target_post['content'] = md.convert(target_post['content'])
     target_post['content'] = modify_post_format(target_post['content'])
     target_post['last_updated'] = target_post['last_updated'].strftime("%Y-%m-%d")
-    print(target_post['content'])
     db_posts.update_one(
         {'uid': post_uid},
         {'clicks': target_post['clicks'] + 1}
+    )
+    db_users.update_one(
+        {'username': username}, 
+        {''}
     )
 
     return render_template('blogpost.html', 
