@@ -46,6 +46,9 @@ class DB_Users(Database):
     def insert_one(self, data):
         return super().insert_one(self.collection, data)
     
+    def update_one(self, filter, update):
+        return super().update_one(self.collection, filter, update)
+    
     ## own methods    
     def create_user(self, data):
         

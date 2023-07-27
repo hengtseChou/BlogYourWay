@@ -41,7 +41,11 @@
 				<h1 class="text-center fw-bold">{{ post.title }}</h1>
 				<div class="d-flex align-items-center justify-content-center mt-3 mb-5">
 					<a href="/{{ post.author }}/about">
-						<img src="/static/img/default_profile.png" alt="" class="profile me-2">
+						{% if user.profile_img_url|length == 0 %}
+						<img src="/static/img/default_profile.png" alt="profile-img" class="profile me-2">
+						{% else %}
+						<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile me-2">
+						{% endif %}
 					</a>
 					<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
 					<div class="date-text"><h4> · Last updated: {{ post.last_updated }}</h4></div>

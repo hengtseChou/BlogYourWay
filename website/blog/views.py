@@ -143,9 +143,11 @@ def post(username, post_uid):
         {'uid': post_uid},
         {'clicks': target_post['clicks'] + 1}
     )
+    clicks_update = author['clicks']
+    clicks_update['total'] += 1
     db_users.update_one(
         {'username': username}, 
-        {''}
+        {'clicks': clicks_update}
     )
 
     return render_template('blogpost.html', 

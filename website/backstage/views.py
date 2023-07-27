@@ -111,9 +111,16 @@ def about_control():
 
     user = db_users.find_one({'username': current_user.username})
 
-    if request.method == 'GET':
+    if request.method == 'POST':  
 
-        return render_template('about.html', user=user)
+        updated_about = request.form.to_dict()
+        db_users.update_one(
+            filter={'username': current_user.username},
+            update=updated_about
+        )
+        flash('Information updated!', category='success')
+
+    return render_template('about.html', user=user)
 
 @backstage.route('/archive', methods=['GET'])
 @login_required
