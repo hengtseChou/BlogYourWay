@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, abort
 from flask_login import login_required, logout_user, current_user
 from datetime import datetime, timedelta
 import random
@@ -29,6 +29,7 @@ def post_control():
 
     session['at'] = 'posts'
     page = request.args.get('page', default = 1, type = int)
+    POSTS_EACH_PAGE = 10
 
     if request.method == 'POST':
         # create a new post in db
@@ -39,7 +40,6 @@ def post_control():
         elif ENV == 'prod':
             new_post['created_at'] = new_post['last_updated'] = datetime.now() + timedelta(hours=8)
         # set other attributes
-        author = db_users.find_one({'username': current_user.username})
         new_post['author'] = current_user.username
         # process tags
         if new_post['tags'] == '':
@@ -69,23 +69,39 @@ def post_control():
     # query through posts
     # 20 posts for each page  
 
-    posts_not_archieved = db_posts.count_documents({'author':current_user.username,
-                                                               'archieved': False})
-    max_skip = (posts_not_archieved // 20 - 1) * 20
+    posts_not_archieved = db_posts.count_documents({
+        'author':current_user.username,
+        'archived': False
+    })
+    max_skip = (posts_not_archieved // POSTS_EACH_PAGE - 1) * POSTS_EACH_PAGE
+
+    enable_older_post = False
+    if page * POSTS_EACH_PAGE < posts_not_archieved:
+        enable_older_post = True
+
+    enable_newer_post = False
+    if page > 1:
+        enable_newer_post = True
 
     if page == 1:
         posts = db_posts.find({
             'author': current_user.username,
             'archived': False
-        }).sort('created_at', -1).limit(20) # descending: newest
-    elif page > 1:
+        }).sort('created_at', -1).limit(POSTS_EACH_PAGE) # descending: newest
+    elif page > 1 and max_skip > 0:
         posts = db_posts.find({
             'author': current_user.username,
             'archived': False
-        }).sort('created_at', -1).skip(min(page*20, max_skip)).limit(20)
+        }).sort('created_at', -1).skip(min((page - 1) * POSTS_EACH_PAGE, max_skip)).limit(POSTS_EACH_PAGE)
+    else:
+        abort(404)
 
 
-    return render_template('posts.html', posts=posts)
+    return render_template('posts.html', 
+                           posts=posts, 
+                           current_page=page,
+                           older_posts=enable_older_post, 
+                           newer_posts=enable_newer_post)
 
 @backstage.route('/archive', methods=['GET'])
 @login_required
@@ -95,8 +111,8 @@ def archive_control():
 
     # query through posts
     posts = db_posts.find({
-            'author': current_user.username,
-            'archived': True
+        'author': current_user.username,
+        'archived': True
     }).sort('created_at', -1) # descending: newest
 
     return render_template('archive.html', posts=posts)
@@ -109,9 +125,7 @@ def theme():
 
 @backstage.route('/posts/edit/<post_uid>', methods=['GET', 'POST'])
 @login_required
-def edit_post(post_uid):
-
-    
+def edit_post(post_uid):    
 
     if request.method == 'GET':
 
@@ -122,7 +136,7 @@ def edit_post(post_uid):
         return render_template('edit_blogpost.html', post=target_post)
     
     updated_post = request.form.to_dict()
-    # set posting time  
+    # set last update time  
     if ENV == 'debug':            
         updated_post['last_updated'] = datetime.now()
     elif ENV == 'prod':
@@ -140,7 +154,7 @@ def edit_post(post_uid):
         update=updated_post
     )
 
-    flash(f'Post id:{post_uid} update succeeded!', category='success')
+    flash(f'Post <{post_uid}> update succeeded!', category='success')
     return redirect(url_for('backstage.post_control'))
         
 

@@ -111,6 +111,18 @@
 	color: white;
 }
 
+/* blogpost */
+
+.badge-custom {
+	color: rgb(100, 100, 100);
+	background-color: rgb(197, 197, 197);
+}
+
+.badge-custom:hover {
+	color: white;
+	background-color: #f7966b;
+}
+
 /* deal with screen size */
 /* medium width */
 

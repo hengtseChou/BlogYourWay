@@ -48,10 +48,21 @@
 				</div>
 			</div>
 			<hr>
-			<div style="font-family: 'Noto Serif TC', serif;">
+			<div style="font-family: 'Noto Serif TC', serif;" class="mb-3">
 				{{ post.content | safe }}
 			</div>
-		</div>	
+			<div class="d-flex align-items-center mb-3" style="color: rgb(100, 100, 100) ; font-size: large;">
+				<span ><i class="fa-solid fa-tags"></i></span>
+				{% for tag in post.tags %}
+				{% set tag_link = 'tags?tag=' ~ tag %}
+					<a href="{{ tag_link }}"><span class="badge badge-custom ms-2">{{ tag }}</span></a>
+				{% endfor %}
+			</div>
+			<hr class="mb-3">
+			<div style="font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;">
+				<h3>Comments</h3>
+			</div>
+		</div>
 	</div>
 </div>
 

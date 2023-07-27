@@ -45,6 +45,22 @@
 		{% endfor %}
 	</tbody>
 </table>
+<div class="container">
+	<div class="row">
+		<div class="col-6 text-start">
+			{% if newer_posts %}
+			{% set previous_page = current_page - 1 %}
+			<a href="/backstage/posts?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts </a>
+			{% endif %}
+		</div>
+		<div class="col-6 text-end">
+			{% if older_posts %}
+			{% set next_page = current_page + 1 %}
+			<a href="/backstage/posts?page={{ next_page }}" class="btn"> Older Posts <span class="mx-1">➡️</span></a>
+			{% endif %}
+		</div>
+	</div>
+</div>
 <!-- Modal -->
 <div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -73,10 +89,8 @@
 					</div>
 					<div class="mb-3">
 						<textarea id="editor" name="content" style="white-space: pre-line;" placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
-					</div>					
-					
-					
-      </div>
+					</div>
+      	</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
         <button type="submit" class="btn panel-btn" onclick="return validateNewPost()">Submit</button>
