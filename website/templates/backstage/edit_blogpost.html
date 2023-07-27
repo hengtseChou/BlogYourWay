@@ -1,0 +1,103 @@
+{% extends 'panel.html' %}
+
+{% block panel %}
+<div class="d-flex align-items-center">
+	<h2 class="ms-2">Edit</h2>
+</div>
+<hr>
+<form method="post" autocomplete="off" id="form" class="row">
+	<div class="col-9">
+		<div class="mb-3">
+			<label for="title" class="form-label ms-2">Title</label>
+			<input type="text" class="form-control" id="title" name="title" value="{{ post.title }}">
+		</div>
+		<div class="mb-3">
+			<label for="subtitle" class="form-label ms-2">Subtitle</label>
+			<input type="text" class="form-control" id="subtitle" name="subtitle" value="{{ post.subtitle }}">
+		</div>		
+		<div class="mb-3">
+			<label for="tags" class="form-label ms-2">Tags</label>
+			<input type="text" class="form-control" id="tags" name="tags" placeholder="Separate your tags with ','" value="{{ post.tags }}">
+		</div>
+		<div class="mb-3">
+			<label for="banner" class="form-label ms-2">Banner image</label>
+			<input type="text" class="form-control" id="banner" name="banner_url" placeholder="Insert image url here." value="{{ post.banner_url }}">
+		</div>
+		<div class="mb-3">
+			<textarea id="editor" name="content" style="white-space: pre-line;" 
+								placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+		</div>
+		<div class="text-end mb-5">
+			<a href="/backstage/posts" class="btn btn-light text-center" style="width: 20%;">Cancel</a>
+			<button type="submit" class="btn panel-btn text-center" style="width: 20%;">Save Changes</button>
+		</div>
+	</div>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+
+	const easyMDE = new EasyMDE({
+		element: document.getElementById('editor'),
+		autofocus: true,
+		toolbar: ["bold", "italic", "heading", "|", 
+							"undo", "redo", "|", 
+							"code", "quote", "unordered-list", "ordered-list","horizontal-rule" ,'|',
+							"link", "image", "|", 
+							"preview", "guide"],
+		minHeight: '200px',
+		spellChecker: false
+	});
+	
+
+	function validateNewPost() {
+		var title = document.getElementById('title').value;
+		if (title.trim() === '') {
+			alert('You must enter the title for the post.');
+			return false;
+		}
+
+		var subtitle = document.getElementById('subtitle').value;
+		if (subtitle.trim() === '') {
+			alert('Add a short description for this post as a subtitle.');
+			return false;
+		}
+
+		var tags = document.getElementById('tags').value;
+		if (tags.trim() === '') {
+			alert('You must add some tags for the post.');
+			return false;
+		}
+
+		var banner = document.getElementById('banner').value;
+		if (banner.trim() === '') {
+			alert('You must add a banner image for the post.');
+			return false;
+		}
+
+		
+		if (easyMDE.value().trim() === '') {
+			alert('You did not write anything!');
+			return false;
+		}
+
+		return true;
+	}
+
+	document.addEventListener("DOMContentLoaded", function() {  
+
+
+		easyMDE.value('{{ post.content| tojson }}'.slice(1, -1));	
+  
+    
+    const form = document.getElementById("form");
+		form.addEventListener("keypress", function(event) {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+			}
+		});
+
+	});	
+</script>
+{% endblock %}

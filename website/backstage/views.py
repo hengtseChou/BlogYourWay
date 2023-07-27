@@ -107,6 +107,43 @@ def theme():
 
     return render_template('theme.html')
 
+@backstage.route('/posts/edit/<post_uid>', methods=['GET', 'POST'])
+@login_required
+def edit_post(post_uid):
+
+    
+
+    if request.method == 'GET':
+
+        target_post = db_posts.find_one({'uid': post_uid})
+        target_post = dict(target_post)
+        target_post['tags'] = ', '.join(target_post['tags'])
+
+        return render_template('edit_blogpost.html', post=target_post)
+    
+    updated_post = request.form.to_dict()
+    # set posting time  
+    if ENV == 'debug':            
+        updated_post['last_updated'] = datetime.now()
+    elif ENV == 'prod':
+        updated_post['last_updated'] = datetime.now() + timedelta(hours=8)
+    # process tags
+    if updated_post['tags'] == '':
+        updated_post['tags'] = []
+    else:
+        updated_post['tags'] = [tag.strip() for tag in updated_post['tags'].split(',')]
+    for tag in updated_post['tags']:
+        tag = tag.replace(" ", "-")
+
+    db_posts.update_one(
+        filter={'uid': post_uid}, 
+        update=updated_post
+    )
+
+    flash(f'Post id:{post_uid} update succeeded!', category='success')
+    return redirect(url_for('backstage.post_control'))
+        
+
 
 ### actions
 

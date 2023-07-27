@@ -3,7 +3,7 @@
 	height: calc(100vw / 3);
 	min-height: 300px;
 	background-size: cover; /* This will maintain the aspect ratio and crop the image */
-  background-position: center; /* This will center the image within the container */
+  	background-position: center; /* This will center the image within the container */
 }
   
 
@@ -11,9 +11,9 @@
 
 .navbar-custom {
 	background-color: rgba(0, 0, 0, 0.6);
-	backdrop-filter: blur(3px);
-	padding-top: 20px; /* Adjust the top padding as needed */
-	padding-bottom: 20px; /* Adjust the bottom padding as needed */
+	backdrop-filter: blur(5px);
+	padding-top: 10px; /* Adjust the top padding as needed */
+	padding-bottom: 10px; /* Adjust the bottom padding as needed */
 	font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;
 }
 
