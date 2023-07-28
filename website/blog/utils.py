@@ -1,41 +1,78 @@
 from bs4 import BeautifulSoup
 
-def modify_post_format(html_string):
-    soup = BeautifulSoup(html_string, 'html.parser')
+class HTML_Formatter:
 
-    # Find all tags in the HTML
-    # except figure and img tag
-    tags = soup.find_all(lambda tag: tag.name not in ['figure', 'img'])
+    def __init__(self, html_string) :
+        self.soup = BeautifulSoup(html_string, 'html.parser')
 
-    # Add padding to each tag
-    for tag in tags:
-        current_style = tag.get('style', '')
-        new_style = f"{current_style} padding-top: 10px; padding-bottom: 10px; "
-        tag['style'] = new_style
+    def add_padding(self):        
 
-    headings = soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+        # Find all tags in the HTML
+        # except figure and img tag
+        tags = self.soup.find_all(lambda tag: tag.name not in ['figure', 'img'])
 
-    # Modify the style attribute for each heading tag
-    for heading in headings:
-        current_style = heading.get('style', '')
-        new_style = f"{current_style} font-family: 'Ubuntu', 'Arial', sans-serif;;"
-        heading['style'] = new_style
+        # Add padding to each tag
+        for tag in tags:
+            current_style = tag.get('style', '')
+            new_style = f"{current_style} padding-top: 10px; padding-bottom: 10px; "
+            tag['style'] = new_style
+
+        return self
     
-    imgs = soup.find_all(['img'])
+    def change_heading_font(self):        
 
-    # center image and modify size
-    for img in imgs:
-        current_style = img.get('style', '')
-        new_style = f"{current_style} display: block; margin: 0 auto; max-width: 90%; min-width: 30% ;height: auto;"
-        img['style'] = new_style
+        # Modify the style attribute for each heading tag
+        headings = self.soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
 
-    captions = soup.find_all(['figcaption'])
+        # Modify the style attribute for each heading tag
+        for heading in headings:
+            current_style = heading.get('style', '')
+            new_style = f"{current_style} font-family: 'Ubuntu', 'Arial', sans-serif;;"
+            heading['style'] = new_style
 
-    # center image and modify size
-    for caption in captions:
-        current_style = caption.get('style', '')
-        new_style = f"{current_style} text-align: center"
-        caption['style'] = new_style
+        return self
+    
+    def modify_figure(self, max_width='90%'):
 
-    # Return the modified HTML
-    return str(soup)
+        imgs = self.soup.find_all(['img'])
+
+        # center image and modify size
+        for img in imgs:
+            current_style = img.get('style', '')
+            new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30% ;height: auto;"
+            img['style'] = new_style
+
+        captions = self.soup.find_all(['figcaption'])
+
+        # center caption
+        for caption in captions:
+            current_style = caption.get('style', '')
+            new_style = f"{current_style} text-align: center"
+            caption['style'] = new_style
+
+        return self
+    
+    def to_string(self):
+
+        return str(self.soup)
+
+
+    def to_blogpost(self):
+
+        blogpost = self.add_padding().\
+            change_heading_font().\
+            modify_figure().\
+            to_string()
+
+        return blogpost
+    
+    def to_about(self):
+        
+        about = self.add_padding().\
+            modify_figure(max_width='50%').\
+            to_string()
+        
+        return about
+
+        
+

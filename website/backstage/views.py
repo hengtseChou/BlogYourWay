@@ -107,9 +107,7 @@ def post_control():
 @login_required
 def about_control():
 
-    session['user_status'] = 'about'
-
-    user = db_users.find_one({'username': current_user.username})
+    session['user_status'] = 'about'    
 
     if request.method == 'POST':  
 
@@ -120,7 +118,9 @@ def about_control():
         )
         flash('Information updated!', category='success')
 
-    return render_template('about.html', user=user)
+    user = db_users.find_one({'username': current_user.username})
+
+    return render_template('edit_about.html', user=user)
 
 @backstage.route('/archive', methods=['GET'])
 @login_required

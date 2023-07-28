@@ -13,11 +13,11 @@
 		</div>		
 		<div class="mb-3">
 			<label for="banner" class="form-label ms-2">Short bio</label>
-			<input type="text" class="form-control" id="banner" name="banner_url" placeholder="Bio on your home page" value="{{ user.bio }}">
+			<input type="text" class="form-control" id="short_bio" name="short_bio" placeholder="Bio on your home page" value="{{ user.short_bio }}">
 		</div>
 		<div class="mb-3">
 			<label for="editor" class="mb-2 ms-2">Edit content in your About page</label>
-			<textarea id="editor" name="content" style="white-space: pre-line;" 
+			<textarea id="editor" name="about" style="white-space: pre-line;" 
 								placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
 		</div>
 		<div class="text-end mb-5">
@@ -49,8 +49,6 @@
 
 
 		easyMDE.value('{{ user.about| tojson }}'.slice(1, -1));	
-  
-    
     const form = document.getElementById("form");
 		form.addEventListener("keypress", function(event) {
 			if (event.key === 'Enter') {

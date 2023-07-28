@@ -5,7 +5,7 @@ from datetime import datetime
 from urllib.parse import unquote
 import markdown
 from website.extensions.db import db_users, db_posts
-from website.blog.utils import modify_post_format
+from website.blog.utils import HTML_Formatter
 
 blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
 
@@ -47,18 +47,18 @@ def home(username):
         feature_idx += 1            
         post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
 
-    clicks = user['clicks']
-    clicks['home'] = clicks['home'] + 1
+    clicks_update = user['clicks']
+    clicks_update['total'] += 1
+    clicks_update['home'] += 1
     db_users.update_one(
         {'username': username}, 
-        {'clicks': clicks}
+        {'clicks': clicks_update}
     )
 
-    return render_template('home.html', user=user, posts=featured_posts, num_of_posts=len(featured_posts))
-    
-
-
-    
+    return render_template('home.html', 
+                           user=user, 
+                           posts=featured_posts, 
+                           num_of_posts=len(featured_posts))    
 
 @blog.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -133,11 +133,20 @@ def tag(username, tag):
 @blog.route('/<username>/posts/<post_uid>', methods=['GET'])
 def post(username, post_uid):
 
-    author = db_users.find_one({'username': username})
+    if not db_users.exists('username', username):
+        abort(404)
+    if not db_posts.exists('uid', post_uid):
+        abort(404)
 
+    author = db_users.find_one({'username': username})
     target_post = dict(db_posts.find_one({'uid': post_uid}))
+
+    # to verify the post is linked to the user
+    if author['username'] != target_post['author']:
+        abort(404)
+
     target_post['content'] = md.convert(target_post['content'])
-    target_post['content'] = modify_post_format(target_post['content'])
+    target_post['content'] = HTML_Formatter(target_post['content']).to_blogpost()
     target_post['last_updated'] = target_post['last_updated'].strftime("%Y-%m-%d")
     db_posts.update_one(
         {'uid': post_uid},
@@ -153,5 +162,28 @@ def post(username, post_uid):
     return render_template('blogpost.html', 
                            user=author,
                            post=target_post)
+
+@blog.route('/<username>/about', methods=['GET'])
+def about(username):
+
+    if not db_users.exists('username', username):
+        abort(404)
+
+    user = db_users.find_one({'username': username})
+
+    clicks_update = user['clicks']
+    clicks_update['total'] += 1
+    clicks_update['about'] += 1
+    db_users.update_one(
+        {'username': username}, 
+        {'clicks': clicks_update}
+    )
+
+    about_content = md.convert(user['about'])
+    about_content = HTML_Formatter(about_content).to_about()
+
+    return render_template('about.html', 
+                           user=user,
+                           about=about_content)
     
 
