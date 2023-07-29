@@ -7,7 +7,7 @@ import os
 # from src.extensions.logger import allLogger
 from website.blog.views import blog, User
 from website.backstage.views import backstage
-from website.extensions.db import db_users
+from website.extensions.db_mongo import db_users
 
 
 

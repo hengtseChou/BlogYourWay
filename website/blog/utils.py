@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import markdown
-from website.extensions.db import db_posts
+from website.extensions.db_mongo import db_posts
 
 class HTML_Formatter:
 

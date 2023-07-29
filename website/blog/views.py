@@ -4,7 +4,8 @@ import bcrypt
 from datetime import datetime
 from urllib.parse import unquote
 from math import ceil
-from website.extensions.db import db_users, db_posts
+from website.extensions.db_mongo import db_users, db_posts
+from website.extensions.db_redis import redis_method
 from website.blog.utils import HTML_Formatter, all_user_tags, md
 
 blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
@@ -125,15 +126,42 @@ def register():
     return redirect(url_for('blog.login'))
 
 
-@blog.route('/<username>/tags/<tag>', methods=['GET'])
-def tag(username, tag):
+@blog.route('/<username>/tags', methods=['GET'])
+def tag(username):
 
-    tag = request.args.get('tag')
+    if not db_users.exists('username', username):
+        abort(404)
+    user = db_users.find_one({'username': username})
+    # currently no pagination for tag    
+
+    tag = request.args.get('tag', default=None, type=str)
+    if tag is None:
+        return redirect(url_for('blog.blogpage', username=username))
     tag_decoded = unquote(tag)
 
-    # ... main: posts with tags; side: recent post titles
+    posts = db_posts({
+        'author': username, 
+        'archived': False
+    }).sort('created_at', -1)
 
-    return tag_decoded
+    posts = list(posts)
+    posts_has_tag = []
+    for post in posts:
+        if tag_decoded in post['tags']:
+            del post['content']
+            post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
+            posts_has_tag.append(post)
+    
+
+    
+
+
+
+    return render_template('tag.html', 
+                           user=user, 
+                           posts=posts_has_tag, 
+                           tag=tag_decoded,
+                           num_of_posts=len(posts_has_tag))
 
 
 @blog.route('/<username>/posts/<post_uid>', methods=['GET'])
@@ -196,7 +224,7 @@ def about(username):
 
 
 @blog.route('/<username>/blog', methods=['GET'])
-def blogposts(username):
+def blogpage(username):
 
     if not db_users.exists('username', username):
         abort(404)

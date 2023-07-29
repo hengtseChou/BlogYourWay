@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import random
 import string
 from math import ceil
-from website.extensions.db import db_users, db_posts
+from website.extensions.db_mongo import db_users, db_posts
 from website.config import ENV
 
 backstage = Blueprint('backstage', __name__, template_folder='../templates/backstage/')
