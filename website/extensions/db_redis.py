@@ -18,8 +18,10 @@ class Redis_method:
 
     def increment_count(self, key, request):
 
-        # f"post_id_{post.uid}"
+        # f"post_uid_{post.uid}"
         # f"{username}_{page}"
+        # f"{username}_tag: {tag}""
+        # f"{username}_uv" as in unique visitor for each user
 
         host = request.remote_addr
         ua = request.headers.get('User-Agent')
@@ -31,6 +33,10 @@ class Redis_method:
     def get_count(self, key):
 
         return self.r.pfcount(key)
+    
+    def remove_all(self, user):
+
+        pass
     
 
 redis_method = Redis_method()

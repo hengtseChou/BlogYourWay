@@ -5,6 +5,7 @@ import random
 import string
 from math import ceil
 from website.extensions.db_mongo import db_users, db_posts
+from website.extensions.db_redis import redis_method
 from website.config import ENV
 
 backstage = Blueprint('backstage', __name__, template_folder='../templates/backstage/')
@@ -52,7 +53,6 @@ def post_control():
             {'username': current_user.username}, 
             {'posts_count': current_user.posts_count + 1}
         )
-        new_post['clicks'] = 0
         new_post['comments'] = 0
         new_post['archived'] = False
         new_post['featured'] = False
@@ -106,8 +106,9 @@ def post_control():
 
     posts = list(posts)
     for post in posts:
-        del post['content']                
+        del post['content']            
         post['created_at'] = post['created_at'].strftime("%Y/%m/%d %H:%M:%S")
+        post['clicks'] = redis_method.get_count(f"post_uid_{post['uid']}")
         post['clicks'] = format(post['clicks'], ',')
         post['comments'] = format(post['comments'], ',')
 
