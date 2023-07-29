@@ -52,12 +52,8 @@ class DB_Users(Database):
     ## own methods    
     def create_user(self, data):
         
-        self.collection.insert_one(data)
+        self.collection.insert_one(data)   
     
-    def update_user(self, username, update:dict):
-        # pass list to update multiple keys at once
-        
-        return self.collection.update_one({'username': username}, {"$set": update})
         
 class DB_Posts(Database):
 

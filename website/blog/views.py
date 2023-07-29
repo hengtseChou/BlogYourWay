@@ -71,11 +71,11 @@ def login():
     
     login_form = request.form.to_dict()
     # find user in db
-    if not db_users.exists('username', login_form['username']):
-        flash('Username not found. Please try again.', category='error')
+    if not db_users.exists('email', login_form['email']):
+        flash('Account not found. Please try again.', category='error')
         return render_template('login.html')
 
-    user_data = db_users.find_one({'username': login_form['username']})
+    user_data = db_users.find_one({'email': login_form['email']})
     # check pw
     if not bcrypt.checkpw(login_form['password'].encode('utf8'), user_data['password'].encode('utf8')):
         flash('Invalid password. Please try again.', category='error')
@@ -95,11 +95,20 @@ def register():
         return render_template('register.html')
     
     # registeration
-    # check if user exists
-    new_user = request.form.to_dict()    
+    # with unique email, username and blog name
+    new_user = request.form.to_dict()  
+    if db_users.exists('email', new_user['email']):
+        flash('Email already exists. Please try another one.', category='error')
+        return render_template('register.html')
+    
     if db_users.exists('username', new_user['username']):
         flash('Username already exists. Please try another one.', category='error')
         return render_template('register.html')
+    
+    if db_users.exists('blogname', new_user['blogname']):
+        flash('Blog name is already used. Please try another one.')
+        return render_template('register.html')      
+    
     
     # create user in db
     hashed_pw = bcrypt.hashpw(new_user['password'].encode('utf-8'), bcrypt.gensalt(12))

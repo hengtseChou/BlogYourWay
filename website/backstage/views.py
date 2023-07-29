@@ -48,8 +48,8 @@ def post_control():
             new_post['tags'] = [tag.strip() for tag in new_post['tags'].split(',')]
         for tag in new_post['tags']:
             tag = tag.replace(" ", "-")
-        db_users.update_user(
-            current_user.username, 
+        db_users.update_one(
+            {'username': current_user.username}, 
             {'posts_count': current_user.posts_count + 1}
         )
         new_post['clicks'] = 0

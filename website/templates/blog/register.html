@@ -38,10 +38,9 @@
     <div class="card-body">
       <h2 class="text-center mb-4">Register</h2>
       <div class="input-group mb-4">
-        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-        <input type="text" class="form-control" placeholder="Username" name="username" id="username">
+        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+        <input type="email" class="form-control" placeholder="Email" name="email" id="email">
       </div>
-
       <div class="input-group mb-2">
         <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
         <input type="password" class="form-control" placeholder="Password" name="password" id="password">
@@ -57,10 +56,11 @@
   <div class="card hide text-white bg-dark shadow" id="step2" style="display: none;">
     <div class="card-body">
       <h2 class="text-center mb-4">Almost Done...</h2>
-      <div class="input-group mb-4">
-        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-        <input type="email" class="form-control" placeholder="Email" name="email" id="email">
-      </div>
+			<div class="input-group mb-1">
+					<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+					<input type="text" class="form-control" placeholder="Username" name="username" id="username">		
+			</div>
+			<small class="mb-4" style="color: #6c757d;"><p>Username will be used as your sub-domain.</p></small>      
       <div class="input-group mb-4">
         <span class="input-group-text"><i class="fa-solid fa-house"></i></span>
         <input type="text" class="form-control" placeholder="Blog's name" name="blogname" id="blogname">
@@ -82,13 +82,20 @@
 <script>
 	function validateStep1() {
 		// Perform input validation for Step 1
-		var username = document.getElementById('username').value;
+		var email = document.getElementById('email').value;
 		var password = document.getElementById('password').value;
 
 		// both fields not empty
-		if (username.trim() === '' || password.trim() === '') {
-			alert('Enter username and password to continue.');
+		if (email.trim() === '' || password.trim() === '') {
+			alert('Enter email and password to continue.');
 			return;
+		}
+
+		// Check if the email is valid
+		var emailRegex = /^\S+@\S+\.\S+$/;
+		if (!emailRegex.test(email)) {
+			alert('Enter a valid email address.');
+			return false;
 		}
 
 		// password satisfies requirements
@@ -102,29 +109,22 @@
 		document.getElementById("step1").classList.add("hide");
 		document.getElementById('step1').style.display = 'none';
 		
-    document.getElementById("step2").style.display = "block";
-    setTimeout(function() {
-      document.getElementById("step2").classList.remove("hide");
-    }, 100); 
+		document.getElementById("step2").style.display = "block";
+		setTimeout(function() {
+			document.getElementById("step2").classList.remove("hide");
+		}, 100); 
 	}
 
 	function validateStep2() {
 		// Perform input validation for Step 2
-		var email = document.getElementById('email').value;
+		var username = document.getElementById('username').value;
 		var blogname = document.getElementById('blogname').value;
 		var termsChecked = document.getElementById('terms').checked;
 
-		if (email.trim() === '' || blogname.trim() === '') {
-			alert('Enter email and blog name to continue.');
+		if (username.trim() === '' || blogname.trim() === '') {
+			alert('Enter username and blog name to continue.');
 			return false;
-		}
-
-		// Check if the email is valid
-		var emailRegex = /^\S+@\S+\.\S+$/;
-		if (!emailRegex.test(email)) {
-			alert('Enter a valid email address.');
-			return false;
-		}
+		}		
 
 		if (!termsChecked) {
 			alert('You must understand the terms to continue.');
