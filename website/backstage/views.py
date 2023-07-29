@@ -3,6 +3,7 @@ from flask_login import login_required, logout_user, current_user
 from datetime import datetime, timedelta
 import random
 import string
+from math import ceil
 from website.extensions.db import db_users, db_posts
 from website.config import ENV
 
@@ -29,7 +30,6 @@ def post_control():
 
     session['user_status'] = 'posts'
     page = request.args.get('page', default = 1, type = int)
-    POSTS_EACH_PAGE = 10
 
     if request.method == 'POST':
         # create a new post in db
@@ -67,16 +67,24 @@ def post_control():
 
 
     # query through posts
-    # 20 posts for each page  
+    # 20 posts for each page
+    POSTS_EACH_PAGE = 20
 
-    posts_not_archieved = db_posts.count_documents({
-        'author':current_user.username,
+    num_not_archieved = db_posts.count_documents({
+        'author': current_user.username,
         'archived': False
     })
-    max_skip = (posts_not_archieved // POSTS_EACH_PAGE - 1) * POSTS_EACH_PAGE
+    if num_not_archieved == 0:
+        max_page = 1
+    else:
+        max_page = ceil(num_not_archieved / POSTS_EACH_PAGE)
+
+    if page > max_page:
+        # not a legal page number
+        abort(404)    
 
     enable_older_post = False
-    if page * POSTS_EACH_PAGE < posts_not_archieved:
+    if page * POSTS_EACH_PAGE < num_not_archieved:
         enable_older_post = True
 
     enable_newer_post = False
@@ -88,20 +96,26 @@ def post_control():
             'author': current_user.username,
             'archived': False
         }).sort('created_at', -1).limit(POSTS_EACH_PAGE) # descending: newest
-    elif page > 1 and max_skip > 0:
+    elif page > 1:
+        
         posts = db_posts.find({
             'author': current_user.username,
             'archived': False
-        }).sort('created_at', -1).skip(min((page - 1) * POSTS_EACH_PAGE, max_skip)).limit(POSTS_EACH_PAGE)
-    else:
-        abort(404)
+        }).sort('created_at', -1).skip((page - 1) * POSTS_EACH_PAGE).limit(POSTS_EACH_PAGE)
+    
 
+    posts = list(posts)
+    for post in posts:
+        del post['content']                
+        post['created_at'] = post['created_at'].strftime("%Y/%m/%d %H:%M:%S")
+        post['clicks'] = format(post['clicks'], ',')
+        post['comments'] = format(post['comments'], ',')
 
     return render_template('posts.html', 
                            posts=posts, 
                            current_page=page,
-                           older_posts=enable_older_post, 
-                           newer_posts=enable_newer_post)
+                           newer_posts=enable_newer_post, 
+                           older_posts=enable_older_post)
 
 @backstage.route('/about', methods=['GET', 'POST'])
 @login_required

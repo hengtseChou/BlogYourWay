@@ -9,42 +9,44 @@
 <!-- description -->
 <p class="ms-2">Featured posts will be on your home page, sorted by time order. </p>
 <!-- description ends -->
-<table class="table">
-	<thead>
-		<tr>
-			<th style="width: 44%">Title</th>
-			<th style="width: 15%">Created At</th>
-			<th style="width: 10%" class="text-center">Clicks</th>
-			<th style="width: 10%" class="text-center">Comments</th>
-			<th style="width: 8%" class="text-center">Feature</th>
-			<th style="width: 8%" class="text-center">Archive</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for post in posts %}
-		<tr>
-			<!-- to-do: add post's link to post's title -->
-			<td class="align-middle"><a href="posts/edit/{{ post.uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
-			{% if post['featured'] %}
-			<span class="badge rounded-pill bg-success">Featured</span>
-			{% endif %}
-			</td>
-			<td class="datetime">{{ post['created_at'] }}</td>
-			<td class="text-right text-center number">{{ post['clicks'] }}</td>
-			<td class="text-right text-center number">{{ post['comments'] }}</td>
-			{% if post['featured'] %}
-			{% set base_link = '/backstage/edit-featured?featured=to_false&uid=' %}
-			<td class="text-center"><a href='{{ base_link ~ post.uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
-			{% else %}
-			{% set base_link = '/backstage/edit-featured?featured=to_true&uid=' %}
-			<td class="text-center"><a href='{{ base_link ~ post.uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
-			{% endif %}
-			{% set base_link2 = '/backstage/edit-archived?archived=to_true&uid=' %}
-			<td class="text-center"><a href="{{ base_link2 ~ post.uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
-		</tr>		
-		{% endfor %}
-	</tbody>
-</table>
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th style="width: 44%">Title</th>
+				<th style="width: 15%">Created At</th>
+				<th style="width: 10%" class="text-center">Clicks</th>
+				<th style="width: 10%" class="text-center">Comments</th>
+				<th style="width: 8%" class="text-center">Feature</th>
+				<th style="width: 8%" class="text-center">Archive</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for post in posts %}
+			<tr>
+				<!-- to-do: add post's link to post's title -->
+				<td class="align-middle"><a href="posts/edit/{{ post.uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
+				{% if post['featured'] %}
+				<span class="badge rounded-pill bg-success">Featured</span>
+				{% endif %}
+				</td>
+				<td>{{ post['created_at'] }}</td>
+				<td class="text-right text-center">{{ post['clicks'] }}</td>
+				<td class="text-right text-center">{{ post['comments'] }}</td>
+				{% if post['featured'] %}
+				{% set base_link = '/backstage/edit-featured?featured=to_false&uid=' %}
+				<td class="text-center"><a href='{{ base_link ~ post.uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
+				{% else %}
+				{% set base_link = '/backstage/edit-featured?featured=to_true&uid=' %}
+				<td class="text-center"><a href='{{ base_link ~ post.uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
+				{% endif %}
+				{% set base_link2 = '/backstage/edit-archived?archived=to_true&uid=' %}
+				<td class="text-center"><a href="{{ base_link2 ~ post.uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
+			</tr>		
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
 <div class="container">
 	<div class="row">
 		<div class="col-6 text-start">
@@ -149,31 +151,7 @@
 		}
 
 		return true;
-	}
-
-	function convertDateTimeToString() {
-  // Select all elements with class name 'datetime'
-		const elements = document.querySelectorAll('.datetime');
-
-		// Iterate over each selected element
-		elements.forEach((element) => {
-			// Get the datetime value from the element's text content
-			const datetime = element.textContent.trim();
-			const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-
-			// Check if the content represents a valid datetime value
-			if (datetime && !isNaN(Date.parse(datetime))) {
-				// Convert the datetime value to a Date object
-				const dateObj = new Date(datetime);
-
-				// Format the datetime as desired (YYYY-MM-DD H:M:S)
-				const dateString = dateObj.toLocaleString("roc", options);
-
-				// Replace the element's content with the formatted datetime string
-				element.textContent = dateString;
-			}
-		});
-	}
+	}	
 
 	function formatNumber() {
 		const numberElements = document.getElementsByClassName("number");

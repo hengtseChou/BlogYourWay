@@ -6,7 +6,7 @@
 </div>
 <hr>
 <form method="post" autocomplete="off" id="form" class="row">
-	<div class="col-9">
+	<div class="col-12 col-md-9">
 		<div class="mb-3">
 			<label for="title" class="form-label ms-2">Add/update an image to your profile</label>
 			<input type="text" class="form-control" id="profile_img_url" name="profile_img_url" value="{{ user.profile_img_url }}" placeholder="Insert image url here">
@@ -21,8 +21,8 @@
 								placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
 		</div>
 		<div class="text-end mb-5">
-			<a href="/backstage/posts" class="btn btn-light text-center" style="width: 20%;">Cancel</a>
-			<button type="submit" class="btn panel-btn text-center" style="width: 20%;">Save Changes</button>
+			<a href="/backstage/posts" class="btn btn-light text-center" style="width: 20%; min-width: 100px;">Cancel</a>
+			<button type="submit" class="btn panel-btn text-center" style="width: 20%; min-width: 100px;">Save Changes</button>
 		</div>
 	</div>
 </form>

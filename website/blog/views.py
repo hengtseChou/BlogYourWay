@@ -3,17 +3,13 @@ from flask_login import login_user, UserMixin, current_user
 import bcrypt
 from datetime import datetime
 from urllib.parse import unquote
-import markdown
+from math import ceil
 from website.extensions.db import db_users, db_posts
-from website.blog.utils import HTML_Formatter
+from website.blog.utils import HTML_Formatter, all_user_tags, md
 
 blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
 
-md = markdown.Markdown(
-    extensions=[
-        'markdown_captions'
-    ]
-)
+
 
 class User(UserMixin):
     # user id is set as username    
@@ -38,7 +34,7 @@ def home(username):
         'author': username, 
         'featured': True,
         'archived': False
-    }).sort('created_at', -1).limit(8)
+    }).sort('created_at', -1).limit(10)
     featured_posts = list(featured_posts)
     feature_idx = 1
     for post in featured_posts:
@@ -47,6 +43,7 @@ def home(username):
         feature_idx += 1            
         post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
 
+    # update click count
     clicks_update = user['clicks']
     clicks_update['total'] += 1
     clicks_update['home'] += 1
@@ -157,6 +154,8 @@ def post(username, post_uid):
     target_post['content'] = md.convert(target_post['content'])
     target_post['content'] = HTML_Formatter(target_post['content']).to_blogpost()
     target_post['last_updated'] = target_post['last_updated'].strftime("%Y-%m-%d")
+
+    # update click counts
     db_posts.update_one(
         {'uid': post_uid},
         {'clicks': target_post['clicks'] + 1}
@@ -177,9 +176,9 @@ def about(username):
 
     if not db_users.exists('username', username):
         abort(404)
-
     user = db_users.find_one({'username': username})
 
+    # update click counts
     clicks_update = user['clicks']
     clicks_update['total'] += 1
     clicks_update['about'] += 1
@@ -194,5 +193,79 @@ def about(username):
     return render_template('about.html', 
                            user=user,
                            about=about_content)
-    
 
+
+@blog.route('/<username>/blog', methods=['GET'])
+def blogposts(username):
+
+    if not db_users.exists('username', username):
+        abort(404)
+    user = db_users.find_one({'username': username})
+    page = request.args.get('page', default = 1, type = int)
+    POSTS_EACH_PAGE = 10
+    
+    # create a tag dict
+    tags_dict = all_user_tags(username)
+
+    # set up for pagination
+    num_not_archieved = db_posts.count_documents({
+        'author': username,
+        'archived': False
+    })
+    if num_not_archieved == 0:
+        max_page = 1
+    else:
+        max_page = ceil(num_not_archieved / POSTS_EACH_PAGE)
+
+    if page > max_page:
+        # not a legal page number
+        abort(404)    
+
+    enable_older_post = False
+    if page * POSTS_EACH_PAGE < num_not_archieved:
+        enable_older_post = True
+
+    enable_newer_post = False
+    if page > 1:
+        enable_newer_post = True
+
+    # skip and limit posts with given page
+    if page == 1:
+        posts = db_posts.find({
+            'author': username,
+            'archived': False
+        }).sort('created_at', -1).limit(POSTS_EACH_PAGE) # descending: newest
+    elif page > 1:        
+        posts = db_posts.find({
+            'author': username,
+            'archived': False
+        }).sort('created_at', -1).\
+            skip((page - 1) * POSTS_EACH_PAGE).\
+            limit(POSTS_EACH_PAGE)   
+
+    idx = 1
+    posts = list(posts)
+    for post in posts:
+        del post['content']
+        post['idx'] = idx
+        idx += 1            
+        post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
+    num_of_posts = len(posts)
+
+    # update click counts
+    clicks_update = user['clicks']
+    clicks_update['total'] += 1
+    clicks_update['blog'] += 1
+    db_users.update_one(
+        {'username': username}, 
+        {'clicks': clicks_update}
+    )
+    
+    return render_template('blog.html', 
+                           user = user,
+                           posts = posts,
+                           num_of_posts = num_of_posts,
+                           tags = tags_dict, 
+                           current_page = page, 
+                           newer_posts = enable_newer_post, 
+                           older_posts = enable_older_post)

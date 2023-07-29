@@ -1,4 +1,6 @@
 from bs4 import BeautifulSoup
+import markdown
+from website.extensions.db import db_posts
 
 class HTML_Formatter:
 
@@ -73,6 +75,34 @@ class HTML_Formatter:
             to_string()
         
         return about
+    
+def all_user_tags(username):
 
+    result = db_posts.find({
+        'author': username, 
+        'archived': False
+    })
+    
+    tags_dict = {}
+    for post in result:
+        post_tags = post['tags']
+        for tag in post_tags:
+            if tag not in tags_dict:
+                tags_dict[tag] = 1
+            else:
+                tags_dict[tag] += 1
+
+    sorted_tags_key = sorted(tags_dict, key=tags_dict.get, reverse=True)
+    sorted_tags = {}
+    for key in sorted_tags_key:
+        sorted_tags[key] = tags_dict[key]
+
+    return sorted_tags
+
+md = markdown.Markdown(
+    extensions=[
+        'markdown_captions'
+    ]
+)
         
 
