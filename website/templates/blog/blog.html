@@ -104,7 +104,7 @@
 				<h5 class="fw-bold mb-3" style="color: rgb(100, 100, 100);">Topics in this blog</h5>
 				{% for tag, count in tags.items() %}
 				{% set tag_link = 'tags?tag=' ~ tag %}
-					<a href="{{ tag_link }}"><span class="badge badge-custom me-2">{{ tag }}<span class="badge bg-secondary ms-2">{{ count }}</span></span></a>
+					<a href="{{ tag_link }}"><span class="badge badge-custom me-2" style="font-size: small;">{{ tag }}<span class="badge bg-secondary ms-2">{{ count }}</span></span></a>
 				{% endfor %}
 			</div>		
 		</div>

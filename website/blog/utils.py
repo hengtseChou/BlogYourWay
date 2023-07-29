@@ -11,7 +11,7 @@ class HTML_Formatter:
 
         # Find all tags in the HTML
         # except figure and img tag
-        tags = self.soup.find_all(lambda tag: tag.name not in ['figure', 'img'])
+        tags = self.soup.find_all(lambda tag: tag.name not in ['figure', 'img'], recursive=False)
 
         # Add padding to each tag
         for tag in tags:
@@ -51,6 +51,15 @@ class HTML_Formatter:
             current_style = caption.get('style', '')
             new_style = f"{current_style} text-align: center"
             caption['style'] = new_style
+
+        return self
+    
+    def wrap_codeblock(self):
+
+        codes = self.soup.find_all(['code'])
+        for code in codes:
+            code.parent.unwrap()
+        self.soup.code.wrap(self.soup.new_tag('pre'))
 
         return self
     
@@ -101,7 +110,8 @@ def all_user_tags(username):
 
 md = markdown.Markdown(
     extensions=[
-        'markdown_captions'
+        'markdown_captions',
+        'fenced_code'
     ]
 )
         

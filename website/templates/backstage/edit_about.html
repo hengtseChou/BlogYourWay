@@ -7,16 +7,16 @@
 <hr>
 <form method="post" autocomplete="off" id="form" class="row">
 	<div class="col-12 col-md-9">
-		<div class="mb-3">
-			<label for="title" class="form-label ms-2">Add/update an image to your profile</label>
-			<input type="text" class="form-control" id="profile_img_url" name="profile_img_url" value="{{ user.profile_img_url }}" placeholder="Insert image url here">
+		<div class="mb-4">
+			<label for="title" class="form-label ms-2 label-text"> · Add/update an image to your profile</label>
+			<input type="text" class="form-control border-underline" id="profile_img_url" name="profile_img_url" value="{{ user.profile_img_url }}" placeholder="Insert image url here">
 		</div>		
-		<div class="mb-3">
-			<label for="banner" class="form-label ms-2">Short bio</label>
-			<input type="text" class="form-control" id="short_bio" name="short_bio" placeholder="Bio on your home page" value="{{ user.short_bio }}">
+		<div class="mb-4">
+			<label for="banner" class="form-label ms-2 label-text"> · Short bio</label>
+			<input type="text" class="form-control border-underline" id="short_bio" name="short_bio" placeholder="Bio on your home page" value="{{ user.short_bio }}">
 		</div>
-		<div class="mb-3">
-			<label for="editor" class="mb-2 ms-2">Edit content in your About page</label>
+		<div class="mb-4">
+			<label for="editor" class="mb-3 ms-2 label-text"> · Edit your About page</label>
 			<textarea id="editor" name="about" style="white-space: pre-line;" 
 								placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
 		</div>

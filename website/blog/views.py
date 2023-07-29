@@ -60,11 +60,11 @@ def register():
     # with unique email, username and blog name
     new_user = request.form.to_dict()  
     if db_users.exists('email', new_user['email']):
-        flash('Email already exists. Please try another one.', category='error')
+        flash('Email is already used. Please try another one.', category='error')
         return render_template('register.html')
     
     if db_users.exists('username', new_user['username']):
-        flash('Username already exists. Please try another one.', category='error')
+        flash('Username is already used. Please try another one.', category='error')
         return render_template('register.html')
     
     if db_users.exists('blogname', new_user['blogname']):
@@ -192,6 +192,8 @@ def post(username, post_uid):
     # update visitor counts
     redis_method.increment_count(f"post_uid_{target_post['uid']}", request)
     redis_method.increment_count(f"{username}_uv", request)
+
+    print(target_post)
 
     return render_template('blogpost.html', 
                            user=author,

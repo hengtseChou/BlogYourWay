@@ -39,7 +39,7 @@
 		<div class="col-12 col-md-7 mx-auto">
 			<div style="font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;">
 				<h1 class="text-center fw-bold">{{ post.title }}</h1>
-				<div class="d-none d-md-flex align-items-center justify-content-center mt-3 mb-5">
+				<div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-5">
 					<a href="/{{ post.author }}/about">
 						{% if user.profile_img_url|length == 0 %}
 						<img src="/static/img/default_profile.png" alt="profile-img" class="profile me-2">
@@ -51,7 +51,7 @@
 					<div class="date-text"><h4> · Last updated: {{ post.last_updated }}</h4></div>
 				</div>
 
-				<div class="d-md-none text-center my-4">
+				<div class="d-lg-none text-center my-4">
 					<div class="d-flex align-items-center justify-content-center mb-4">
 						<a href="/{{ post.author }}/about">
 							{% if user.profile_img_url|length == 0 %}
