@@ -53,16 +53,7 @@ class HTML_Formatter:
             caption['style'] = new_style
 
         return self
-    
-    def wrap_codeblock(self):
-
-        codes = self.soup.find_all(['code'])
-        for code in codes:
-            code.parent.unwrap()
-        self.soup.code.wrap(self.soup.new_tag('pre'))
-
-        return self
-    
+        
     def to_string(self):
 
         return str(self.soup)

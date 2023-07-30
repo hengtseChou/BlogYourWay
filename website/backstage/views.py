@@ -3,6 +3,7 @@ from flask_login import login_required, logout_user, current_user
 from datetime import datetime, timedelta
 import random
 import string
+import bcrypt
 from math import ceil
 from website.extensions.db_mongo import db_users, db_posts
 from website.extensions.db_redis import redis_method
@@ -23,7 +24,14 @@ backstage = Blueprint('backstage', __name__, template_folder='../templates/backs
 @login_required
 def overview():
 
-    return render_template('overview.html')
+    now = datetime.now()
+    user = db_users.find_one({'username': current_user.username})  
+
+    time_difference = now - user['created_at']
+    days_difference = time_difference.days + 1
+    print(time_difference)
+
+    return render_template('overview.html', user=user)
 
 @backstage.route('/posts', methods=['GET', 'POST'])
 @login_required
@@ -31,6 +39,8 @@ def post_control():
 
     session['user_status'] = 'posts'
     page = request.args.get('page', default = 1, type = int)
+    user = db_users.find_one({'username': current_user.username})  
+
 
     if request.method == 'POST':
         # create a new post in db
@@ -51,7 +61,7 @@ def post_control():
             tag = tag.replace(" ", "-")
         db_users.update_one(
             {'username': current_user.username}, 
-            {'posts_count': current_user.posts_count + 1}
+            {'posts_count': user['posts_count'] + 1}
         )
         new_post['comments'] = 0
         new_post['archived'] = False
@@ -122,7 +132,8 @@ def post_control():
 @login_required
 def about_control():
 
-    session['user_status'] = 'about'    
+    session['user_status'] = 'about'
+    user = db_users.find_one({'username': current_user.username})  
 
     if request.method == 'POST':  
 
@@ -133,7 +144,6 @@ def about_control():
         )
         flash('Information updated!', category='success')
 
-    user = db_users.find_one({'username': current_user.username})
 
     return render_template('edit_about.html', user=user)
 
@@ -156,6 +166,87 @@ def archive_control():
 def theme():
 
     return render_template('theme.html')
+
+@backstage.route('/settings', methods=['GET', "POST"])
+@login_required
+def settings():
+
+    session['user_status'] = 'settings'
+
+    if request.method == 'POST':
+
+        general = request.form.get('general')
+        change_pw = request.form.get('changepw')
+        delete_account = request.form.get('delete-account')
+
+        if general is not None:
+
+            banner_url = request.form.get('banner_url')
+            db_users.update_one(
+                {'username': current_user.username}, 
+                {'banner_url': banner_url}
+            )
+            flash('Update succeeded!', category='success')
+
+        elif change_pw is not None:
+
+            current_pw = request.form.get('current')
+            new_pw = request.form.get('new')
+
+            user = db_users.find_one({'username': current_user.username})
+
+            # check pw
+            if not bcrypt.checkpw(current_pw.encode('utf8'), user['password'].encode('utf8')):
+                flash('Current password is invalid. Please try again.', category='error')
+                return render_template('settings.html', user=user)
+
+            # update new password
+            hashed_pw = bcrypt.hashpw(new_pw.encode('utf-8'), bcrypt.gensalt(12))
+            hashed_pw = hashed_pw.decode('utf-8')
+            db_users.update_one(
+                {'username': current_user.username},
+                {'password': hashed_pw}
+            )
+            flash('Password update succeeded!', category='success')
+        
+        elif delete_account is not None:
+
+            # get all post id, because we want to also remove relevant comments
+            # remove all posts
+            # remove postfolio
+            # logout user
+            # remove user
+            confirm_pw = request.form.get('delete-confirm-pw')
+            user = db_users.find_one({'username': current_user.username})  
+
+
+            if not bcrypt.checkpw(confirm_pw.encode('utf8'), user['password'].encode('utf8')):
+                flash('Access denied, bacause password is invalid.', category='error')
+                return render_template('settings.html', user=user)
+            
+            # deletion procedure
+
+            posts_id_to_delete = []
+            posts_to_delete = list(db_posts.find({'author': current_user.username}))
+            for post in posts_to_delete: 
+                posts_id_to_delete.append(post['uid'])
+
+            db_posts.delete_many({'author': user['username']})
+            logout_user()
+
+            db_users.delete_one({'username': user['username']})
+            flash("Account deleted successfully!", category='success')
+
+            return redirect(url_for('blog.register'))
+
+            
+            
+
+
+    user = db_users.find_one({'username': current_user.username})  
+
+
+    return render_template('settings.html', user=user)
 
 @backstage.route('/posts/edit/<post_uid>', methods=['GET', 'POST'])
 @login_required

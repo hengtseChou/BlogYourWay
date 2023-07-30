@@ -1,12 +1,13 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
 from flask_login import login_user, UserMixin, current_user
 import bcrypt
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import unquote
 from math import ceil
 from website.extensions.db_mongo import db_users, db_posts
 from website.extensions.db_redis import redis_method
 from website.blog.utils import HTML_Formatter, all_user_tags, md
+from website.config import ENV
 
 blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
 
@@ -77,10 +78,15 @@ def register():
     hashed_pw = hashed_pw.decode('utf-8')
     new_user['password'] = hashed_pw
     new_user['posts_count'] = 0
+    new_user['banner_url'] = ""
     new_user['profile_img_url'] = ""
     new_user['short_bio'] = ""
     new_user['about'] = ""
-    # about(bio, profile pic, about), theme, social links
+    if ENV == 'debug':            
+        new_user['created_at']  = datetime.now()
+    elif ENV == 'prod':
+        new_user['created_at']  = datetime.now() + timedelta(hours=8)
+    #  theme, social links
     del new_user['terms']
     db_users.create_user(new_user)
 

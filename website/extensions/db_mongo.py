@@ -49,6 +49,9 @@ class DB_Users(Database):
     def update_one(self, filter, update):
         return super().update_one(self.collection, filter, update)
     
+    def delete_one(self, query):
+        return super().delete_one(self.collection, query)
+    
     ## own methods    
     def create_user(self, data):
         
@@ -84,12 +87,14 @@ class DB_Posts(Database):
     
     def count_documents(self, query):
 
-        return self.collection.count_documents(query)
+        count = self.collection.count_documents(query)
+        if count is None:
+            return 0
+        return count
     
+    def delete_many(self, query):
 
-
-
-
+        self.collection.delete_many(query)
 
 
 class DB_Comments(Database):

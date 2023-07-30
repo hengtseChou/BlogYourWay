@@ -1,0 +1,126 @@
+{% extends 'panel.html' %}
+
+{% block panel %}
+<h2 class="ms-2">Settings</h2>
+<hr>
+<div class="row">
+	<div class="col-12 col-lg-9">
+	<!-- General -->
+		<h4 class="ms-2 mb-3">General</h4>
+		<form method="post" autocomplete="off" id="general_form">
+			<div class="mb-4">
+				<label for="title" class="form-label ms-2 label-text"> · Add/update blog banner</label>
+				<input type="text" class="form-control border-underline" id="banner_url" name="banner_url" value="{{ user.banner_url }}" placeholder="Insert image url">
+			</div>
+				<div class="text-end mb-5">
+				<button type="submit" class="btn panel-btn text-center" style="width: 20%; min-width: 150px;" name="general">Save Changes</button>
+			</div>
+		</form>
+		<!-- update pw -->
+		<h4 class="ms-2 mb-4">Update Password</h4>
+		<form method="post" autocomplete="off" id="changepw_form">
+			<div class="ms-2 mb-3 row">
+				<label for="current" class="col-4">Current Password</label>
+				<div class="col-8">
+					<input type="password" class="form-control" id="current" name="current">
+				</div>
+			</div>
+			<div class="ms-2 mb-3 row">
+				<label for="new" class="col-4">New Password</label>
+				<div class="col-8">
+					<input type="password" class="form-control" id="new" name="new">
+				</div>
+			</div>
+			<div class="ms-2 mb-4 row">
+				<label for="confirm" class="col-4">Confirm New Password</label>
+				<div class="col-8">
+					<input type="password" class="form-control" id="confirm" name="confirm">
+				</div>
+			</div>
+			<div class="text-end mb-4">
+				<button type="submit" class="btn panel-btn text-center" style="width: 20%; min-width: 150px;" name="changepw" onclick="return validatePasswords()">Save Changes</button>
+			</div>		
+		</form>
+		<hr>
+		<!-- delete -->
+		<div class="text-end mt-4 mb-5">
+			<button class="btn" data-bs-toggle="modal" data-bs-target="#delete" style=" width: 20%; min-width: 150px; background-color: #911D21; color: white;">Delete Account</button>
+		</div>
+
+
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="delete" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Delete Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+			<form method="post" autocomplete="off" id="delete-form">				
+	      <div class="modal-body">
+					<p>Do you sure you want to delete account? All your works and posts will be deleted!</p>
+					<p style="color: rgb(100, 100, 100);">Type <span class="fw-bold">your password</span> to proceed.</p>
+					<div class="mb-4">
+						<input type="password" class="form-control" id="delete-confirm-pw" name="delete-confirm-pw">
+					</div>					
+      	</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn" name="delete-account" style="background-color: #911D21; color: white;">Delete</button>
+      </div>
+		</form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+	function validatePasswords() {
+		// Get the input values
+		var currentPassword = document.getElementById('current').value;
+		var newPassword = document.getElementById('new').value;
+		var confirmNewPassword = document.getElementById('confirm').value;
+
+		// Regular expression to check valid password format (at least 6 characters)
+		var passwordFormat = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+		// Check if current password is valid (not empty and matches the format)
+		if (!currentPassword.match(passwordFormat)) {
+			alert('Current password is invalid. It should be at least 6 characters long and contain both letters and numbers.');
+			return false;
+		}
+
+		// Check if new password is valid (not empty and matches the format)
+		if (!newPassword.match(passwordFormat)) {
+			alert('New password is invalid. It should be at least 8 characters long and contain both uppercases and lowercases.');
+			return false;
+		}
+
+		// Check if new password matches the confirmed new password
+		if (newPassword !== confirmNewPassword) {
+			alert('New password and Confirm new password do not match.');
+			return false;
+		}
+
+		// All checks pass, proceed with your logic here
+		return true;
+	}
+
+	document.getElementById('general_form').addEventListener('keypress', function(event) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	});
+
+	document.getElementById('changepw_form').addEventListener('keypress', function(event) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	});
+</script>
+{% endblock %}
