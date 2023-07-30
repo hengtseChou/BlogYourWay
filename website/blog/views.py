@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
 from flask_login import login_user, UserMixin, current_user
 import bcrypt
+import string 
+import random
 from datetime import datetime, timedelta
 from urllib.parse import unquote
 from math import ceil
-from website.extensions.db_mongo import db_users, db_posts
+from website.extensions.db_mongo import db_users, db_posts, db_comments
 from website.extensions.db_redis import redis_method
-from website.blog.utils import HTML_Formatter, all_user_tags, md
+from website.blog.utils import HTML_Formatter, all_user_tags, is_comment_verified, md
 from website.config import ENV
 
 blog = Blueprint('blog', __name__, template_folder='../templates/blog/')
@@ -176,7 +178,7 @@ def tag(username):
                            num_of_posts=len(posts_has_tag))
 
 
-@blog.route('/<username>/posts/<post_uid>', methods=['GET'])
+@blog.route('/<username>/posts/<post_uid>', methods=['GET', 'POST'])
 def post(username, post_uid):
 
     if not db_users.exists('username', username):
@@ -191,19 +193,66 @@ def post(username, post_uid):
     if author['username'] != target_post['author']:
         abort(404)
 
+    # add comments
+    if request.method == 'POST':
+
+        token = request.form.get('g-recaptcha-response')
+
+        if is_comment_verified(token):
+
+            new_comment = {}
+            if ENV == 'debug':
+                new_comment['created_at'] = datetime.now()
+            elif ENV == 'prod':
+                new_comment['created_at'] = datetime.now() + timedelta(hours=8)
+            new_comment['post_uid'] = post_uid
+            new_comment['profile_pic'] = '/static/img/visitor.png'
+            new_comment['profile_link'] = ''
+            new_comment['comment'] = request.form.get('comment')
+            alphabet = string.ascii_lowercase + string.digits
+            uid = ''.join(random.choices(alphabet, k=8))
+            while db_comments.exists('comment_uid', uid):
+                uid = ''.join(random.choices(alphabet, k=8))
+            new_comment['comment_uid'] = uid
+
+            if current_user.is_authenticated:
+                commenter = dict(db_users({'username': current_user.username}))
+                new_comment['name'] = current_user.username
+                new_comment['email'] = commenter['email']
+                new_comment['profile_link'] = f'/{current_user.username}/about'
+                if commenter['profile_img_url']:
+                    new_comment['profile_pic'] = commenter['profile_img_url']
+            else:
+                new_comment['name'] = request.form.get('name')
+                new_comment['email'] = request.form.get('email')
+
+            db_comments.insert_one(new_comment)
+            db_posts.update_one(
+                {'uid': post_uid}, 
+                {'comments': target_post['comments'] + 1}
+            )
+            flash('Comment pubished!', category='success')
+                
+
+
+
     target_post['content'] = md.convert(target_post['content'])
     target_post['content'] = HTML_Formatter(target_post['content']).to_blogpost()
     target_post['last_updated'] = target_post['last_updated'].strftime("%Y-%m-%d")
+
+    # find comments
+    comments = db_comments.find({'post_uid': post_uid}).sort('created_at', -1)
+    comments = list(comments)
 
     # update visitor counts
     redis_method.increment_count(f"post_uid_{target_post['uid']}", request)
     redis_method.increment_count(f"{username}_uv", request)
 
-    print(target_post)
 
     return render_template('blogpost.html', 
                            user=author,
-                           post=target_post)
+                           post=target_post, 
+                           comments=comments)
 
 @blog.route('/<username>/about', methods=['GET'])
 def about(username):

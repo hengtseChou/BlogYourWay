@@ -20,13 +20,20 @@ class Database(object):
         return collection.find_one(query)
     
     def insert_one(self, collection, data):
-        return collection.insert_one(data)
+        collection.insert_one(data)
     
     def update_one(self, collection, filter, update):
-        return collection.update_one(filter, {'$set': update})
+        collection.update_one(filter, {'$set': update})
     
     def delete_one(self, collection, query):
-        return collection.delete_one(query)
+        collection.delete_one(query)
+    
+    def count_documents(self, collection, query):
+
+        count = collection.count_documents(query)
+        if count is None:
+            return 0
+        return count
 
 class DB_Users(Database):
 
@@ -71,10 +78,16 @@ class DB_Posts(Database):
         return super().find_one(self.collection, query)
     
     def update_one(self, filter, update):
-        return super().update_one(self.collection, filter, update)
+        super().update_one(self.collection, filter, update)
     
     def delete_one(self, query):
-        return super().delete_one(self.collection, query)
+        super().delete_one(self.collection, query)
+    
+    def exists(self, key, value):
+        return super().exists(self.collection, key, value)
+    
+    def count_documents(self, query):
+        return super().count_documents(self.collection, query)
     
     ## own methods
 
@@ -82,16 +95,8 @@ class DB_Posts(Database):
 
         self.collection.insert_one(new_post)
 
-    def exists(self, key, value):
-        return super().exists(self.collection, key, value)
-    
-    def count_documents(self, query):
 
-        count = self.collection.count_documents(query)
-        if count is None:
-            return 0
-        return count
-    
+
     def delete_many(self, query):
 
         self.collection.delete_many(query)
@@ -101,7 +106,19 @@ class DB_Comments(Database):
 
     def __init__(self):
         super().__init__()
-        self.collection = self.db['comments']        
+        self.collection = self.db['comments']
+    
+    def exists(self, key, value):
+        return super().exists(self.collection, key, value)
+
+    def insert_one(self, data):
+        super().insert_one(self.collection, data) 
+
+    def count_documents(self, collection, query):
+        return super().count_documents(collection, query) 
+    
+    def find(self, query):
+        return super().find(self.collection, query)
 
 
 

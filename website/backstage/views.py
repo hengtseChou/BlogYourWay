@@ -29,7 +29,6 @@ def overview():
 
     time_difference = now - user['created_at']
     days_difference = time_difference.days + 1
-    print(time_difference)
 
     return render_template('overview.html', user=user)
 

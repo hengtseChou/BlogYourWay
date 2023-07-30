@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import markdown
 from website.extensions.db_mongo import db_posts
+import requests
+from website.config import RECAPTCHA_SECRET
 
 class HTML_Formatter:
 
@@ -98,6 +100,16 @@ def all_user_tags(username):
         sorted_tags[key] = tags_dict[key]
 
     return sorted_tags
+
+def is_comment_verified(token):
+
+    payload = {'secret': RECAPTCHA_SECRET, 'response': token}
+    r = requests.post('https://www.google.com/recaptcha/api/siteverify', params=payload)
+    response = r.json()
+
+    if response['success']:
+        return True
+    return False
 
 md = markdown.Markdown(
     extensions=[
