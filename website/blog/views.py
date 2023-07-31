@@ -61,7 +61,9 @@ def register():
     
     # registeration
     # with unique email, username and blog name
-    new_user = request.form.to_dict()  
+    new_user = request.form.to_dict()
+    # make sure username has no space character
+    new_user['username'] = new_user['username'].strip().replace(' ', '-')
     if db_users.exists('email', new_user['email']):
         flash('Email is already used. Please try another one.', category='error')
         return render_template('register.html')
