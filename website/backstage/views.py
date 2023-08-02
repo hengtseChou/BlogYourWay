@@ -5,7 +5,7 @@ import random
 import string
 import bcrypt
 from math import ceil
-from website.extensions.db_mongo import db_users, db_posts
+from website.extensions.db_mongo import db_users, db_posts, db_comments
 from website.extensions.db_redis import redis_method
 from website.config import ENV
 
@@ -188,7 +188,7 @@ def social_link_control():
             {'social_links': updated_links}
         )
         flash('Social Links updated', category='success')
-        
+
         return render_template('social_links.html', social_links = updated_links)
 
 
@@ -241,6 +241,7 @@ def settings():
 
             # get all post id, because we want to also remove relevant comments
             # remove all posts
+            # remove comments within the post
             # remove postfolio
             # logout user
             # remove user
@@ -254,10 +255,12 @@ def settings():
             
             # deletion procedure
 
-            posts_id_to_delete = []
+            posts_uid_to_delete = []
             posts_to_delete = list(db_posts.find({'author': current_user.username}))
             for post in posts_to_delete: 
-                posts_id_to_delete.append(post['uid'])
+                posts_uid_to_delete.append(post['uid'])
+            for post_uid in posts_uid_to_delete:
+                db_comments.delete_many({'post_uid': post_uid})
 
             db_posts.delete_many({'author': user['username']})
             logout_user()

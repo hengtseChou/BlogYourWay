@@ -27,6 +27,9 @@ class Database(object):
     
     def delete_one(self, collection, query):
         collection.delete_one(query)
+
+    def delete_many(self, collection, query):
+        collection.delete_many(query)
     
     def count_documents(self, collection, query):
 
@@ -51,13 +54,14 @@ class DB_Users(Database):
         return super().find_one(self.collection, query)
     
     def insert_one(self, data):
-        return super().insert_one(self.collection, data)
+        super().insert_one(self.collection, data)
     
     def update_one(self, filter, update):
-        return super().update_one(self.collection, filter, update)
+        super().update_one(self.collection, filter, update)
     
     def delete_one(self, query):
-        return super().delete_one(self.collection, query)
+        super().delete_one(self.collection, query)
+    
     
     ## own methods    
     def create_user(self, data):
@@ -82,6 +86,9 @@ class DB_Posts(Database):
     
     def delete_one(self, query):
         super().delete_one(self.collection, query)
+
+    def delete_many(self, query):
+        super().delete_many(self.collection, query)
     
     def exists(self, key, value):
         return super().exists(self.collection, key, value)
@@ -97,10 +104,6 @@ class DB_Posts(Database):
 
 
 
-    def delete_many(self, query):
-
-        self.collection.delete_many(query)
-
 
 class DB_Comments(Database):
 
@@ -111,14 +114,18 @@ class DB_Comments(Database):
     def exists(self, key, value):
         return super().exists(self.collection, key, value)
 
-    def insert_one(self, data):
-        super().insert_one(self.collection, data) 
-
     def count_documents(self, collection, query):
         return super().count_documents(collection, query) 
     
     def find(self, query):
         return super().find(self.collection, query)
+    
+    def delete_many(self, collection, query):
+        super().delete_many(collection, query)
+    
+    def new_comment(self, new_comment):
+        super().insert_one(self.collection, new_comment)
+
 
 
 

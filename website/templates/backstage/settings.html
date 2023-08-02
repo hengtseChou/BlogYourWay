@@ -12,6 +12,11 @@
 				<label for="title" class="form-label ms-2 label-text"> · Add/update blog banner</label>
 				<input type="text" class="form-control border-underline" id="banner_url" name="banner_url" value="{{ user.banner_url }}" placeholder="Insert image url">
 			</div>
+			<div class="mb-4">
+				<label for="editor" class="mb-3 ms-2 label-text"> · Modify backstage's banner text</label>
+				<textarea id="editor" name="banner-text" style="white-space: pre-line;" 
+									placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+			</div>
 				<div class="text-end mb-5">
 				<button type="submit" class="btn panel-btn text-center" style="width: 20%; min-width: 150px;" name="general">Save Changes</button>
 			</div>
@@ -122,5 +127,35 @@
 			event.preventDefault();
 		}
 	});
+</script>
+
+<script>
+
+	const easyMDE = new EasyMDE({
+		element: document.getElementById('editor'),
+		autofocus: true,
+		toolbar: ["bold", "italic", "heading", "|", 
+							"undo", "redo", "|", 
+							"code", "quote", "unordered-list", "ordered-list","horizontal-rule" ,'|',
+							"link", "image", "|", 
+							"preview", "guide"],
+		minHeight: '150px',
+		spellChecker: false
+	});
+
+
+
+	document.addEventListener("DOMContentLoaded", function() {  
+
+
+		// easyMDE.value('{{ user.about| tojson }}'.slice(1, -1));	
+    const form = document.getElementById("form");
+		form.addEventListener("keypress", function(event) {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+			}
+		});
+
+	});	
 </script>
 {% endblock %}

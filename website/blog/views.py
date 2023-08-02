@@ -237,12 +237,12 @@ def post(username, post_uid):
                 new_comment['name'] = request.form.get('name')
                 new_comment['email'] = request.form.get('email')
 
-            db_comments.insert_one(new_comment)
+            db_comments.new_comment(new_comment)
             db_posts.update_one(
                 {'uid': post_uid}, 
                 {'comments': target_post['comments'] + 1}
             )
-            flash('Comment pubished!', category='success')
+            flash('Comment published!', category='success')
                 
 
 
