@@ -26,15 +26,33 @@
 				{% endif %}
 			</ul>
 			<ul class="navbar-nav social-icons">
+				{% for dict in user['social_links'] %}
+				{% if dict['platform'] == 'medium' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="https://medium.com/@hankchou1219"><i class="fa-brands fa-medium"></i></a>
+					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-medium"></i></a>
 				</li>
+				{% elif dict['platform'] == 'linkedin' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="https://www.linkedin.com/in/heng-tse-chou-7988951ab/"><i class="fa-brands fa-linkedin"></i></a>
+					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-linkedin"></i></a>
 				</li>
+				{% elif dict['platform'] == 'github' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="https://github.com/hank-chouu"><i class="fa-brands fa-github"></i></a>
+					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-github"></i></a>
 				</li>
+				{% elif dict['platform'] == 'facebook' %}
+				<li class="nav-item">
+					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-facebook-f"></i></a>
+				</li>
+				{% elif dict['platform'] == 'instagram' %}
+				<li class="nav-item">
+					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-instagram"></i></a>
+				</li>
+				{% elif dict['platform'] == 'twitter' %}
+				<li class="nav-item">
+					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-twitter"></i></a>
+				</li>
+				{% endif %}
+				{% endfor %}
 			</ul>
 		</div>
 	</div>

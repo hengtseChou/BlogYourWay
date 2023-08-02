@@ -116,7 +116,7 @@ def post_control():
     posts = list(posts)
     for post in posts:
         del post['content']            
-        post['created_at'] = post['created_at'].strftime("%Y/%m/%d %H:%M:%S")
+        post['created_at'] = post['created_at'].strftime("%Y-%m-%d %H:%M:%S")
         post['clicks'] = redis_method.get_count(f"post_uid_{post['uid']}")
         post['clicks'] = format(post['clicks'], ',')
         post['comments'] = format(post['comments'], ',')
@@ -165,6 +165,35 @@ def archive_control():
 def theme():
 
     return render_template('theme.html')
+
+
+@backstage.route('/social-links', methods=['GET', 'POST'])
+@login_required
+def social_link_control():
+
+    user = db_users.find_one({'username': current_user.username})
+    social_links = user['social_links']
+
+    if request.method == 'POST':
+
+        updated_links = []
+        form = request.form.to_dict()
+        form_values = list(form.values())
+
+        for i in range(0, len(form_values), 2):
+            updated_links.append({'platform': form_values[i+1], 'url': form_values[i]})
+        
+        db_users.update_one(
+            {'username': current_user.username},
+            {'social_links': updated_links}
+        )
+        flash('Social Links updated', category='success')
+        
+        return render_template('social_links.html', social_links = updated_links)
+
+
+
+    return render_template('social_links.html', social_links = social_links)
 
 @backstage.route('/settings', methods=['GET', "POST"])
 @login_required

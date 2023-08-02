@@ -15,6 +15,12 @@
 		border-radius:50%
 	}
 
+	img.comment {
+		width: 3.7rem;
+		height: 3.7rem;
+		border-radius: 50%;
+	}
+
 
 	.author-link {
 		text-decoration: none;
@@ -88,7 +94,7 @@
 				<h3 class="mb-3">Leave a Comment</h3>
 				<form method="POST" id="comment-form" autocomplete="off">
 					{% if current_user.is_authenticated %}
-					<p>You are logged in as <span class="fw-bold">{{ current_user.username }}</span></p>
+					<p>You are logged in as <span class="fw-bold">{{ current_user.username }}</span>.</p>
 					{% else %}
 					<div class="row mb-3">
 						<div class="col-12 col-md-6">
@@ -116,12 +122,29 @@
 				{% if comments|length == 0 %}
 				<p>Not comments yet!</p>
 				{% else %}
-				{% for comment in comments %}
-
-				{% endfor %}
+				<div class="mb-5">
+					<h5 class="text-start my-4 fw-bold" style="color: rgb(100, 100, 100);">{{ comments|length }} comments</h5>
+					{% for comment in comments %}
+					{% if comment['profile_link']| length != 0 %}
+					<div class="mb-4 d-flex flex-row">
+						<a href="{{ comment['profile_link'] }}"><img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="comment"></a>
+						<div class="ms-3 mt-1">
+							<div><a href="{{ comment['profile_link'] }}" style="color: black;"><span class="fw-bold">{{ comment['name'] }}</span></a><span style="color: rgb(100, 100, 100);"> on {{ comment['created_at'] }}</span></div>
+							<div class="mt-2">{{ comment['comment'] }}</div>
+						</div>
+					</div>
+					{% else %}
+					<div class="mb-4 d-flex flex-row">
+						<img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="comment">
+						<div class="ms-3">
+							<div><span class="fw-bold">{{ comment['name'] }}</span><span style="color: rgb(100, 100, 100);"> on {{ comment['created_at'] }}</span></div>
+							<div class="mt-2">{{ comment['comment'] }}</div>
+						</div>
+					</div>	
+					{% endif %}				
+					{% endfor %}
+				</div>
 				{% endif %}
-
-
 			</div>
 		</div>
 	</div>

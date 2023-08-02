@@ -25,6 +25,14 @@ class User(UserMixin):
                 continue
             setattr(self, key, value) 
 
+@blog.route('/', methods=['GET'])
+def landing_page():
+
+
+    return render_template('landing_page.html')
+
+
+
 @blog.route('/login', methods = ['GET', 'POST'])
 def login():
 
@@ -86,6 +94,7 @@ def register():
     new_user['profile_img_url'] = ""
     new_user['short_bio'] = ""
     new_user['about'] = ""
+    new_user['social_links'] = []
     if ENV == 'debug':            
         new_user['created_at']  = datetime.now()
     elif ENV == 'prod':
@@ -218,7 +227,7 @@ def post(username, post_uid):
             new_comment['comment_uid'] = uid
 
             if current_user.is_authenticated:
-                commenter = dict(db_users({'username': current_user.username}))
+                commenter = dict(db_users.find_one({'username': current_user.username}))
                 new_comment['name'] = current_user.username
                 new_comment['email'] = commenter['email']
                 new_comment['profile_link'] = f'/{current_user.username}/about'
@@ -243,8 +252,10 @@ def post(username, post_uid):
     target_post['last_updated'] = target_post['last_updated'].strftime("%Y-%m-%d")
 
     # find comments
-    comments = db_comments.find({'post_uid': post_uid}).sort('created_at', -1)
+    comments = db_comments.find({'post_uid': post_uid}).sort('created_at', 1)# oldest to newest comment
     comments = list(comments)
+    for comment in comments:
+        comment['created_at'] = comment['created_at'].strftime("%Y-%m-%d %H:%M:%S")
 
     # update visitor counts
     redis_method.increment_count(f"post_uid_{target_post['uid']}", request)
