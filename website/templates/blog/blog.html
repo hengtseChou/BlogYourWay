@@ -35,14 +35,11 @@
 	img.profile {
 		width: 3rem;
 		height: 3rem;
+		object-fit: cover;
 		border-radius:50%
 	}
 
-	img.big-profile {
-		width: 12rem;
-		height: 12rem;
-		border-radius:50%
-	}
+
 
 
 </style>
@@ -65,7 +62,7 @@
 				<div class="col-8">
 					{% if num_of_posts != 0 %}
 					{% for post in posts %}
-					{% set post_link = 'posts/' ~ post.uid  %}
+					{% set post_link = 'posts/' ~ post.post_uid  %}
 					<div class="my-5">
 						<a href="{{ post_link }}" class="header-link"><h1 class="fw-bold">{{ post.title }}</h1></a>
 						<div class="d-flex align-items-center my-3">

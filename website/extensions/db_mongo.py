@@ -4,131 +4,64 @@ from website.config import MONGO_URL
 class Database(object):
     def __init__(self):
 
-        client = pymongo.MongoClient(MONGO_URL, connect=False)
-        self.db = client['blog']
+        self.client = pymongo.MongoClient(MONGO_URL, connect=False)
 
-    def exists(self, collection, key, value):
-        exists = collection.find_one({key: value})
-        if exists:
-            return True
-        return False
-    
-    def find(self, collection, query):
-        return collection.find(query)
-    
-    def find_one(self, collection, query):
-        return collection.find_one(query)
-    
-    def insert_one(self, collection, data):
-        collection.insert_one(data)
-    
-    def update_one(self, collection, filter, update):
-        collection.update_one(filter, {'$set': update})
-    
-    def delete_one(self, collection, query):
-        collection.delete_one(query)
-
-    def delete_many(self, collection, query):
-        collection.delete_many(query)
-    
-    def count_documents(self, collection, query):
-
-        count = collection.count_documents(query)
-        if count is None:
-            return 0
-        return count
 
 class DB_Users(Database):
 
     def __init__(self):
         super().__init__()
-        self.collection = self.db['users']
+        self.db = self.client['users']
+        # collections
+        self.login = self.db['user-login']
+        self.info = self.db['user-info']
+        self.about = self.db['user-about']
 
     def exists(self, key, value):
-        return super().exists(self.collection, key, value)
-    
-    def find(self, query):
-        return super().find(self.collection, query)
-    
-    def find_one(self, query):
-        return super().find_one(self.collection, query)
-    
-    def insert_one(self, data):
-        super().insert_one(self.collection, data)
-    
-    def update_one(self, filter, update):
-        super().update_one(self.collection, filter, update)
-    
-    def delete_one(self, query):
-        super().delete_one(self.collection, query)
-    
-    
-    ## own methods    
-    def create_user(self, data):
+
+        if key in ['email', 'username']:
+
+            if self.login.find_one({key: value}):
+                return True
+            return False
         
-        self.collection.insert_one(data)   
-    
+        elif key in ['blogname']:
+
+            if self.info.find_one({key: value}):
+                return True
+            return False
+        
         
 class DB_Posts(Database):
 
     def __init__(self):
         super().__init__()
-        self.collection = self.db['posts']
+        self.db = self.client['posts']
+        # collections
+        self.content = self.db['post-content']
+        self.info = self.db['post-info']
 
-    def find(self, query):
-        return super().find(self.collection, query)
-
-    def find_one(self, query):
-        return super().find_one(self.collection, query)
-    
-    def update_one(self, filter, update):
-        super().update_one(self.collection, filter, update)
-    
-    def delete_one(self, query):
-        super().delete_one(self.collection, query)
-
-    def delete_many(self, query):
-        super().delete_many(self.collection, query)
-    
     def exists(self, key, value):
-        return super().exists(self.collection, key, value)
-    
-    def count_documents(self, query):
-        return super().count_documents(self.collection, query)
-    
-    ## own methods
 
-    def new_post(self, new_post):
+        if key in ['author', 'post_uid']:
 
-        self.collection.insert_one(new_post)
-
-
-
+            if self.info.find_one({key: value}):
+                return True
+            return False
 
 class DB_Comments(Database):
 
     def __init__(self):
         super().__init__()
-        self.collection = self.db['comments']
-    
+        self.db = self.client['comments']
+        # collections
+        self.comment = self.db['comment']
+
     def exists(self, key, value):
-        return super().exists(self.collection, key, value)
 
-    def count_documents(self, collection, query):
-        return super().count_documents(collection, query) 
-    
-    def find(self, query):
-        return super().find(self.collection, query)
-    
-    def delete_many(self, collection, query):
-        super().delete_many(collection, query)
-    
-    def new_comment(self, new_comment):
-        super().insert_one(self.collection, new_comment)
-
-
-
-
+        if self.comment.find_one({key: value}):
+            return True
+        return False
 
 db_users = DB_Users()
 db_posts = DB_Posts()

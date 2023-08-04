@@ -80,7 +80,7 @@ class HTML_Formatter:
     
 def all_user_tags(username):
 
-    result = db_posts.find({
+    result = db_posts.info.find({
         'author': username, 
         'archived': False
     })

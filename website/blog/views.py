@@ -48,13 +48,13 @@ def login():
         flash('Account not found. Please try again.', category='error')
         return render_template('login.html')
 
-    user_data = db_users.find_one({'email': login_form['email']})
+    user_creds = db_users.login.find_one({'email': login_form['email']})
     # check pw
-    if not bcrypt.checkpw(login_form['password'].encode('utf8'), user_data['password'].encode('utf8')):
+    if not bcrypt.checkpw(login_form['password'].encode('utf8'), user_creds['password'].encode('utf8')):
         flash('Invalid password. Please try again.', category='error')
         return render_template('login.html') 
     # login user
-    user = User(user_data)
+    user = User(user_creds)
     login_user(user)
     flash('Login Succeeded.', category='success')
     return redirect(url_for('backstage.overview'))
@@ -69,40 +69,47 @@ def register():
     
     # registeration
     # with unique email, username and blog name
-    new_user = request.form.to_dict()
+    reg_form = request.form.to_dict()
     # make sure username has no space character
-    new_user['username'] = new_user['username'].strip().replace(' ', '-')
-    if db_users.exists('email', new_user['email']):
+    reg_form['username'] = reg_form['username'].strip().replace(' ', '-')
+    if db_users.exists('email', reg_form['email']):
         flash('Email is already used. Please try another one.', category='error')
         return render_template('register.html')
     
-    if db_users.exists('username', new_user['username']):
+    if db_users.exists('username', reg_form['username']):
         flash('Username is already used. Please try another one.', category='error')
         return render_template('register.html')
     
-    if db_users.exists('blogname', new_user['blogname']):
+    if db_users.exists('blogname', reg_form['blogname']):
         flash('Blog name is already used. Please try another one.')
         return render_template('register.html')      
-    
-    
-    # create user in db
-    hashed_pw = bcrypt.hashpw(new_user['password'].encode('utf-8'), bcrypt.gensalt(12))
-    hashed_pw = hashed_pw.decode('utf-8')
-    new_user['password'] = hashed_pw
-    new_user['posts_count'] = 0
-    new_user['banner_url'] = ""
-    new_user['profile_img_url'] = ""
-    new_user['short_bio'] = ""
-    new_user['about'] = ""
-    new_user['social_links'] = []
-    if ENV == 'debug':            
-        new_user['created_at']  = datetime.now()
-    elif ENV == 'prod':
-        new_user['created_at']  = datetime.now() + timedelta(hours=8)
-    #  theme, social links
-    del new_user['terms']
-    db_users.create_user(new_user)
 
+    hashed_pw = bcrypt.hashpw(reg_form['password'].encode('utf-8'), bcrypt.gensalt(12))
+    hashed_pw = hashed_pw.decode('utf-8')
+
+    new_user_login = {'username': reg_form['username']}
+    new_user_info = {'username': reg_form['username']}
+    new_user_about = {'username': reg_form['username']}
+
+    new_user_login['email'] = reg_form['email']
+    new_user_login['password'] = hashed_pw
+
+    new_user_info['blogname'] = reg_form['blogname']
+    new_user_info['posts_count'] = 0
+    new_user_info['banner_url'] = ""
+    new_user_info['profile_img_url'] = ""
+    new_user_info['short_bio'] = ""
+    new_user_info['social_links'] = []
+    if ENV == 'debug':            
+        new_user_info['created_at']  = datetime.now()
+    elif ENV == 'prod':
+        new_user_info['created_at']  = datetime.now() + timedelta(hours=8)
+
+    new_user_about['about'] = ""
+
+    db_users.login.insert_one(new_user_login)
+    db_users.info.insert_one(new_user_info)
+    db_users.about.insert_one(new_user_about)
     # succeeded and return to login page
     flash('Registeration succeeded.', category='success')    
     return redirect(url_for('blog.login'))
@@ -116,8 +123,8 @@ def home(username):
     if not db_users.exists('username', username):
         abort(404)
 
-    user = db_users.find_one({'username': username})
-    featured_posts = db_posts.find({
+    user = db_users.info.find_one({'username': username})
+    featured_posts = db_posts.info.find({
         'author': username, 
         'featured': True,
         'archived': False
@@ -125,7 +132,6 @@ def home(username):
     featured_posts = list(featured_posts)
     feature_idx = 1
     for post in featured_posts:
-        del post['content']
         post['idx'] = feature_idx
         feature_idx += 1            
         post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
@@ -146,7 +152,7 @@ def tag(username):
 
     if not db_users.exists('username', username):
         abort(404)
-    user = db_users.find_one({'username': username})
+    user = db_users.info.find_one({'username': username})
     # currently no pagination for tag    
 
     tag = request.args.get('tag', default=None, type=str)
@@ -160,7 +166,7 @@ def tag(username):
     if tag_decoded not in all_tags.keys():
         abort(404)
 
-    posts = db_posts.find({
+    posts = db_posts.info.find({
         'author': username, 
         'archived': False
     }).sort('created_at', -1)
@@ -170,7 +176,6 @@ def tag(username):
     idx = 1
     for post in posts:
         if tag_decoded in post['tags']:
-            del post['content']
             post['idx'] = idx
             idx += 1
             post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
@@ -194,11 +199,12 @@ def post(username, post_uid):
 
     if not db_users.exists('username', username):
         abort(404)
-    if not db_posts.exists('uid', post_uid):
+    if not db_posts.exists('post_uid', post_uid):
         abort(404)
 
-    author = db_users.find_one({'username': username})
-    target_post = dict(db_posts.find_one({'uid': post_uid}))
+    author = db_users.info.find_one({'username': username})
+    target_post = dict(db_posts.info.find_one({'post_uid': post_uid}))
+    target_post['content'] = db_posts.content.find_one({'post_uid': post_uid})['content']
 
     # to verify the post is linked to the user
     if author['username'] != target_post['author']:
@@ -227,7 +233,7 @@ def post(username, post_uid):
             new_comment['comment_uid'] = uid
 
             if current_user.is_authenticated:
-                commenter = dict(db_users.find_one({'username': current_user.username}))
+                commenter = dict(db_users.info.find_one({'username': current_user.username}))
                 new_comment['name'] = current_user.username
                 new_comment['email'] = commenter['email']
                 new_comment['profile_link'] = f'/{current_user.username}/about'
@@ -237,28 +243,25 @@ def post(username, post_uid):
                 new_comment['name'] = request.form.get('name')
                 new_comment['email'] = request.form.get('email')
 
-            db_comments.new_comment(new_comment)
-            db_posts.update_one(
-                {'uid': post_uid}, 
-                {'comments': target_post['comments'] + 1}
+            db_comments.comment.insert_one(new_comment)
+            db_posts.info.update_one(
+                filter={'post_uid': post_uid}, 
+                update={"$set": {'comments': target_post['comments'] + 1}}
             )
-            flash('Comment published!', category='success')
-                
-
-
+            flash('Comment published!', category='success') 
 
     target_post['content'] = md.convert(target_post['content'])
     target_post['content'] = HTML_Formatter(target_post['content']).to_blogpost()
     target_post['last_updated'] = target_post['last_updated'].strftime("%Y-%m-%d")
 
     # find comments
-    comments = db_comments.find({'post_uid': post_uid}).sort('created_at', 1)# oldest to newest comment
+    comments = db_comments.comment.find({'post_uid': post_uid}).sort('created_at', 1)# oldest to newest comment
     comments = list(comments)
     for comment in comments:
         comment['created_at'] = comment['created_at'].strftime("%Y-%m-%d %H:%M:%S")
 
     # update visitor counts
-    redis_method.increment_count(f"post_uid_{target_post['uid']}", request)
+    redis_method.increment_count(f"post_uid_{target_post['post_uid']}", request)
     redis_method.increment_count(f"{username}_uv", request)
 
 
@@ -272,9 +275,10 @@ def about(username):
 
     if not db_users.exists('username', username):
         abort(404)
-    user = db_users.find_one({'username': username}) 
-    about_content = md.convert(user['about'])
-    about_content = HTML_Formatter(about_content).to_about()
+    user = dict(db_users.info.find_one({'username': username}))
+    user_about = db_users.about.find_one({'username': username})['about']
+    about_converted = md.convert(user_about)
+    about_converted = HTML_Formatter(about_converted).to_about()
 
     # update visitor counts
     redis_method.increment_count(f"{username}_about", request)
@@ -282,7 +286,7 @@ def about(username):
 
     return render_template('about.html', 
                            user=user,
-                           about=about_content)
+                           about=about_converted)
 
 
 @blog.route('/<username>/blog', methods=['GET'])
@@ -290,7 +294,7 @@ def blogpage(username):
 
     if not db_users.exists('username', username):
         abort(404)
-    user = db_users.find_one({'username': username})
+    user = db_users.info.find_one({'username': username})
     page = request.args.get('page', default = 1, type = int)
     POSTS_EACH_PAGE = 10
     
@@ -298,7 +302,7 @@ def blogpage(username):
     tags_dict = all_user_tags(username)
 
     # set up for pagination
-    num_not_archieved = db_posts.count_documents({
+    num_not_archieved = db_posts.info.count_documents({
         'author': username,
         'archived': False
     })
@@ -321,12 +325,12 @@ def blogpage(username):
 
     # skip and limit posts with given page
     if page == 1:
-        posts = db_posts.find({
+        posts = db_posts.info.find({
             'author': username,
             'archived': False
         }).sort('created_at', -1).limit(POSTS_EACH_PAGE) # descending: newest
     elif page > 1:        
-        posts = db_posts.find({
+        posts = db_posts.info.find({
             'author': username,
             'archived': False
         }).sort('created_at', -1).\
@@ -336,7 +340,6 @@ def blogpage(username):
     idx = 1
     posts = list(posts)
     for post in posts:
-        del post['content']
         post['idx'] = idx
         idx += 1            
         post['created_at'] = post['created_at'].strftime("%Y-%m-%d")
