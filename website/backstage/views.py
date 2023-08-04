@@ -8,6 +8,7 @@ from flask_login import login_required, logout_user, current_user
 from website.extensions.db_mongo import db_users, db_posts
 from website.extensions.db_redis import redis_method
 from website.blog.utils import set_up_pagination, CRUD_Utils
+from website.config import ENV
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
@@ -84,7 +85,10 @@ def about_control():
     session["user_status"] = "about"
     user = dict(db_users.info.find_one({"username": current_user.username}))
     about = dict(db_users.about.find_one({"username": current_user.username}))
-    user = user | about
+    if ENV == 'debug':
+        user = user | about
+    elif ENV == 'prod':
+        user = {**user, **about}
 
     if request.method == "POST":
         updated_info = request.form.to_dict()
