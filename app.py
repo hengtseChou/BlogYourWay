@@ -3,14 +3,14 @@ from website.config import ENV
 import os
 
 
-if ENV == 'debug':
+if ENV == "debug":
     DEBUG = True
 else:
     DEBUG = False
 
 app = create_app()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if DEBUG:
         app.run(debug=True)
     else:

@@ -31,8 +31,8 @@
 				{% endif %}
 				</td>
 				<td>{{ post['created_at'] }}</td>
-				<td class="text-right text-center">{{ post['clicks'] }}</td>
-				<td class="text-right text-center">{{ post['comments'] }}</td>
+				<td class="text-center">{{ post['clicks'] }}</td>
+				<td class="text-center">{{ post['comments'] }}</td>
 				{% if post['featured'] %}
 				{% set base_link = '/backstage/edit-featured?featured=to_false&uid=' %}
 				<td class="text-center"><a href='{{ base_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
@@ -153,21 +153,8 @@
 		return true;
 	}	
 
-	function formatNumber() {
-		const numberElements = document.getElementsByClassName("number");
-		for (let i = 0; i < numberElements.length; i++) {
-			const originalNumber = numberElements[i].textContent;
-			const formattedNumber = originalNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-			numberElements[i].textContent = formattedNumber;
-		}
-	}
-
-
-	document.addEventListener("DOMContentLoaded", function() {  
-		
-		convertDateTimeToString();
-		formatNumber();    
-    
+	document.addEventListener("DOMContentLoaded", function() {  		
+		   
     const form = document.getElementById("form");
 		form.addEventListener("keypress", function(event) {
 			if (event.key === 'Enter') {

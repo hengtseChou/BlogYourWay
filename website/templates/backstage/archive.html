@@ -26,52 +26,15 @@
 			<!-- to-do: add post's link to post's title -->
 			<td>{{ post['title'] }}			
 			</td>
-			<td class="datetime">{{ post['created_at'] }}</td>
-			<td class="text-right text-end pe-5">{{ post['clicks'] }}</td>
-			<td class="text-right text-end pe-5">{{ post['comments'] }}</td>			
+			<td>{{ post['created_at'] }}</td>
+			<td class="text-center">{{ post['clicks'] }}</td>
+			<td class="text-center">{{ post['comments'] }}</td>			
 			{% set base_link = '/backstage/edit-archived?archived=to_false&uid=' %}
-			<td class="text-center"><a href="{{ base_link ~ post.uid }}" style="color: black; font-size: 18px;"><i class="fa-regular fa-thumbs-up"></i></a></td>
+			<td class="text-center"><a href="{{ base_link ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-regular fa-thumbs-up"></i></a></td>
 			{% set base_link2 = '/backstage/delete?type=post&uid=' %}
-			<td class="text-center"><a href="{{ base_link2 ~ post.uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-trash-can"></i></a></td>
+			<td class="text-center"><a href="{{ base_link2 ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-trash-can"></i></a></td>
 		</tr>		
 		{% endfor %}
 	</tbody>
 </table>
-
-{% endblock %}
-
-{% block script %}
-<script>
-
-	function convertDateTimeToString() {
-  // Select all elements with class name 'datetime'
-		const elements = document.querySelectorAll('.datetime');
-
-		// Iterate over each selected element
-		elements.forEach((element) => {
-			// Get the datetime value from the element's text content
-			const datetime = element.textContent.trim();
-			const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-
-			// Check if the content represents a valid datetime value
-			if (datetime && !isNaN(Date.parse(datetime))) {
-				// Convert the datetime value to a Date object
-				const dateObj = new Date(datetime);
-
-				// Format the datetime as desired (YYYY-MM-DD H:M:S)
-				const dateString = dateObj.toLocaleString("roc", options);
-
-				// Replace the element's content with the formatted datetime string
-				element.textContent = dateString;
-			}
-		});
-	}
-
-	// Call the function when the page finishes loading
-	document.addEventListener("DOMContentLoaded", function() {
-
-	convertDateTimeToString();   
-
-	});	
-</script>
 {% endblock %}
