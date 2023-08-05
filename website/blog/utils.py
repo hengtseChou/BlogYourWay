@@ -321,3 +321,11 @@ def set_up_pagination(username, current_page, posts_per_page):
 
     return pagination
 
+def get_today():
+
+    if ENV == 'debug':
+        today = datetime.now().strftime('%Y%m%d')
+    elif ENV == 'prod':
+        today = (datetime.now() + timedelta(hours=8)).strftime('%Y%m%d')
+    return today
+

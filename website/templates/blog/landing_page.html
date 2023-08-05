@@ -1,1 +1,183 @@
 {% extends 'base.html' %}
+
+{% block title %}
+Little Blog · Your All-in-One Personal Website and Blogging Platform
+{% endblock %}
+
+{% block head %}
+<style>
+	/* Custom styles for the dark-themed landing page */
+	body {
+		background-color: #222;
+		color: #fff;
+	}
+	
+	.navbar {
+		position: absolute; /* Set the navbar to absolute positioning */
+		width: 100%;
+		padding-top: 20px;
+		z-index: 2; /* Set a higher z-index to stack it above the jumbotron */
+	}
+	
+	.jumbotron {
+		background-image: url('/static/img/landing-banner.jpg');
+		background-size: cover;
+		background-position: center;
+		width: 100%;
+		height: 70vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		position: relative; /* Add this to set the jumbotron as a relative container for absolute positioning */
+		z-index: 1; /* Set a lower z-index for the jumbotron */
+	}
+	
+	.jumbotron h1,
+	.jumbotron p {
+		color: #fff;
+	}
+	
+	.feature-card {
+		background: #444;
+		color: #fff;
+		border: none;
+		border-radius: 0.5rem;
+	}
+	
+
+	.footer {
+		background-color: #222;
+		color: #fff;
+	}
+
+	.btn-getting-start {
+		color: #fff;
+		font-weight: bold;
+		background-color: #f7966b;
+	}
+
+	.btn-getting-start:hover {
+		color: #fff;
+		font-weight: bold;
+		background-color: #f7966b;
+	}
+
+
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class="nav-container">
+	<nav class="navbar navbar-expand-lg navbar-dark">
+		<div class="container">
+			<a class="navbar-brand" href="/">
+				<img src="/static/img/logo.png" width="30" height="30" alt="" class="mx-1"> Little Blog
+			</a>
+			<!-- Add your navigation links here if needed -->
+		</div>
+	</nav>
+</div>
+
+
+<!-- Hero Section -->
+<header class="jumbotron">
+	<div class="container" >
+		<h1 class="display-4">Welcome to Little Blog</h1>
+		<p class="lead">Your All-in-One Personal Website and Blogging Platform</p>
+		<a href="/register" class="btn btn-lg btn-getting-start mt-2">Get Started</a>
+	</div>
+</header>
+
+
+
+<!-- Features Section -->
+<section class="py-5">
+	<hr style="width: 30%;" class="mx-auto">
+	<!-- wider view -->
+	<div class="d-none d-lg-block container">
+		<div class="row pt-5">
+			<div class="col-4 text-start offset-1">
+				<h2 class="mb-5">A Perfect Blend of Portfolio and Blogging</h2>
+				<p class="lh-lg">Gone are the days of managing multiple websites to showcase your creative work and share your thoughts with the world. 
+					Little Blog brings together the best of both worlds, 
+					providing you with a seamless and intuitive platform to exhibit your professional portfolio alongside your captivating blog posts.</p>
+			</div>
+			<div class="col-md-4 offset-md-1">
+				<img src="/static/img/portfolio.jpg" alt="" class="img-fluid shadow-sm rounded-2 w-100">
+			</div>
+		</div>
+		<div class="row pt-5">
+			<div class="col-4 offset-1">
+				<img src="/static/img/writing.jpg" alt="" class="img-fluid shadow-sm rounded-2 w-100">
+			</div>
+			<div class="col-4 text-start offset-1">
+				<h2 class="mb-5">Unleash Your Creativity with Markdown Editor</h2>
+				<p class="lh-lg">Expressing yourself has never been easier. 
+					Little Blog's built-in Markdown editor empowers you to create captivating blog posts in a breeze. 
+					Effortlessly format your text, add images, embed videos, 
+					and unleash your creativity without worrying about the technicalities.</p>				
+			</div>
+		</div>
+		<div class="row pt-5">
+			<div class="col-4 text-start offset-1">
+				<h2 class="mb-5">Tailor Your Website to Reflect Your Personality</h2>
+				<p class="lh-lg">Stand out from the crowd with a personalized touch. 
+					Little Blog offers a plethora of customizable options, 
+					allowing you to choose from a wide range of themes, design a unique blog banner, 
+					and easily integrate your social media links to create a truly bespoke experience.</p>
+			</div>
+			<div class="col-md-4 offset-md-1">
+				<img src="/static/img/style.jpg" alt="" class="img-fluid shadow-sm rounded-2 w-100">
+			</div>
+		</div>
+		<div class="row pt-5">
+			<div class="col-4 offset-1">
+				<img src="/static/img/chart.jpg" alt="" class="img-fluid shadow-sm rounded-2 w-100">
+			</div>
+			<div class="col-4 text-start offset-1">
+				<h2 class="mb-5">Keep Track of Your Success with Built-in Performance Monitoring</h2>
+				<p class="lh-lg">Understanding your audience and content performance is crucial in the digital landscape. 
+					With Little Blog's integrated backstage, you can effortlessly monitor your website's traffic, 
+					track visitor engagement, and gain valuable insights to fine-tune your content strategy for maximum impact.</p>				
+
+			</div>
+		</div>
+	</div>
+	<!-- smaller view -->
+	<div class="d-block d-lg-none container">
+		<img src="/static/img/portfolio.jpg" alt="" class="img-fluid shadow-sm rounded-2 mt-3 w-100">
+		<h2 class="my-4">A Perfect Blend of Portfolio and Blogging</h2>
+			<p class="lh-lg">Gone are the days of managing multiple websites to showcase your creative work and share your thoughts with the world. 
+				Little Blog brings together the best of both worlds, 
+				providing you with a seamless and intuitive platform to exhibit your professional portfolio alongside your captivating blog posts.</p>
+		<img src="/static/img/writing.jpg" alt="" class="img-fluid shadow-sm rounded-2 mt-3 w-100">
+		<h2 class="my-4">Unleash Your Creativity with Markdown Editor</h2>
+		<p class="lh-lg">Expressing yourself has never been easier. 
+			Little Blog's built-in Markdown editor empowers you to create captivating blog posts in a breeze. 
+			Effortlessly format your text, add images, embed videos, 
+			and unleash your creativity without worrying about the technicalities.</p>		
+		<img src="/static/img/style.jpg" alt="" class="img-fluid shadow-sm rounded-2 mt-3 w-100">
+		<h2 class="my-4">Tailor Your Website to Reflect Your Personality</h2>
+		<p class="lh-lg">Stand out from the crowd with a personalized touch. 
+			Little Blog offers a plethora of customizable options, 
+			allowing you to choose from a wide range of themes, design a unique blog banner, 
+			and easily integrate your social media links to create a truly bespoke experience.</p>
+		<img src="/static/img/chart.jpg" alt="" class="img-fluid shadow-sm rounded-2 mt-3 w-100">
+		<h2 class="my-4">Keep Track of Your Success with Built-in Performance Monitoring</h2>
+		<p class="lh-lg">Understanding your audience and content performance is crucial in the digital landscape. 
+			With Little Blog's integrated backstage, you can effortlessly monitor your website's traffic, 
+			track visitor engagement, and gain valuable insights to fine-tune your content strategy for maximum impact.</p>	
+	</div	>
+
+	<hr style="width: 30%;" class="mx-auto mt-5">
+</section>
+
+<footer class="footer py-3">
+	<div class="container text-center">
+		<p>&copy; 2023 Little Blog. All rights reserved.</p>
+	</div>
+</footer>
+{% endblock %}
+

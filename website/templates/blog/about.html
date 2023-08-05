@@ -13,7 +13,7 @@
 
 {% include 'banner.html' %}
 
-<div class="container-fluid" style="font-family: 'Ubuntu', 'Noto Sans TC', sans-serif; min-height: calc(100vh - 330px);">
+<div class="container-fluid" style="min-height: calc(100vh - 330px);">
 	<div class="text-center mt-5"><h1>About Me</h1></div>
 	<div class="row my-3">
 		<div class="col-1 mx-auto"><hr></div>
@@ -29,7 +29,6 @@
 	</div>	
 </div>
 
-<footer>
-	<p>&copy; 2023 {{ user['blogname'] }}. All rights reserved.&nbsp;&nbsp;|&nbsp;&nbsp;Powered by Little Blog</p>
-</footer>
+{% include 'footer.html' %}
+
 {% endblock %}

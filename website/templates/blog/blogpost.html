@@ -52,33 +52,31 @@
 <div class="container">
 	<div class="row mt-5">
 		<div class="col-12 col-md-7 mx-auto">
-			<div style="font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;">
-				<h1 class="text-center fw-bold">{{ post.title }}</h1>
-				<div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-5">
+			<h1 class="text-center fw-bold">{{ post.title }}</h1>
+			<div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-5">
+				<a href="/{{ post.author }}/about">
+					{% if user.profile_img_url|length == 0 %}
+					<img src="/static/img/default-profile.png" alt="profile-img" class="profile me-2">
+					{% else %}
+					<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile me-2">
+					{% endif %}
+				</a>
+				<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
+				<div class="date-text"><h4> · Last updated: {{ post.last_updated }}</h4></div>
+			</div>
+
+			<div class="d-lg-none text-center my-4">
+				<div class="d-flex align-items-center justify-content-center mb-4">
 					<a href="/{{ post.author }}/about">
 						{% if user.profile_img_url|length == 0 %}
-						<img src="/static/img/default_profile.png" alt="profile-img" class="profile me-2">
+						<img src="/static/img/default-profile.png" alt="profile-img" class="profile me-2">
 						{% else %}
 						<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile me-2">
 						{% endif %}
 					</a>
 					<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
-					<div class="date-text"><h4> · Last updated: {{ post.last_updated }}</h4></div>
 				</div>
-
-				<div class="d-lg-none text-center my-4">
-					<div class="d-flex align-items-center justify-content-center mb-4">
-						<a href="/{{ post.author }}/about">
-							{% if user.profile_img_url|length == 0 %}
-							<img src="/static/img/default_profile.png" alt="profile-img" class="profile me-2">
-							{% else %}
-							<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile me-2">
-							{% endif %}
-						</a>
-						<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
-					</div>
-					<div class="date-text"><h4>Last updated: {{ post.last_updated }}</h4></div>
-				</div>
+				<div class="date-text"><h4>Last updated: {{ post.last_updated }}</h4></div>
 			</div>
 			<hr>
 			<div style="font-family: 'Noto Serif TC', serif;" class="mb-3">
@@ -92,68 +90,65 @@
 				{% endfor %}
 			</div>
 			<hr class="mb-4">
-			<div style="font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;">
-				<h3 class="mb-3">Leave a Comment</h3>
-				<form method="POST" id="comment-form" autocomplete="off">
-					{% if current_user.is_authenticated %}
-					<p>You are logged in as <span class="fw-bold">{{ current_user.username }}</span>.</p>
-					{% else %}
-					<div class="row mb-3">
-						<div class="col-12 col-md-6">
-							<label for="comment-name" class="form-label">Name <span style="color: red;">*</span></label>
-							<input type="text"  class="form-control" id="comment-name" name="name" required>
-						</div>
-						<div class="col-12 col-md-6">
-							<label for="comment-email" class="form-label">Email Address</label>
-							<input type="email"  class="form-control" id="comment-email" name="email">
-						</div>
-					</div>
-					{% endif %}
-					<div class="mb-3">
-						<label for="comment-text" class="form-label">Comment <span style="color: red;">*</span></label>
-						<textarea class="form-control" id="comment-text" rows="3" name="comment" required></textarea>
-					</div>
-					<div class="text-end mb-4">
-						<button class="g-recaptcha btn panel-btn text-center" data-sitekey="6LcxqWgnAAAAALNxCvk7tu1tVBikm_zKG54nCP3C" data-callback="onSubmit"
-						style="width: 25%; min-width: 150px;">Submit</button>
-					</div>
-				</form>
-
-				<hr class="mb-4">
-				<h3 class="mb-3">Comments</h3>
-				{% if comments|length == 0 %}
-				<p>Not comments yet!</p>
+			<h3 class="mb-3">Leave a Comment</h3>
+			<form method="POST" id="comment-form" autocomplete="off">
+				{% if current_user.is_authenticated %}
+				<p>You are logged in as <span class="fw-bold">{{ current_user.username }}</span>.</p>
 				{% else %}
-				<div class="mb-5">
-					<h5 class="text-start my-4 fw-bold" style="color: rgb(100, 100, 100);">{{ comments|length }} comments</h5>
-					{% for comment in comments %}
-					{% if comment['profile_link']| length != 0 %}
-					<div class="mb-4 d-flex flex-row">
-						<a href="{{ comment['profile_link'] }}"><img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="comment"></a>
-						<div class="ms-3 mt-1">
-							<div><a href="{{ comment['profile_link'] }}" style="color: black;"><span class="fw-bold">{{ comment['name'] }}</span></a><span style="color: rgb(100, 100, 100);"> on {{ comment['created_at'] }}</span></div>
-							<div class="mt-2">{{ comment['comment'] }}</div>
-						</div>
+				<div class="row mb-3">
+					<div class="col-12 col-md-6">
+						<label for="comment-name" class="form-label">Name <span style="color: red;">*</span></label>
+						<input type="text"  class="form-control" id="comment-name" name="name" required>
 					</div>
-					{% else %}
-					<div class="mb-4 d-flex flex-row">
-						<img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="comment">
-						<div class="ms-3">
-							<div><span class="fw-bold">{{ comment['name'] }}</span><span style="color: rgb(100, 100, 100);"> on {{ comment['created_at'] }}</span></div>
-							<div class="mt-2">{{ comment['comment'] }}</div>
-						</div>
-					</div>	
-					{% endif %}				
-					{% endfor %}
+					<div class="col-12 col-md-6">
+						<label for="comment-email" class="form-label">Email Address</label>
+						<input type="email"  class="form-control" id="comment-email" name="email">
+					</div>
 				</div>
 				{% endif %}
+				<div class="mb-3">
+					<label for="comment-text" class="form-label">Comment <span style="color: red;">*</span></label>
+					<textarea class="form-control" id="comment-text" rows="3" name="comment" required></textarea>
+				</div>
+				<div class="text-end mb-4">
+					<button class="g-recaptcha btn panel-btn text-center" data-sitekey="6LcxqWgnAAAAALNxCvk7tu1tVBikm_zKG54nCP3C" data-callback="onSubmit"
+					style="width: 25%; min-width: 150px;">Submit</button>
+				</div>
+			</form>
+
+			<hr class="mb-4">
+			<h3 class="mb-3">Comments</h3>
+			{% if comments|length == 0 %}
+			<p>Not comments yet!</p>
+			{% else %}
+			<div class="mb-5">
+				<h5 class="text-start my-4 fw-bold" style="color: rgb(100, 100, 100);">{{ comments|length }} comments</h5>
+				{% for comment in comments %}
+				{% if comment['profile_link']| length != 0 %}
+				<div class="mb-4 d-flex flex-row">
+					<a href="{{ comment['profile_link'] }}"><img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="comment"></a>
+					<div class="ms-3 mt-1">
+						<div><a href="{{ comment['profile_link'] }}" style="color: black;"><span class="fw-bold">{{ comment['name'] }}</span></a><span style="color: rgb(100, 100, 100);"> on {{ comment['created_at'] }}</span></div>
+						<div class="mt-2">{{ comment['comment'] }}</div>
+					</div>
+				</div>
+				{% else %}
+				<div class="mb-4 d-flex flex-row">
+					<img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="comment">
+					<div class="ms-3">
+						<div><span class="fw-bold">{{ comment['name'] }}</span><span style="color: rgb(100, 100, 100);"> on {{ comment['created_at'] }}</span></div>
+						<div class="mt-2">{{ comment['comment'] }}</div>
+					</div>
+				</div>	
+				{% endif %}				
+				{% endfor %}
 			</div>
+			{% endif %}
 		</div>
 	</div>
 </div>
 
 
-<footer>
-	<p>&copy; 2023 {{ user['blogname'] }}. All rights reserved.&nbsp;&nbsp;|&nbsp;&nbsp;Powered by Little Blog</p>
-</footer>
+{% include 'footer.html' %}
+
 {% endblock %}

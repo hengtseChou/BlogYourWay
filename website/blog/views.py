@@ -7,7 +7,7 @@ from website.extensions.db_mongo import db_users, db_posts, db_comments
 from website.extensions.db_redis import redis_method
 from website.blog.utils import (
     HTML_Formatter, CRUD_Utils, 
-    all_user_tags, is_comment_verified, set_up_pagination
+    all_user_tags, is_comment_verified, set_up_pagination, get_today
 )
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
@@ -26,6 +26,9 @@ class User(UserMixin):
 
 @blog.route("/", methods=["GET"])
 def landing_page():
+
+    today = get_today()
+    redis_method.increment_count(f'{today}_landing_page', request)
 
     return render_template("landing_page.html")
 
@@ -93,7 +96,8 @@ def home(username):
 
     # update visitor counts
     redis_method.increment_count(f"{username}_home", request)
-    redis_method.increment_count(f"{username}_uv", request)
+    today = get_today()
+    redis_method.increment_count(f"{username}_{today}_uv", request)
 
     return render_template(
         "home.html", user=user, posts=featured_posts, num_of_posts=len(featured_posts)
@@ -135,7 +139,9 @@ def tag(username):
 
     # update visitor counts
     redis_method.increment_count(f"{username}_tag: {tag_decoded}", request)
-    redis_method.increment_count(f"{username}_uv", request)
+    today = get_today()
+    redis_method.increment_count(f"{username}_{today}_uv", request)
+
 
     return render_template(
         "tag.html",
@@ -192,7 +198,9 @@ def post(username, post_uid):
 
     # update visitor counts
     redis_method.increment_count(f"post_uid_{target_post['post_uid']}", request)
-    redis_method.increment_count(f"{username}_uv", request)
+    today = get_today()
+    redis_method.increment_count(f"{username}_{today}_uv", request)
+
 
     return render_template(
         "blogpost.html", user=author, post=target_post, comments=comments
@@ -210,7 +218,9 @@ def about(username):
 
     # update visitor counts
     redis_method.increment_count(f"{username}_about", request)
-    redis_method.increment_count(f"{username}_uv", request)
+    today = get_today()
+    redis_method.increment_count(f"{username}_{today}_uv", request)
+
 
     return render_template("about.html", user=user, about=about_converted)
 
@@ -255,7 +265,10 @@ def blogg(username):
     num_of_posts = len(posts)
 
     # update visitor counts
-    redis_method.increment_count(f"{username}_uv", request)
+    redis_method.increment_count(f"{username}_blog", request)
+    today = get_today()
+    redis_method.increment_count(f"{username}_{today}_uv", request)
+
 
     return render_template(
         "blog.html",

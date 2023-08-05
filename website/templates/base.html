@@ -25,6 +25,9 @@
 
 	<title>{% block title %}{% endblock %}</title>
 	<style>
+		body {
+			font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;
+		}
 		.toast {
     	opacity: 1 !important;
 			border-radius: 10px;
@@ -43,7 +46,6 @@
             text-align: center;
             bottom: 0;
             width: 100%;
-			font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;
         }
         footer p {
             margin: 0;
@@ -52,7 +54,7 @@
 	</style>
 </head>
 <body>
-	<div class="toast-container bottom-0 end-0 p-3" style="font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;">
+	<div class="toast-container bottom-0 end-0 p-3">
 		{% with messages = get_flashed_messages(with_categories=true) %}
 			{% for category, message in messages %}			
 				<div class="toast show" role="alert" aria-live="polite" aria-atomic="true" id="notification">

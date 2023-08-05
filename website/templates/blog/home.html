@@ -59,7 +59,7 @@
 
 {% include 'banner.html' %}
 
-<div class="container-fluid" style="font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;">
+<div class="container-fluid">
 	<div class="row">
 		<!-- post column -->
 		<div class="col-12 col-md-8">
@@ -75,7 +75,7 @@
 						<div class="d-flex align-items-center my-3">
 							<a href="about">
 								{% if user.profile_img_url|length == 0 %}
-								<img src="/static/img/default_profile.png" alt="profile-img" class="profile me-2">
+								<img src="/static/img/default-profile.png" alt="profile-img" class="profile me-2">
 								{% else %}
 								<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile me-2">
 								{% endif %}
@@ -106,7 +106,7 @@
 		<div class="d-none d-md-block col-md-4 border-start">
 			<div class="d-flex justify-content-center" style="margin-top: 6rem;">
 				{% if user.profile_img_url|length == 0 %}
-				<img src="/static/img/default_profile.png" alt="profile-img" class="big-profile img-thumbnail">
+				<img src="/static/img/default-profile.png" alt="profile-img" class="big-profile img-thumbnail">
 				{% else %}
 				<img src="{{ user.profile_img_url }}" alt="profile-img" class="big-profile img-thumbnail">
 				{% endif %}
@@ -136,9 +136,7 @@
 	</div>
 </div>
 
-<footer>
-	<p>&copy; 2023 {{ user['blogname'] }}. All rights reserved.&nbsp;&nbsp;|&nbsp;&nbsp;Powered by Little Blog</p>
-</footer>
+{% include 'footer.html' %}
 
 
 {% endblock %}
