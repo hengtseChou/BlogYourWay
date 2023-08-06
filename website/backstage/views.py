@@ -8,6 +8,7 @@ from flask_login import login_required, logout_user, current_user
 from website.extensions.db_mongo import db_users, db_posts
 from website.extensions.db_redis import redis_method
 from website.blog.utils import set_up_pagination, CRUD_Utils
+from website.backstage.utils import daily_visitor_data
 from website.config import ENV
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
@@ -23,7 +24,11 @@ def overview():
     time_difference = now - user["created_at"]
     days_difference = time_difference.days + 1
 
-    return render_template("overview.html", user=user)
+    daily_count = daily_visitor_data(current_user.username)
+
+    return render_template("overview.html", 
+                           user=user,
+                           daily_count=daily_count)
 
 
 @backstage.route("/posts", methods=["GET", "POST"])

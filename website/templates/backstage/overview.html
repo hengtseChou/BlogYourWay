@@ -1,9 +1,52 @@
 {% extends 'panel.html' %}
 
 {% block panel %}
-<h2 class="ms-2">Hello! {{ user.username }}</h2>
+<h2 class="ms-2">Welcome back, {{ user.username }}!</h2>
 <hr>
 <p class="ms-2">Themes for Little Blog is under develop for now.</p>
+<div style="width: 80%; height: 200px;">
+	<!-- Create a canvas element where the line chart will be rendered -->
+	<canvas id="myLineChart"></canvas>
+</div>
 
+
+{% endblock %}
+
+{% block script %}
+<script>
+	// Access the data passed from Flask
+	const chartData = JSON.parse('{{ daily_count | tojson }}');
+	const lineChart = new Chart(
+		document.getElementById('myLineChart'),
+		{
+			type: 'line',
+			data: {
+				labels: chartData.labels,
+				datasets: [{
+					label: 'daily unique visitors', 
+					data: chartData.data,
+					backgroundColor: "#f5ae8e",
+					borderColor: "#f7966b",
+					borderWidth: 1
+				}]
+			},
+			options: {
+				maintainAspectRatio: false,
+				scales: {
+					x: {
+						display: true,
+						ticks: {
+							autoSkip: true,
+							maxTicksLimit: 5, // Show only 5 date labels
+						}
+					}
+
+				}
+			}			
+		}
+	)
+	
+	
+</script>
 
 {% endblock %}

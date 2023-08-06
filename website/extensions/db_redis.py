@@ -12,7 +12,7 @@ class Redis_method:
         # f"post_uid_{post.uid}"
         # f"{username}_{page}"
         # f"{username}_tag: {tag}""
-        # f"{username}_uv" as in unique visitor for each user
+        # f"{date}_{username}_uv" as in unique visitor for each user
 
         host = request.remote_addr
         ua = request.headers.get("User-Agent")
