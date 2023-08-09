@@ -20,7 +20,7 @@ def daily_visitor_data(username):
 
         current_time += timedelta(days=1)
         current_date = current_time.strftime('%Y%m%d')
-        count_of_the_day = redis_method.get_count(f"{current_date}_{username}_uv")
+        count_of_the_day = redis_method.get_count(f"{username}_uv_{current_date}")
 
         dates.append(current_time.strftime('%Y-%m-%d'))
         daily_visitor_count.append(count_of_the_day)
@@ -29,5 +29,13 @@ def daily_visitor_data(username):
     
     return data
 
+def get_visitor_count(username):
 
+    visitor = {}
+    visitor['home'] = redis_method.get_count(f"{username}_home")
+    visitor['blog'] = redis_method.get_count(f"{username}_blog")
+    visitor['about'] = redis_method.get_count(f"{username}_about")
+    visitor['total'] = redis_method.get_count_with_prefix(f"{username}_uv")
+
+    return visitor
 

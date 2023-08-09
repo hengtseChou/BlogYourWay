@@ -15,19 +15,21 @@
 {% block script %}
 <script>
 	// Access the data passed from Flask
-	const chartData = JSON.parse('{{ daily_count | tojson }}');
+	const daily_count = JSON.parse('{{ daily_count | tojson }}');
 	const lineChart = new Chart(
 		document.getElementById('myLineChart'),
 		{
 			type: 'line',
 			data: {
-				labels: chartData.labels,
+				labels: daily_count.labels,
 				datasets: [{
 					label: 'daily unique visitors', 
-					data: chartData.data,
+					data: daily_count.data,
+					fill: false,
 					backgroundColor: "#f5ae8e",
 					borderColor: "#f7966b",
-					borderWidth: 1
+					borderWidth: 1,
+					lineTension: 0.4 // Adjust the value to control the curvature (0.1 to 1)
 				}]
 			},
 			options: {

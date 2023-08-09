@@ -10,9 +10,10 @@ class Redis_method:
 
     def increment_count(self, key, request):
         # f"post_uid_{post.uid}"
-        # f"{username}_{page}"
+        # f"{username}_{page}" as in home, blog, about
         # f"{username}_tag: {tag}""
-        # f"{date}_{username}_uv" as in unique visitor for each user
+        # f"{username}_uv_{date}" as in unique visitor for each user
+        # f"landing_page_{date}""
 
         host = request.remote_addr
         ua = request.headers.get("User-Agent")
@@ -22,7 +23,13 @@ class Redis_method:
         self.r.pfadd(key, hit_value)
 
     def get_count(self, key):
+
         return self.r.pfcount(key)
+    
+    def get_count_with_prefix(self, prefix):
+
+        keys_with_prefix = self.r.keys(prefix)
+        return self.r.pfcount(*keys_with_prefix)
 
     def remove_all(self, user):
         pass

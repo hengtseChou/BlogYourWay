@@ -28,7 +28,7 @@ class User(UserMixin):
 def landing_page():
 
     today = get_today()
-    redis_method.increment_count(f'{today}_landing_page', request)
+    redis_method.increment_count(f'landing_page_{today}', request)
 
     return render_template("landing_page.html")
 
@@ -140,7 +140,7 @@ def tag(username):
     # update visitor counts
     redis_method.increment_count(f"{username}_tag: {tag_decoded}", request)
     today = get_today()
-    redis_method.increment_count(f"{username}_{today}_uv", request)
+    redis_method.increment_count(f"{username}_uv_{today}", request)
 
 
     return render_template(
@@ -199,7 +199,7 @@ def post(username, post_uid):
     # update visitor counts
     redis_method.increment_count(f"post_uid_{target_post['post_uid']}", request)
     today = get_today()
-    redis_method.increment_count(f"{username}_{today}_uv", request)
+    redis_method.increment_count(f"{username}_uv_{today}", request)
 
 
     return render_template(
@@ -219,7 +219,7 @@ def about(username):
     # update visitor counts
     redis_method.increment_count(f"{username}_about", request)
     today = get_today()
-    redis_method.increment_count(f"{username}_{today}_uv", request)
+    redis_method.increment_count(f"{username}_uv_{today}", request)
 
 
     return render_template("about.html", user=user, about=about_converted)
@@ -267,7 +267,7 @@ def blogg(username):
     # update visitor counts
     redis_method.increment_count(f"{username}_blog", request)
     today = get_today()
-    redis_method.increment_count(f"{username}_{today}_uv", request)
+    redis_method.increment_count(f"{username}_uv_{today}", request)
 
 
     return render_template(
