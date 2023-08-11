@@ -1,7 +1,7 @@
 from redis import Redis
-from website.config import REDIS_HOST, REDIS_PORT, REDIS_PW
-
-r = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PW)
+from datetime import datetime, timedelta
+from functools import lru_cache
+from website.config import REDIS_HOST, REDIS_PORT, REDIS_PW, ENV
 
 
 class Redis_method:
@@ -26,11 +26,45 @@ class Redis_method:
 
         return self.r.pfcount(key)
     
-    def get_count_with_prefix(self, prefix):
+    def get_counts(self, keys):
 
-        keys_with_prefix = self.r.keys(prefix)
-        return self.r.pfcount(*keys_with_prefix)
+        return [self.r.pfcount(key) for key in keys]
+    
+    @lru_cache(maxsize=None)  # Caching to optimize repeated calls
+    def get_daily_visitor_data(self, username):
 
+        if ENV == 'debug':
+            start_time = datetime.now() - timedelta(days=30)
+        elif ENV == 'prod':
+            start_time = datetime.now() + timedelta(hours=8) - timedelta(days=30)
+
+        keys = []
+        dates = []
+        daily_visitor_count = []
+
+        for i in range(1, 31):
+            keys.append(f"{username}_uv_{(start_time + timedelta(days=i)).strftime('%Y%m%d')}")
+            dates.append((start_time + timedelta(days=i)).strftime('%Y-%m-%d'))   
+
+        daily_visitor_count = self.get_counts(keys)
+        data = {'labels': dates, 'data': daily_visitor_count}
+        return data
+    
+    def get_visitor_stats(self, username):
+
+        data = {}
+        for page in ['home', 'blog', 'portfolio', 'about']:
+            data[page] = self.get_count(f"{username}_{page}")
+        total = 0
+        cursor = '0'
+        while cursor != 0:
+            cursor, keys = self.r.scan(cursor, match=f"{username}_uv*", count=1000)  # Adjust count as needed
+            total += len(keys)
+        data['total'] = total
+
+        return data
+
+    
     def remove_all(self, user):
         pass
 
