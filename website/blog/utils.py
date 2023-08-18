@@ -4,11 +4,12 @@ import random
 import string
 from math import ceil
 from datetime import datetime, timedelta
-from flask import request, flash, render_template, abort
+from flask import request, flash, render_template, abort, current_app
 from flask_login import current_user
 from bs4 import BeautifulSoup
 from website.extensions.db_mongo import db_users, db_posts, db_comments
 from website.config import ENV, RECAPTCHA_SECRET
+
 
 
 class HTML_Formatter:
@@ -126,9 +127,11 @@ class CRUD_Utils:
 
         new_user_about["about"] = ""
 
+        current_app.logger.debug(f'Add new user {reg_form["username"]}.')
         db_users.login.insert_one(new_user_login)
         db_users.info.insert_one(new_user_info)
         db_users.about.insert_one(new_user_about)
+        
 
     @staticmethod
     def create_comment(post_uid, request):
@@ -197,6 +200,7 @@ class CRUD_Utils:
         db_posts.content.insert_one({"post_uid": uid, "content": new_post["content"]})
         del new_post["content"]
         db_posts.info.insert_one(new_post)
+        current_app.logger.debug(f'Add new post {uid}.')
 
     @staticmethod
     def update_post(post_uid, request):
@@ -225,6 +229,7 @@ class CRUD_Utils:
         db_posts.info.update_one(
             filter={"post_uid": post_uid}, update={"$set": updated_post_info}
         )
+        current_app.logger.debug(f'Updated post id {post_uid}.')
 
     @staticmethod
     def delete_user(username):
@@ -250,6 +255,7 @@ class CRUD_Utils:
         db_users.login.delete_one({"username": username})
         db_users.info.delete_one({"username": username})
         db_users.about.delete_one({"username": username})
+        current_app.logger.debug(f'Deleted user {username}.')
 
 
         

@@ -1,7 +1,7 @@
 import bcrypt
 from datetime import datetime
 from flask import (
-    Blueprint, request, session,
+    Blueprint, request, session, current_app,
     render_template, flash, redirect, url_for
 )
 from flask_login import login_required, logout_user, current_user
@@ -21,7 +21,7 @@ def overview():
     user = db_users.info.find_one({"username": current_user.username})
 
     time_difference = now - user["created_at"]
-    user['days_joined'] = time_difference.days + 1
+    user['days_joined'] = format(time_difference.days + 1, ",")
 
     visitor_stats = redis_method.get_visitor_stats(current_user.username)
     daily_count = redis_method.get_daily_visitor_data(current_user.username)
@@ -108,6 +108,7 @@ def about_control():
         )
         user.update(updated_info)
         user.update(updated_about)
+        current_app.logger.debug(f'Update about for user {user["username"]}.')
         flash("Information updated!", category="success")
 
     return render_template("edit_about.html", user=user)
@@ -259,6 +260,7 @@ def edit_post(post_uid):
 
     CRUD_Utils.update_post(post_uid, request)
     flash(f"Post <{post_uid}> update succeeded!", category="success")
+    
 
     return redirect(url_for("backstage.post_control"))
 

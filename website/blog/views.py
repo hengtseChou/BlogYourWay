@@ -97,7 +97,7 @@ def home(username):
     # update visitor counts
     redis_method.increment_count(f"{username}_home", request)
     today = get_today()
-    redis_method.increment_count(f"{username}_{today}_uv", request)
+    redis_method.increment_count(f"{username}_uv_{today}", request)
 
     return render_template(
         "home.html", user=user, posts=featured_posts, num_of_posts=len(featured_posts)
