@@ -32,13 +32,13 @@ def create_app():
     @app.errorhandler(500)
     def internal_server_error(e):
         app.logger.error('Internal server error: %s', e)
-        return 'Internal Server Error', 500
+        return render_template("500.html"), 500
     
     logging.basicConfig(level=logging.DEBUG, 
                         format='%(asctime)s [%(levelname)s] %(message)s',
                         handlers=[
                             logging.StreamHandler(),
-                            logging.FileHandler('app.log')
+                            logging.FileHandler('app.log', 'w', 'utf-8')
                         ])
 
     # blueprints

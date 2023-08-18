@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+	body {
+		background-color: #333;
+		color: #fff;
+		text-align: center;
+		padding-top: 100px;
+	}
+	h1 {
+		font-size: 6rem;
+	}
+	p {
+		font-size: 1.5rem;
+	}
+	a {
+		color: #fff;
+	}
+
+	.hover-pointer:hover{
+		cursor: pointer;
+	}
+</style>
+{% endblock %}
+
+{% block title %}500 Internal Server Error · Little Blog{% endblock %}
+
+{% block body%}
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h1>404</h1>
+			<p class="mt-4">Oops! It seems like there is an internal server error. Please contact the provider about this situation. </p>
+			<p onclick="window.history.go(-1); return false;" class="hover-pointer"><u>👉 Go to the previous page</u></p>
+		</div>
+	</div>
+</div>
+{% endblock %}

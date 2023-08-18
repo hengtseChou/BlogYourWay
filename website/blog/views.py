@@ -73,6 +73,11 @@ def register():
     flash("Registeration succeeded.", category="success")
     return redirect(url_for("blog.login"))
 
+@blog.route("/<username>", methods=['GET'])
+def redirect_home(username):
+
+    return redirect(url_for('blog.home', username=username))
+
 
 @blog.route("/<username>/home", methods=["GET"])
 def home(username):
