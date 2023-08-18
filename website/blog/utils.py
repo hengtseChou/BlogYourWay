@@ -290,7 +290,6 @@ def is_comment_verified(token):
     r = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
     response = r.json()
 
-
     if response["success"]:
         return True
     return False
