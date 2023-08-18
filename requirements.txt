@@ -10,7 +10,6 @@ colorama==0.4.6
 dnspython==2.3.0
 Flask==2.3.2
 Flask-Login==0.6.2
-gevent==23.7.0
 greenlet==2.0.2
 gunicorn==20.1.0
 idna==3.4
