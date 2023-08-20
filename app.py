@@ -1,6 +1,5 @@
 from website import create_app
 from website.config import ENV
-import os
 
 
 if ENV == "debug":

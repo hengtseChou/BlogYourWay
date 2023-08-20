@@ -1,12 +1,13 @@
 import bcrypt
 from datetime import datetime
 from flask import (
-    Blueprint, request, session, current_app,
+    Blueprint, request, session,
     render_template, flash, redirect, url_for
 )
 from flask_login import login_required, logout_user, current_user
 from website.extensions.db_mongo import db_users, db_posts
 from website.extensions.db_redis import redis_method
+from website.extensions.log import logger
 from website.blog.utils import set_up_pagination, CRUD_Utils
 from website.config import ENV
 
@@ -108,7 +109,7 @@ def about_control():
         )
         user.update(updated_info)
         user.update(updated_about)
-        current_app.logger.debug(f'Update about for user {user["username"]}.')
+        logger.debug(f'Update about for user {user["username"]}.')
         flash("Information updated!", category="success")
 
     return render_template("edit_about.html", user=user)

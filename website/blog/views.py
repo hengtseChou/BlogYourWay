@@ -1,10 +1,12 @@
 import bcrypt
 import markdown
+import logging
 from urllib.parse import unquote
-from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
+from flask import Blueprint, render_template, request, flash, redirect, url_for, abort, current_app
 from flask_login import login_user, UserMixin, current_user
 from website.extensions.db_mongo import db_users, db_posts, db_comments
 from website.extensions.db_redis import redis_method
+from website.extensions.log import logger
 from website.blog.utils import (
     HTML_Formatter, CRUD_Utils, 
     all_user_tags, is_comment_verified, set_up_pagination, get_today
@@ -57,6 +59,7 @@ def login():
     # login user
     user = User(user_creds)
     login_user(user)
+    logger.info(f'User {user_creds["username"]} logged in.')
     flash("Login Succeeded.", category="success")
     return redirect(url_for("backstage.overview"))
 

@@ -59,7 +59,7 @@ class Redis_method:
         cursor = '0'
         while cursor != 0:
             cursor, keys = self.r.scan(cursor, match=f"{username}_uv_*", count=1000)  # Adjust count as needed
-            total += len(keys)
+            total += sum(self.get_counts(keys))
         data['total'] = total
 
         return data

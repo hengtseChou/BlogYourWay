@@ -1,9 +1,9 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
 import os
-import logging
 from website.blog.views import blog, User
 from website.backstage.views import backstage
+from website.extensions.log import logger
 from website.extensions.db_mongo import db_users
 
 
@@ -31,15 +31,10 @@ def create_app():
     
     @app.errorhandler(500)
     def internal_server_error(e):
-        app.logger.error('Internal server error: %s', e)
+        logger.error('Internal server error: %s', e)
         return render_template("500.html"), 500
     
-    logging.basicConfig(level=logging.DEBUG, 
-                        format='%(asctime)s [%(levelname)s] %(message)s',
-                        handlers=[
-                            logging.StreamHandler(),
-                            logging.FileHandler('app.log', 'w', 'utf-8')
-                        ])
+    
 
     # blueprints
     app.register_blueprint(blog, url_prefix="/")
