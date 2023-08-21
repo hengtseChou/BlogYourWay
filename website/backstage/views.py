@@ -8,7 +8,8 @@ from flask_login import login_required, logout_user, current_user
 from website.extensions.db_mongo import db_users, db_posts
 from website.extensions.db_redis import redis_method
 from website.extensions.log import logger
-from website.blog.utils import set_up_pagination, CRUD_Utils
+from website.blog.utils import set_up_pagination
+from website.backstage.utils import create_post, update_post, delete_user
 from website.config import ENV
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
@@ -42,7 +43,7 @@ def post_control():
 
     if request.method == "POST":
         
-        CRUD_Utils.create_post(request)
+        create_post(request)
         db_users.info.update_one(
             filter={"username": current_user.username},
             update={"$set": {"posts_count": user["posts_count"] + 1}},
@@ -229,9 +230,8 @@ def settings():
                 flash("Access denied, bacause password is invalid.", category="error")
                 return render_template("settings.html", user=user)
 
-            # deletion procedure
-            #             
-            CRUD_Utils.delete_user(current_user.username)
+            # deletion procedure        
+            delete_user(current_user.username)
             flash("Account deleted successfully!", category="success")
             logout_user()
             return redirect(url_for("blog.register"))
@@ -259,7 +259,7 @@ def edit_post(post_uid):
 
         return render_template("edit_blogpost.html", post=target_post, user=user)
 
-    CRUD_Utils.update_post(post_uid, request)
+    update_post(post_uid, request)
     flash(f"Post <{post_uid}> update succeeded!", category="success")
     
 

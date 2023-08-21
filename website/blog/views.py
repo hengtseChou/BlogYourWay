@@ -1,15 +1,19 @@
 import bcrypt
 import markdown
-import logging
 from urllib.parse import unquote
-from flask import Blueprint, render_template, request, flash, redirect, url_for, abort, current_app
+from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
 from flask_login import login_user, UserMixin, current_user
 from website.extensions.db_mongo import db_users, db_posts, db_comments
 from website.extensions.db_redis import redis_method
 from website.extensions.log import logger
 from website.blog.utils import (
-    HTML_Formatter, CRUD_Utils, 
-    all_user_tags, is_comment_verified, set_up_pagination, get_today
+    HTML_Formatter, 
+    create_user, 
+    create_comment,
+    all_user_tags, 
+    is_comment_verified, 
+    set_up_pagination, 
+    get_today
 )
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
@@ -29,7 +33,7 @@ class User(UserMixin):
 @blog.route("/", methods=["GET"])
 def landing_page():
 
-    today = get_today()
+    today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f'landing_page_{today}', request)
 
     return render_template("landing_page.html")
@@ -70,7 +74,7 @@ def register():
     if request.method == "GET":
         return render_template("register.html") 
 
-    CRUD_Utils.create_user(request=request)
+    create_user(request=request)
 
     # succeeded and return to login page
     flash("Registeration succeeded.", category="success")
@@ -104,7 +108,7 @@ def home(username):
 
     # update visitor counts
     redis_method.increment_count(f"{username}_home", request)
-    today = get_today()
+    today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
     return render_template(
@@ -147,7 +151,7 @@ def tag(username):
 
     # update visitor counts
     redis_method.increment_count(f"{username}_tag: {tag_decoded}", request)
-    today = get_today()
+    today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
 
@@ -182,7 +186,7 @@ def post(username, post_uid):
 
         if is_comment_verified(token):
 
-            CRUD_Utils.create_comment(post_uid, request)
+            create_comment(post_uid, request)
             
             db_posts.info.update_one(
                 filter={"post_uid": post_uid},
@@ -206,7 +210,7 @@ def post(username, post_uid):
 
     # update visitor counts
     redis_method.increment_count(f"post_uid_{target_post['post_uid']}", request)
-    today = get_today()
+    today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
 
@@ -226,7 +230,7 @@ def about(username):
 
     # update visitor counts
     redis_method.increment_count(f"{username}_about", request)
-    today = get_today()
+    today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
 
@@ -274,7 +278,7 @@ def blogg(username):
 
     # update visitor counts
     redis_method.increment_count(f"{username}_blog", request)
-    today = get_today()
+    today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
 

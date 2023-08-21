@@ -4,10 +4,11 @@ import random
 import string
 from math import ceil
 from datetime import datetime, timedelta
-from flask import request, flash, render_template, abort, current_app
+from flask import request, flash, render_template, abort
 from flask_login import current_user
 from bs4 import BeautifulSoup
 from website.extensions.db_mongo import db_users, db_posts, db_comments
+from website.extensions.log import logger
 from website.config import ENV, RECAPTCHA_SECRET
 
 
@@ -82,191 +83,87 @@ class HTML_Formatter:
 
         return about
     
-class CRUD_Utils:
 
-    @staticmethod
-    def create_user(request):
+def create_user(request):
 
-        # registeration
-        # with unique email, username and blog name
-        reg_form = request.form.to_dict()
-        # make sure username has no space character
-        reg_form["username"] = reg_form["username"].strip().replace(" ", "-")
-        if db_users.exists("email", reg_form["email"]):
-            flash("Email is already used. Please try another one.", category="error")
-            return render_template("register.html")
+    # registeration
+    # with unique email, username and blog name
+    reg_form = request.form.to_dict()
+    # make sure username has no space character
+    reg_form["username"] = reg_form["username"].strip().replace(" ", "-")
+    if db_users.exists("email", reg_form["email"]):
+        flash("Email is already used. Please try another one.", category="error")
+        return render_template("register.html")
 
-        if db_users.exists("username", reg_form["username"]):
-            flash("Username is already used. Please try another one.", category="error")
-            return render_template("register.html")
+    if db_users.exists("username", reg_form["username"]):
+        flash("Username is already used. Please try another one.", category="error")
+        return render_template("register.html")
 
-        if db_users.exists("blogname", reg_form["blogname"]):
-            flash("Blog name is already used. Please try another one.")
-            return render_template("register.html")
+    if db_users.exists("blogname", reg_form["blogname"]):
+        flash("Blog name is already used. Please try another one.")
+        return render_template("register.html")
 
-        hashed_pw = bcrypt.hashpw(reg_form["password"].encode("utf-8"), bcrypt.gensalt(12))
-        hashed_pw = hashed_pw.decode("utf-8")
+    hashed_pw = bcrypt.hashpw(reg_form["password"].encode("utf-8"), bcrypt.gensalt(12))
+    hashed_pw = hashed_pw.decode("utf-8")
 
-        new_user_login = {"username": reg_form["username"]}
-        new_user_info = {"username": reg_form["username"]}
-        new_user_about = {"username": reg_form["username"]}
+    new_user_login = {"username": reg_form["username"]}
+    new_user_info = {"username": reg_form["username"]}
+    new_user_about = {"username": reg_form["username"]}
 
-        new_user_login["email"] = reg_form["email"]
-        new_user_login["password"] = hashed_pw
+    new_user_login["email"] = reg_form["email"]
+    new_user_login["password"] = hashed_pw
 
-        new_user_info["blogname"] = reg_form["blogname"]
-        new_user_info["posts_count"] = 0
-        new_user_info["banner_url"] = ""
-        new_user_info["profile_img_url"] = ""
-        new_user_info["short_bio"] = ""
-        new_user_info["social_links"] = []
-        if ENV == "debug":
-            new_user_info["created_at"] = datetime.now()
-        elif ENV == "prod":
-            new_user_info["created_at"] = datetime.now() + timedelta(hours=8)
+    new_user_info["blogname"] = reg_form["blogname"]
+    new_user_info["posts_count"] = 0
+    new_user_info["banner_url"] = ""
+    new_user_info["profile_img_url"] = ""
+    new_user_info["short_bio"] = ""
+    new_user_info["social_links"] = []
+    if ENV == "debug":
+        new_user_info["created_at"] = datetime.now()
+    elif ENV == "prod":
+        new_user_info["created_at"] = datetime.now() + timedelta(hours=8)
 
-        new_user_about["about"] = ""
+    new_user_about["about"] = ""
 
-        current_app.logger.debug(f'Add new user {reg_form["username"]}.')
-        db_users.login.insert_one(new_user_login)
-        db_users.info.insert_one(new_user_info)
-        db_users.about.insert_one(new_user_about)
-        
+    logger.debug(f'Add new user {reg_form["username"]}.')
+    db_users.login.insert_one(new_user_login)
+    db_users.info.insert_one(new_user_info)
+    db_users.about.insert_one(new_user_about)        
 
-    @staticmethod
-    def create_comment(post_uid, request):
 
-        new_comment = {}
-        if ENV == "debug":
-            new_comment["created_at"] = datetime.now()
-        elif ENV == "prod":
-            new_comment["created_at"] = datetime.now() + timedelta(hours=8)
-        new_comment["post_uid"] = post_uid
-        new_comment["profile_pic"] = "/static/img/visitor.png"
-        new_comment["profile_link"] = ""
-        new_comment["comment"] = request.form.get("comment")
-        alphabet = string.ascii_lowercase + string.digits
+def create_comment(post_uid, request):
+
+    new_comment = {}
+    new_comment["created_at"] = get_today()    
+    new_comment["post_uid"] = post_uid
+    new_comment["profile_pic"] = "/static/img/visitor.png"
+    new_comment["profile_link"] = ""
+    new_comment["comment"] = request.form.get("comment")
+    alphabet = string.ascii_lowercase + string.digits
+    uid = "".join(random.choices(alphabet, k=8))
+    while db_comments.exists("comment_uid", uid):
         uid = "".join(random.choices(alphabet, k=8))
-        while db_comments.exists("comment_uid", uid):
-            uid = "".join(random.choices(alphabet, k=8))
-        new_comment["comment_uid"] = uid
+    new_comment["comment_uid"] = uid
 
-        if current_user.is_authenticated:
-            commenter = dict(
-                db_users.info.find_one({"username": current_user.username})
-            )
-            new_comment["name"] = current_user.username
-            new_comment["email"] = commenter["email"]
-            new_comment["profile_link"] = f"/{current_user.username}/about"
-            if commenter["profile_img_url"]:
-                new_comment["profile_pic"] = commenter["profile_img_url"]
-        else:
-            new_comment["name"] = request.form.get("name")
-            new_comment["email"] = request.form.get("email")
-
-        db_comments.comment.insert_one(new_comment)
-
-    @staticmethod
-    def create_post(request):
-
-         # create a new post in db
-        new_post = request.form.to_dict()
-        # set posting time
-        if ENV == "debug":
-            new_post["created_at"] = new_post["last_updated"] = datetime.now()
-        elif ENV == "prod":
-            new_post["created_at"] = new_post[
-                "last_updated"
-            ] = datetime.now() + timedelta(hours=8)
-        # set other attributes
-        new_post["author"] = current_user.username
-        # process tags
-        if new_post["tags"] == "":
-            new_post["tags"] = []
-        else:
-            new_post["tags"] = [tag.strip() for tag in new_post["tags"].split(",")]
-        for tag in new_post["tags"]:
-            tag = tag.replace(" ", "-")
-        
-        new_post["comments"] = 0
-        new_post["archived"] = False
-        new_post["featured"] = False
-        alphabet = string.ascii_lowercase + string.digits
-        uid = "".join(random.choices(alphabet, k=8))
-        while db_posts.exists("post_uid", uid):
-            uid = "".join(random.choices(alphabet, k=8))
-        new_post["post_uid"] = uid
-
-        db_posts.content.insert_one({"post_uid": uid, "content": new_post["content"]})
-        del new_post["content"]
-        db_posts.info.insert_one(new_post)
-        current_app.logger.debug(f'Add new post {uid}.')
-
-    @staticmethod
-    def update_post(post_uid, request):
-
-        updated_post = request.form.to_dict()
-        # set last update time
-        if ENV == "debug":
-            updated_post["last_updated"] = datetime.now()
-        elif ENV == "prod":
-            updated_post["last_updated"] = datetime.now() + timedelta(hours=8)
-        # process tags
-        if updated_post["tags"] == "":
-            updated_post["tags"] = []
-        else:
-            updated_post["tags"] = [tag.strip() for tag in updated_post["tags"].split(",")]
-        for tag in updated_post["tags"]:
-            tag = tag.replace(" ", "-")
-
-        updated_post_content = updated_post["content"]
-        del updated_post["content"]
-        updated_post_info = updated_post
-
-        db_posts.content.update_one(
-            filter={"post_uid": post_uid}, update={"$set": updated_post_content}
+    if current_user.is_authenticated:
+        commenter = dict(
+            db_users.info.find_one({"username": current_user.username})
         )
-        db_posts.info.update_one(
-            filter={"post_uid": post_uid}, update={"$set": updated_post_info}
-        )
-        current_app.logger.debug(f'Updated post id {post_uid}.')
+        new_comment["name"] = current_user.username
+        new_comment["email"] = commenter["email"]
+        new_comment["profile_link"] = f"/{current_user.username}/about"
+        if commenter["profile_img_url"]:
+            new_comment["profile_pic"] = commenter["profile_img_url"]
+    else:
+        new_comment["name"] = request.form.get("name")
+        new_comment["email"] = request.form.get("email")
 
-    @staticmethod
-    def delete_user(username):
-
-        # get all post id, because we want to also remove relevant comments
-        # remove all posts
-        # remove comments within the post
-        # remove postfolio
-        # remove user
-
-        posts_uid_to_delete = []
-        posts_to_delete = list(
-            db_posts.info.find({"author": username})
-        )
-        for post in posts_to_delete:
-            posts_uid_to_delete.append(post["post_uid"])
-        for post_uid in posts_uid_to_delete:
-            db_posts.info.delete_one({"post_uid": post_uid})
-            db_posts.content.delete_one({"post_uid": post_uid})
-            db_comments.comment.delete_many({"post_uid": post_uid})
-
-
-        db_users.login.delete_one({"username": username})
-        db_users.info.delete_one({"username": username})
-        db_users.about.delete_one({"username": username})
-        current_app.logger.debug(f'Deleted user {username}.')
-
-
-        
-
-
-
+    db_comments.comment.insert_one(new_comment)
 
 def all_user_tags(username):
 
     result = db_posts.info.find({"author": username, "archived": False})
-
     tags_dict = {}
     for post in result:
         post_tags = post["tags"]
@@ -293,8 +190,6 @@ def is_comment_verified(token):
     if response["success"]:
         return True
     return False
-
-
 
 def set_up_pagination(username, current_page, posts_per_page):
 
@@ -329,8 +224,8 @@ def set_up_pagination(username, current_page, posts_per_page):
 def get_today():
 
     if ENV == 'debug':
-        today = datetime.now().strftime('%Y%m%d')
+        today = datetime.now()
     elif ENV == 'prod':
-        today = (datetime.now() + timedelta(hours=8)).strftime('%Y%m%d')
+        today = (datetime.now() + timedelta(hours=8))
     return today
 
