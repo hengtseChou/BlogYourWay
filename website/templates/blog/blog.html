@@ -58,8 +58,7 @@
 		<!-- post column -->
 		<div class="col-12 col-md-8" style="min-height: 300px;">
 			<div class="row">
-				<div class="col-2"></div>
-				<div class="col-8">
+				<div class="col-12 offset-md-2 col-md-8 px-md-2">
 					{% if num_of_posts != 0 %}
 					{% for post in posts %}
 					{% set post_link = 'posts/' ~ post.post_uid  %}

@@ -3,8 +3,8 @@ import markdown
 from urllib.parse import unquote
 from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
 from flask_login import login_user, UserMixin, current_user
-from website.extensions.db_mongo import db_users, db_posts, db_comments
-from website.extensions.db_redis import redis_method
+from website.extensions.mongo import db_users, db_posts, db_comments
+from website.extensions.redis import redis_method
 from website.extensions.log import logger
 from website.blog.utils import (
     HTML_Formatter, 
@@ -60,6 +60,7 @@ def login():
     if not bcrypt.checkpw(login_form["password"].encode("utf8"), user_creds["password"].encode("utf8")):
         flash("Invalid password. Please try again.", category="error")
         return render_template("login.html")
+    
     # login user
     user = User(user_creds)
     login_user(user)

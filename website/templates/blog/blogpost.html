@@ -23,6 +23,13 @@
 		border-radius: 50%;
 	}
 
+	img.small-profile {
+		width: 2rem;
+		height: 2rem;
+		object-fit: cover;
+		border-radius: 50%;
+	}
+
 
 	.author-link {
 		text-decoration: none;
@@ -48,12 +55,13 @@
 {% block body%}
 
 {% include 'navbar.html' %}
-{% include 'banner.html' %}
+<div class="banner-container" style="background-image: url('{{ post.banner_url }}')"></div>
+<!-- post starts -->
 <div class="container">
 	<div class="row mt-5">
 		<div class="col-12 col-md-7 mx-auto">
 			<h1 class="text-center fw-bold">{{ post.title }}</h1>
-			<div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-5">
+			<div class="d-none d-md-flex align-items-center justify-content-center mt-3 mb-5">
 				<a href="/{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
 					<img src="/static/img/default-profile.png" alt="profile-img" class="profile me-2">
@@ -65,21 +73,21 @@
 				<div class="date-text"><h4> · Last updated: {{ post.last_updated }}</h4></div>
 			</div>
 
-			<div class="d-lg-none text-center my-4">
-				<div class="d-flex align-items-center justify-content-center mb-4">
-					<a href="/{{ post.author }}/about">
-						{% if user.profile_img_url|length == 0 %}
-						<img src="/static/img/default-profile.png" alt="profile-img" class="profile me-2">
-						{% else %}
-						<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile me-2">
-						{% endif %}
-					</a>
-					<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
-				</div>
-				<div class="date-text"><h4>Last updated: {{ post.last_updated }}</h4></div>
+			<div class="d-flex d-md-none align-items-center justify-content-center my-2">
+				<a href="/{{ post.author }}/about">
+					{% if user.profile_img_url|length == 0 %}
+					<img src="/static/img/default-profile.png" alt="profile-img" class="small-profile me-1">
+					{% else %}
+					<img src="{{ user.profile_img_url }}" alt="profile-img" class="small-profile me-1">
+					{% endif %}
+				</a>
+				<a href="/{{ post.author }}/about" class="author-link mx-1 mt-2"><h6>{{ post.author }}</h6></a>
+				<div class="date-text mt-2"><h6>· Last updated: {{ post.last_updated }}</h6></div>
 			</div>
+
+
 			<hr>
-			<div style="font-family: 'Noto Serif TC', serif;" class="mb-3">
+			<div style="font-family: 'Noto Sans TC', sans; line-height: 1.6rem;" class="mb-3 px-2">
 				{{ post.content | safe }}
 			</div>
 			<div class="d-flex align-items-center mb-4" style="color: rgb(100, 100, 100) ; font-size: large;">

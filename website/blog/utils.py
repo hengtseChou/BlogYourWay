@@ -4,10 +4,10 @@ import random
 import string
 from math import ceil
 from datetime import datetime, timedelta
-from flask import request, flash, render_template, abort
+from flask import flash, render_template, abort
 from flask_login import current_user
 from bs4 import BeautifulSoup
-from website.extensions.db_mongo import db_users, db_posts, db_comments
+from website.extensions.mongo import db_users, db_posts, db_comments
 from website.extensions.log import logger
 from website.config import ENV, RECAPTCHA_SECRET
 

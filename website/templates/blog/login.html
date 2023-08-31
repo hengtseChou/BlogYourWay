@@ -27,25 +27,28 @@
 
 
 {% block body %}
-<div class="card text-white bg-dark shadow">
-	<div class="card-body">
-		<h2 class="text-center mb-4">Login</h2>
-		<form method="post">
-			<div class="input-group mb-4">
-				<span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-				<input type="email" class="form-control" placeholder="Email" name="email">
+<div class="row">
+	<div class="col-10 offset-1 col-md-12 offset-md-0 card text-white bg-dark shadow">
+		<div class="card-body">
+			<h2 class="text-center mb-4">Login</h2>
+			<form method="post">
+				<div class="input-group mb-4">
+					<span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+					<input type="email" class="form-control" placeholder="Email" name="email">
+				</div>
+				<div class="input-group mb-4">
+					<span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+					<input type="password" class="form-control" placeholder="Password" name="password">
+				</div>
+				<button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;">Login</button>
+			</form>
+			<div class="text-center mt-4">
+				Don't have an account? <a href="/register">Register</a>
 			</div>
-			<div class="input-group mb-4">
-				<span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-				<input type="password" class="form-control" placeholder="Password" name="password">
-			</div>
-			<button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;">Login</button>
-		</form>
-		<div class="text-center mt-4">
-			Don't have an account? <a href="/register">Register</a>
 		</div>
 	</div>
 </div>
+
 {% endblock %}
 
 

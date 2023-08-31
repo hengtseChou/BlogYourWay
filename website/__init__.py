@@ -4,7 +4,7 @@ import os
 from website.blog.views import blog, User
 from website.backstage.views import backstage
 from website.extensions.log import logger
-from website.extensions.db_mongo import db_users
+from website.extensions.mongo import db_users
 
 
 def create_app():

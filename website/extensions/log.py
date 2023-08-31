@@ -1,6 +1,5 @@
 import logging
 from website.config import ENV
-
    
 stream_formatter = logging.Formatter(
     fmt='[%(asctime)s] %(levelname)s: %(message)s'
@@ -17,6 +16,7 @@ if ENV == 'prod':
 else:
     werkzeug_logger = logging.getLogger('werkzeug')
     werkzeug_logger.setLevel(logging.ERROR)
+    # to stop showing https log
 
     logger = logging.getLogger('app')
     logger.setLevel(logging.DEBUG)

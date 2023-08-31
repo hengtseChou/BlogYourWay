@@ -5,8 +5,8 @@ from flask import (
     render_template, flash, redirect, url_for
 )
 from flask_login import login_required, logout_user, current_user
-from website.extensions.db_mongo import db_users, db_posts
-from website.extensions.db_redis import redis_method
+from website.extensions.mongo import db_users, db_posts
+from website.extensions.redis import redis_method
 from website.extensions.log import logger
 from website.blog.utils import set_up_pagination
 from website.backstage.utils import create_post, update_post, delete_user

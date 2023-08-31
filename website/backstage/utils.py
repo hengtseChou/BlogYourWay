@@ -1,7 +1,7 @@
 import random
 import string
 from flask_login import current_user
-from website.extensions.db_mongo import db_users, db_posts, db_comments
+from website.extensions.mongo import db_users, db_posts, db_comments
 from website.extensions.log import logger
 from website.blog.utils import get_today
 

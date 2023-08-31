@@ -1,5 +1,5 @@
 from redis import Redis
-from datetime import datetime, timedelta
+from datetime import timedelta
 from functools import lru_cache
 from website.config import REDIS_HOST, REDIS_PORT, REDIS_PW
 from website.blog.utils import get_today
