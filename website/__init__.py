@@ -40,4 +40,6 @@ def create_app():
     app.register_blueprint(blog, url_prefix="/")
     app.register_blueprint(backstage, url_prefix="/backstage/")
 
+    logger.info('APP INIT')
+
     return app

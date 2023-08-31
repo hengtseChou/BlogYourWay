@@ -84,23 +84,25 @@ class HTML_Formatter:
         return about
     
 
-def create_user(request):
+def create_user(reg_form):
 
     # registeration
     # with unique email, username and blog name
-    reg_form = request.form.to_dict()
     # make sure username has no space character
     reg_form["username"] = reg_form["username"].strip().replace(" ", "-")
     if db_users.exists("email", reg_form["email"]):
         flash("Email is already used. Please try another one.", category="error")
+        logger.debug('Registeration failed. type: email already existed.')
         return render_template("register.html")
 
     if db_users.exists("username", reg_form["username"]):
         flash("Username is already used. Please try another one.", category="error")
+        logger.debug('Registeration failed. type: username already existed.')
         return render_template("register.html")
 
     if db_users.exists("blogname", reg_form["blogname"]):
         flash("Blog name is already used. Please try another one.")
+        logger.debug('REgisteration failed. type: blog name already existed.')
         return render_template("register.html")
 
     hashed_pw = bcrypt.hashpw(reg_form["password"].encode("utf-8"), bcrypt.gensalt(12))
@@ -126,7 +128,6 @@ def create_user(request):
 
     new_user_about["about"] = ""
 
-    logger.debug(f'Add new user {reg_form["username"]}.')
     db_users.login.insert_one(new_user_login)
     db_users.info.insert_one(new_user_info)
     db_users.about.insert_one(new_user_about)        

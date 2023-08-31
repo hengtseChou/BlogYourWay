@@ -27,10 +27,6 @@ class Redis_method:
 
         return self.r.pfcount(key)
     
-    def get_counts(self, keys):
-
-        return [self.r.pfcount(key) for key in keys]
-    
     @lru_cache(maxsize=None)  # Caching to optimize repeated calls
     def get_daily_visitor_data(self, username):
 
@@ -45,7 +41,7 @@ class Redis_method:
             keys.append(f"{username}_uv_{(start_time + timedelta(days=i)).strftime('%Y%m%d')}")
             dates.append((start_time + timedelta(days=i)).strftime('%Y-%m-%d'))   
 
-        daily_visitor_count = self.get_counts(keys)
+        daily_visitor_count = [self.get_count(key) for key in keys]
         data = {'labels': dates, 'data': daily_visitor_count}
         return data
     
@@ -58,7 +54,8 @@ class Redis_method:
         cursor = '0'
         while cursor != 0:
             cursor, keys = self.r.scan(cursor, match=f"{username}_uv_*", count=1000)  # Adjust count as needed
-            total += sum(self.get_counts(keys))
+            counts = [self.get_count(key) for key in keys]
+            total += sum(counts)
         data['total'] = total
 
         return data
