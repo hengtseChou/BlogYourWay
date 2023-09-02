@@ -10,7 +10,7 @@ from website.blog.utils import (
     HTML_Formatter, 
     create_user, 
     create_comment,
-    all_user_tags, 
+    all_tags_from_user,
     is_comment_verified, 
     set_up_pagination, 
     get_today
@@ -33,10 +33,21 @@ class User(UserMixin):
 @blog.route("/", methods=["GET"])
 def landing_page():
 
+    ###################################################################
 
-    logger.debug(f'Landing page was visited, IP: {request.remote_addr}.')
+    # redis and logging
+
+    ###################################################################
+
+    logger.debug(f'{request.path} was visited from {request.remote_addr}.')
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f'landing_page_{today}', request)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
 
     return render_template("landing_page.html")
 
@@ -46,18 +57,33 @@ def login():
 
     ###################################################################
 
-    # early returns for invalid input
+    # early returns
 
     ###################################################################
 
     if request.method == "GET":
 
-        logger.debug(f'Login page was visited, IP: {request.remote_addr}.')
+        logger.debug(f'{request.path} was visited from {request.remote_addr}.')
 
         if current_user.is_authenticated:
             flash("You are already logged in.")
-            logger.debug(f'Attempt to duplicate logging in, IP: {request.remote_addr}.')
-            return redirect(url_for("backstage.panel"))        
+            logger.debug(f'Attempt to duplicate logging in from {request.remote_addr}.')
+            return redirect(url_for("backstage.panel"))
+                      
+        return render_template("login.html")
+
+    # find user in db
+    login_form = request.form.to_dict()
+    if not db_users.exists("email", login_form["email"]):
+        flash("Account not found. Please try again.", category="error")
+        logger.debug(f'Login failed. type: email {login_form["email"]} not found. IP: {request.remote_addr}.')
+        return render_template("login.html")
+
+    # check pw
+    user_creds = db_users.login.find_one({"email": login_form["email"]})
+    if not bcrypt.checkpw(login_form["password"].encode("utf8"), user_creds["password"].encode("utf8")):
+        flash("Invalid password. Please try again.", category="error")
+        logger.debug(f'Login failed. type: incorrect password. IP: {request.remote_addr}.')
         return render_template("login.html")
     
     ###################################################################
@@ -66,35 +92,14 @@ def login():
 
     ###################################################################
 
-    login_form = request.form.to_dict()
-    # find user in db
-    if not db_users.exists("email", login_form["email"]):
-        flash("Account not found. Please try again.", category="error")
-        logger.debug(f'Login failed. type: email not found. IP: {request.remote_addr}.')
-        return render_template("login.html")
-
-    user_creds = db_users.login.find_one({"email": login_form["email"]})
-    # check pw
-    if not bcrypt.checkpw(login_form["password"].encode("utf8"), user_creds["password"].encode("utf8")):
-        flash("Invalid password. Please try again.", category="error")
-        logger.debug(f'Login failed. type: incorrect password. IP: {request.remote_addr}.')
-        return render_template("login.html")
-    
-    # login user
     user = User(user_creds)
     login_user(user)
-    logger.info(f'User {user_creds["username"]} logged in from {request.remote_addr}')
+    logger.info(f'User {user_creds["username"]} has logged in from {request.remote_addr}')
     flash("Login Succeeded.", category="success")
 
     ###################################################################
 
-    # redis and logging
-
-    ###################################################################
-
-    ###################################################################
-
-    # rreturn page content
+    # return page content
 
     ###################################################################
 
@@ -104,17 +109,33 @@ def login():
 @blog.route("/register", methods=["GET", "POST"])
 def register():
 
+    ###################################################################
+
+    # early returns
+
+    ###################################################################
+
     if request.method == "GET":
-        logger.debug(f'Register page was visited, IP: {request.remote_addr}')
-        return render_template("register.html") 
+        logger.debug(f'{request.path} was visited from {request.remote_addr}.')
+        return render_template("register.html")
     
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
     reg_form = request.form.to_dict()
     create_user(reg_form=reg_form)
-
-    logger.info(f'New user {reg_form["username"]} created from {request.remote_addr}')
-
-    # succeeded and return to login page
+    logger.info(f'New user {reg_form["username"]} has created from {request.remote_addr}')
     flash("Registeration succeeded.", category="success")
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
     return redirect(url_for("blog.login"))
 
 @blog.route("/<username>", methods=['GET'])
@@ -128,12 +149,12 @@ def home(username):
 
     ###################################################################
 
-    # early returns for invalid input
+    # early returns
 
     ###################################################################
 
     if not db_users.exists("username", username):
-        logger.debug(f'Home page for invalid user {username} was entered. IP: {request.remote_addr}.')
+        logger.debug(f'Invalid username {username} at {request.path}. IP: {request.remote_addr}.')
         abort(404)
 
     ###################################################################
@@ -165,7 +186,7 @@ def home(username):
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    logger.debug(f'Home page for user {username} was visited. IP: {request.remote_addr}.')
+    logger.debug(f'{request.path} was visited from {request.remote_addr}.')
 
     ###################################################################
 
@@ -186,12 +207,12 @@ def tag(username):
 
     ###################################################################
 
-    # early returns for invalid input
+    # early returns
 
     ###################################################################
 
     if not db_users.exists("username", username):
-        logger.debug(f'Tags for invalid user {username} was entered. IP: {request.remote_addr}.')
+        logger.debug(f'Invalid username {username} at {request.path}. IP: {request.remote_addr}.')
         abort(404)
 
     ###################################################################
@@ -200,43 +221,40 @@ def tag(username):
 
     ###################################################################
 
-    user = db_users.info.find_one({"username": username})
-    tag = request.args.get("tag", default=None, type=str)
-    if tag is None:
+    # if no tag specified, show blog page
+    tag_url_encoded = request.args.get("tag", default=None, type=str)
+    if tag_url_encoded is None:
         return redirect(url_for("blog.blogpage", username=username))
-    # decode form url
-    tag_decoded = unquote(tag)
-
+    
     # abort for unknown tag
-    all_tags = all_user_tags(username)
-    if tag_decoded not in all_tags.keys():
+    tag = unquote(tag_url_encoded)
+    all_tags = all_tags_from_user(username)
+    if tag not in all_tags.keys():
         abort(404)
 
+    user = db_users.info.find_one({"username": username})
     posts = db_posts.info.find(
         {"author": username, "archived": False}
     ).sort("created_at", -1)
 
     posts = list(posts)
-    posts_has_tag = []
-    idx = 1
+    posts_with_desired_tag = []
     for post in posts:
-        if tag_decoded in post["tags"]:
-            post["idx"] = idx
-            idx += 1
+        if tag in post["tags"]:
             post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
-            posts_has_tag.append(post)
+            posts_with_desired_tag.append(post)
 
     ###################################################################
 
-    # redis and logging
+    # visiting counts and logging
 
     ###################################################################
 
-    redis_method.increment_count(f"{username}_tag: {tag_decoded}", request)
+    redis_method.increment_count(f"{username}_tag: {tag}", request)
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    logger.debug(f'Tags for user {username} was visited. tag: {tag_decoded}. IP: {request.remote_addr}.')
+    logger.debug(f'Tags for user {username} was visited. tag: {tag}. IP: {request.remote_addr}.')
 
     ###################################################################
 
@@ -247,21 +265,33 @@ def tag(username):
     return render_template(
         "tag.html",
         user=user,
-        posts=posts_has_tag,
-        tag=tag_decoded,
-        num_of_posts=len(posts_has_tag),
+        posts=posts_with_desired_tag,
+        tag=tag,
+        num_of_posts=len(posts_with_desired_tag),
     )
 
 
 @blog.route("/<username>/posts/<post_uid>", methods=["GET", "POST"])
 def post(username, post_uid):
 
+    ###################################################################
+
+    # early return for invalid inputs
+
+    ###################################################################
+
     if not db_users.exists("username", username):
         logger.debug(f'Post for invalid user {username} was entered. type: invalid username. IP: {request.remote_addr}.')
         abort(404)
     if not db_posts.exists("post_uid", post_uid):
-        logger.debug(f'Tags for invalid user {username} was entered. type: invalid post id: {post_uid}. IP: {request.remote_addr}.')
+        logger.debug(f'Tags for invalid user {username} was entered. type: invalid post id {post_uid}. IP: {request.remote_addr}.')
         abort(404)
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
 
     author = db_users.info.find_one({"username": username})
     target_post = dict(db_posts.info.find_one({"post_uid": post_uid}))
@@ -269,6 +299,7 @@ def post(username, post_uid):
 
     # to verify the post is linked to the user
     if author["username"] != target_post["author"]:
+        logger.debug(f'The author entered ({username}) was not the author of the post {post_uid}. IP: {request.remote_addr}.')
         abort(404)
 
     # add comments
@@ -299,52 +330,106 @@ def post(username, post_uid):
     for comment in comments:
         comment["created_at"] = comment["created_at"].strftime("%Y-%m-%d %H:%M:%S")
 
-    # update visitor counts
+    ###################################################################
+
+    # redis and logging
+
+    ###################################################################
+
     redis_method.increment_count(f"post_uid_{target_post['post_uid']}", request)
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    # log 
-    logger.debug(f'Post id={post_uid} was visited. Author: {username}. IP: {request.remote_addr}.')
+    logger.debug(f'Post {post_uid} by {username} was visited from {request.remote_addr}.')
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
 
     return render_template(
-        "blogpost.html", user=author, post=target_post, comments=comments
+        "blogpost.html", 
+        user=author, 
+        post=target_post, 
+        comments=comments
     )
 
 
 @blog.route("/<username>/about", methods=["GET"])
 def about(username):
+
+    ###################################################################
+
+    # early return for invalid inputs
+
+    ###################################################################
+
     if not db_users.exists("username", username):
         logger.debug(f'About me for invalid user {username} was entered. IP: {request.remote_addr}.')
         abort(404)
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
     user = dict(db_users.info.find_one({"username": username}))
     user_about = db_users.about.find_one({"username": username})["about"]
     about_converted = md.convert(user_about)
     about_converted = HTML_Formatter(about_converted).to_about()
 
-    # update visitor counts
+    ###################################################################
+
+    # visiting counts and logging
+
+    ###################################################################
+
     redis_method.increment_count(f"{username}_about", request)
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    # log
     logger.debug(f'About me for user {username} was visited. IP: {request.remote_addr}.')
 
+    ###################################################################
 
-    return render_template("about.html", user=user, about=about_converted)
+    # return page content
+
+    ###################################################################
+
+    return render_template(
+        "about.html", 
+        user=user, 
+        about=about_converted
+    )
 
 
 @blog.route("/<username>/blog", methods=["GET"])
 def blogg(username):
+
+    ###################################################################
+
+    # early returns
+
+    ###################################################################
+
     if not db_users.exists("username", username):
         logger.debug(f'Blog for invalid user {username} was entered. IP: {request.remote_addr}.')
         abort(404)
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
     user = db_users.info.find_one({"username": username})
     page = request.args.get("page", default=1, type=int)
     POSTS_EACH_PAGE = 10
 
     # create a tag dict
-    tags_dict = all_user_tags(username)
+    tags_dict = all_tags_from_user(username)
 
     # set up pagination
     pagination = set_up_pagination(username, page, POSTS_EACH_PAGE)
@@ -366,22 +451,28 @@ def blogg(username):
             .limit(POSTS_EACH_PAGE)
         )
 
-    idx = 1
     posts = list(posts)
     for post in posts:
-        post["idx"] = idx
-        idx += 1
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
     num_of_posts = len(posts)
 
-    # update visitor counts
+    ###################################################################
+
+    # visiting counts and logging
+
+    ###################################################################
+
     redis_method.increment_count(f"{username}_blog", request)
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    # log 
-    logger.debug(f"Blog for user {username} was visited. page: {page}. IP: {request.remote_addr}.")
+    logger.debug(f'{request.path} was visited from {request.remote_addr}.')
 
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
 
     return render_template(
         "blog.html",

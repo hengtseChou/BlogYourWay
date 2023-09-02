@@ -11,8 +11,6 @@ from website.extensions.mongo import db_users, db_posts, db_comments
 from website.extensions.log import logger
 from website.config import ENV, RECAPTCHA_SECRET
 
-
-
 class HTML_Formatter:
     def __init__(self, html_string):
 
@@ -92,40 +90,36 @@ def create_user(reg_form):
     reg_form["username"] = reg_form["username"].strip().replace(" ", "-")
     if db_users.exists("email", reg_form["email"]):
         flash("Email is already used. Please try another one.", category="error")
-        logger.debug('Registeration failed. type: email already existed.')
+        logger.debug(f'Registeration failed. type: email {reg_form["email"]} already existed.')
         return render_template("register.html")
 
     if db_users.exists("username", reg_form["username"]):
         flash("Username is already used. Please try another one.", category="error")
-        logger.debug('Registeration failed. type: username already existed.')
+        logger.debug(f'Registeration failed. type: username {reg_form["username"]} already existed.')
         return render_template("register.html")
 
     if db_users.exists("blogname", reg_form["blogname"]):
         flash("Blog name is already used. Please try another one.")
-        logger.debug('REgisteration failed. type: blog name already existed.')
+        logger.debug(f'Registeration failed. type: blog name {reg_form["blogname"]} already existed.')
         return render_template("register.html")
 
     hashed_pw = bcrypt.hashpw(reg_form["password"].encode("utf-8"), bcrypt.gensalt(12))
     hashed_pw = hashed_pw.decode("utf-8")
 
     new_user_login = {"username": reg_form["username"]}
-    new_user_info = {"username": reg_form["username"]}
-    new_user_about = {"username": reg_form["username"]}
-
     new_user_login["email"] = reg_form["email"]
     new_user_login["password"] = hashed_pw
 
+    new_user_info = {"username": reg_form["username"]}
     new_user_info["blogname"] = reg_form["blogname"]
     new_user_info["posts_count"] = 0
     new_user_info["banner_url"] = ""
     new_user_info["profile_img_url"] = ""
     new_user_info["short_bio"] = ""
     new_user_info["social_links"] = []
-    if ENV == "debug":
-        new_user_info["created_at"] = datetime.now()
-    elif ENV == "prod":
-        new_user_info["created_at"] = datetime.now() + timedelta(hours=8)
-
+    new_user_info["created_at"] = get_today()
+    
+    new_user_about = {"username": reg_form["username"]}
     new_user_about["about"] = ""
 
     db_users.login.insert_one(new_user_login)
@@ -162,7 +156,7 @@ def create_comment(post_uid, request):
 
     db_comments.comment.insert_one(new_comment)
 
-def all_user_tags(username):
+def all_tags_from_user(username):
 
     result = db_posts.info.find({"author": username, "archived": False})
     tags_dict = {}

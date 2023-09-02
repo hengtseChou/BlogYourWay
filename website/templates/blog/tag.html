@@ -86,7 +86,7 @@
 					{% endfor %}
 				</div>						
 			</div>
-			{% if post.idx != num_of_posts %}
+			{% if loop.index != num_of_posts %}
 			<hr>
 			{% endif %}
 			{% endfor %}
