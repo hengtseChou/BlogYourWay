@@ -6,11 +6,12 @@ from website.blog.utils import get_today
 
 
 class Redis_method:
+    
     def __init__(self):
         self.r = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PW)
 
     def increment_count(self, key, request):
-        # f"post_uid_{post.uid}"
+        # f"post_uid_{post.post_uid}"
         # f"{username}_{page}" as in home, blog, about
         # f"{username}_tag: {tag}""
         # f"{username}_uv_{date}" as in unique visitor for each user
@@ -48,21 +49,25 @@ class Redis_method:
     def get_visitor_stats(self, username):
 
         data = {}
-        for page in ['home', 'blog', 'portfolio', 'about']:
-            data[page] = self.get_count(f"{username}_{page}")
+        for view in ['home', 'blog', 'portfolio', 'about']:
+            data[view] = self.get_count(f"{username}_{view}")
+        
         total = 0
-        cursor = '0'
-        while cursor != 0:
-            cursor, keys = self.r.scan(cursor, match=f"{username}_uv_*", count=1000)  # Adjust count as needed
-            counts = [self.get_count(key) for key in keys]
-            total += sum(counts)
+        for key in self.r.scan_iter(f"{username}_uv_*"):
+            total += self.get_count(key)        
         data['total'] = total
 
         return data
 
     
-    def remove_all(self, user):
-        pass
+    def delete(self, key):
+        
+        self.r.delete(key)
+
+    def delete_with_prefix(self, prefix):
+
+        for key in self.r.scan_iter(f"{prefix}*"):
+            self.r.delete(key)
 
 
 redis_method = Redis_method()

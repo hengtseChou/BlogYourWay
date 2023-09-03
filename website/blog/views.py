@@ -39,7 +39,7 @@ def landing_page():
 
     ###################################################################
 
-    logger.debug(f'{request.path} was visited from {request.remote_addr}.')
+    logger.debug(f'The landing page was visited from {request.remote_addr}.')
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f'landing_page_{today}', request)
 
@@ -127,7 +127,7 @@ def register():
 
     reg_form = request.form.to_dict()
     create_user(reg_form=reg_form)
-    logger.info(f'New user {reg_form["username"]} has created from {request.remote_addr}')
+    logger.info(f'New user {reg_form["username"]} has been created from {request.remote_addr}')
     flash("Registeration succeeded.", category="success")
 
     ###################################################################
@@ -164,16 +164,13 @@ def home(username):
     ###################################################################
 
     user = db_users.info.find_one({"username": username})
-    featured_posts = (
-        db_posts.info.find({"author": username, "featured": True, "archived": False})
+    featured_posts = list(
+        db_posts.info
+        .find({"author": username, "featured": True, "archived": False})
         .sort("created_at", -1)
         .limit(10)
     )
-    featured_posts = list(featured_posts)
-    feature_idx = 1
     for post in featured_posts:
-        post["idx"] = feature_idx
-        feature_idx += 1
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
 
     ###################################################################
@@ -233,11 +230,12 @@ def tag(username):
         abort(404)
 
     user = db_users.info.find_one({"username": username})
-    posts = db_posts.info.find(
-        {"author": username, "archived": False}
-    ).sort("created_at", -1)
+    posts = list(
+        db_posts.info
+        .find({"author": username, "archived": False})
+        .sort("created_at", -1)
+    )
 
-    posts = list(posts)
     posts_with_desired_tag = []
     for post in posts:
         if tag in post["tags"]:
@@ -254,7 +252,7 @@ def tag(username):
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    logger.debug(f'Tags for user {username} was visited. tag: {tag}. IP: {request.remote_addr}.')
+    logger.debug(f'{request.full_path} was visited from {request.remote_addr}.')
 
     ###################################################################
 
@@ -304,6 +302,7 @@ def post(username, post_uid):
 
     # add comments
     if request.method == "POST":
+
         token = request.form.get("g-recaptcha-response")
 
         if is_comment_verified(token):
@@ -340,7 +339,7 @@ def post(username, post_uid):
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    logger.debug(f'Post {post_uid} by {username} was visited from {request.remote_addr}.')
+    logger.debug(f'{request.path} was visited from {request.remote_addr}.')
 
     ###################################################################
 
@@ -366,7 +365,7 @@ def about(username):
     ###################################################################
 
     if not db_users.exists("username", username):
-        logger.debug(f'About me for invalid user {username} was entered. IP: {request.remote_addr}.')
+        logger.debug(f'Invalid username {username} at {request.path}. IP: {request.remote_addr}.')
         abort(404)
 
     ###################################################################
@@ -390,7 +389,7 @@ def about(username):
     today = get_today().strftime('%Y%m%d')
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    logger.debug(f'About me for user {username} was visited. IP: {request.remote_addr}.')
+    logger.debug(f'{request.path} was visited from {request.remote_addr}.')
 
     ###################################################################
 
@@ -415,7 +414,7 @@ def blogg(username):
     ###################################################################
 
     if not db_users.exists("username", username):
-        logger.debug(f'Blog for invalid user {username} was entered. IP: {request.remote_addr}.')
+        logger.debug(f'Invalid username {username} at {request.path}. IP: {request.remote_addr}.')
         abort(404)
 
     ###################################################################

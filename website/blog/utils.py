@@ -106,25 +106,32 @@ def create_user(reg_form):
     hashed_pw = bcrypt.hashpw(reg_form["password"].encode("utf-8"), bcrypt.gensalt(12))
     hashed_pw = hashed_pw.decode("utf-8")
 
-    new_user_login = {"username": reg_form["username"]}
-    new_user_login["email"] = reg_form["email"]
-    new_user_login["password"] = hashed_pw
+    new_user_login = {
+        "username": reg_form["username"],
+        "email": reg_form["email"], 
+        "password": hashed_pw
+    }
 
-    new_user_info = {"username": reg_form["username"]}
-    new_user_info["blogname"] = reg_form["blogname"]
-    new_user_info["posts_count"] = 0
-    new_user_info["banner_url"] = ""
-    new_user_info["profile_img_url"] = ""
-    new_user_info["short_bio"] = ""
-    new_user_info["social_links"] = []
-    new_user_info["created_at"] = get_today()
+    new_user_info = {
+        "username": reg_form["username"],
+        "blogname": reg_form["blogname"], 
+        "email": reg_form["email"], 
+        "posts_count": 0, 
+        "banner_url": '', 
+        "profile_img_url": '',
+        "short_bio": '', 
+        "social_links": [], 
+        "created_at": get_today()
+    }
     
-    new_user_about = {"username": reg_form["username"]}
-    new_user_about["about"] = ""
+    new_user_about = {
+        "username": reg_form["username"],
+        "about": ''
+    }
 
     db_users.login.insert_one(new_user_login)
     db_users.info.insert_one(new_user_info)
-    db_users.about.insert_one(new_user_about)        
+    db_users.about.insert_one(new_user_about)    
 
 
 def create_comment(post_uid, request):
@@ -132,14 +139,12 @@ def create_comment(post_uid, request):
     new_comment = {}
     new_comment["created_at"] = get_today()    
     new_comment["post_uid"] = post_uid
-    new_comment["profile_pic"] = "/static/img/visitor.png"
-    new_comment["profile_link"] = ""
     new_comment["comment"] = request.form.get("comment")
     alphabet = string.ascii_lowercase + string.digits
-    uid = "".join(random.choices(alphabet, k=8))
-    while db_comments.exists("comment_uid", uid):
-        uid = "".join(random.choices(alphabet, k=8))
-    new_comment["comment_uid"] = uid
+    comment_uid = "".join(random.choices(alphabet, k=8))
+    while db_comments.exists("comment_uid", comment_uid):
+        comment_uid = "".join(random.choices(alphabet, k=8))
+    new_comment["comment_uid"] = comment_uid
 
     if current_user.is_authenticated:
         commenter = dict(
@@ -153,6 +158,8 @@ def create_comment(post_uid, request):
     else:
         new_comment["name"] = request.form.get("name")
         new_comment["email"] = request.form.get("email")
+        new_comment["profile_pic"] = "/static/img/visitor.png"
+        new_comment["profile_link"] = ""
 
     db_comments.comment.insert_one(new_comment)
 

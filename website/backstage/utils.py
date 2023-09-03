@@ -3,63 +3,67 @@ import string
 from flask_login import current_user
 from website.extensions.mongo import db_users, db_posts, db_comments
 from website.extensions.log import logger
+from website.extensions.redis import redis_method
 from website.blog.utils import get_today
+
+alphabet = string.ascii_lowercase + string.digits
+
 
 def create_post(request):
 
-    # create a new post in db
-    new_post = request.form.to_dict()
+    form = request.form.to_dict()
 
-    # set posting time
-    new_post["created_at"] = new_post["last_updated"] = get_today()    
-    # set other attributes
-    new_post["author"] = current_user.username
-    # process tags
-    if new_post["tags"] == "":
-        new_post["tags"] = []
-    else:
-        new_post["tags"] = [tag.strip() for tag in new_post["tags"].split(",")]
-    for tag in new_post["tags"]:
-        tag = tag.replace(" ", "-")
+    new_post_info = {}
+    post_uid = "".join(random.choices(alphabet, k=8))
+    while db_posts.exists("post_uid", post_uid):
+        post_uid = "".join(random.choices(alphabet, k=8))
+    new_post_info["post_uid"] = post_uid
+
+    new_post_info["created_at"] = get_today()   
+    new_post_info["last_updated"] = get_today()
+    new_post_info['title'] = form['title']
+    new_post_info['subtitle'] = form['subtitle']
+    new_post_info['banner_url'] = form['banner_url'] 
+    new_post_info["author"] = current_user.username
+
+    new_post_info["comments"] = 0
+    new_post_info["archived"] = False
+    new_post_info["featured"] = False
     
-    new_post["comments"] = 0
-    new_post["archived"] = False
-    new_post["featured"] = False
-    alphabet = string.ascii_lowercase + string.digits
-    uid = "".join(random.choices(alphabet, k=8))
-    while db_posts.exists("post_uid", uid):
-        uid = "".join(random.choices(alphabet, k=8))
-    new_post["post_uid"] = uid
+    # process tags 
+    if new_post_info["tags"] == "":
+        new_post_info["tags"] = []
+    else:
+        new_post_info["tags"] = [tag.strip().replace(" ", "-") for tag in new_post_info["tags"].split(",")]
 
-    db_posts.content.insert_one({"post_uid": uid, "content": new_post["content"]})
-    del new_post["content"]
-    db_posts.info.insert_one(new_post)
-    logger.debug(f'Add new post {uid}.')
+    db_posts.content.insert_one({"post_uid": post_uid, "content": form["content"]})
+    db_posts.info.insert_one(new_post_info)
+    logger.info(f'New post {post_uid} is uploaded by {current_user.username} from {request.remote_addr}.')
 
 
 def update_post(post_uid, request):
 
-    updated_post = request.form.to_dict()
-    updated_post["last_updated"] = get_today()    
+    form = request.form.to_dict()
+    updated_post_info = {}
+    updated_post_info["last_updated"] = get_today()
+    updated_post_info['title'] = form['title']
+    updated_post_info['subtitle'] = form['subtitle']
+    updated_post_info['banner_url'] = form['banner_url'] 
+     
     # process tags
-    if updated_post["tags"] == "":
-        updated_post["tags"] = []
+    if form["tags"] == "":
+        updated_post_info["tags"] = []
     else:
-        updated_post["tags"] = [tag.strip() for tag in updated_post["tags"].split(",")]
-    for tag in updated_post["tags"]:
-        tag = tag.replace(" ", "-")
-
-    updated_post_content = updated_post["content"]
-    del updated_post["content"]
-    updated_post_info = updated_post
+        updated_post_info["tags"] = [tag.strip().replace(" ", "-") for tag in form["tags"].split(",")]
 
     db_posts.content.update_one(
-        filter={"post_uid": post_uid}, update={"$set": updated_post_content}
+        filter={"post_uid": post_uid}, update={"$set": {'content': form['content']}}
     )
     db_posts.info.update_one(
         filter={"post_uid": post_uid}, update={"$set": updated_post_info}
     )
-    logger.debug(f'Updated post id {post_uid}.')
+    logger.info(f'Post {post_uid} is updated by {current_user.username} from {request.remote_addr}.')
+
 
 
 def delete_user(username):
@@ -76,13 +80,16 @@ def delete_user(username):
     )
     for post in posts_to_delete:
         posts_uid_to_delete.append(post["post_uid"])
+        redis_method.delete(f"post_uid_{post['post_uid']}")        
     for post_uid in posts_uid_to_delete:
         db_posts.info.delete_one({"post_uid": post_uid})
         db_posts.content.delete_one({"post_uid": post_uid})
         db_comments.comment.delete_many({"post_uid": post_uid})
-
+    logger.debug(f'Deleted all posts by {username} and relevant comments from the post and the comment databases.')
+    redis_method.delete_with_prefix(username)
+    logger.debug(f'Deleted all log with {username} in the redis memory.')
 
     db_users.login.delete_one({"username": username})
     db_users.info.delete_one({"username": username})
     db_users.about.delete_one({"username": username})
-    logger.debug(f'Deleted user {username}.')
+    logger.debug(f'Deleted {username} from the user database.')

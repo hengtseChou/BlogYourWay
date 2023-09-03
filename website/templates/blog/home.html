@@ -69,7 +69,7 @@
 					{% if num_of_posts != 0 %}
 					<h5 class="text-start pt-5 fw-bold" style="color: rgb(100, 100, 100);">Featured Posts</h5>
 					{% for post in posts %}
-					{% set post_link = 'posts/' ~ post.uid  %}
+					{% set post_link = 'posts/' ~ post.post_uid  %}
 					<div class="my-5">
 						<a href="{{ post_link }}" class="header-link"><h1 class="fw-bold">{{ post.title }}</h1></a>
 						<div class="d-flex align-items-center my-3">
