@@ -1,63 +1,69 @@
 {% extends 'panel.html' %}
 
 {% block panel %}
-<h2 class="ms-2">Welcome back, {{ user.username }}!</h2>
-<hr>
-<div class="row">
-	<div class="col-12 col-md-9">
-		<p class="ms-2">You have joined Little blog for {{ user.days_joined }} days.&nbsp;&nbsp;🎉️</p>
-		<h3 class="py-1" style="border-left: 0.7rem solid #f7966b;">&nbsp;&nbsp;Visitors</h3>
-		<div class="row">
-			<div class="col-6 col-md-3 py-3">
-				<div class="card rounded-4">
-					<div class="card-body">
-						<h5 class="card-title">Total</h5>
-						<p class="card-text" id="stats-total">0</p>						
+<!-- desktop view -->
+<div class="d-none d-md-block">
+	<h2 class="ms-2">Welcome back, {{ user.username }}!</h2>
+	<hr>
+	<div class="row">
+		<div class="col-12">
+			<p class="ms-2">You have joined Little blog for {{ user.days_joined }} days.&nbsp;&nbsp;🎉️</p>
+			<h3 class="py-1" style="border-left: 0.7rem solid #f7966b;">&nbsp;&nbsp;Visitors</h3>
+			<div class="row">
+				<div class="col-6 col-lg-3 py-3">
+					<div class="card rounded-4">
+						<div class="card-body">
+							<h5 class="card-title">Total</h5>
+							<p class="card-text" id="stats-total">0</p>						
+						</div>
+					</div>
+				</div>
+				<div class="col-6 col-lg-2 py-3">
+					<div class="card rounded-4">
+						<div class="card-body">
+							<h5 class="card-title">Home</h5>
+							<p class="card-text" id="stats-home">0</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-6 col-lg-2 py-3">
+					<div class="card rounded-4">
+						<div class="card-body">
+							<h5 class="card-title">Blog</h5>
+							<p class="card-text" id="stats-blog">0</p>						
+						</div>
+					</div>
+				</div>
+				<div class="col-6 col-lg-3 py-3">
+					<div class="card rounded-4">
+						<div class="card-body">
+							<h5 class="card-title">Portfolio</h5>
+							<p class="card-text" id="stats-portfolio">0</p>						
+						</div>
+					</div>
+				</div>
+				<div class="col-6 col-lg-2 py-3">
+					<div class="card rounded-4">
+						<div class="card-body">
+							<h5 class="card-title">About</h5>
+							<p class="card-text" id="stats-about">0</p>						
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-6 col-md-3 py-3">
-				<div class="card rounded-4">
-					<div class="card-body">
-						<h5 class="card-title">Home</h5>
-						<p class="card-text" id="stats-home">0</p>
-					</div>
-				</div>
+			<div style="height: calc(100vh/4);">
+				<!-- Create a canvas element where the line chart will be rendered -->
+				<canvas id="daily-count-chart"></canvas>
 			</div>
-			<div class="col-6 col-md-2 py-3">
-				<div class="card rounded-4">
-					<div class="card-body">
-						<h5 class="card-title">Blog</h5>
-						<p class="card-text" id="stats-blog">0</p>						
-					</div>
-				</div>
-			</div>
-			<div class="col-6 col-md-2 py-3">
-				<div class="card rounded-4">
-					<div class="card-body">
-						<h5 class="card-title">Portfolio</h5>
-						<p class="card-text" id="stats-portfolio">0</p>						
-					</div>
-				</div>
-			</div>
-			<div class="col-6 col-md-2 py-3">
-				<div class="card rounded-4">
-					<div class="card-body">
-						<h5 class="card-title">About</h5>
-						<p class="card-text" id="stats-about">0</p>						
-					</div>
-				</div>
-			</div>
+			<h3 class="my-3 py-1" style="border-left: 0.7rem solid #f7966b;">&nbsp;&nbsp;Popular Posts</h3>
 		</div>
-		<div style="height: calc(100vh/4);">
-			<!-- Create a canvas element where the line chart will be rendered -->
-			<canvas id="daily-count-chart"></canvas>
-		</div>
-		<h3 class="my-3 py-1" style="border-left: 0.7rem solid #f7966b;">&nbsp;&nbsp;Popular Posts</h3>
-
 	</div>
 </div>
+<!-- mobile view -->
+<div class="d-block d-md-none">
+	<h2 class="ms-2">Welcome back, {{ user.username }}!</h2>
 
+</div>
 
 {% endblock %}
 

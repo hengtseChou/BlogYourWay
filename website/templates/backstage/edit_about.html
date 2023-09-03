@@ -30,6 +30,9 @@
 {% block script %}
 <script>
 
+	const mobile_nav_btn = document.getElementById('mobile-nav-about');
+	mobile_nav_btn.style.color = 'white';
+
 	const easyMDE = new EasyMDE({
 		element: document.getElementById('editor'),
 		autofocus: true,
@@ -42,13 +45,10 @@
 		spellChecker: false
 	});
 
-
-
-	document.addEventListener("DOMContentLoaded", function() {  
-
+	document.addEventListener("DOMContentLoaded", function() {
 
 		easyMDE.value('{{ user.about| tojson }}'.slice(1, -1));	
-    const form = document.getElementById("form");
+		const form = document.getElementById("form");
 		form.addEventListener("keypress", function(event) {
 			if (event.key === 'Enter') {
 				event.preventDefault();

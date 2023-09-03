@@ -62,6 +62,14 @@
 	background-color: #6c757d;
 }
 
+.mobile-nav .btn {
+	margin-bottom: 10px;
+	text-align: left;
+	background-color: #333;
+	color: rgb(140, 140, 140);
+	border: 0px;
+}
+
 .main-panel {
 	position: relative;
 	margin-top: 0;
@@ -209,7 +217,7 @@ blockquote p {
 	}
 
 	.main-panel {
-		margin-left: 80px;
-		width: calc(100vw - 92px);
+		margin-left: 0;
+		width: 100%;
 	}
 }

@@ -1,67 +1,76 @@
 {% extends 'panel.html' %}
 
 {% block panel %}
-<div class="d-flex align-items-center">
-	<h2 class="ms-2">Posts</h2>
-	<button class="btn panel-btn ms-auto me-3" data-bs-toggle="modal" data-bs-target="#myModal">+ New Post</button>
-</div>
-<hr>
-<!-- description -->
-<p class="ms-2">Featured posts will be on your home page, sorted by time order. </p>
-<!-- description ends -->
-<div class="table-responsive">
-	<table class="table">
-		<thead>
-			<tr>
-				<th style="width: 44%">Title</th>
-				<th style="width: 15%">Created At</th>
-				<th style="width: 10%" class="text-center">Clicks</th>
-				<th style="width: 10%" class="text-center">Comments</th>
-				<th style="width: 8%" class="text-center">Feature</th>
-				<th style="width: 8%" class="text-center">Archive</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for post in posts %}
-			<tr>
-				<!-- to-do: add post's link to post's title -->
-				<td class="align-middle"><a href="posts/edit/{{ post.post_uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
-				{% if post['featured'] %}
-				<span class="badge rounded-pill bg-success">Featured</span>
+<!-- desktop view -->
+<div class="d-none d-md-block">
+	<div class="d-flex align-items-center">
+		<h2 class="ms-2">Posts</h2>
+		<button class="btn panel-btn ms-auto me-3" data-bs-toggle="modal" data-bs-target="#myModal">+ New Post</button>
+	</div>
+	<hr>
+	<!-- description -->
+	<p class="ms-2">Featured posts will be on your home page, sorted by time order. </p>
+	<!-- description ends -->
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="width: 44%">Title</th>
+					<th style="width: 15%">Created At</th>
+					<th style="width: 10%" class="text-center">Clicks</th>
+					<th style="width: 10%" class="text-center">Comments</th>
+					<th style="width: 8%" class="text-center">Feature</th>
+					<th style="width: 8%" class="text-center">Archive</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for post in posts %}
+				<tr>
+					<!-- to-do: add post's link to post's title -->
+					<td class="align-middle"><a href="posts/edit/{{ post.post_uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
+					{% if post['featured'] %}
+					<span class="badge rounded-pill bg-success">Featured</span>
+					{% endif %}
+					</td>
+					<td>{{ post['created_at'] }}</td>
+					<td class="text-center">{{ post['clicks'] }}</td>
+					<td class="text-center">{{ post['comments'] }}</td>
+					{% if post['featured'] %}
+					{% set base_link = '/backstage/edit-featured?featured=to_false&uid=' %}
+					<td class="text-center"><a href='{{ base_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
+					{% else %}
+					{% set base_link = '/backstage/edit-featured?featured=to_true&uid=' %}
+					<td class="text-center"><a href='{{ base_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
+					{% endif %}
+					{% set base_link2 = '/backstage/edit-archived?archived=to_true&uid=' %}
+					<td class="text-center"><a href="{{ base_link2 ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
+				</tr>		
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-6 text-start">
+				{% if newer_posts %}
+				{% set previous_page = current_page - 1 %}
+				<a href="/backstage/posts?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts </a>
 				{% endif %}
-				</td>
-				<td>{{ post['created_at'] }}</td>
-				<td class="text-center">{{ post['clicks'] }}</td>
-				<td class="text-center">{{ post['comments'] }}</td>
-				{% if post['featured'] %}
-				{% set base_link = '/backstage/edit-featured?featured=to_false&uid=' %}
-				<td class="text-center"><a href='{{ base_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
-				{% else %}
-				{% set base_link = '/backstage/edit-featured?featured=to_true&uid=' %}
-				<td class="text-center"><a href='{{ base_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
+			</div>
+			<div class="col-6 text-end">
+				{% if older_posts %}
+				{% set next_page = current_page + 1 %}
+				<a href="/backstage/posts?page={{ next_page }}" class="btn"> Older Posts <span class="mx-1">➡️</span></a>
 				{% endif %}
-				{% set base_link2 = '/backstage/edit-archived?archived=to_true&uid=' %}
-				<td class="text-center"><a href="{{ base_link2 ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
-			</tr>		
-			{% endfor %}
-		</tbody>
-	</table>
-</div>
-<div class="container">
-	<div class="row">
-		<div class="col-6 text-start">
-			{% if newer_posts %}
-			{% set previous_page = current_page - 1 %}
-			<a href="/backstage/posts?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts </a>
-			{% endif %}
-		</div>
-		<div class="col-6 text-end">
-			{% if older_posts %}
-			{% set next_page = current_page + 1 %}
-			<a href="/backstage/posts?page={{ next_page }}" class="btn"> Older Posts <span class="mx-1">➡️</span></a>
-			{% endif %}
+			</div>
 		</div>
 	</div>
+</div>
+<!-- mobile view -->
+<div class="d-block d-md-none">
+	<button class="btn panel-btn ms-auto me-3" data-bs-toggle="modal" data-bs-target="#myModal">+ New Post</button>
+
+
 </div>
 <!-- Modal -->
 <div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -105,6 +114,9 @@
 
 {% block script %}
 <script>
+
+	const mobile_nav_btn = document.getElementById('mobile-nav-posts');
+	mobile_nav_btn.style.color = 'white';
 
 	const easyMDE = new EasyMDE({
 		element: document.getElementById('editor'),

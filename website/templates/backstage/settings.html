@@ -85,6 +85,22 @@
 
 {% block script %}
 <script>
+
+	const mobile_nav_btn = document.getElementById('mobile-nav-settings');
+	mobile_nav_btn.style.color = 'white';
+
+	const easyMDE = new EasyMDE({
+		element: document.getElementById('editor'),
+		autofocus: true,
+		toolbar: ["bold", "italic", "heading", "|", 
+							"undo", "redo", "|", 
+							"code", "quote", "unordered-list", "ordered-list","horizontal-rule" ,'|',
+							"link", "image", "|", 
+							"preview", "guide"],
+		minHeight: '150px',
+		spellChecker: false
+	});
+
 	function validatePasswords() {
 		// Get the input values
 		var currentPassword = document.getElementById('current').value;
@@ -131,29 +147,6 @@
 
 <script>
 
-	const easyMDE = new EasyMDE({
-		element: document.getElementById('editor'),
-		autofocus: true,
-		toolbar: ["bold", "italic", "heading", "|", 
-							"undo", "redo", "|", 
-							"code", "quote", "unordered-list", "ordered-list","horizontal-rule" ,'|',
-							"link", "image", "|", 
-							"preview", "guide"],
-		minHeight: '150px',
-		spellChecker: false
-	});
-
-
-
-	document.addEventListener("DOMContentLoaded", function() {  
-
-    const form = document.getElementById("form");
-		form.addEventListener("keypress", function(event) {
-			if (event.key === 'Enter') {
-				event.preventDefault();
-			}
-		});
-
-	});	
+	
 </script>
 {% endblock %}
