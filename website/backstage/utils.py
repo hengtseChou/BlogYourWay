@@ -31,10 +31,10 @@ def create_post(request):
     new_post_info["featured"] = False
     
     # process tags 
-    if new_post_info["tags"] == "":
+    if form["tags"] == "":
         new_post_info["tags"] = []
     else:
-        new_post_info["tags"] = [tag.strip().replace(" ", "-") for tag in new_post_info["tags"].split(",")]
+        new_post_info["tags"] = [tag.strip().replace(" ", "-") for tag in form["tags"].split(",")]
 
     db_posts.content.insert_one({"post_uid": post_uid, "content": form["content"]})
     db_posts.info.insert_one(new_post_info)

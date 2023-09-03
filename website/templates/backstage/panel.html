@@ -15,6 +15,10 @@
 	.row {
 		flex-grow: 1;
 	}
+	a {
+		text-decoration: none;
+		color: white;
+	}
 
 
 	/* sidebar, sidebar-small, main-panel: in styles.css */
@@ -24,67 +28,32 @@
 {% block title %}Backstage · Little Blog{% endblock %}
 
 {% block body %}
-  <!-- Navbar -->
-	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" style="padding-top: 20px; padding-bottom: 20px;">
-		<div class="container">
-			<a class="navbar-brand" href="/{{ current_user.username}}/home">{{ user['blogname'] }}</a>
-			<button class="navbar-toggler me-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>			
-			<div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-				<ul class="navbar-nav">
-					<li class="nav-item">
-						<a class="nav-link" href="/backstage/overview">Backstage</a>
-					</li>					
-				</ul>
-			</div>
-			<div class="ml-auto">
-				<a href="/backstage/logout" class="btn" style="background-color: #911D21; color: white;">Log out</a>
-			</div>
-		</div>
-	</nav>
+
 	
-	<div class="container-fluid">
-		<div class="row">
-			<!-- side bar with desktop view portal -->
-		  <div class="d-none d-md-inline col sidebar">
-				<div class="d-flex align-items-center">
-					<img src="/static/img/logo.png" alt="logo" width="28" height="28">
-					<h5 class="ms-3 mt-2">Little Blog</h5>
-				</div>				
-				<hr>
-				<a class="btn w-100 px-2" href="/backstage/posts"><span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts</a>
-				<a class="btn w-100 px-2"><span class="ms-2 me-3"><i class="fa-solid fa-masks-theater"></i></span>Portfolio</a>
-				<a class="btn w-100 px-2" href="/backstage/about"><span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About</a>
-				<a class="btn w-100 px-2" href="/backstage/social-links"><span class="ms-2 me-3"><i class="fa-solid fa-link"></i></span>Social Links</a>
-				<a class="btn w-100 px-2" href="/backstage/theme"><span class="ms-2 me-3"><i class="fa-solid fa-palette"></i></span>Blog Theme</a>
-				<a class="btn w-100 px-2" href="/backstage/archive"><span class="ms-2 me-3"><i class="fa-solid fa-box-archive"></i></i></span>Archive</a>
-				<a class="btn w-100 px-2" href="/backstage/settings"><span class="ms-2 me-3"><i class="fa-solid fa-gear"></i></span>Settings</a>
-				<!-- <a class="btn w-100 px-2"><span class="ms-2 me-3"><i class="fa-solid fa-flag"></i></span>Backstage Banner</a> -->
+<div class="container-fluid">
+	<!-- side bar with desktop view portal -->
+	<div class="d-none d-md-inline sidebar">
+		<div class="d-flex align-items-center">
+			<img src="/static/img/logo.png" alt="logo" width="28" height="28">
+			<h5 class="ms-3 mt-2"><a href="/backstage/overview">Little Blog</a></h5>
+		</div>				
+		<hr>
+		<a class="btn w-100 px-2" href="/backstage/posts"><span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts</a>
+		<a class="btn w-100 px-2"><span class="ms-2 me-3"><i class="fa-solid fa-masks-theater"></i></span>Portfolio</a>
+		<a class="btn w-100 px-2" href="/backstage/about"><span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About</a>
+		<a class="btn w-100 px-2" href="/backstage/social-links"><span class="ms-2 me-3"><i class="fa-solid fa-link"></i></span>Social Links</a>
+		<a class="btn w-100 px-2" href="/backstage/theme"><span class="ms-2 me-3"><i class="fa-solid fa-palette"></i></span>Blog Theme</a>
+		<a class="btn w-100 px-2" href="/backstage/archive"><span class="ms-2 me-3"><i class="fa-solid fa-box-archive"></i></i></span>Archive</a>
+		<a class="btn w-100 px-2" href="/backstage/settings"><span class="ms-2 me-3"><i class="fa-solid fa-gear"></i></span>Settings</a>
+		<a class="btn w-100 px-2" href="/backstage/logout"><span class="ms-2 me-3"><i class="fa-solid fa-right-from-bracket"></i></span>Log Out</a>
+	</div>
+	<!-- main panel -->
+	<div class="col">
+		<div class="main-panel">
+			<div class="container-fluid pt-3 ps-2 pe-5">
+				{% block panel %}{% endblock %}
 			</div>
-			<!-- side bar with smaller view portal -->
-			<div class="d-inline d-md-none col sidebar-small">
-				<div>
-					<img src="/static/img/logo.png" alt="logo" width="28" height="28" style="display: block; margin: auto;">
-				</div>				
-				<hr>
-				<a class="btn w-100" href="/backstage/posts"><span><i class="fa-solid fa-pen-to-square"></i></span></a>
-				<a class="btn w-100 "><span><i class="fa-solid fa-masks-theater"></i></span></a>
-				<a class="btn w-100 "><span><i class="fa-solid fa-user"></i></span></a>
-				<a class="btn w-100 "><span><i class="fa-solid fa-link"></i></span></a>
-				<a class="btn w-100 " href="/backstage/theme"><span><i class="fa-solid fa-palette"></i></span></a>
-				<a class="btn w-100 "><span><i class="fa-solid fa-box-archive"></i></span></a>
-				<a class="btn w-100 "><span><i class="fa-solid fa-gear"></i></span></a>
-				<!-- <a class="btn w-100 "><span><i class="fa-solid fa-flag"></i></span></a> -->
-			</div>
-			<!-- main panel -->
-		  <div class="col">
-				<div class="main-panel">
-					<div class="container-fluid pt-3 ps-2 pe-5">
-						{% block panel %}{% endblock %}
-					</div>
-				</div>
-		  </div>
 		</div>
 	</div>
+</div>
 {% endblock %}

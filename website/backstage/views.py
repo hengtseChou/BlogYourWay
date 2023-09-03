@@ -258,7 +258,7 @@ def social_link_control():
 
     if request.method == 'GET':        
         logger.debug(f'Editing social links for user {current_user.username} from {request.remote_addr}.')
-        return render_template("social_links.html", social_links=updated_links, user=user)
+        return render_template("social_links.html", social_links=social_links, user=user)
 
     ###################################################################
 
@@ -288,7 +288,7 @@ def social_link_control():
 
     return render_template(
         "social_links.html", 
-        social_links=social_links, 
+        social_links=updated_links, 
         user=user
     )
 

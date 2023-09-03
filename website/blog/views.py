@@ -1,7 +1,7 @@
 import bcrypt
 import markdown
 from urllib.parse import unquote
-from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
+from flask import Blueprint, render_template, request, flash, redirect, url_for, abort, jsonify
 from flask_login import login_user, UserMixin, current_user
 from website.extensions.mongo import db_users, db_posts, db_comments
 from website.extensions.redis import redis_method
@@ -483,3 +483,14 @@ def blogg(username):
         newer_posts=enable_newer_post,
         older_posts=enable_older_post,
     )
+
+@blog.route('/<username>/get-profile-pic', methods=['GET'])
+def profile_img_endpoint(username):
+
+    user = dict(db_users.info.find_one({"username": username}))
+    if user['profile_img_url']:
+        profile_img_url = user['profile_img_url']
+    else:
+        profile_img_url = "/static/img/default-profile.png"
+    
+    return jsonify({'imageUrl': profile_img_url})

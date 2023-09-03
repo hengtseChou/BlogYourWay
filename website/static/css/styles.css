@@ -37,7 +37,7 @@
 
 .sidebar {
 	position: fixed;
-	top: 80px;
+	top: 0px;
 	left: 0;
 	bottom: 0;
 	background-color: #333;
@@ -62,42 +62,13 @@
 	background-color: #6c757d;
 }
 
-.sidebar-small {
-	position: fixed;
-	top: 80px;
-	left: 0;
-	bottom: 0;
-	background-color: #333;
-	color: #fff;
-	width: 80px;
-	padding: 20px;
-	overflow-y: auto;
-	font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;
-}
-
-.sidebar-small hr {
-	border-top: 1px solid #fff;
-	margin: 20px 0;
-}
-.sidebar-small .btn {
-	margin-bottom: 10px;
-	text-align: center;
-	background-color: #333;
-	color: white;
-	border: 0px;
-	font-size: 18px;
-}
-.sidebar-small .btn:hover {
-	background-color: #6c757d;
-}
-
 .main-panel {
 	position: relative;
-	margin-top: 80px;
+	margin-top: 0;
 	margin-left: 250px;
 	width: calc(100vw - 262px);
 	overflow-y: auto;
-	max-height: calc(100vh - 80px); /* Subtract navbar height from viewport height */
+	max-height: 100vh;
 }
 
 .panel-btn {
@@ -111,7 +82,71 @@
 	color: white;
 }
 
+/* profile pics */
+
+img.profile-xxl {
+	width: 12rem;
+	height: 12rem;
+	object-fit: cover;
+	border-radius:50%
+}
+
+img.profile-xl {
+	width: 4rem;
+	height: 4rem;
+	object-fit: cover;
+	border-radius:50%
+}
+
+img.profile-lg {
+	width: 3.7rem;
+	height: 3.7rem;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
+img.profile-md {
+	width: 3rem;
+	height: 3rem;
+	object-fit: cover;
+	border-radius:50%
+}
+
+img.profile-sm {
+	width: 2rem;
+	height: 2rem;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
 /* blogpost */
+
+.header-link {
+	text-decoration: none;
+	color: #333;
+}
+
+.header-link:hover {
+	text-decoration: underline;
+	color: #f7966b;
+}
+
+
+.author-link {
+	text-decoration: none;
+	color: #333;
+	font-size: large;
+}
+
+/* Add underline on hover */
+.author-link:hover {
+	text-decoration: underline;
+	color: #333;
+}
+
+.date-text {
+	color: rgb(100, 100, 100)
+}
 
 .badge-custom {
 	color: rgb(100, 100, 100);

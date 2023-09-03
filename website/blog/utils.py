@@ -153,8 +153,8 @@ def create_comment(post_uid, request):
         new_comment["name"] = current_user.username
         new_comment["email"] = commenter["email"]
         new_comment["profile_link"] = f"/{current_user.username}/about"
-        if commenter["profile_img_url"]:
-            new_comment["profile_pic"] = commenter["profile_img_url"]
+        new_comment["profile_pic"] = f"/{current_user.username}/get-profile-pic"
+        
     else:
         new_comment["name"] = request.form.get("name")
         new_comment["email"] = request.form.get("email")

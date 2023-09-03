@@ -7,47 +7,6 @@
 		document.getElementById("comment-form").submit();
 	}
 </script>
-
-<style>
-	img.profile {
-		width: 4rem;
-		height: 4rem;
-		object-fit: cover;
-		border-radius:50%
-	}
-
-	img.comment {
-		width: 3.7rem;
-		height: 3.7rem;
-		object-fit: cover;
-		border-radius: 50%;
-	}
-
-	img.small-profile {
-		width: 2rem;
-		height: 2rem;
-		object-fit: cover;
-		border-radius: 50%;
-	}
-
-
-	.author-link {
-		text-decoration: none;
-		color: #333;
-	}	
-
-	/* Add underline on hover */
-	.author-link:hover {
-		text-decoration: underline;
-		color: #333;
-	}
-
-	
-	.date-text {
-		color: rgb(100, 100, 100)
-	}
-
-</style>
 {% endblock %}
 
 {% block title %}{{ post.title }}{% endblock %}
@@ -61,12 +20,12 @@
 	<div class="row mt-5">
 		<div class="col-12 col-md-7 mx-auto">
 			<h1 class="text-center fw-bold">{{ post.title }}</h1>
-			<div class="d-none d-md-flex align-items-center justify-content-center mt-3 mb-5">
+			<div class="d-none d-md-flex align-items-center justify-content-center mt-3 mb-4">
 				<a href="/{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
-					<img src="/static/img/default-profile.png" alt="profile-img" class="profile me-2">
+					<img src="/static/img/default-profile.png" alt="profile-img" class="profile-xl me-2">
 					{% else %}
-					<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile me-2">
+					<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile-xl me-2">
 					{% endif %}
 				</a>
 				<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
@@ -76,9 +35,9 @@
 			<div class="d-flex d-md-none align-items-center justify-content-center my-2">
 				<a href="/{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
-					<img src="/static/img/default-profile.png" alt="profile-img" class="small-profile me-1">
+					<img src="/static/img/default-profile.png" alt="profile-img" class="profile-sm me-1">
 					{% else %}
-					<img src="{{ user.profile_img_url }}" alt="profile-img" class="small-profile me-1">
+					<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile-sm me-1">
 					{% endif %}
 				</a>
 				<a href="/{{ post.author }}/about" class="author-link mx-1 mt-2"><h6>{{ post.author }}</h6></a>
@@ -133,16 +92,18 @@
 				<h5 class="text-start my-4 fw-bold" style="color: rgb(100, 100, 100);">{{ comments|length }} comments</h5>
 				{% for comment in comments %}
 				{% if comment['profile_link']| length != 0 %}
+				<!-- registered user -->
 				<div class="mb-4 d-flex flex-row">
-					<a href="{{ comment['profile_link'] }}"><img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="comment"></a>
+					<a href="{{ comment['profile_link'] }}"><img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="profile-lg ajax-profile-pic"></a>
 					<div class="ms-3 mt-1">
 						<div><a href="{{ comment['profile_link'] }}" style="color: black;"><span class="fw-bold">{{ comment['name'] }}</span></a><span style="color: rgb(100, 100, 100);"> on {{ comment['created_at'] }}</span></div>
 						<div class="mt-2">{{ comment['comment'] }}</div>
 					</div>
 				</div>
 				{% else %}
+				<!-- visitor -->
 				<div class="mb-4 d-flex flex-row">
-					<img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="comment">
+					<img src="{{ comment['profile_pic'] }}" alt="profile-pic" class="profile-lg">
 					<div class="ms-3">
 						<div><span class="fw-bold">{{ comment['name'] }}</span><span style="color: rgb(100, 100, 100);"> on {{ comment['created_at'] }}</span></div>
 						<div class="mt-2">{{ comment['comment'] }}</div>
@@ -156,7 +117,38 @@
 	</div>
 </div>
 
-
 {% include 'footer.html' %}
+{% endblock %}
+
+{% block script %}
+<script>
+	$(document).ready(function() {
+		// Function to make an AJAX request to fetch a replacement image
+		function fetchReplacementImage(imgElement) {
+			var originalSrc = $(imgElement).attr('src'); // Get the initial src
+			$.ajax({
+				url: originalSrc, // Use the initial src as the URL
+				method: 'GET', // Use GET or any other appropriate method
+				success: function(data) {
+					// Assuming the data received is a JSON object with an 'imageUrl' property
+					if (data.imageUrl) {
+						// Update the src attribute of the image element with the fetched replacement URL
+						$(imgElement).attr('src', data.imageUrl);
+					} else {
+						console.log('Image URL not found in the response.');
+					}
+				},
+				error: function() {
+					console.log('Error fetching replacement image.');
+				}
+			});
+		}
+
+		// Loop through each image element with the "loop" class and fetch/replace the image
+		$('.ajax-profile-pic').each(function() {
+			fetchReplacementImage(this);
+		});
+	});
+</script>
 
 {% endblock %}
