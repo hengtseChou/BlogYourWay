@@ -14,7 +14,7 @@
 		<div class="col-12 col-md-8" style="min-height: calc(100vh * 0.55);">
 			<div class="row">
 				<div class="col-12 offset-md-2 col-md-8 px-md-2">
-					{% if num_of_posts != 0 %}
+					{% if posts|length %}
 					{% for post in posts %}
 					{% set post_link = 'posts/' ~ post.post_uid  %}
 					<div class="my-5">
@@ -39,7 +39,7 @@
 							{% endfor %}
 						</div>						
 					</div>
-					{% if post.idx != num_of_posts %}
+					{% if loop.index != posts|length %}
 					<hr>
 					{% endif %}
 					{% endfor %}
@@ -62,13 +62,13 @@
 		<div class="border text-center py-4" style="background-color: #f5f5f5;">
 			<div class="row">
 				<div class="col-6 text-start">
-					{% if newer_posts %}
+					{% if allow_previous_page %}
 					{% set previous_page = current_page - 1 %}
 					<a href="{{ '/' ~ user.username ~ '/blog?page=' ~ previous_page }}" class="btn ms-3"><h5><span class="mx-1">⬅️</span> Newer Posts </h5></a>
 					{% endif %}
 				</div>
 				<div class="col-6 text-end">
-					{% if older_posts %}
+					{% if allow_next_page %}
 					{% set next_page = current_page + 1 %}
 					<a href="{{ '/' ~ user.username ~ '/blog?page=' ~ next_page }}" class="btn me-3"><h5> Older Posts <span class="mx-1">➡️</span></h5></a>
 					{% endif %}

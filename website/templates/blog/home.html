@@ -15,7 +15,7 @@
 			<div class="row">
 				<div class="col-2"></div>
 				<div class="col-8">
-					{% if num_of_posts != 0 %}
+					{% if posts|length != 0 %}
 					<h5 class="text-start pt-5 fw-bold" style="color: rgb(100, 100, 100);">Featured Posts</h5>
 					{% for post in posts %}
 					{% set post_link = 'posts/' ~ post.post_uid  %}
@@ -41,7 +41,7 @@
 							{% endfor %}
 						</div>						
 					</div>
-					{% if loop.index != num_of_posts %}
+					{% if loop.index != posts|length %}
 					<hr>
 					{% endif %}
 					{% endfor %}

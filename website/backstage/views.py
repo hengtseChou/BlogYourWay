@@ -7,7 +7,7 @@ from flask_login import login_required, logout_user, current_user
 from website.extensions.mongo import db_users, db_posts
 from website.extensions.redis import redis_method
 from website.extensions.log import logger
-from website.blog.utils import set_up_pagination
+from website.blog.utils import Pagination
 from website.backstage.utils import create_post, update_post, delete_user
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
@@ -76,7 +76,7 @@ def post_control():
 
     ###################################################################
 
-    page = request.args.get("page", default=1, type=int)
+    current_page = request.args.get("page", default=1, type=int)
     user = db_users.info.find_one({"username": current_user.username})
 
     if request.method == "POST":
@@ -92,23 +92,23 @@ def post_control():
     # query through posts
     # 20 posts for each page
     POSTS_EACH_PAGE = 20
-    pagination = set_up_pagination(current_user.username, page, POSTS_EACH_PAGE)
-    enable_newer_post = pagination['enable_newer_post']
-    enable_older_post = pagination['enable_older_post']
+    pagination = Pagination(current_user.username, current_page, POSTS_EACH_PAGE)
+    allow_previous_page = pagination.is_previous_page_allowed()
+    allow_next_page = pagination.is_next_page_allowed()
 
-    if page == 1:
+    if current_page == 1:
         posts = list(
             db_posts.info
             .find({"author": current_user.username, "archived": False})
             .sort("created_at", -1)
             .limit(POSTS_EACH_PAGE)
         )  # descending: newest
-    elif page > 1:
+    elif current_page > 1:
         posts = list(
             db_posts.info
             .find({"author": current_user.username, "archived": False})
             .sort("created_at", -1)
-            .skip((page - 1) * POSTS_EACH_PAGE)
+            .skip((current_page - 1) * POSTS_EACH_PAGE)
             .limit(POSTS_EACH_PAGE)
         )
 
@@ -118,7 +118,7 @@ def post_control():
         post["clicks"] = format(post["clicks"], ",")
         post["comments"] = format(post["comments"], ",")
 
-    logger.debug(f'Showing {len(posts)} posts for user {current_user.username} at page {page} from {request.remote_addr}.')
+    logger.debug(f'Showing {len(posts)} posts for user {current_user.username} at page {current_page} from {request.remote_addr}.')
 
     ###################################################################
 
@@ -130,9 +130,9 @@ def post_control():
         "posts.html",
         user=user,
         posts=posts,
-        current_page=page,
-        newer_posts=enable_newer_post,
-        older_posts=enable_older_post,
+        current_page=current_page,
+        allow_previous_page=allow_previous_page,
+        allow_next_page=allow_next_page
     )
 
 

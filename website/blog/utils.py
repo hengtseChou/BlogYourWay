@@ -12,9 +12,9 @@ from website.extensions.log import logger
 from website.config import ENV, RECAPTCHA_SECRET
 
 class HTML_Formatter:
-    def __init__(self, html_string):
+    def __init__(self, html):
 
-        self.soup = BeautifulSoup(html_string, "html.parser")
+        self.soup = BeautifulSoup(html, "html.parser")
 
     def add_padding(self):
 
@@ -121,6 +121,7 @@ def create_user(reg_form):
         "profile_img_url": '',
         "short_bio": '', 
         "social_links": [], 
+        "enabled_change_log": False,
         "created_at": get_today()
     }
     
@@ -193,35 +194,43 @@ def is_comment_verified(token):
         return True
     return False
 
-def set_up_pagination(username, current_page, posts_per_page):
+class Pagination:
 
-    # set up for pagination
-    num_not_archieved = db_posts.info.count_documents(
-        {"author": username, "archived": False}
-    )
-    if num_not_archieved == 0:
-        max_page = 1
-    else:
-        max_page = ceil(num_not_archieved / posts_per_page)
+    def __init__(self, username, current_page, posts_per_page):
 
-    if current_page > max_page:
-        # not a legal page number
-        abort(404)
+        self.__allow_previous_page = False
+        self.__allow_next_page = False
 
-    enable_older_post = False
-    if current_page * posts_per_page < num_not_archieved:
-        enable_older_post = True
+        # set up for pagination
+        num_not_archieved = db_posts.info.count_documents(
+            {"author": username, "archived": False}
+        )
+        if num_not_archieved == 0:
+            max_page = 1
+        else:
+            max_page = ceil(num_not_archieved / posts_per_page)
 
-    enable_newer_post = False
-    if current_page > 1:
-        enable_newer_post = True
+        if current_page > max_page:
+            # not a legal page number
+            abort(404)
 
-    pagination = {
-        'enable_newer_post': enable_newer_post, 
-        'enable_older_post': enable_older_post
-    }
+        if current_page * posts_per_page < num_not_archieved:
+            self.__allow_previous_page = True
 
-    return pagination
+        if current_page > 1:
+            self.__allow_next_page = True
+
+    def is_previous_page_allowed(self):
+
+        return self.__allow_previous_page
+    
+    def is_next_page_allowed(self):
+
+        return self.__allow_next_page
+
+
+
+        
 
 def get_today():
 

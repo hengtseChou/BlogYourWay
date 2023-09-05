@@ -7,12 +7,12 @@ from website.extensions.mongo import db_users, db_posts, db_comments
 from website.extensions.redis import redis_method
 from website.extensions.log import logger
 from website.blog.utils import (
-    HTML_Formatter, 
+    HTML_Formatter,
+    Pagination,
     create_user, 
     create_comment,
     all_tags_from_user,
     is_comment_verified, 
-    set_up_pagination, 
     get_today
 )
 
@@ -94,7 +94,7 @@ def login():
 
     user = User(user_creds)
     login_user(user)
-    logger.info(f'User {user_creds["username"]} has logged in from {request.remote_addr}')
+    logger.info(f'User {user_creds["username"]} has logged in from {request.remote_addr}.')
     flash("Login Succeeded.", category="success")
 
     ###################################################################
@@ -194,8 +194,7 @@ def home(username):
     return render_template(
         "home.html", 
         user=user, 
-        posts=featured_posts, 
-        num_of_posts=len(featured_posts)
+        posts=featured_posts
     )
 
 
@@ -316,7 +315,7 @@ def post(username, post_uid):
             flash("Comment published!", category="success")
 
     target_post["content"] = md.convert(target_post["content"])
-    target_post["content"] = HTML_Formatter(target_post["content"]).to_blogpost()
+    target_post["content"] = HTML_Formatter(html=target_post["content"]).to_blogpost()
     target_post["last_updated"] = target_post["last_updated"].strftime("%Y-%m-%d")
 
     # find comments
@@ -376,8 +375,8 @@ def about(username):
 
     user = dict(db_users.info.find_one({"username": username}))
     user_about = db_users.about.find_one({"username": username})["about"]
-    about_converted = md.convert(user_about)
-    about_converted = HTML_Formatter(about_converted).to_about()
+    about = md.convert(user_about)
+    about = HTML_Formatter(about).to_about()
 
     ###################################################################
 
@@ -400,7 +399,7 @@ def about(username):
     return render_template(
         "about.html", 
         user=user, 
-        about=about_converted
+        about=about
     )
 
 
@@ -424,36 +423,35 @@ def blogg(username):
     ###################################################################
 
     user = db_users.info.find_one({"username": username})
-    page = request.args.get("page", default=1, type=int)
+    current_page = request.args.get("page", default=1, type=int)
     POSTS_EACH_PAGE = 10
 
     # create a tag dict
     tags_dict = all_tags_from_user(username)
 
     # set up pagination
-    pagination = set_up_pagination(username, page, POSTS_EACH_PAGE)
-    enable_newer_post = pagination['enable_newer_post']
-    enable_older_post = pagination['enable_older_post']
+    pagination = Pagination(username, current_page, POSTS_EACH_PAGE)
+    allow_previous_page = pagination.is_previous_page_allowed()
+    allow_next_page = pagination.is_next_page_allowed()
 
     # skip and limit posts with given page
-    if page == 1:
+    if current_page == 1:
         posts = (
             db_posts.info.find({"author": username, "archived": False})
             .sort("created_at", -1)
             .limit(POSTS_EACH_PAGE)
         )  # descending: newest
-    elif page > 1:
+    elif current_page > 1:
         posts = (
             db_posts.info.find({"author": username, "archived": False})
             .sort("created_at", -1)
-            .skip((page - 1) * POSTS_EACH_PAGE)
+            .skip((current_page - 1) * POSTS_EACH_PAGE)
             .limit(POSTS_EACH_PAGE)
         )
 
     posts = list(posts)
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
-    num_of_posts = len(posts)
 
     ###################################################################
 
@@ -477,11 +475,10 @@ def blogg(username):
         "blog.html",
         user=user,
         posts=posts,
-        num_of_posts=num_of_posts,
         tags=tags_dict,
-        current_page=page,
-        newer_posts=enable_newer_post,
-        older_posts=enable_older_post,
+        current_page=current_page,
+        allow_previous_page=allow_previous_page,
+        allow_next_page=allow_next_page
     )
 
 @blog.route('/<username>/get-profile-pic', methods=['GET'])
