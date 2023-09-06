@@ -91,14 +91,12 @@
 			return;
 		}
 
-		// Check if the email is valid
 		var emailRegex = /^\S+@\S+\.\S+$/;
 		if (!emailRegex.test(email)) {
 			alert('Enter a valid email address.');
 			return false;
 		}
 
-		// password satisfies requirements
 		var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 		if (!passwordRegex.test(password)) {
 			alert('Password must be 8 characters long and contain both uppercase and lowercase letters.');
@@ -124,10 +122,16 @@
 		if (username.trim() === '' || blogname.trim() === '') {
 			alert('Enter username and blog name to continue.');
 			return false;
-		}		
+		}
+
+		var usernameRegex = /^[a-zA-Z0-9.\-_]+$/;
+		if (!usernameRegex.test(username)) {
+			alert("Invalid username. Please use only letters, numbers, '.', '-', and '_'.");
+			return false;
+		}
 
 		if (!termsChecked) {
-			alert('You must understand the terms to continue.');
+			alert('You must read the terms to continue.');
 			return false;
 		}
 
@@ -137,7 +141,7 @@
 	document.getElementById('step1').addEventListener('keypress', function(event) {
 		if (event.key === 'Enter') {
 			event.preventDefault();
-			validateStep1();
+			// validateStep1();
 		}
 	});
 </script>

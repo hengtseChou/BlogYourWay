@@ -421,7 +421,7 @@ def settings():
     )
 
 
-@backstage.route("/posts/edit/<post_uid>", methods=["GET", "POST"])
+@backstage.route("/posts/edit/<post_uid>", methods=["GET"])
 @login_required
 def edit_post(post_uid):
 
@@ -429,7 +429,7 @@ def edit_post(post_uid):
 
     # status control / early returns
 
-    ###################################################################    
+    ###################################################################
 
     if session["user_status"] != "posts":
         logger.debug(f'Invalid procedure to edit post {post_uid} by {current_user.username} from {request.remote_addr}.')
@@ -439,17 +439,40 @@ def edit_post(post_uid):
     session['user_status'] = 'editing_post'
     logger.debug(f'User {current_user.username} is now at the post editing tab.')
 
-    if request.method == "GET":
-        user = db_users.info.find({"username": current_user.username})
-        target_post = db_posts.info.find_one({"post_uid": post_uid})
-        target_post = dict(target_post)
-        target_post["content"] = db_posts.content.find_one({"post_uid": post_uid})[
-            "content"
-        ]
-        target_post["tags"] = ", ".join(target_post["tags"])
-        logger.debug(f'Editing post {post_uid} by {current_user.username} from {request.remote_addr}.')
+    ###################################################################
 
-        return render_template("edit_blogpost.html", post=target_post, user=user)    
+    # main actions
+
+    ###################################################################
+
+    user = db_users.info.find({"username": current_user.username})
+    target_post = db_posts.info.find_one({"post_uid": post_uid})
+    target_post = dict(target_post)
+    target_post["content"] = db_posts.content.find_one({"post_uid": post_uid})["content"]
+    target_post["tags"] = ", ".join(target_post["tags"])
+    logger.debug(f'Editing post {post_uid} by {current_user.username} from {request.remote_addr}.')
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################    
+
+    return render_template("edit_blogpost.html", post=target_post, user=user)    
+
+
+@backstage.route("/posts/edit/<post_uid>", methods=["POST"])
+@login_required
+def send_edited_post(post_uid):
+
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################
+
+    # it seems like there is no need for early return so far
+    logger.debug(f'Sent edited post {post_uid} by {current_user.username} from {request.remote_addr}.')
 
     ###################################################################
 
@@ -559,9 +582,9 @@ def edit_archived():
         return redirect(url_for("backstage.archive_control"))
 
 
-@backstage.route("/delete", methods=["GET"])
+@backstage.route("/delete/post", methods=["GET"])
 @login_required
-def delete():
+def delete_post():
 
     ###################################################################
 
@@ -580,21 +603,11 @@ def delete():
 
     ###################################################################
 
-    target = request.args.get("type")
-
-    if target == "post":
-
-        post_uid = request.args.get("uid")        
-        db_posts.info.delete_one({"post_uid": post_uid})
-        db_posts.content.delete_one({"post_uid": post_uid})
-        logger.info(f'Post {post_uid} by {current_user.username} has been deleted from {request.remote_addr}.')
-        flash("Post deleted!", category="success")
-        return redirect(url_for("backstage.archive_control"))
-    
-    elif target == "work":
-
-        # delete work
-        return redirect(url_for("backstage.archive_control"))
+    post_uid = request.args.get("uid")        
+    db_posts.info.delete_one({"post_uid": post_uid})
+    db_posts.content.delete_one({"post_uid": post_uid})
+    logger.info(f'Post {post_uid} by {current_user.username} has been deleted from {request.remote_addr}.')
+    flash("Post deleted!", category="success")
 
     ###################################################################
 

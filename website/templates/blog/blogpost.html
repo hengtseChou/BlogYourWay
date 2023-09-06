@@ -20,7 +20,7 @@
 	<div class="row mt-5">
 		<div class="col-12 col-md-7 mx-auto">
 			<h1 class="text-center fw-bold">{{ post.title }}</h1>
-			<div class="d-none d-md-flex align-items-center justify-content-center mt-3 mb-4">
+			<div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-4">
 				<a href="/{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
 					<img src="/static/img/default-profile.png" alt="profile-img" class="profile-xl me-2">
@@ -32,7 +32,7 @@
 				<div class="date-text"><h4> · Last updated: {{ post.last_updated }}</h4></div>
 			</div>
 
-			<div class="d-flex d-md-none align-items-center justify-content-center my-2">
+			<div class="d-flex d-lg-none align-items-center justify-content-center my-2">
 				<a href="/{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
 					<img src="/static/img/default-profile.png" alt="profile-img" class="profile-sm me-1">
@@ -62,12 +62,12 @@
 				{% if current_user.is_authenticated %}
 				<p>You are logged in as <span class="fw-bold">{{ current_user.username }}</span>.</p>
 				{% else %}
-				<div class="row mb-3">
-					<div class="col-12 col-md-6">
+				<div class="row">
+					<div class="col-12 col-md-6 mb-3">
 						<label for="comment-name" class="form-label">Name <span style="color: red;">*</span></label>
 						<input type="text"  class="form-control" id="comment-name" name="name" required>
 					</div>
-					<div class="col-12 col-md-6">
+					<div class="col-12 col-md-6 mb-3">
 						<label for="comment-email" class="form-label">Email Address</label>
 						<input type="email"  class="form-control" id="comment-email" name="email">
 					</div>

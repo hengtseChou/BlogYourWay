@@ -26,8 +26,7 @@
 			<tbody>
 				{% for post in posts %}
 				<tr>
-					<!-- to-do: add post's link to post's title -->
-					<td class="align-middle"><a href="posts/edit/{{ post.post_uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
+					<td class="align-middle text-truncate"><a href="posts/edit/{{ post.post_uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
 					{% if post['featured'] %}
 					<span class="badge rounded-pill bg-success">Featured</span>
 					{% endif %}
@@ -36,14 +35,14 @@
 					<td class="text-center">{{ post['clicks'] }}</td>
 					<td class="text-center">{{ post['comments'] }}</td>
 					{% if post['featured'] %}
-					{% set base_link = '/backstage/edit-featured?featured=to_false&uid=' %}
-					<td class="text-center"><a href='{{ base_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
+					{% set set_featured_link = '/backstage/edit-featured?featured=to_false&uid=' %}
+					<td class="text-center"><a href='{{ set_featured_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
 					{% else %}
-					{% set base_link = '/backstage/edit-featured?featured=to_true&uid=' %}
-					<td class="text-center"><a href='{{ base_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
+					{% set set_featured_link = '/backstage/edit-featured?featured=to_true&uid=' %}
+					<td class="text-center"><a href='{{ set_featured_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
 					{% endif %}
-					{% set base_link2 = '/backstage/edit-archived?archived=to_true&uid=' %}
-					<td class="text-center"><a href="{{ base_link2 ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
+					{% set set_archived_link = '/backstage/edit-archived?archived=to_true&uid=' %}
+					<td class="text-center"><a href="{{ set_archived_link ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
 				</tr>		
 				{% endfor %}
 			</tbody>

@@ -11,10 +11,10 @@
 <div class="container-fluid">
 	<div class="row">
 		<!-- post column -->
-		<div class="col-12 col-md-8" style="min-height: calc(100vh * 0.55);">
+		<div class="col-12 col-md-8 px-2" style="min-height: calc(100vh - 330px);">
 			<div class="row">
-				<div class="col-12 offset-md-2 col-md-8 px-md-2">
-					{% if posts|length %}
+				<div class="col-12 offset-sm-2 col-md-8">
+					{% if posts|length != 0 %}
 					{% for post in posts %}
 					{% set post_link = 'posts/' ~ post.post_uid  %}
 					<div class="my-5">
@@ -55,7 +55,7 @@
 				<h5 class="fw-bold mb-3" style="color: rgb(100, 100, 100);">Topics in this blog</h5>
 				{% for tag, count in tags.items() %}
 				{% set tag_link = 'tags?tag=' ~ tag %}
-					<a href="{{ tag_link }}"><span class="badge badge-custom me-2" style="font-size: small;">{{ tag }}<span class="badge bg-secondary ms-2">{{ count }}</span></span></a>
+					<a href="{{ tag_link }}"><span class="badge badge-custom me-2 my-1" style="font-size: small;">{{ tag }}<span class="badge bg-secondary ms-2">{{ count }}</span></span></a>
 				{% endfor %}
 			</div>		
 		</div>

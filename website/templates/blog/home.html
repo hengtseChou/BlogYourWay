@@ -11,10 +11,9 @@
 <div class="container-fluid">
 	<div class="row">
 		<!-- post column -->
-		<div class="col-12 col-md-8" style="min-height: calc(100vh - 330px);">
+		<div class="col-12 col-md-8 px-2" style="min-height: calc(100vh - 330px);">
 			<div class="row">
-				<div class="col-2"></div>
-				<div class="col-8">
+				<div class="col-12 offset-sm-2 col-md-8">
 					{% if posts|length != 0 %}
 					<h5 class="text-start pt-5 fw-bold" style="color: rgb(100, 100, 100);">Featured Posts</h5>
 					{% for post in posts %}
@@ -52,7 +51,7 @@
 			</div>
 		</div>
 		<!-- bio column -->
-		<div class="d-none d-md-block col-md-4 border-start">
+		<div class="d-none d-md-block col-4 border-start">
 			<div class="d-flex justify-content-center" style="margin-top: 6rem;">
 				{% if user.profile_img_url|length == 0 %}
 				<img src="/static/img/default-profile.png" alt="profile-img" class="profile-xxl img-thumbnail">
