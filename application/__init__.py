@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request
 from flask_login import LoginManager
 import os
-from website.blog.views import blog, User
-from website.backstage.views import backstage
-from website.extensions.log import logger
-from website.extensions.mongo import db_users
+from application.blog.views import blog, User
+from application.backstage.views import backstage
+from application.extensions.log import logger
+from application.extensions.mongo import db_users
 
 
 def create_app():

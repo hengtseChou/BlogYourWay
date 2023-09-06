@@ -1,10 +1,10 @@
 import random
 import string
 from flask_login import current_user
-from website.extensions.mongo import db_users, db_posts, db_comments
-from website.extensions.log import logger
-from website.extensions.redis import redis_method
-from website.blog.utils import get_today
+from application.extensions.mongo import db_users, db_posts, db_comments
+from application.extensions.log import logger
+from application.extensions.redis import redis_method
+from application.blog.utils import get_today
 
 alphabet = string.ascii_lowercase + string.digits
 

@@ -4,11 +4,11 @@ from flask import (
     Blueprint, request, session, render_template, flash, redirect, url_for
 )
 from flask_login import login_required, logout_user, current_user
-from website.extensions.mongo import db_users, db_posts
-from website.extensions.redis import redis_method
-from website.extensions.log import logger
-from website.blog.utils import Pagination
-from website.backstage.utils import create_post, update_post, delete_user
+from application.extensions.mongo import db_users, db_posts, db_comments
+from application.extensions.redis import redis_method
+from application.extensions.log import logger
+from application.blog.utils import Pagination
+from application.backstage.utils import create_post, update_post, delete_user
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
@@ -116,7 +116,8 @@ def post_control():
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
         post["clicks"] = format(post["clicks"], ",")
-        post["comments"] = format(post["comments"], ",")
+        post["comments"] = db_comments.comment.count_documents({'post_uid': post['post_uid']})
+        post["comments"] - format(post["comments"], ',')
 
     logger.debug(f'Showing {len(posts)} posts for user {current_user.username} at page {current_page} from {request.remote_addr}.')
 

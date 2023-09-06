@@ -3,10 +3,10 @@ import markdown
 from urllib.parse import unquote
 from flask import Blueprint, render_template, request, flash, redirect, url_for, abort, jsonify
 from flask_login import login_user, UserMixin, current_user
-from website.extensions.mongo import db_users, db_posts, db_comments
-from website.extensions.redis import redis_method
-from website.extensions.log import logger
-from website.blog.utils import (
+from application.extensions.mongo import db_users, db_posts, db_comments
+from application.extensions.redis import redis_method
+from application.extensions.log import logger
+from application.blog.utils import (
     HTML_Formatter,
     Pagination,
     create_user, 

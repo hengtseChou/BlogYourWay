@@ -1,5 +1,5 @@
 import logging
-from website.config import ENV
+from application.config import ENV
    
 stream_formatter = logging.Formatter(
     fmt='[%(asctime)s] %(levelname)s: %(message)s'

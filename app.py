@@ -1,5 +1,5 @@
-from website import create_app
-from website.config import ENV
+from application import create_app
+from application.config import ENV
 
 
 if ENV == "debug":

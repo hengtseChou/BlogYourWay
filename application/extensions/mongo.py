@@ -1,18 +1,32 @@
-import pymongo
-from website.config import MONGO_URL
+from pymongo.mongo_client import MongoClient
+from pymongo.collection import Collection
+from pymongo.database import Database
+from application.config import MONGO_URL
 
 
-class Database(object):
+class Client:
+
     def __init__(self):
-        self.client = pymongo.MongoClient(MONGO_URL, connect=False)
+        self.client = MongoClient(MONGO_URL, connect=False)
+
+class Database(Client):
+
+    def __init__(self, database):
+        super().__init__()
+        self.db = self.client[database]
+
+class Custom_Collection(Collection):
+
+    def __init__(self, database: Database, name: str, create=False):
+        super().__init__(database, name, create)
+
 
 
 class DB_Users(Database):
     def __init__(self):
-        super().__init__()
-        self.db = self.client["users"]
+        super().__init__(database='users')
         # collections
-        self.login = self.db["user-login"]
+        self.login = Collection(self.db, 'user-login')
         self.info = self.db["user-info"]
         self.about = self.db["user-about"]
 
