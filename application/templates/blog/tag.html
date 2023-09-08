@@ -13,7 +13,7 @@
 		<div class="col-12 col-md-7 mx-auto">
 			<h1 class="fw-bold text-center py-5"># {{ tag }}</h1>	
 			<hr>
-			<h5 class="pt-3 fw-bold" style="color: rgb(100, 100, 100);">Found {{ num_of_posts }} posts</h5>	
+			<h5 class="pt-3 fw-bold" style="color: rgb(100, 100, 100);">Found {{ posts|length }} posts</h5>	
 			{% for post in posts %}
 			{% set post_link = 'posts/' ~ post.uid  %}
 			<div class="my-5">
@@ -38,7 +38,7 @@
 					{% endfor %}
 				</div>						
 			</div>
-			{% if loop.index != num_of_posts %}
+			{% if loop.index != posts|length %}
 			<hr>
 			{% endif %}
 			{% endfor %}
