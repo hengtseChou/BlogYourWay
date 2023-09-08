@@ -1,8 +1,6 @@
-import bcrypt
+from bcrypt import hashpw, checkpw, gensalt
 from datetime import datetime
-from flask import (
-    Blueprint, request, session, render_template, flash, redirect, url_for
-)
+from flask import Blueprint, request, session, render_template, flash, redirect, url_for
 from flask_login import login_required, logout_user, current_user
 from application.extensions.mongo import db_users, db_posts, db_comments
 from application.extensions.redis import redis_method
@@ -83,9 +81,9 @@ def post_control():
         
         # logging for this is inside the create post function
         create_post(request)
-        db_users.info.update_one(
+        db_users.info.simple_update(
             filter={"username": current_user.username},
-            update={"$set": {"posts_count": user["posts_count"] + 1}},
+            update={"posts_count": user["posts_count"] + 1},
         )
         flash("New post published successfully!", category="success")
 
@@ -96,28 +94,17 @@ def post_control():
     allow_previous_page = pagination.is_previous_page_allowed()
     allow_next_page = pagination.is_next_page_allowed()
 
-    if current_page == 1:
-        posts = list(
-            db_posts.info
-            .find({"author": current_user.username, "archived": False})
-            .sort("created_at", -1)
-            .limit(POSTS_EACH_PAGE)
-        )  # descending: newest
-    elif current_page > 1:
-        posts = list(
-            db_posts.info
-            .find({"author": current_user.username, "archived": False})
-            .sort("created_at", -1)
-            .skip((current_page - 1) * POSTS_EACH_PAGE)
-            .limit(POSTS_EACH_PAGE)
-        )
-
+    posts = db_posts.find_posts_with_pagination(
+        username=current_user.username,
+        page_number=current_page,
+        posts_per_page=POSTS_EACH_PAGE
+    )
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
         post["clicks"] = format(post["clicks"], ",")
         post["comments"] = db_comments.comment.count_documents({'post_uid': post['post_uid']})
-        post["comments"] - format(post["comments"], ',')
+        post["comments"] = format(post["comments"], ',')
 
     logger.debug(f'Showing {len(posts)} posts for user {current_user.username} at page {current_page} from {request.remote_addr}.')
 
@@ -150,8 +137,8 @@ def about_control():
     session["user_status"] = "about"
     logger.debug(f'User {current_user.username} is now at the about control tab.')
     
-    user_info = dict(db_users.info.find_one({"username": current_user.username}))
-    user_about = dict(db_users.about.find_one({"username": current_user.username}))
+    user_info = db_users.info.find_one({"username": current_user.username})
+    user_about = db_users.about.find_one({"username": current_user.username})
     user = {**user_info, **user_about}
 
     if request.method == 'GET':        
@@ -172,10 +159,11 @@ def about_control():
     updated_about = {
         "about": form["about"]
     }
-    db_users.info.update_one(
-        filter={"username": user["username"]}, update={"$set": updated_info}
+    db_users.info.simple_update(
+        filter={"username": user["username"]}, 
+        update=updated_info
     )
-    db_users.about.update_one(
+    db_users.about.simple_update(
         filter={"username": user["username"]}, update={"$set": updated_about}
     )
     user.update(updated_info)
@@ -215,11 +203,7 @@ def archive_control():
     ###################################################################
 
     user = db_users.info.find_one({'username': current_user.username})
-    posts = list(
-        db_posts.info
-        .find({"author": current_user.username, "archived": True})
-        .sort("created_at", -1)
-    )
+    posts = db_posts.find_all_archived_posts_info(current_user.username)
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
@@ -241,7 +225,7 @@ def archive_control():
     )
 
 
-@backstage.route("/social-links", methods=["GET", "POST"])
+@backstage.route("/social-links", methods=["GET"])
 @login_required
 def social_link_control():
 
@@ -253,13 +237,7 @@ def social_link_control():
 
     session['user_status'] = 'social_link'
     logger.debug(f'User {current_user.username} is now at the social links control tab.')
-    
-    user = db_users.info.find_one({"username": current_user.username})
-    social_links = user["social_links"]
-
-    if request.method == 'GET':        
-        logger.debug(f'Editing social links for user {current_user.username} from {request.remote_addr}.')
-        return render_template("social_links.html", social_links=social_links, user=user)
+    logger.debug(f'Editing social links for user {current_user.username} from {request.remote_addr}.')
 
     ###################################################################
 
@@ -267,6 +245,41 @@ def social_link_control():
 
     ###################################################################
 
+    user = db_users.info.find_one({"username": current_user.username})
+    social_links = user["social_links"]
+    
+    ###################################################################
+
+    # return page content
+
+    ###################################################################  
+
+    return render_template(
+        "social_links.html", 
+        social_links=social_links, 
+        user=user
+    )
+
+
+@backstage.route("/social-links", methods=["POST"])
+@login_required
+def send_updated_social_links():
+
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################   
+
+    logger.debug(f'Sending updated social links for {current_user.username}.')
+    
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    user = db_users.info.find_one({"username": current_user.username})
     updated_links = []
     form = request.form.to_dict()
     form_values = list(form.values())
@@ -274,9 +287,9 @@ def social_link_control():
     for i in range(0, len(form_values), 2):
         updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
 
-    db_users.info.update_one(
+    db_users.info.simple_update(
         filter={"username": current_user.username},
-        update={"$set": {"social_links": updated_links}},
+        update={"social_links": updated_links}
     )
     logger.info(f'Social links for user {current_user.username} is updated from {request.remote_addr}.')
     flash("Social Links updated", category="success")
@@ -357,45 +370,48 @@ def settings():
     if general is not None:
 
         banner_url = request.form.get("banner_url")
-        db_users.info.update_one(
+        db_users.info.simple_update(
             filter={"username": current_user.username},
-            update={"$set": {"banner_url": banner_url}},
+            update={"banner_url": banner_url}
         )
         logger.info(f'General setting for user {current_user.username} is updated from {request.remote_addr}.')
         flash("Update succeeded!", category="success")
 
     elif change_pw is not None:
 
-        current_pw = request.form.get("current")
+        current_pw_input = request.form.get("current")
+        encoded_current_pw_input = current_pw_input.encode("utf8")
         new_pw = request.form.get("new")
 
         user_creds = db_users.login.find_one({"username": current_user.username})
         user = db_users.info.find_one({"username": current_user.username})
+        encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
         # check pw
-        if not bcrypt.checkpw(current_pw.encode("utf8"), user_creds["password"].encode("utf8")):
+        if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
             logger.debug(f'Invalid password while updating password for user {current_user.username} from {request.remote_addr}')
             flash("Current password is invalid. Please try again.", category="error")
             return render_template("settings.html", user=user)
 
         # update new password
-        hashed_pw = bcrypt.hashpw(new_pw.encode("utf-8"), bcrypt.gensalt(12))
-        hashed_pw = hashed_pw.decode("utf-8")
-        db_users.login.update_one(
+        hashed_new_pw = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
+        db_users.login.simple_update(
             filter={"username": current_user.username},
-            update={"$set": {"password": hashed_pw}},
+            update={"password": hashed_new_pw}
         )
         logger.info(f'Password for user {current_user.username} is updated from {request.remote_addr}.')
         flash("Password update succeeded!", category="success")
 
     elif delete_account is not None:
         
-        confirm_pw = request.form.get("delete-confirm-pw")
-        username =  current_user.username    
-        user_creds = db_users.login.find_one({"username": username})
+        current_pw_input = request.form.get("current")
+        encoded_current_pw_input = current_pw_input.encode("utf8")
+        username = current_user.username    
         user = db_users.info.find_one({"username": username})
+        user_creds = db_users.login.find_one({"username": username})
+        encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
-        if not bcrypt.checkpw(confirm_pw.encode("utf8"), user_creds["password"].encode("utf8")):
+        if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
             logger.debug(f'Invalid password while deleting account for user {current_user.username} from {request.remote_addr}')
             flash("Access denied, bacause password is invalid.", category="error")
             return render_template("settings.html", user=user)
@@ -447,9 +463,7 @@ def edit_post(post_uid):
     ###################################################################
 
     user = db_users.info.find({"username": current_user.username})
-    target_post = db_posts.info.find_one({"post_uid": post_uid})
-    target_post = dict(target_post)
-    target_post["content"] = db_posts.content.find_one({"post_uid": post_uid})["content"]
+    target_post = db_posts.get_full_post(post_uid)
     target_post["tags"] = ", ".join(target_post["tags"])
     logger.debug(f'Editing post {post_uid} by {current_user.username} from {request.remote_addr}.')
 
@@ -505,7 +519,6 @@ def edit_featured():
     ###################################################################
 
     post_uid = request.args.get("uid")
-
     if session["user_status"] != 'posts':
         logger.debug(f'Invalid procedure to change featured status for post {post_uid} by {current_user.username} from {request.remote_addr}.')
         flash("Access Denied. ", category="error")
@@ -519,12 +532,16 @@ def edit_featured():
 
     if request.args.get("featured") == "to_true":
         updated_featured_status = True
+        flash(f'Post {post_uid} is now featured on the home page!', category='success')
+
     else:
         updated_featured_status = False
+        flash(f'Post {post_uid} is now removed from the home page!', category='success')
 
-    db_posts.info.update_one(
+
+    db_posts.info.simple_update(
         filter={"post_uid": post_uid},
-        update={"$set": {"featured": updated_featured_status}},
+        update={"featured": updated_featured_status},
     )
     logger.debug(f'Featured status for post {post_uid} by {current_user.username} is set to {updated_featured_status} from {request.remote_addr}.')
 
@@ -547,6 +564,7 @@ def edit_archived():
 
     ###################################################################
 
+    post_uid = request.args.get("uid")
     if session['user_status'] not in ['posts', 'archive']:
         logger.debug(f'Invalid procedure to change archived status for post {post_uid} by {current_user.username} from {request.remote_addr}.')
         flash("Access Denied. ", category="error")
@@ -560,13 +578,16 @@ def edit_archived():
 
     if request.args.get("archived") == "to_true":
         updated_archived_status = True
+        flash(f'Post {post_uid} is now archived!', category='success')
+
     else:
         updated_archived_status = False
+        flash(f'Post {post_uid} is now restored from the archive!', category='success')
 
-    post_uid = request.args.get("uid")
-    db_posts.info.update_one(
+
+    db_posts.info.simple_update(
         filter={"post_uid": post_uid},
-        update={"$set": {"archived": updated_archived_status}},
+        update={"archived": updated_archived_status},
     )
     logger.debug(f'Archived status for post {post_uid} by {current_user.username} is set to {updated_archived_status} from {request.remote_addr}.')
 
@@ -608,7 +629,7 @@ def delete_post():
     db_posts.info.delete_one({"post_uid": post_uid})
     db_posts.content.delete_one({"post_uid": post_uid})
     logger.info(f'Post {post_uid} by {current_user.username} has been deleted from {request.remote_addr}.')
-    flash("Post deleted!", category="success")
+    flash(f"Post {post_uid} has been deleted!", category="success")
 
     ###################################################################
 
