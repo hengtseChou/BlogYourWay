@@ -21,11 +21,9 @@ def overview():
 
     ###################################################################
 
-    session['user_current_tab'] = 'overview'
+    session["user_current_tab"] = "overview"
     logger.log_for_backstage_tab(
-        username=current_user.username, 
-        tab='overview', 
-        request=request
+        username=current_user.username, tab="overview", request=request
     )
 
     ###################################################################
@@ -34,29 +32,28 @@ def overview():
 
     ###################################################################
 
-    logger.debug(f'Retrieving stats for user {current_user.username} started.')
+    logger.debug(f"Retrieving stats for user {current_user.username} started.")
 
     now = datetime.now()
     user = db_users.info.find_one({"username": current_user.username})
 
     time_difference = now - user["created_at"]
-    user['days_joined'] = format(time_difference.days + 1, ",")
+    user["days_joined"] = format(time_difference.days + 1, ",")
 
     visitor_stats = redis_method.get_visitor_stats(current_user.username)
     daily_count = redis_method.get_daily_visitor_data(current_user.username)
 
-    logger.debug(f'Retrieving stats for user {current_user.username} completed.')
+    logger.debug(f"Retrieving stats for user {current_user.username} completed.")
 
     ###################################################################
 
     # return page content
 
-    ###################################################################    
+    ###################################################################
 
-    return render_template("overview.html", 
-                           user=user,
-                           daily_count=daily_count, 
-                           visitor_stats=visitor_stats)
+    return render_template(
+        "overview.html", user=user, daily_count=daily_count, visitor_stats=visitor_stats
+    )
 
 
 @backstage.route("/posts", methods=["GET", "POST"])
@@ -71,9 +68,7 @@ def post_control():
 
     session["user_current_tab"] = "posts"
     logger.log_for_backstage_tab(
-        username=current_user.username, 
-        tab='posts control', 
-        request=request
+        username=current_user.username, tab="posts control", request=request
     )
 
     ###################################################################
@@ -86,12 +81,17 @@ def post_control():
     user = db_users.info.find_one({"username": current_user.username})
 
     if request.method == "POST":
-        
+
         # logging for this is inside the create post function
-        create_post(request)
+        post_uid = create_post(request)
         db_users.info.simple_update(
             filter={"username": current_user.username},
             update={"posts_count": user["posts_count"] + 1},
+        )
+        logger.user.data_created(
+            username=current_user.username,
+            data_info=f"post {post_uid}",
+            request=request,
         )
         flash("New post published successfully!", category="success")
 
@@ -103,19 +103,19 @@ def post_control():
     posts = db_posts.find_posts_with_pagination(
         username=current_user.username,
         page_number=current_page,
-        posts_per_page=POSTS_EACH_PAGE
+        posts_per_page=POSTS_EACH_PAGE,
     )
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
         post["clicks"] = format(post["clicks"], ",")
-        post["comments"] = db_comments.comment.count_documents({'post_uid': post['post_uid']})
-        post["comments"] = format(post["comments"], ',')
+        post["comments"] = db_comments.comment.count_documents(
+            {"post_uid": post["post_uid"]}
+        )
+        post["comments"] = format(post["comments"], ",")
 
     logger.log_for_pagination(
-        username=current_user.username,
-        num_of_posts_showing=len(posts),
-        request=request
+        username=current_user.username, num_of_posts_showing=len(posts), request=request
     )
 
     ###################################################################
@@ -124,14 +124,10 @@ def post_control():
 
     ###################################################################
 
-    return render_template(
-        "posts.html",
-        user=user,
-        posts=posts,
-        pagination=pagination
-    )
+    return render_template("posts.html", user=user, posts=posts, pagination=pagination)
 
-@backstage.route('/about', methods=['GET'])
+
+@backstage.route("/about", methods=["GET"])
 @login_required
 def about_control():
 
@@ -143,11 +139,9 @@ def about_control():
 
     session["user_current_tab"] = "about"
     logger.log_for_backstage_tab(
-        username=current_user.username, 
-        tab='about control', 
-        request=request
+        username=current_user.username, tab="about control", request=request
     )
-    
+
     user_info = db_users.info.find_one({"username": current_user.username})
     user_about = db_users.about.find_one({"username": current_user.username})
     user = {**user_info, **user_about}
@@ -158,10 +152,7 @@ def about_control():
 
     ###################################################################
 
-    return render_template(
-        "edit_about.html", 
-        user=user
-    )
+    return render_template("edit_about.html", user=user)
 
 
 @backstage.route("/about", methods=["POST"])
@@ -180,15 +171,12 @@ def sending_updated_about():
 
     form = request.form.to_dict()
     updated_info = {
-        'profile_img_url': form['profile_img_url'],
-        'short_bio': form['short_bio']
+        "profile_img_url": form["profile_img_url"],
+        "short_bio": form["short_bio"],
     }
-    updated_about = {
-        "about": form["about"]
-    }
+    updated_about = {"about": form["about"]}
     db_users.info.simple_update(
-        filter={"username": user["username"]}, 
-        update=updated_info
+        filter={"username": user["username"]}, update=updated_info
     )
     db_users.about.simple_update(
         filter={"username": user["username"]}, update={"$set": updated_about}
@@ -196,9 +184,7 @@ def sending_updated_about():
     user.update(updated_info)
     user.update(updated_about)
     logger.user.data_updated(
-        username=current_user.username, 
-        data_info='about', 
-        request=request
+        username=current_user.username, data_info="about", request=request
     )
     flash("Information updated!", category="success")
 
@@ -208,10 +194,7 @@ def sending_updated_about():
 
     ###################################################################
 
-    return render_template(
-        "edit_about.html", 
-        user=user
-    )
+    return render_template("edit_about.html", user=user)
 
 
 @backstage.route("/archive", methods=["GET"])
@@ -226,9 +209,7 @@ def archive_control():
 
     session["user_current_tab"] = "archive"
     logger.log_for_backstage_tab(
-        username=current_user.username, 
-        tab='archive control', 
-        request=request
+        username=current_user.username, tab="archive control", request=request
     )
 
     ###################################################################
@@ -237,19 +218,17 @@ def archive_control():
 
     ###################################################################
 
-    user = db_users.info.find_one({'username': current_user.username})
+    user = db_users.info.find_one({"username": current_user.username})
     posts = db_posts.find_all_archived_posts_info(current_user.username)
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
         post["clicks"] = format(post["clicks"], ",")
         post["comments"] = format(post["comments"], ",")
-    
+
     logger.log_for_pagination(
-        username=current_user.username,
-        num_of_posts_showing=len(posts),
-        request=request
-    )   
+        username=current_user.username, num_of_posts_showing=len(posts), request=request
+    )
 
     ###################################################################
 
@@ -257,11 +236,7 @@ def archive_control():
 
     ###################################################################
 
-    return render_template(
-        "archive.html", 
-        user=user,
-        posts=posts 
-    )
+    return render_template("archive.html", user=user, posts=posts)
 
 
 @backstage.route("/social-links", methods=["GET"])
@@ -272,13 +247,11 @@ def social_link_control():
 
     # status control / early returns
 
-    ###################################################################   
+    ###################################################################
 
-    session['user_current_tab'] = 'social_link'
+    session["user_current_tab"] = "social_link"
     logger.log_for_backstage_tab(
-        username=current_user.username, 
-        tab='social link control', 
-        request=request
+        username=current_user.username, tab="social link control", request=request
     )
 
     ###################################################################
@@ -289,24 +262,20 @@ def social_link_control():
 
     user = db_users.info.find_one({"username": current_user.username})
     social_links = user["social_links"]
-    
+
     ###################################################################
 
     # return page content
 
-    ###################################################################  
+    ###################################################################
 
-    return render_template(
-        "social_links.html", 
-        social_links=social_links, 
-        user=user
-    )
+    return render_template("social_links.html", social_links=social_links, user=user)
 
 
 @backstage.route("/social-links", methods=["POST"])
 @login_required
 def sending_updated_social_links():
-    
+
     ###################################################################
 
     # main actions
@@ -323,26 +292,21 @@ def sending_updated_social_links():
 
     db_users.info.simple_update(
         filter={"username": current_user.username},
-        update={"social_links": updated_links}
+        update={"social_links": updated_links},
     )
     logger.user.data_updated(
-        username=current_user.username, 
-        data_info='social links',
-        request=request
+        username=current_user.username, data_info="social links", request=request
     )
     flash("Social Links updated", category="success")
-    
+
     ###################################################################
 
     # return page content
 
-    ###################################################################  
+    ###################################################################
 
-    return render_template(
-        "social_links.html", 
-        social_links=updated_links, 
-        user=user
-    )
+    return render_template("social_links.html", social_links=updated_links, user=user)
+
 
 @backstage.route("/theme", methods=["GET", "POST"])
 @login_required
@@ -354,11 +318,9 @@ def theme():
 
     ###################################################################
 
-    session['user_current_tab'] = 'theme'
+    session["user_current_tab"] = "theme"
     logger.log_for_backstage_tab(
-        username=current_user.username, 
-        tab='theme', 
-        request=request
+        username=current_user.username, tab="theme", request=request
     )
 
     ###################################################################
@@ -367,7 +329,7 @@ def theme():
 
     ###################################################################
 
-    user = db_users.info.find_one({'username': current_user.username})
+    user = db_users.info.find_one({"username": current_user.username})
 
     ###################################################################
 
@@ -375,26 +337,22 @@ def theme():
 
     ###################################################################
 
-    return render_template(
-        "theme.html", 
-        user=user
-    )
+    return render_template("theme.html", user=user)
 
 
-@backstage.route('/settings', methods=['GET'])
+@backstage.route("/settings", methods=["GET"])
+@login_required
 def settings():
 
     ###################################################################
 
     # status control / early returns
 
-    ################################################################### 
+    ###################################################################
 
     session["user_current_tab"] = "settings"
     logger.log_for_backstage_tab(
-        username=current_user.username, 
-        tab='settings', 
-        request=request
+        username=current_user.username, tab="settings", request=request
     )
 
     ###################################################################
@@ -431,14 +389,25 @@ def sending_updated_settings():
     if general is not None:
 
         banner_url = request.form.get("banner_url")
+        blogname = request.form.get("blogname")
+        if request.form.get("enable_change_log") is None:
+            enable_change_log = False
+        else:
+            enable_change_log = True
+        logger.debug(enable_change_log)
+
         db_users.info.simple_update(
             filter={"username": current_user.username},
-            update={"banner_url": banner_url}
+            update={
+                "banner_url": banner_url, 
+                "blogname": blogname, 
+                "change_log_enabled": enable_change_log
+            },
         )
         logger.user.data_updated(
-            username=current_user.username, 
-            data_info='general settings',
-            request=request
+            username=current_user.username,
+            data_info="general settings",
+            request=request,
         )
         flash("Update succeeded!", category="success")
 
@@ -455,9 +424,9 @@ def sending_updated_settings():
         # check pw
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
             logger.invalid_procedure(
-                username=current_user.username, 
-                procedure='update password (invalid old password)',
-                request=request
+                username=current_user.username,
+                procedure="update password (invalid old password)",
+                request=request,
             )
             flash("Current password is invalid. Please try again.", category="error")
             return render_template("settings.html", user=user)
@@ -466,34 +435,32 @@ def sending_updated_settings():
         hashed_new_pw = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
         db_users.login.simple_update(
             filter={"username": current_user.username},
-            update={"password": hashed_new_pw}
+            update={"password": hashed_new_pw},
         )
         logger.user.data_updated(
-            username=current_user.username, 
-            data_info='password',
-            request=request
+            username=current_user.username, data_info="password", request=request
         )
         flash("Password update succeeded!", category="success")
 
     elif delete_account is not None:
-        
-        current_pw_input = request.form.get("current")
+
+        current_pw_input = request.form.get("delete-confirm-pw")
         encoded_current_pw_input = current_pw_input.encode("utf8")
-        username = current_user.username    
+        username = current_user.username
         user = db_users.info.find_one({"username": username})
         user_creds = db_users.login.find_one({"username": username})
         encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
             logger.invalid_procedure(
-                username=current_user.username, 
-                procedure='delete account (invalid password)',
-                request=request
+                username=current_user.username,
+                procedure="delete account (invalid password)",
+                request=request,
             )
             flash("Access denied, bacause password is invalid.", category="error")
             return render_template("settings.html", user=user)
 
-        # deletion procedure  
+        # deletion procedure
         logout_user()
         logger.user.logout(username=username, request=request)
         delete_user(username)
@@ -507,12 +474,9 @@ def sending_updated_settings():
 
     # return page content
 
-    ###################################################################    
+    ###################################################################
 
-    return render_template(
-        "settings.html", 
-        user=user
-    )
+    return render_template("settings.html", user=user)
 
 
 @backstage.route("/posts/edit/<post_uid>", methods=["GET"])
@@ -527,18 +491,16 @@ def edit_post(post_uid):
 
     if session["user_current_tab"] != "posts":
         logger.invalid_procedure(
-            username=current_user.username, 
-            procedure=f'edit post {post_uid}', 
-            request=request
+            username=current_user.username,
+            procedure=f"edit post {post_uid}",
+            request=request,
         )
         flash("Access Denied!", category="error")
         return redirect(url_for("backstage.post_control"))
-    
-    session['user_current_tab'] = 'editing_post'
+
+    session["user_current_tab"] = "editing_post"
     logger.log_for_backstage_tab(
-        username=current_user.username,
-        tab='edit post', 
-        request=request
+        username=current_user.username, tab="edit post", request=request
     )
     ###################################################################
 
@@ -554,9 +516,9 @@ def edit_post(post_uid):
 
     # return page content
 
-    ###################################################################    
+    ###################################################################
 
-    return render_template("edit_blogpost.html", post=target_post, user=user)    
+    return render_template("edit_blogpost.html", post=target_post, user=user)
 
 
 @backstage.route("/posts/edit/<post_uid>", methods=["POST"])
@@ -571,9 +533,7 @@ def sending_edited_post(post_uid):
 
     update_post(post_uid, request)
     logger.user.data_updated(
-        username=current_user.username, 
-        data_info=f'post {post_uid}', 
-        request=request
+        username=current_user.username, data_info=f"post {post_uid}", request=request
     )
     flash(f"Post {post_uid} update succeeded!", category="success")
 
@@ -581,7 +541,7 @@ def sending_edited_post(post_uid):
 
     # return page content
 
-    ###################################################################    
+    ###################################################################
 
     return redirect(url_for("backstage.post_control"))
 
@@ -597,11 +557,11 @@ def edit_featured():
     ###################################################################
 
     post_uid = request.args.get("uid")
-    if session["user_current_tab"] != 'posts':
+    if session["user_current_tab"] != "posts":
         logger.invalid_procedure(
             username=current_user.username,
-            procedure=f'change featured status for post {post_uid}', 
-            request=request
+            procedure=f"change featured status for post {post_uid}",
+            request=request,
         )
         flash("Access Denied. ", category="error")
         return redirect(url_for("backstage.post_control"))
@@ -614,21 +574,20 @@ def edit_featured():
 
     if request.args.get("featured") == "to_true":
         updated_featured_status = True
-        flash(f'Post {post_uid} is now featured on the home page!', category='success')
+        flash(f"Post {post_uid} is now featured on the home page!", category="success")
 
     else:
         updated_featured_status = False
-        flash(f'Post {post_uid} is now removed from the home page!', category='success')
-
+        flash(f"Post {post_uid} is now removed from the home page!", category="success")
 
     db_posts.info.simple_update(
         filter={"post_uid": post_uid},
         update={"featured": updated_featured_status},
     )
     logger.user.data_updated(
-        username=current_user.username, 
-        data_info=f'featured status for post {post_uid} (now set to {updated_featured_status})',
-        request=request
+        username=current_user.username,
+        data_info=f"featured status for post {post_uid} (now set to {updated_featured_status})",
+        request=request,
     )
 
     ###################################################################
@@ -651,11 +610,11 @@ def edit_archived():
     ###################################################################
 
     post_uid = request.args.get("uid")
-    if session['user_current_tab'] not in ['posts', 'archive']:
+    if session["user_current_tab"] not in ["posts", "archive"]:
         logger.invalid_procedure(
             username=current_user.username,
-            procedure=f'change archived status for post {post_uid}', 
-            request=request
+            procedure=f"change archived status for post {post_uid}",
+            request=request,
         )
         flash("Access Denied. ", category="error")
         return redirect(url_for("backstage.archive_control"))
@@ -668,21 +627,20 @@ def edit_archived():
 
     if request.args.get("archived") == "to_true":
         updated_archived_status = True
-        flash(f'Post {post_uid} is now archived!', category='success')
+        flash(f"Post {post_uid} is now archived!", category="success")
 
     else:
         updated_archived_status = False
-        flash(f'Post {post_uid} is now restored from the archive!', category='success')
-
+        flash(f"Post {post_uid} is now restored from the archive!", category="success")
 
     db_posts.info.simple_update(
         filter={"post_uid": post_uid},
         update={"archived": updated_archived_status},
     )
     logger.user.data_updated(
-        username=current_user.username, 
-        data_info=f'archived status for post {post_uid} (now set to {updated_archived_status})',
-        request=request
+        username=current_user.username,
+        data_info=f"archived status for post {post_uid} (now set to {updated_archived_status})",
+        request=request,
     )
 
     ###################################################################
@@ -690,11 +648,11 @@ def edit_archived():
     # return page contents
 
     ###################################################################
-    
-    if session["user_current_tab"] == "posts":        
+
+    if session["user_current_tab"] == "posts":
         return redirect(url_for("backstage.post_control"))
 
-    elif session["user_current_tab"] == "archive":        
+    elif session["user_current_tab"] == "archive":
         return redirect(url_for("backstage.archive_control"))
 
 
@@ -713,8 +671,8 @@ def delete_post():
     if session["user_current_tab"] != "archive":
         logger.invalid_procedure(
             username=current_user.username,
-            procedure=f'deleting post {post_uid}', 
-            request=request
+            procedure=f"deleting post {post_uid}",
+            request=request,
         )
         flash("Access Denied. ", category="error")
         return redirect(url_for("backstage.archive_control"))
@@ -728,9 +686,7 @@ def delete_post():
     db_posts.info.delete_one({"post_uid": post_uid})
     db_posts.content.delete_one({"post_uid": post_uid})
     logger.user.data_updated(
-        username=current_user.username, 
-        data_info=f'post {post_uid}', 
-        request=request
+        username=current_user.username, data_info=f"post {post_uid}", request=request
     )
     flash(f"Post {post_uid} has been deleted!", category="success")
 

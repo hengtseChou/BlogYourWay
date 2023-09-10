@@ -2,19 +2,19 @@ import logging
 from flask import request
 from application.config import ENV
 
-class Logger_Obj:
 
+class Logger_Obj:
     def __init__(self):
-        if ENV == 'prod':
+        if ENV == "prod":
             self._logger = setup_prod_logger()
-        elif ENV == 'debug':
+        elif ENV == "debug":
             self._logger = setup_debug_logger()
 
         self.user = Log_for_User_Actions(self._logger)
 
     def debug(self, msg):
         self._logger.debug(msg)
-    
+
     def info(self, msg):
         self._logger.info(msg)
 
@@ -27,7 +27,7 @@ class Logger_Obj:
     def page_visited(self, request: request):
         self.debug(f"{request.path} was visited from {request.remote_addr}.")
 
-    def invalid_username(self, username: str, request: request):  
+    def invalid_username(self, username: str, request: request):
         self.debug(
             f"Invalid username {username} at {request.path}. IP: {request.remote_addr}."
         )
@@ -37,7 +37,9 @@ class Logger_Obj:
             f"Invalid post uid {post_uid} for user {username} was entered from {request.remote_addr}"
         )
 
-    def invalid_autor_for_the_post(self, username: str, post_uid: str, request: request):
+    def invalid_autor_for_the_post(
+        self, username: str, post_uid: str, request: request
+    ):
         self.debug(
             f"The author entered ({username}) was not the author of the post {post_uid}. IP: {request.remote_addr}."
         )
@@ -52,70 +54,88 @@ class Logger_Obj:
             f"User {username} is now at the {tab} tab. IP: {request.remote_addr}."
         )
 
-    def log_for_pagination(self, username: str, num_of_posts_showing: int, request: request):
+    def log_for_pagination(
+        self, username: str, num_of_posts_showing: int, request: request
+    ):
         self.debug(
-            f'Showing {num_of_posts_showing} posts for user {username} at {request.full_path} from {request.remote_addr}.'
+            f"Showing {num_of_posts_showing} posts for user {username} at {request.full_path} from {request.remote_addr}."
         )
 
-class Log_for_User_Actions:
 
-    def __init__(self, logger: Logger_Obj):        
+class Log_for_User_Actions:
+    def __init__(self, logger: Logger_Obj):
         self._logger = logger
 
     def login_failed(self, username: str, msg: str, request: request):
-        msg = msg.strip().strip('.')
-        self._logger.debug(f'User {username} login failed. Msg: {msg}. IP: {request.remote_addr}.')
+        msg = msg.strip().strip(".")
+        self._logger.debug(
+            f"User {username} login failed. Msg: {msg}. IP: {request.remote_addr}."
+        )
 
     def login_succeeded(self, username: str, request: request):
-        self._logger.info(f'User {username} has logged in successflly from {request.remote_addr}. ')
+        self._logger.info(
+            f"User {username} has logged in successflly from {request.remote_addr}. "
+        )
 
-    def new_user_created(self, username: str, request: request):
-        self._logger.info(f'New user {username} has been created from {request.remote_addr}')
+    def registration_failed(self, username: str, msg: str, request: request):
+        msg = msg.strip().strip(".")
+        self._logger.debug(
+            f"Registration for user {username} failed. Msg: {msg}. IP: {request.remote_addr}."
+        )
+
+    def registration_succeeded(self, username: str, request: request):
+        self._logger.info(
+            f"New user {username} has been created from {request.remote_addr}"
+        )
 
     def logout(self, username: str, request: request):
-        self._logger.info(f'User {username} has logged out from {request.remote_addr}.')
+        self._logger.info(f"User {username} has logged out from {request.remote_addr}.")
 
     def deleted(self, username: str, request: request):
-        self._logger.info(f'User {username} has been deleted from {request.remote_addr}.')
+        self._logger.info(
+            f"User {username} has been deleted from {request.remote_addr}."
+        )
+
+    def data_created(self, username: str, data_info: str, request: request):
+        data_info_capitalized = data_info.capitalize().strip()
+        self._logger.info(
+            f"{data_info_capitalized} for user {username} has been created from {request.remote_addr}."
+        )
 
     def data_updated(self, username: str, data_info: str, request: request):
         data_info_capitalized = data_info.capitalize().strip()
         self._logger.info(
-            f'{data_info_capitalized} for user {username} has been updated from {request.remote_addr}.'
+            f"{data_info_capitalized} for user {username} has been updated from {request.remote_addr}."
         )
 
     def data_deleted(self, username: str, data_info: str, request: request):
         data_info_capitalized = data_info.capitalize().strip()
         self._logger.info(
-            f'{data_info_capitalized} for user {username} has been deleted from {request.remote_addr}.'
+            f"{data_info_capitalized} for user {username} has been deleted from {request.remote_addr}."
         )
-
-
-
 
 
 def setup_prod_logger():
 
-    gunicorn_logger = logging.getLogger('gunicorn.error')
+    gunicorn_logger = logging.getLogger("gunicorn.error")
     logger = gunicorn_logger
 
     return logger
 
+
 def setup_debug_logger():
 
     # to stop showing https log
-    werkzeug_logger = logging.getLogger('werkzeug')
+    werkzeug_logger = logging.getLogger("werkzeug")
     werkzeug_logger.setLevel(logging.ERROR)
 
-    stream_formatter = logging.Formatter(
-        fmt='[%(asctime)s] %(levelname)s: %(message)s'
-    )
+    stream_formatter = logging.Formatter(fmt="[%(asctime)s] %(levelname)s: %(message)s")
 
     file_formatter = logging.Formatter(
-        fmt='[%(asctime)s] %(levelname)s in %(funcName)s, %(module)s: %(message)s'
+        fmt="[%(asctime)s] %(levelname)s in %(funcName)s, %(module)s: %(message)s"
     )
 
-    logger = logging.getLogger('app')
+    logger = logging.getLogger("app")
     logger.setLevel(logging.DEBUG)
     # logger.setLevel(logging.INFO)
 
@@ -124,13 +144,12 @@ def setup_debug_logger():
     stream_handler.setLevel(logging.DEBUG)
     logger.addHandler(stream_handler)
 
-    file_handler = logging.FileHandler('app.log', 'w', 'utf-8')
+    file_handler = logging.FileHandler("app.log", "w", "utf-8")
     file_handler.setFormatter(file_formatter)
     file_handler.setLevel(logging.DEBUG)
     logger.addHandler(file_handler)
 
     return logger
 
-    
+
 logger = Logger_Obj()
-    

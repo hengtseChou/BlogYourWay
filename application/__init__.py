@@ -27,18 +27,18 @@ def create_app():
     # Register the custom error page
     @app.errorhandler(404)
     def page_not_found(e):
-        logger.debug(f'404 not found at {request.path} from {request.remote_addr}.')
+        logger.debug(f"404 not found at {request.path} from {request.remote_addr}.")
         return render_template("404.html"), 404
-    
+
     @app.errorhandler(500)
     def internal_server_error(e):
-        logger.error('Internal server error: %s', e)
+        logger.error("Internal server error: %s", e)
         return render_template("500.html"), 500
 
     # blueprints
     app.register_blueprint(blog, url_prefix="/")
     app.register_blueprint(backstage, url_prefix="/backstage/")
 
-    logger.info('APP INIT')
+    logger.info("APP INIT")
 
     return app

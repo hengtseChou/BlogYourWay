@@ -27,6 +27,7 @@ from application.blog.utils import (
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
+
 class User(UserMixin):
     # user id is set as username
     def __init__(self, user_data):
@@ -60,8 +61,7 @@ def landing_page():
     return render_template("landing_page.html")
 
 
-
-@blog.route('/login', methods=['GET'])
+@blog.route("/login", methods=["GET"])
 def login():
 
     ###################################################################
@@ -73,7 +73,7 @@ def login():
     if current_user.is_authenticated:
         flash("You are already logged in.")
         logger.debug(f"Attempt to duplicate logging in from {request.remote_addr}.")
-        return redirect(url_for("backstage.panel"))   
+        return redirect(url_for("backstage.panel"))
 
     ###################################################################
 
@@ -87,9 +87,10 @@ def login():
 
     # return page content
 
-    ###################################################################        
+    ###################################################################
 
     return render_template("login.html")
+
 
 @blog.route("/login", methods=["POST"])
 def sending_login_form():
@@ -98,15 +99,12 @@ def sending_login_form():
 
     # early returns
 
-    ###################################################################    
+    ###################################################################
 
     login_form = request.form.to_dict()
     if not db_users.login.exists("email", login_form["email"]):
         flash("Account not found. Please try again.", category="error")
-        logger.user.login_failed(
-            msg='email not found', 
-            request=request
-        )
+        logger.user.login_failed(msg="email not found", request=request)
         return render_template("login.html")
 
     # check pw
@@ -116,10 +114,7 @@ def sending_login_form():
 
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
-        logger.user.login_failed(
-            msg='invalid password', 
-            request=request
-        )
+        logger.user.login_failed(msg="invalid password", request=request)
         return render_template("login.html")
 
     ###################################################################
@@ -130,10 +125,7 @@ def sending_login_form():
 
     user = User(user_creds)
     login_user(user)
-    logger.user.login_succeeded(
-        username=user_creds['username'], 
-        request=request
-    )
+    logger.user.login_succeeded(username=user_creds["username"], request=request)
     flash("Login Succeeded.", category="success")
 
     ###################################################################
@@ -145,7 +137,7 @@ def sending_login_form():
     return redirect(url_for("backstage.overview"))
 
 
-@blog.route('/register', methods=['GET'])
+@blog.route("/register", methods=["GET"])
 def register():
 
     ###################################################################
@@ -166,7 +158,7 @@ def register():
 
 
 @blog.route("/register", methods=["POST"])
-def sending_register_form():       
+def sending_register_form():
 
     ###################################################################
 
@@ -174,13 +166,9 @@ def sending_register_form():
 
     ###################################################################
 
-    reg_form = request.form.to_dict()
-    create_user(reg_form=reg_form)
-    logger.user.new_user_created(
-        username=reg_form['username'],
-        request=request
-    )
-    flash("Registeration succeeded.", category="success")
+    username = create_user(request=request)
+    logger.user.registration_succeeded(username=username, request=request)
+    flash("Registration succeeded.", category="success")
 
     ###################################################################
 
@@ -298,12 +286,7 @@ def tag(username):
 
     ###################################################################
 
-    return render_template(
-        "tag.html",
-        user=user,
-        posts=posts_with_desired_tag,
-        tag=tag
-    )
+    return render_template("tag.html", user=user, posts=posts_with_desired_tag, tag=tag)
 
 
 @blog.route("/<username>/posts/<post_uid>", methods=["GET", "POST"])
@@ -316,25 +299,18 @@ def post(username, post_uid):
     ###################################################################
 
     if not db_users.info.exists("username", username):
-        logger.invalid_username(
-            username=username, 
-            request=request
-        )
+        logger.invalid_username(username=username, request=request)
         abort(404)
     if not db_posts.info.exists("post_uid", post_uid):
-        logger.invalid_post_uid(
-            username=username, 
-            post_uid=post_uid, 
-            request=request
-        )
+        logger.invalid_post_uid(username=username, post_uid=post_uid, request=request)
         abort(404)
 
-    author_found_with_post_uid = db_posts.info.find_one({'post_uid': post_uid})['author']
-    if username != author_found_with_post_uid: 
+    author_found_with_post_uid = db_posts.info.find_one({"post_uid": post_uid})[
+        "author"
+    ]
+    if username != author_found_with_post_uid:
         logger.invalid_autor_for_the_post(
-            username=username, 
-            post_uid=post_uid, 
-            request=request
+            username=username, post_uid=post_uid, request=request
         )
         abort(404)
 
@@ -363,7 +339,7 @@ def post(username, post_uid):
             create_comment(post_uid, request)
             db_posts.info.simple_update(
                 filter={"post_uid": post_uid},
-                update={"comments": target_post["comments"] + 1}
+                update={"comments": target_post["comments"] + 1},
             )
             flash("Comment published!", category="success")
 
@@ -371,7 +347,7 @@ def post(username, post_uid):
     # oldest to newest comment
     comments = db_comments.find_comments_by_post_uid(post_uid)
     for comment in comments:
-        comment["created_at"] = comment["created_at"].strftime("%Y-%m-%d %H:%M:%S")    
+        comment["created_at"] = comment["created_at"].strftime("%Y-%m-%d %H:%M:%S")
 
     ###################################################################
 
@@ -392,10 +368,7 @@ def post(username, post_uid):
     ###################################################################
 
     return render_template(
-        "blogpost.html", 
-        user=author_info, 
-        post=target_post, 
-        comments=comments
+        "blogpost.html", user=author_info, post=target_post, comments=comments
     )
 
 
@@ -443,11 +416,7 @@ def about(username):
 
     ###################################################################
 
-    return render_template(
-        "about.html", 
-        user=user, 
-        about=about
-    )
+    return render_template("about.html", user=user, about=about)
 
 
 @blog.route("/<username>/blog", methods=["GET"])
@@ -481,9 +450,7 @@ def blogg(username):
 
     # skip and limit posts with given page
     posts = db_posts.find_posts_with_pagination(
-        username=username,
-        page_number=current_page,
-        posts_per_page=POSTS_EACH_PAGE
+        username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
     )
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
@@ -507,11 +474,7 @@ def blogg(username):
     ###################################################################
 
     return render_template(
-        "blog.html",
-        user=user,
-        posts=posts,
-        tags=tags_dict,
-        pagination=pagination
+        "blog.html", user=user, posts=posts, tags=tags_dict, pagination=pagination
     )
 
 

@@ -4,23 +4,24 @@ import random
 import string
 from math import ceil
 from datetime import datetime, timedelta
-from flask import flash, render_template, abort
+from flask import flash, render_template, abort, request
 from flask_login import current_user
 from bs4 import BeautifulSoup
 from application.extensions.mongo import db_users, db_posts, db_comments
 from application.extensions.log import logger
 from application.config import ENV, RECAPTCHA_SECRET
 
+
 class HTML_Formatter:
     def __init__(self, html):
 
-        self.soup = BeautifulSoup(html, "html.parser")
+        self.__soup = BeautifulSoup(html, "html.parser")
 
     def add_padding(self):
 
         # Find all tags in the HTML
         # except figure and img tag
-        tags = self.soup.find_all(
+        tags = self.__soup.find_all(
             lambda tag: tag.name not in ["figure", "img"], recursive=False
         )
 
@@ -35,7 +36,7 @@ class HTML_Formatter:
     def change_heading_font(self):
 
         # Modify the style attribute for each heading tag
-        headings = self.soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
+        headings = self.__soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
 
         # Modify the style attribute for each heading tag
         for heading in headings:
@@ -47,7 +48,7 @@ class HTML_Formatter:
 
     def modify_figure(self, max_width="90%"):
 
-        imgs = self.soup.find_all(["img"])
+        imgs = self.__soup.find_all(["img"])
 
         # center image and modify size
         for img in imgs:
@@ -55,7 +56,7 @@ class HTML_Formatter:
             new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30% ;height: auto;"
             img["style"] = new_style
 
-        captions = self.soup.find_all(["figcaption"])
+        captions = self.__soup.find_all(["figcaption"])
 
         # center caption
         for caption in captions:
@@ -67,7 +68,7 @@ class HTML_Formatter:
 
     def to_string(self):
 
-        return str(self.soup)
+        return str(self.__soup)
 
     def to_blogpost(self):
 
@@ -80,27 +81,40 @@ class HTML_Formatter:
         about = self.add_padding().modify_figure(max_width="50%").to_string()
 
         return about
-    
 
-def create_user(reg_form):
 
+def create_user(request: request):
+
+    reg_form = request.form.to_dict()
     # registeration
     # with unique email, username and blog name
     # make sure username has no space character
     reg_form["username"] = reg_form["username"].strip().replace(" ", "-")
-    if db_users.exists("email", reg_form["email"]):
+    if db_users.login.exists("email", reg_form["email"]):
         flash("Email is already used. Please try another one.", category="error")
-        logger.debug(f'Registeration failed. type: email {reg_form["email"]} already existed.')
+        logger.user.registration_failed(
+            username=reg_form["username"],
+            msg=f'email {reg_form["email"]} already used',
+            request=request,
+        )
         return render_template("register.html")
 
-    if db_users.exists("username", reg_form["username"]):
+    if db_users.login.exists("username", reg_form["username"]):
         flash("Username is already used. Please try another one.", category="error")
-        logger.debug(f'Registeration failed. type: username {reg_form["username"]} already existed.')
+        logger.user.registration_failed(
+            username=reg_form["username"],
+            msg=f'username {reg_form["username"]} already used',
+            request=request,
+        )
         return render_template("register.html")
 
-    if db_users.exists("blogname", reg_form["blogname"]):
+    if db_users.info.exists("blogname", reg_form["blogname"]):
         flash("Blog name is already used. Please try another one.")
-        logger.debug(f'Registeration failed. type: blog name {reg_form["blogname"]} already existed.')
+        logger.user.registration_failed(
+            username=reg_form["username"],
+            msg=f'blog name {reg_form["blogname"]} already used',
+            request=request,
+        )
         return render_template("register.html")
 
     hashed_pw = bcrypt.hashpw(reg_form["password"].encode("utf-8"), bcrypt.gensalt(12))
@@ -108,37 +122,36 @@ def create_user(reg_form):
 
     new_user_login = {
         "username": reg_form["username"],
-        "email": reg_form["email"], 
-        "password": hashed_pw
+        "email": reg_form["email"],
+        "password": hashed_pw,
     }
 
     new_user_info = {
         "username": reg_form["username"],
-        "blogname": reg_form["blogname"], 
-        "email": reg_form["email"], 
-        "posts_count": 0, 
-        "banner_url": '', 
-        "profile_img_url": '',
-        "short_bio": '', 
-        "social_links": [], 
-        "enabled_change_log": False,
-        "created_at": get_today()
+        "blogname": reg_form["blogname"],
+        "email": reg_form["email"],
+        "posts_count": 0,
+        "banner_url": "",
+        "profile_img_url": "",
+        "short_bio": "",
+        "social_links": [],
+        "change_log_enabled": False,
+        "created_at": get_today(),
     }
-    
-    new_user_about = {
-        "username": reg_form["username"],
-        "about": ''
-    }
+
+    new_user_about = {"username": reg_form["username"], "about": ""}
 
     db_users.login.insert_one(new_user_login)
     db_users.info.insert_one(new_user_info)
-    db_users.about.insert_one(new_user_about)    
+    db_users.about.insert_one(new_user_about)
+
+    return reg_form["username"]
 
 
 def create_comment(post_uid, request):
 
     new_comment = {}
-    new_comment["created_at"] = get_today()    
+    new_comment["created_at"] = get_today()
     new_comment["post_uid"] = post_uid
     new_comment["comment"] = request.form.get("comment")
     alphabet = string.ascii_lowercase + string.digits
@@ -148,24 +161,23 @@ def create_comment(post_uid, request):
     new_comment["comment_uid"] = comment_uid
 
     if current_user.is_authenticated:
-        commenter = dict(
-            db_users.info.find_one({"username": current_user.username})
-        )
+        commenter = db_users.info.find_one({"username": current_user.username})
         new_comment["name"] = current_user.username
         new_comment["email"] = commenter["email"]
         new_comment["profile_link"] = f"/{current_user.username}/about"
         new_comment["profile_pic"] = f"/{current_user.username}/get-profile-pic"
-        
+
     else:
         new_comment["name"] = f'{request.form.get("name")} (Visitor)'
         new_comment["email"] = request.form.get("email")
         new_comment["profile_pic"] = "/static/img/visitor.png"
-        if new_comment["email"]: 
-            new_comment['profile_link'] = f'mailto:{new_comment["email"]}'
+        if new_comment["email"]:
+            new_comment["profile_link"] = f'mailto:{new_comment["email"]}'
         else:
             new_comment["profile_link"] = ""
 
     db_comments.comment.insert_one(new_comment)
+
 
 def all_tags_from_user(username):
 
@@ -197,8 +209,8 @@ def is_comment_verified(token):
         return True
     return False
 
-class Pagination:
 
+class Pagination:
     def __init__(self, username, current_page, posts_per_page):
 
         self.__allow_previous_page = False
@@ -227,24 +239,20 @@ class Pagination:
     @property
     def is_previous_page_allowed(self):
         return self.__allow_previous_page
-    
-    @property    
+
+    @property
     def is_next_page_allowed(self):
         return self.__allow_next_page
-    
+
     @property
     def current_page(self):
         return self.__current_page
 
 
-
-        
-
 def get_today():
 
-    if ENV == 'debug':
+    if ENV == "debug":
         today = datetime.now()
-    elif ENV == 'prod':
-        today = (datetime.now() + timedelta(hours=8))
+    elif ENV == "prod":
+        today = datetime.now() + timedelta(hours=8)
     return today
-

@@ -6,7 +6,6 @@ from application.blog.utils import get_today
 
 
 class Redis_method:
-    
     def __init__(self):
         self.r = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PW)
 
@@ -27,10 +26,9 @@ class Redis_method:
     def get_count(self, key):
 
         return self.r.pfcount(key)
-    
+
     @lru_cache(maxsize=None)  # Caching to optimize repeated calls
     def get_daily_visitor_data(self, username):
-
 
         start_time = get_today() - timedelta(days=30)
 
@@ -39,29 +37,30 @@ class Redis_method:
         daily_visitor_count = []
 
         for i in range(1, 31):
-            keys.append(f"{username}_uv_{(start_time + timedelta(days=i)).strftime('%Y%m%d')}")
-            dates.append((start_time + timedelta(days=i)).strftime('%Y-%m-%d'))   
+            keys.append(
+                f"{username}_uv_{(start_time + timedelta(days=i)).strftime('%Y%m%d')}"
+            )
+            dates.append((start_time + timedelta(days=i)).strftime("%Y-%m-%d"))
 
         daily_visitor_count = [self.get_count(key) for key in keys]
-        data = {'labels': dates, 'data': daily_visitor_count}
+        data = {"labels": dates, "data": daily_visitor_count}
         return data
-    
+
     def get_visitor_stats(self, username):
 
         data = {}
-        for view in ['home', 'blog', 'portfolio', 'about']:
+        for view in ["home", "blog", "portfolio", "about"]:
             data[view] = self.get_count(f"{username}_{view}")
-        
+
         total = 0
         for key in self.r.scan_iter(f"{username}_uv_*"):
-            total += self.get_count(key)        
-        data['total'] = total
+            total += self.get_count(key)
+        data["total"] = total
 
         return data
 
-    
     def delete(self, key):
-        
+
         self.r.delete(key)
 
     def delete_with_prefix(self, prefix):

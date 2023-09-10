@@ -1,5 +1,15 @@
 {% extends 'panel.html' %}
 
+{% block head %}
+<style>
+.form-check-input:checked {
+	background-color: #333!important;
+	border-color: #333;
+}
+</style>
+
+{% endblock %}
+
 {% block panel %}
 <h2 class="ms-2">Settings</h2>
 <hr>
@@ -9,15 +19,19 @@
 		<h4 class="ms-2 mb-3">General</h4>
 		<form method="post" autocomplete="off" id="general_form">
 			<div class="mb-4">
-				<label for="title" class="form-label ms-2 label-text"> · Add/update blog banner</label>
+				<label for="title" class="form-label ms-2 label-text"> · Add/update blog banner image</label>
 				<input type="text" class="form-control border-underline" id="banner_url" name="banner_url" value="{{ user.banner_url }}" placeholder="Insert image url">
 			</div>
 			<div class="mb-4">
-				<label for="editor" class="mb-3 ms-2 label-text"> · Modify backstage's banner text</label>
-				<textarea id="editor" name="banner-text" style="white-space: pre-line;" 
-									placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+				<label for="title" class="form-label ms-2 label-text"> · Change blog name</label>
+				<input type="text" class="form-control border-underline" id="blogname" name="blogname" value="{{ user.blogname }}">
 			</div>
-				<div class="text-end mb-5">
+			<div class="mb-4 form-check form-switch ms-2">
+				<input type="checkbox" class="form-check-input custom-control-input card-checkbox" name="enable_change_log" {% if user.change_log_enabled %}checked{% endif %}>
+				<label for="enable_change_log" class="form-check-label ms-2 custom-control-label">Enable change log for your blog</label>
+			</div>
+				  
+			<div class="text-end mb-5">
 				<button type="submit" class="btn panel-btn text-center" style="width: 20%; min-width: 150px;" name="general">Save Changes</button>
 			</div>
 		</form>
@@ -88,18 +102,6 @@
 
 	const mobile_nav_btn = document.getElementById('mobile-nav-settings');
 	mobile_nav_btn.style.color = 'white';
-
-	const easyMDE = new EasyMDE({
-		element: document.getElementById('editor'),
-		autofocus: true,
-		toolbar: ["bold", "italic", "heading", "|", 
-							"undo", "redo", "|", 
-							"code", "quote", "unordered-list", "ordered-list","horizontal-rule" ,'|',
-							"link", "image", "|", 
-							"preview", "guide"],
-		minHeight: '150px',
-		spellChecker: false
-	});
 
 	function validatePasswords() {
 		// Get the input values
