@@ -1,4 +1,5 @@
 import bcrypt
+import readtime
 from urllib.parse import unquote
 from markdown import Markdown
 from flask import (
@@ -327,9 +328,10 @@ def post(username, post_uid):
     target_post["content"] = md.convert(target_post["content"])
     target_post["content"] = HTML_Formatter(html=target_post["content"]).to_blogpost()
     target_post["last_updated"] = target_post["last_updated"].strftime("%Y-%m-%d")
+    target_post["readtime"] = str(readtime.of_html(target_post["content"]))
 
     # add comments
-    # this section should be placed before finding comments to show on the post
+    # this section should be placed before finding comments to show on the postu'1 min read'
     if request.method == "POST":
 
         token = request.form.get("g-recaptcha-response")

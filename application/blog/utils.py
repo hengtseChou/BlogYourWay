@@ -83,7 +83,7 @@ class HTML_Formatter:
         return about
 
 
-def create_user(request: request):
+def create_user(request: request) -> str:
 
     reg_form = request.form.to_dict()
     # registeration
@@ -136,6 +136,7 @@ def create_user(request: request):
         "short_bio": "",
         "social_links": [],
         "change_log_enabled": False,
+        "portfolio_enabled": True,
         "created_at": get_today(),
     }
 

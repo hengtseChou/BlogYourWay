@@ -32,9 +32,16 @@
 				<a class="btn w-100 px-2" href="/backstage/posts">
 					<span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts
 				</a>
+				{% if user.portfolio_enabled %}
 				<a class="btn w-100 px-2">
 					<span class="ms-2 me-3"><i class="fa-solid fa-masks-theater"></i></span>Portfolio
 				</a>
+				{% endif %}
+				{% if user.change_log_enabled %}
+				<a class="btn w-100 px-2">
+					<span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Change Log
+				</a>
+				{% endif %}
 				<a class="btn w-100 px-2" href="/backstage/about">
 					<span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About
 				</a>
@@ -74,9 +81,16 @@
 						<a class="btn w-100 px-2" href="/backstage/posts" id="mobile-nav-posts">
 							<span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts
 						</a>
+						{% if user.portfolio_enabled %}
 						<a class="btn w-100 px-2"id="mobile-nav-portfolio">
 							<span class="ms-2 me-3"><i class="fa-solid fa-masks-theater"></i></span>Portfolio
 						</a>
+						{% endif %}
+						{% if user.change_log_enabled %}
+						<a class="btn w-100 px-2"id="mobile-nav-portfolio">
+							<span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Change Log
+						</a>
+						{% endif %}
 						<a class="btn w-100 px-2" href="/backstage/about" id="mobile-nav-about">
 							<span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About
 						</a>

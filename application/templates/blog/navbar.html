@@ -9,9 +9,16 @@
 				<li class="nav-item">
 					<a class="nav-link" href="/{{ user.username}}/blog">Blog</a>
 				</li>
+				{% if user.portfolio_enabled %}
 				<li class="nav-item">
 					<a class="nav-link" href="/{{ user.username}}/portfolio">Portfolio</a>
 				</li>
+				{% endif %}
+				{% if user.change_log_enabled %}
+				<li class="nav-item">
+					<a class="nav-link" href="/{{ user.username}}/change-log">Change Log</a>
+				</li>
+				{% endif %}
 				<li class="nav-item">
 					<a class="nav-link" href="/{{ user.username}}/about">About</a>
 				</li>

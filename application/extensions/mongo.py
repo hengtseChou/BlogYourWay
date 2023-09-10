@@ -96,14 +96,6 @@ class DB_Posts:
         )
         return result
 
-    def get_full_post(self, post_uid: str):
-
-        target_post = self.info.find_one({"post_uid": post_uid})
-        target_post_content = self.content.find_one({"post_uid": post_uid})["content"]
-        target_post["content"] = target_post_content
-
-        return target_post
-
     def find_posts_with_pagination(
         self, username: str, page_number: int, posts_per_page: int
     ):
@@ -130,6 +122,14 @@ class DB_Posts:
             )
 
         return result
+    
+    def get_full_post(self, post_uid: str):
+
+        target_post = self.info.find_one({"post_uid": post_uid})
+        target_post_content = self.content.find_one({"post_uid": post_uid})["content"]
+        target_post["content"] = target_post_content
+
+        return target_post
 
 
 class DB_Comments:

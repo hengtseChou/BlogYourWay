@@ -96,3 +96,10 @@ def delete_user(username):
     db_users.info.delete_one({"username": username})
     db_users.about.delete_one({"username": username})
     logger.debug(f"Deleted {username} from the user database.")
+
+
+def switch_to_bool(switch_value: str | None)-> bool:
+
+    if switch_value is None:
+        return False
+    return True

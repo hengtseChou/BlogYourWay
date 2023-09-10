@@ -6,7 +6,7 @@ from application.extensions.mongo import db_users, db_posts, db_comments
 from application.extensions.redis import redis_method
 from application.extensions.log import logger
 from application.blog.utils import Pagination
-from application.backstage.utils import create_post, update_post, delete_user
+from application.backstage.utils import create_post, update_post, delete_user, switch_to_bool
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
@@ -390,18 +390,16 @@ def sending_updated_settings():
 
         banner_url = request.form.get("banner_url")
         blogname = request.form.get("blogname")
-        if request.form.get("enable_change_log") is None:
-            enable_change_log = False
-        else:
-            enable_change_log = True
-        logger.debug(enable_change_log)
+        enable_change_log = switch_to_bool(request.form.get("enable_change_log"))
+        enable_portfolio = switch_to_bool(request.form.get("enable_portfolio"))
 
         db_users.info.simple_update(
             filter={"username": current_user.username},
             update={
                 "banner_url": banner_url, 
                 "blogname": blogname, 
-                "change_log_enabled": enable_change_log
+                "change_log_enabled": enable_change_log,
+                "portfolio_enabled": enable_portfolio
             },
         )
         logger.user.data_updated(
