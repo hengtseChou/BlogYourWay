@@ -24,7 +24,7 @@ def create_app():
         # return none if the ID is not valid
         return user
 
-    # Register the custom 404 error page
+    # Register the custom error page
     @app.errorhandler(404)
     def page_not_found(e):
         logger.debug(f'404 not found at {request.path} from {request.remote_addr}.')

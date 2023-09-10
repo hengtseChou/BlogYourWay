@@ -143,7 +143,7 @@ def create_comment(post_uid, request):
     new_comment["comment"] = request.form.get("comment")
     alphabet = string.ascii_lowercase + string.digits
     comment_uid = "".join(random.choices(alphabet, k=8))
-    while db_comments.exists("comment_uid", comment_uid):
+    while db_comments.comment.exists("comment_uid", comment_uid):
         comment_uid = "".join(random.choices(alphabet, k=8))
     new_comment["comment_uid"] = comment_uid
 
@@ -157,10 +157,13 @@ def create_comment(post_uid, request):
         new_comment["profile_pic"] = f"/{current_user.username}/get-profile-pic"
         
     else:
-        new_comment["name"] = request.form.get("name")
+        new_comment["name"] = f'{request.form.get("name")} (Visitor)'
         new_comment["email"] = request.form.get("email")
         new_comment["profile_pic"] = "/static/img/visitor.png"
-        new_comment["profile_link"] = ""
+        if new_comment["email"]: 
+            new_comment['profile_link'] = f'mailto:{new_comment["email"]}'
+        else:
+            new_comment["profile_link"] = ""
 
     db_comments.comment.insert_one(new_comment)
 
@@ -200,6 +203,7 @@ class Pagination:
 
         self.__allow_previous_page = False
         self.__allow_next_page = False
+        self.__current_page = current_page
 
         # set up for pagination
         num_not_archieved = db_posts.info.count_documents(
@@ -220,13 +224,17 @@ class Pagination:
         if current_page > 1:
             self.__allow_next_page = True
 
+    @property
     def is_previous_page_allowed(self):
-
         return self.__allow_previous_page
     
+    @property    
     def is_next_page_allowed(self):
-
         return self.__allow_next_page
+    
+    @property
+    def current_page(self):
+        return self.__current_page
 
 
 

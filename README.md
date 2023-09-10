@@ -20,5 +20,5 @@ Welcome to Little Blog, your all-in-one personal website and blogging platform. 
 
 2. Go to backstage and edit your profile.
 
-3. Make a new post at ant time!
+3. Make a new post at any time!
 

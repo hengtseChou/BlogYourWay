@@ -51,14 +51,14 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-6 text-start">
-				{% if allow_previous_page %}
-				{% set previous_page = current_page - 1 %}
+				{% if pagination.is_previous_page_allowed %}
+				{% set previous_page = pagination.current_page - 1 %}
 				<a href="/backstage/posts?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts </a>
 				{% endif %}
 			</div>
 			<div class="col-6 text-end">
-				{% if allow_next_page %}
-				{% set next_page = current_page + 1 %}
+				{% if pagination.is_next_page_allowed %}
+				{% set next_page = pagination.current_page + 1 %}
 				<a href="/backstage/posts?page={{ next_page }}" class="btn"> Older Posts <span class="mx-1">➡️</span></a>
 				{% endif %}
 			</div>

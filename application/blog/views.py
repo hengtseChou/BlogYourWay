@@ -27,7 +27,6 @@ from application.blog.utils import (
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
-
 class User(UserMixin):
     # user id is set as username
     def __init__(self, user_data):
@@ -41,13 +40,14 @@ class User(UserMixin):
 
 @blog.route("/", methods=["GET"])
 def landing_page():
+
     ###################################################################
 
     # redis and logging
 
     ###################################################################
 
-    logger.debug(f"The landing page was visited from {request.remote_addr}.")
+    logger.page_visited(request=request)
     today = get_today().strftime("%Y%m%d")
     redis_method.increment_count(f"landing_page_{today}", request)
 
@@ -60,30 +60,52 @@ def landing_page():
     return render_template("landing_page.html")
 
 
-@blog.route("/login", methods=["GET", "POST"])
+
+@blog.route('/login', methods=['GET'])
 def login():
+
     ###################################################################
 
     # early returns
 
     ###################################################################
 
-    if request.method == "GET":
-        logger.debug(f"{request.path} was visited from {request.remote_addr}.")
+    if current_user.is_authenticated:
+        flash("You are already logged in.")
+        logger.debug(f"Attempt to duplicate logging in from {request.remote_addr}.")
+        return redirect(url_for("backstage.panel"))   
 
-        if current_user.is_authenticated:
-            flash("You are already logged in.")
-            logger.debug(f"Attempt to duplicate logging in from {request.remote_addr}.")
-            return redirect(url_for("backstage.panel"))
+    ###################################################################
 
-        return render_template("login.html")
+    # redis and logging
 
-    # find user in db
+    ###################################################################
+
+    logger.page_visited(request=request)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################        
+
+    return render_template("login.html")
+
+@blog.route("/login", methods=["POST"])
+def sending_login_form():
+
+    ###################################################################
+
+    # early returns
+
+    ###################################################################    
+
     login_form = request.form.to_dict()
     if not db_users.login.exists("email", login_form["email"]):
         flash("Account not found. Please try again.", category="error")
-        logger.debug(
-            f'Login failed. type: email {login_form["email"]} not found. IP: {request.remote_addr}.'
+        logger.user.login_failed(
+            msg='email not found', 
+            request=request
         )
         return render_template("login.html")
 
@@ -94,8 +116,9 @@ def login():
 
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
-        logger.debug(
-            f"Login failed. type: incorrect password. IP: {request.remote_addr}."
+        logger.user.login_failed(
+            msg='invalid password', 
+            request=request
         )
         return render_template("login.html")
 
@@ -107,8 +130,9 @@ def login():
 
     user = User(user_creds)
     login_user(user)
-    logger.info(
-        f'User {user_creds["username"]} has logged in from {request.remote_addr}.'
+    logger.user.login_succeeded(
+        username=user_creds['username'], 
+        request=request
     )
     flash("Login Succeeded.", category="success")
 
@@ -121,17 +145,28 @@ def login():
     return redirect(url_for("backstage.overview"))
 
 
-@blog.route("/register", methods=["GET", "POST"])
+@blog.route('/register', methods=['GET'])
 def register():
-    ###################################################################
-
-    # early returns
 
     ###################################################################
 
-    if request.method == "GET":
-        logger.debug(f"{request.path} was visited from {request.remote_addr}.")
-        return render_template("register.html")
+    # redis and logging
+
+    ###################################################################
+
+    logger.page_visited(request=request)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("register.html")
+
+
+@blog.route("/register", methods=["POST"])
+def sending_register_form():       
 
     ###################################################################
 
@@ -141,8 +176,9 @@ def register():
 
     reg_form = request.form.to_dict()
     create_user(reg_form=reg_form)
-    logger.info(
-        f'New user {reg_form["username"]} has been created from {request.remote_addr}'
+    logger.user.new_user_created(
+        username=reg_form['username'],
+        request=request
     )
     flash("Registeration succeeded.", category="success")
 
@@ -162,6 +198,7 @@ def redirect_home(username):
 
 @blog.route("/<username>/home", methods=["GET"])
 def home(username):
+
     ###################################################################
 
     # early returns
@@ -169,9 +206,7 @@ def home(username):
     ###################################################################
 
     if not db_users.info.exists("username", username):
-        logger.debug(
-            f"Invalid username {username} at {request.path}. IP: {request.remote_addr}."
-        )
+        logger.invalid_username(username=username, request=request)
         abort(404)
 
     ###################################################################
@@ -195,7 +230,7 @@ def home(username):
     today = get_today().strftime("%Y%m%d")
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    logger.debug(f"{request.path} was visited from {request.remote_addr}.")
+    logger.page_visited(request=request)
 
     ###################################################################
 
@@ -208,6 +243,7 @@ def home(username):
 
 @blog.route("/<username>/tags", methods=["GET"])
 def tag(username):
+
     ###################################################################
 
     # early returns
@@ -215,9 +251,7 @@ def tag(username):
     ###################################################################
 
     if not db_users.info.exists("username", username):
-        logger.debug(
-            f"Invalid username {username} at {request.path}. IP: {request.remote_addr}."
-        )
+        logger.invalid_username(username=username, request=request)
         abort(404)
 
     ###################################################################
@@ -274,6 +308,7 @@ def tag(username):
 
 @blog.route("/<username>/posts/<post_uid>", methods=["GET", "POST"])
 def post(username, post_uid):
+
     ###################################################################
 
     # early return for invalid inputs
@@ -281,20 +316,25 @@ def post(username, post_uid):
     ###################################################################
 
     if not db_users.info.exists("username", username):
-        logger.debug(
-            f"Post for invalid user {username} was entered. type: invalid username. IP: {request.remote_addr}."
+        logger.invalid_username(
+            username=username, 
+            request=request
         )
         abort(404)
     if not db_posts.info.exists("post_uid", post_uid):
-        logger.debug(
-            f"Tags for invalid user {username} was entered. type: invalid post id {post_uid}. IP: {request.remote_addr}."
+        logger.invalid_post_uid(
+            username=username, 
+            post_uid=post_uid, 
+            request=request
         )
         abort(404)
 
-    author_by_post_uid = db_posts.info.find_one({'post_uid': post_uid})['author']
-    if username != author_by_post_uid: 
-        logger.debug(
-            f"The author entered ({username}) was not the author of the post {post_uid}. IP: {request.remote_addr}."
+    author_found_with_post_uid = db_posts.info.find_one({'post_uid': post_uid})['author']
+    if username != author_found_with_post_uid: 
+        logger.invalid_autor_for_the_post(
+            username=username, 
+            post_uid=post_uid, 
+            request=request
         )
         abort(404)
 
@@ -312,13 +352,8 @@ def post(username, post_uid):
     target_post["content"] = HTML_Formatter(html=target_post["content"]).to_blogpost()
     target_post["last_updated"] = target_post["last_updated"].strftime("%Y-%m-%d")
 
-    # find comments
-    # oldest to newest comment
-    comments = db_comments.find_comments_by_post_uid(post_uid)
-    for comment in comments:
-        comment["created_at"] = comment["created_at"].strftime("%Y-%m-%d %H:%M:%S")
-
     # add comments
+    # this section should be placed before finding comments to show on the post
     if request.method == "POST":
 
         token = request.form.get("g-recaptcha-response")
@@ -332,6 +367,12 @@ def post(username, post_uid):
             )
             flash("Comment published!", category="success")
 
+    # find comments
+    # oldest to newest comment
+    comments = db_comments.find_comments_by_post_uid(post_uid)
+    for comment in comments:
+        comment["created_at"] = comment["created_at"].strftime("%Y-%m-%d %H:%M:%S")    
+
     ###################################################################
 
     # redis and logging
@@ -342,7 +383,7 @@ def post(username, post_uid):
     today = get_today().strftime("%Y%m%d")
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    logger.debug(f"{request.path} was visited from {request.remote_addr}.")
+    logger.page_visited(request=request)
 
     ###################################################################
 
@@ -360,6 +401,7 @@ def post(username, post_uid):
 
 @blog.route("/<username>/about", methods=["GET"])
 def about(username):
+
     ###################################################################
 
     # early return for invalid inputs
@@ -367,9 +409,7 @@ def about(username):
     ###################################################################
 
     if not db_users.info.exists("username", username):
-        logger.debug(
-            f"Invalid username {username} at {request.path}. IP: {request.remote_addr}."
-        )
+        logger.invalid_username(username=username, request=request)
         abort(404)
 
     ###################################################################
@@ -395,7 +435,7 @@ def about(username):
     today = get_today().strftime("%Y%m%d")
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    logger.debug(f"{request.path} was visited from {request.remote_addr}.")
+    logger.page_visited(request=request)
 
     ###################################################################
 
@@ -412,6 +452,7 @@ def about(username):
 
 @blog.route("/<username>/blog", methods=["GET"])
 def blogg(username):
+
     ###################################################################
 
     # early returns
@@ -419,9 +460,7 @@ def blogg(username):
     ###################################################################
 
     if not db_users.info.exists("username", username):
-        logger.debug(
-            f"Invalid username {username} at {request.path}. IP: {request.remote_addr}."
-        )
+        logger.invalid_username(username=username, request=request)
         abort(404)
 
     ###################################################################
@@ -439,8 +478,6 @@ def blogg(username):
 
     # set up pagination
     pagination = Pagination(username, current_page, POSTS_EACH_PAGE)
-    allow_previous_page = pagination.is_previous_page_allowed()
-    allow_next_page = pagination.is_next_page_allowed()
 
     # skip and limit posts with given page
     posts = db_posts.find_posts_with_pagination(
@@ -474,15 +511,15 @@ def blogg(username):
         user=user,
         posts=posts,
         tags=tags_dict,
-        current_page=current_page,
-        allow_previous_page=allow_previous_page,
-        allow_next_page=allow_next_page,
+        pagination=pagination
     )
 
 
 @blog.route("/<username>/get-profile-pic", methods=["GET"])
-def profile_img_endpoint(username):
+def profile_pic_endpoint(username):
+
     user = db_users.info.find_one({"username": username})
+
     if user["profile_img_url"]:
         profile_img_url = user["profile_img_url"]
     else:
