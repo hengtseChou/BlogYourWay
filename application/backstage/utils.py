@@ -15,7 +15,7 @@ def create_post(request):
 
     new_post_info = {}
     post_uid = "".join(random.choices(alphabet, k=8))
-    while db_posts.exists("post_uid", post_uid):
+    while db_posts.info.exists("post_uid", post_uid):
         post_uid = "".join(random.choices(alphabet, k=8))
     new_post_info["post_uid"] = post_uid
 

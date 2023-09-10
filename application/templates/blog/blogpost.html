@@ -17,9 +17,10 @@
 <div class="banner-container" style="background-image: url('{{ post.banner_url }}')"></div>
 <!-- post starts -->
 <div class="container">
-	<div class="row mt-5">
+	<div class="row mt-4 mt-md-5">
 		<div class="col-12 col-md-7 mx-auto">
 			<h1 class="text-center fw-bold">{{ post.title }}</h1>
+			<!-- info row from desktop -->
 			<div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-4">
 				<a href="/{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
@@ -29,9 +30,9 @@
 					{% endif %}
 				</a>
 				<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
-				<div class="date-text"><h4> · Last updated: {{ post.last_updated }}</h4></div>
+				<div class="date-text"><h4> · {{ post.readtime }}</h4></div>
 			</div>
-
+			<!-- info row from mobile -->
 			<div class="d-flex d-lg-none align-items-center justify-content-center my-2">
 				<a href="/{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
@@ -41,12 +42,11 @@
 					{% endif %}
 				</a>
 				<a href="/{{ post.author }}/about" class="author-link mx-1 mt-2"><h6>{{ post.author }}</h6></a>
-				<div class="date-text mt-2"><h6>· Last updated: {{ post.last_updated }}</h6></div>
+				<div class="date-text mt-2"><h6>· {{ post.readtime }}</h6></div>
 			</div>
-
-
-			<hr>
+			<hr>			
 			<div style="font-family: 'Noto Sans TC', sans; line-height: 1.6rem;" class="mb-3 px-2">
+				<i class="date-text">- Last updated: {{ post.last_updated }}</i>
 				{{ post.content | safe }}
 			</div>
 			<div class="d-flex align-items-center mb-4" style="color: rgb(100, 100, 100) ; font-size: large;">

@@ -11,6 +11,13 @@ from application.backstage.utils import create_post, update_post, delete_user, s
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
 
+@backstage.route("/", methods=["GET"])
+@login_required
+def redirect_overview():
+
+    return url_for("backstage.overview")
+
+
 @backstage.route("/overview", methods=["GET"])
 @login_required
 def overview():
