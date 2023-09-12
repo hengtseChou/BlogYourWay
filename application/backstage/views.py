@@ -174,7 +174,7 @@ def sending_updated_about():
 
     user_info = db_users.info.find_one({"username": current_user.username})
     user_about = db_users.about.find_one({"username": current_user.username})
-    user = {**user_info, **user_about}
+    user = user_info | user_about
 
     form = request.form.to_dict()
     updated_info = {
