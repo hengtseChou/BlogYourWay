@@ -29,7 +29,7 @@
 		</div>
 		<div class="text-end mb-5">
 			<a href="/backstage/posts" class="btn btn-light text-center" style="width: 20%; min-width: 100px;">Cancel</a>
-			<button type="submit" class="btn panel-btn text-center" style="width: 20%; min-width: 100px;">Save Changes</button>
+			<button type="submit" class="btn panel-btn text-center" style="width: 20%; min-width: 100px;" onclick="return validateUpdate()">Save Changes</button>
 		</div>
 	</div>
 </form>
@@ -52,9 +52,22 @@
 		minHeight: '200px',
 		spellChecker: false
 	});
+
+	document.addEventListener("DOMContentLoaded", function() {
+
+		easyMDE.value('{{ post.content| tojson }}'.slice(1, -1));	  
+
+		const form = document.getElementById("form");
+		form.addEventListener("keypress", function(event) {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+			}
+		});
+
+	});	
 	
 
-	function validateNewPost() {
+	function validateUpdate() {
 		var title = document.getElementById('title').value;
 		if (title.trim() === '') {
 			alert('You must enter the title for the post.');
@@ -69,7 +82,12 @@
 
 		var tags = document.getElementById('tags').value;
 		if (tags.trim() === '') {
-			alert('You must add some tags for the post.');
+			alert('You must add one tag to the post at least.');
+			return false;
+		}
+		const tagRegex = /^[\u4e00-\u9fa5a-zA-Z\s]+(,\s*[\u4e00-\u9fa5a-zA-Z\s]+)*$/;
+		if (!tagRegex.test(tags)) {
+			alert("You must separate tags with a comma (',').");
 			return false;
 		}
 
@@ -78,7 +96,6 @@
 			alert('You must add a banner image for the post.');
 			return false;
 		}
-
 		
 		if (easyMDE.value().trim() === '') {
 			alert('You did not write anything!');
@@ -87,20 +104,5 @@
 
 		return true;
 	}
-
-	document.addEventListener("DOMContentLoaded", function() {  
-
-
-		easyMDE.value('{{ post.content| tojson }}'.slice(1, -1));	
-  
-    
-    const form = document.getElementById("form");
-		form.addEventListener("keypress", function(event) {
-			if (event.key === 'Enter') {
-				event.preventDefault();
-			}
-		});
-
-	});	
 </script>
 {% endblock %}

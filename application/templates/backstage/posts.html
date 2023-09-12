@@ -128,7 +128,17 @@
 		minHeight: '200px',
 		spellChecker: false
 	});
-	
+
+	document.addEventListener("DOMContentLoaded", function() {  		
+		   
+		const form = document.getElementById("form");
+		form.addEventListener("keypress", function(event) {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+			}
+		});
+	 
+	});
 
 	function validateNewPost() {
 		var title = document.getElementById('title').value;
@@ -145,7 +155,12 @@
 
 		var tags = document.getElementById('tags').value;
 		if (tags.trim() === '') {
-			alert('You must add some tags for the post.');
+			alert('You must add one tag to the post at least.');
+			return false;
+		}
+		const tagRegex = /^[\u4e00-\u9fa5a-zA-Z\s]+(,\s*[\u4e00-\u9fa5a-zA-Z\s]+)*$/;
+		if (!tagRegex.test(tags)) {
+			alert("You must separate tags with a comma (',').");
 			return false;
 		}
 
@@ -154,25 +169,13 @@
 			alert('You must add a banner image for the post.');
 			return false;
 		}
-
 		
 		if (easyMDE.value().trim() === '') {
-			alert('You did not write anything!');
+			alert('You did not write anything for your post!');
 			return false;
 		}
 
 		return true;
-	}	
-
-	document.addEventListener("DOMContentLoaded", function() {  		
-		   
-    const form = document.getElementById("form");
-		form.addEventListener("keypress", function(event) {
-			if (event.key === 'Enter') {
-				event.preventDefault();
-			}
-		});
-
-	});	
+	}
 </script>
 {% endblock %}
