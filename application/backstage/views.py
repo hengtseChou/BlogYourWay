@@ -6,7 +6,13 @@ from application.extensions.mongo import db_users, db_posts, db_comments
 from application.extensions.redis import redis_method
 from application.extensions.log import logger
 from application.blog.utils import Pagination
-from application.backstage.utils import create_post, update_post, delete_user, switch_to_bool
+from application.backstage.utils import (
+    create_post, 
+    update_post, 
+    delete_user, 
+    switch_to_bool,
+    string_truncate
+)
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
@@ -577,13 +583,15 @@ def edit_featured():
 
     ###################################################################
 
+    truncated_post_title = string_truncate(db_posts.info.find_one({'post_uid': post_uid})['title'], 20)
+
     if request.args.get("featured") == "to_true":
         updated_featured_status = True
-        flash(f"Post {post_uid} is now featured on the home page!", category="success")
+        flash(f"your post \"{truncated_post_title}\" is now featured on the home page!", category="success")
 
     else:
         updated_featured_status = False
-        flash(f"Post {post_uid} is now removed from the home page!", category="success")
+        flash(f"Your post \"{truncated_post_title}\" is now removed from the home page!", category="success")
 
     db_posts.info.simple_update(
         filter={"post_uid": post_uid},
@@ -630,13 +638,15 @@ def edit_archived():
 
     ###################################################################
 
+    truncated_post_title = string_truncate(db_posts.info.find_one({'post_uid': post_uid})['title'], 20)
+
     if request.args.get("archived") == "to_true":
         updated_archived_status = True
-        flash(f"Post {post_uid} is now archived!", category="success")
+        flash(f"Your post \"{truncated_post_title}\" is now archived!", category="success")
 
     else:
         updated_archived_status = False
-        flash(f"Post {post_uid} is now restored from the archive!", category="success")
+        flash(f"your post \"{truncated_post_title}\" is now restored from the archive!", category="success")
 
     db_posts.info.simple_update(
         filter={"post_uid": post_uid},

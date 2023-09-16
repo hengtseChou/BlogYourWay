@@ -24,7 +24,7 @@
 			<tbody>
 				{% for post in posts %}
 				<tr>
-					<td class="align-middle text-truncate"><a href="posts/edit/{{ post.post_uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
+					<td class="align-middle"><a href="posts/edit/{{ post.post_uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
 					{% if post['featured'] %}
 					<span class="badge rounded-pill bg-success">Featured</span>
 					{% endif %}
@@ -33,14 +33,14 @@
 					<td class="text-center">{{ post['clicks'] }}</td>
 					<td class="text-center">{{ post['comments'] }}</td>
 					{% if post['featured'] %}
-					{% set set_featured_link = '/backstage/edit-featured?featured=to_false&uid=' %}
-					<td class="text-center"><a href='{{ set_featured_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
+					{% set featured_link = '/backstage/edit-featured?featured=to_false&uid=' %}
+					<td class="text-center"><a href='{{ featured_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
 					{% else %}
-					{% set set_featured_link = '/backstage/edit-featured?featured=to_true&uid=' %}
-					<td class="text-center"><a href='{{ set_featured_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
+					{% set featured_link = '/backstage/edit-featured?featured=to_true&uid=' %}
+					<td class="text-center"><a href='{{ featured_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
 					{% endif %}
-					{% set set_archived_link = '/backstage/edit-archived?archived=to_true&uid=' %}
-					<td class="text-center"><a href="{{ set_archived_link ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
+					{% set archived_link = '/backstage/edit-archived?archived=to_true&uid=' %}
+					<td class="text-center"><a href="{{ archived_link ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
 				</tr>		
 				{% endfor %}
 			</tbody>
@@ -64,8 +64,62 @@
 	</div>
 </div>
 <!-- mobile view -->
-<div class="d-block d-md-none">
-	<button class="btn panel-btn ms-auto me-3" data-bs-toggle="modal" data-bs-target="#myModal">+ New Post</button>
+<div class="d-block d-md-none" >
+	<div class="d-flex align-items-center mb-3">
+		<h2 class="ms-2 mt-3	">Posts</h2>
+		<button class="btn panel-btn ms-auto me-3" data-bs-toggle="modal" data-bs-target="#myModal">+ New Post</button>
+	</div>
+	<hr>
+	{% for post in posts %}
+	<div class="card rounded-0 py-2 overflow-visible my-3">
+		<div class="card-body">
+			<div class="row">
+				<div class="col-10">
+					<a href="posts/edit/{{ post.post_uid }}" class="text-truncate" style="color: black;">{{ post['title'] }}</a>
+					<p style="font-size: small; font-style: italic;" class="date-text mb-2">Created at {{ post['created_at'] }}</p>
+					<div >
+						{% if post['featured'] %}
+						<button class="btn btn-sm btn-success rounded-4 me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Featured posts will be on your home page">Featured</button>
+						{% endif %}						
+						<span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['clicks'] }}</span>
+						<span><i class="fa-regular fa-comment me-2"></i>{{ post['comments'] }}</span>						
+					</div>
+				</div>
+				<div class="col-2">
+					<div class="text-end dropdown">
+						<a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>					  
+						<ul class="dropdown-menu">
+							{% if post['featured'] %}
+							{% set featured_link = '/backstage/edit-featured?featured=to_false&uid=' %}
+						  <li><a class="dropdown-item" href='{{ featured_link ~ post.post_uid }}'>Remove featured</a></li>
+							{% else %}
+							{% set featured_link = '/backstage/edit-featured?featured=to_true&uid=' %}
+						  <li><a class="dropdown-item" href='{{ featured_link ~ post.post_uid }}'>Add featured</a></li>
+							{% endif %}
+							{% set archived_link = '/backstage/edit-archived?archived=to_true&uid=' %}
+						  <li><a class="dropdown-item" href='{{ archived_link ~ post.post_uid }}'>Move to archive</a></li>
+						</ul>
+					</div>					
+				</div>
+			</div>			
+		</div>
+	</div>
+	{% endfor %}
+	<!-- pagination -->
+	<div class="row">
+		<div class="col-6 text-start">
+			{% if pagination.is_previous_page_allowed %}
+			{% set previous_page = pagination.current_page - 1 %}
+			<a href="/backstage/posts?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts </a>
+			{% endif %}
+		</div>
+		<div class="col-6 text-end">
+			{% if pagination.is_next_page_allowed %}
+			{% set next_page = pagination.current_page + 1 %}
+			<a href="/backstage/posts?page={{ next_page }}" class="btn"> Older Posts <span class="mx-1">➡️</span></a>
+			{% endif %}
+		</div>
+	</div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -112,6 +166,9 @@
 
 	const mobile_nav_btn = document.getElementById('mobile-nav-posts');
 	mobile_nav_btn.style.color = 'white';
+
+	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
 	const easyMDE = new EasyMDE({
 		element: document.getElementById('editor'),

@@ -103,3 +103,9 @@ def switch_to_bool(switch_value: str | None)-> bool:
     if switch_value is None:
         return False
     return True
+
+def string_truncate(text:str, max_len:int):
+
+    if len(text) <= max_len:
+        return text
+    return f'{text[:max_len]}...'

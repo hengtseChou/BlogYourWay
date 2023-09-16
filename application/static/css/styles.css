@@ -219,5 +219,6 @@ blockquote p {
 	.main-panel {
 		margin-left: 0;
 		width: 100%;
+		height: 93vh;
 	}
 }
