@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
-{% block head %}
-
-{% endblock %}
-
 {% block title %}About · {{ user['blogname'] }}{% endblock %}
+
+{% block meta_tags %}
+<meta name="description" content="Some information about myself...">
+<meta property="og:image" content="https://little-blog.up.railway.app/{{ user['username'] }}/get-profile-pic">
+{% endblock %}
 
 {% block body%}
 

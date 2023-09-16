@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ post.title }}{% endblock %}
+
+
+{% block meta_tags %}
+<meta name="description" content="{{ post['subtitle'] }}">
+<meta property="og:image" content="{{ post['banner_url'] }}">
+{% endblock %}
+
 {% block head %}
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
@@ -27,8 +35,6 @@
 	}	
 </style>
 {% endblock %}
-
-{% block title %}{{ post.title }}{% endblock %}
 
 {% block body%}
 

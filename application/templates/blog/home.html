@@ -2,10 +2,14 @@
 
 {% block title %}{{ user['blogname'] }} · Little Blog{% endblock %}
 
+{% block meta_tags %}
+<meta name="description" content="Hi, welcome to my blog '{{ user['blogname'] }}'!">
+
+{% endblock %}
+
 {% block body%}
 
 {% include 'navbar.html' %}
-
 {% include 'banner.html' %}
 
 <div class="container-fluid">
