@@ -546,7 +546,8 @@ def sending_edited_post(post_uid):
     logger.user.data_updated(
         username=current_user.username, data_info=f"post {post_uid}", request=request
     )
-    flash(f"Post {post_uid} update succeeded!", category="success")
+    truncated_post_title = string_truncate(db_posts.info.find_one({'post_uid': post_uid})['title'], 20)
+    flash(f"Your post \"{truncated_post_title}\" has been updated!", category="success")
 
     ###################################################################
 
@@ -587,7 +588,7 @@ def edit_featured():
 
     if request.args.get("featured") == "to_true":
         updated_featured_status = True
-        flash(f"your post \"{truncated_post_title}\" is now featured on the home page!", category="success")
+        flash(f"Your post \"{truncated_post_title}\" is now featured on the home page!", category="success")
 
     else:
         updated_featured_status = False
@@ -646,7 +647,7 @@ def edit_archived():
 
     else:
         updated_archived_status = False
-        flash(f"your post \"{truncated_post_title}\" is now restored from the archive!", category="success")
+        flash(f"Your post \"{truncated_post_title}\" is now restored from the archive!", category="success")
 
     db_posts.info.simple_update(
         filter={"post_uid": post_uid},
@@ -698,12 +699,13 @@ def delete_post():
 
     ###################################################################
 
+    truncated_post_title = string_truncate(db_posts.info.find_one({'post_uid': post_uid})['title'], 20)
     db_posts.info.delete_one({"post_uid": post_uid})
     db_posts.content.delete_one({"post_uid": post_uid})
-    logger.user.data_updated(
+    logger.user.data_deleted(
         username=current_user.username, data_info=f"post {post_uid}", request=request
     )
-    flash(f"Post {post_uid} has been deleted!", category="success")
+    flash(f"Your post \"{truncated_post_title}\" has been deleted!", category="success")
 
     ###################################################################
 

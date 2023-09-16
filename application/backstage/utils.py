@@ -25,18 +25,11 @@ def create_post(request):
     new_post_info["subtitle"] = form["subtitle"]
     new_post_info["banner_url"] = form["banner_url"]
     new_post_info["author"] = current_user.username
+    new_post_info["tags"] = process_tags(form["tags"])
 
     new_post_info["comments"] = 0
     new_post_info["archived"] = False
     new_post_info["featured"] = False
-
-    # process tags
-    if form["tags"] == "":
-        new_post_info["tags"] = []
-    else:
-        new_post_info["tags"] = [
-            tag.strip().replace(" ", "-") for tag in form["tags"].split(",")
-        ]
 
     db_posts.content.insert_one({"post_uid": post_uid, "content": form["content"]})
     db_posts.info.insert_one(new_post_info)
@@ -52,19 +45,19 @@ def update_post(post_uid, request):
     updated_post_info["title"] = form["title"]
     updated_post_info["subtitle"] = form["subtitle"]
     updated_post_info["banner_url"] = form["banner_url"]
-
-    # process tags
-    if form["tags"] == "":
-        updated_post_info["tags"] = []
-    else:
-        updated_post_info["tags"] = [
-            tag.strip().replace(" ", "-") for tag in form["tags"].split(",")
-        ]
+    updated_post_info["tags"] = process_tags(form["tags"])
 
     db_posts.content.simple_update(
         filter={"post_uid": post_uid}, update={"content": form["content"]}
     )
     db_posts.info.simple_update(filter={"post_uid": post_uid}, update=updated_post_info)
+
+
+def process_tags(tag_string):    
+
+    if tag_string == "":
+        return []
+    return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
 
 
 def delete_user(username):
@@ -108,4 +101,4 @@ def string_truncate(text:str, max_len:int):
 
     if len(text) <= max_len:
         return text
-    return f'{text[:max_len]}...'
+    return f"{text[:max_len]}..."

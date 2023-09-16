@@ -66,7 +66,7 @@
 <!-- mobile view -->
 <div class="d-block d-md-none" >
 	<div class="d-flex align-items-center mb-3">
-		<h2 class="ms-2 mt-3	">Posts</h2>
+		<h2 class="ms-2 mt-3">Posts</h2>
 		<button class="btn panel-btn ms-auto me-3" data-bs-toggle="modal" data-bs-target="#myModal">+ New Post</button>
 	</div>
 	<hr>
@@ -75,7 +75,9 @@
 		<div class="card-body">
 			<div class="row">
 				<div class="col-10">
-					<a href="posts/edit/{{ post.post_uid }}" class="text-truncate" style="color: black;">{{ post['title'] }}</a>
+					<div class="text-truncate">
+						<a href="posts/edit/{{ post.post_uid }}" style="color: black;">{{ post['title'] }}</a>
+					</div>
 					<p style="font-size: small; font-style: italic;" class="date-text mb-2">Created at {{ post['created_at'] }}</p>
 					<div >
 						{% if post['featured'] %}
@@ -123,14 +125,14 @@
 </div>
 <!-- Modal -->
 <div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="myModalLabel">Write About Something...</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="myModalLabel">Write About Something...</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
 			<form method="post" autocomplete="off" id="form">
-	      <div class="modal-body">
+				<div class="modal-body">
 					<div class="mb-4">
 						<label for="title" class="form-label ms-2 label-text"> · Title</label>
 						<input type="text" class="form-control border-underline" id="title" name="title">
@@ -150,14 +152,14 @@
 					<div class="mb-4">
 						<textarea id="editor" name="content" style="white-space: pre-line;" placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
 					</div>
-      	</div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn panel-btn" onclick="return validateNewPost()">Submit</button>
-      </div>
-		</form>
-    </div>
-  </div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+					<button type="submit" class="btn panel-btn" onclick="return validateNewPost()">Submit</button>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
 {% endblock %}
 

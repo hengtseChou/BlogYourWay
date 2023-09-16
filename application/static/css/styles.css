@@ -76,7 +76,7 @@
 	margin-left: 250px;
 	width: calc(100vw - 262px);
 	overflow-y: auto;
-	max-height: 100vh;
+	height: 100vh;
 }
 
 .panel-btn {
