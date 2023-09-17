@@ -42,116 +42,45 @@ class Extended_Mongo_Cursor(Cursor):
 
 ###################################################################
 
-# DB objects
+# my database handler
 
 ###################################################################
 
+class MyDatabase:
+    def __init__(self) -> None:
+        self._users_db = Database(client=MongoClient(MONGO_URL, connect=False), name="users")
+        self._posts_db = Database(client=MongoClient(MONGO_URL, connect=False), name="posts")
+        self._comments_db = Database(client=MongoClient(MONGO_URL, connect=False), name="comments")  
 
-class DB_Users:
-    def __init__(self):
-
-        self.db = Database(client=MongoClient(MONGO_URL, connect=False), name="users")
-        # collections
-        self.login = Extended_Mongo_Collection(self.db, "user-login")
-        self.info = Extended_Mongo_Collection(self.db, "user-info")
-        self.about = Extended_Mongo_Collection(self.db, "user-about")
-
-
-class DB_Posts:
-    def __init__(self):
-
-        self.db = Database(client=MongoClient(MONGO_URL, connect=False), name="posts")
-        # collections
-        self.info = Extended_Mongo_Collection(self.db, "post-info")
-        self.content = Extended_Mongo_Collection(self.db, "post-content")
-
-    def find_featured_posts_info(self, username: str):
-
-        result = (
-            db_posts.info
-            .find({"author": username, "featured": True, "archived": False})
-            .sort("created_at", -1)
-            .limit(10)
-            .as_list()
-        )
-        return result
-
-    def find_all_posts_info(self, username: str):
-
-        result = (
-            db_posts.info
-            .find({"author": username, "archived": False})
-            .sort("created_at", -1)
-            .as_list()
-        )
-        return result
-
-    def find_all_archived_posts_info(self, username: str):
-
-        result = (
-            db_posts.info
-            .find({"author": username, "archived": True})
-            .sort("created_at", -1)
-            .as_list()
-        )
-        return result
-
-    def find_posts_with_pagination(
-        self, username: str, page_number: int, posts_per_page: int
-    ):
-
-        if page_number == 1:
-
-            result = (
-                db_posts.info
-                .find({"author": username, "archived": False})
-                .sort("created_at", -1)
-                .limit(posts_per_page)
-                .as_list()
-            )
-
-        elif page_number > 1:
-
-            result = (
-                db_posts.info
-                .find({"author": username, "archived": False})
-                .sort("created_at", -1)
-                .skip((page_number - 1) * posts_per_page)
-                .limit(posts_per_page)
-                .as_list()
-            )
-
-        return result
+        self._user_login = Extended_Mongo_Collection(self._users_db, "user-login")
+        self._user_info = Extended_Mongo_Collection(self._users_db, "user-info")
+        self._user_about = Extended_Mongo_Collection(self._users_db, "user-about")
+        self._post_info = Extended_Mongo_Collection(self._posts_db, "post-info")
+        self._post_content = Extended_Mongo_Collection(self._posts_db, "post-content")
+        self._comment = Extended_Mongo_Collection(self._comments_db, "comment")
     
-    def get_full_post(self, post_uid: str):
+    @property
+    def user_login(self):
+        return self._user_login
+    
+    @property
+    def user_info(self):
+        return self._user_info
+    
+    @property
+    def user_about(self):
+        return self._user_about
+    
+    @property
+    def post_info(self):
+        return self._post_info
+    
+    @property
+    def post_content(self):
+        return self._post_content
+    
+    @property
+    def comment(self):
+        return self._comment 
 
-        target_post = self.info.find_one({"post_uid": post_uid})
-        target_post_content = self.content.find_one({"post_uid": post_uid})["content"]
-        target_post["content"] = target_post_content
-
-        return target_post
-
-
-class DB_Comments:
-    def __init__(self):
-
-        self.db = Database(
-            client=MongoClient(MONGO_URL, connect=False), name="comments"
-        )
-        # collections
-        self.comment = Extended_Mongo_Collection(self.db, "comment")
-
-    def find_comments_by_post_uid(self, post_uid: str):
-
-        result = (
-            self.comment
-            .find({"post_uid": post_uid})
-            .sort("created_at", 1)
-            .as_list()
-        )
-        return result
-
-
-db_users = DB_Users()
-db_posts = DB_Posts()
-db_comments = DB_Comments()
+my_database = MyDatabase()

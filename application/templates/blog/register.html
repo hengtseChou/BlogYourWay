@@ -64,6 +64,7 @@
 					<span class="input-group-text"><i class="fa-solid fa-house"></i></span>
 					<input type="text" class="form-control" placeholder="Blog's name" name="blogname" id="blogname">
 				</div>
+				<small class="mb-4" style="color: #6c757d;"><p>20 characters maximum</p></small>      
 				<div class="form-check mb-4">
 					<input class="form-check-input" type="checkbox" name="terms" id="terms" style="background-color: #343a40; border: 0px;">
 					<label class="form-check-label" for="terms">
@@ -88,7 +89,7 @@
 		// both fields not empty
 		if (email.trim() === '' || password.trim() === '') {
 			alert('Enter email and password to continue.');
-			return;
+			return false;
 		}
 
 		var emailRegex = /^\S+@\S+\.\S+$/;
@@ -100,7 +101,7 @@
 		var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 		if (!passwordRegex.test(password)) {
 			alert('Password must be 8 characters long and contain both uppercase and lowercase letters.');
-			return;
+			return false;
 		}
 
 		// // Hide Step 1, show Step 2
@@ -141,7 +142,6 @@
 	document.getElementById('step1').addEventListener('keypress', function(event) {
 		if (event.key === 'Enter') {
 			event.preventDefault();
-			// validateStep1();
 		}
 	});
 </script>

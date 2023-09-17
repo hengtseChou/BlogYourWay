@@ -2,30 +2,33 @@ import requests
 import bcrypt
 import random
 import string
+import re
 from math import ceil
 from datetime import datetime, timedelta
-from flask import flash, render_template, abort, request
+from flask import flash, render_template, abort, request, Request
 from flask_login import current_user
 from bs4 import BeautifulSoup
-from application.extensions.mongo import db_users, db_posts, db_comments
-from application.extensions.log import logger
+from application.extensions.mongo import my_database, MyDatabase
+from application.extensions.log import logger, MyLogger
 from application.config import ENV, RECAPTCHA_SECRET
 
+###################################################################
 
-class HTML_Formatter:
+# html formatter
+
+###################################################################
+
+class HTMLFormatter:
     def __init__(self, html):
 
         self.__soup = BeautifulSoup(html, "html.parser")
 
     def add_padding(self):
 
-        # Find all tags in the HTML
-        # except figure and img tag
+        # add padding for all first level tags, except figure and img
         tags = self.__soup.find_all(
             lambda tag: tag.name not in ["figure", "img"], recursive=False
         )
-
-        # Add padding to each tag
         for tag in tags:
             current_style = tag.get("style", "")
             new_style = f"{current_style} padding-top: 10px; padding-bottom: 10px; "
@@ -48,17 +51,15 @@ class HTML_Formatter:
 
     def modify_figure(self, max_width="90%"):
 
-        imgs = self.__soup.find_all(["img"])
-
         # center image and modify size
+        imgs = self.__soup.find_all(["img"])
         for img in imgs:
             current_style = img.get("style", "")
             new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30% ;height: auto;"
             img["style"] = new_style
 
-        captions = self.__soup.find_all(["figcaption"])
-
         # center caption
+        captions = self.__soup.find_all(["figcaption"])
         for caption in captions:
             current_style = caption.get("style", "")
             new_style = f"{current_style} text-align: center"
@@ -70,156 +71,303 @@ class HTML_Formatter:
 
         return str(self.__soup)
 
-    def to_blogpost(self):
 
-        blogpost = self.add_padding().change_heading_font().modify_figure().to_string()
+def html_to_blogpost(html):
 
-        return blogpost
+    formatter = HTMLFormatter(html)
+    blogpost = formatter.add_padding().change_heading_font().modify_figure().to_string()
 
-    def to_about(self):
+    return blogpost
 
-        about = self.add_padding().modify_figure(max_width="50%").to_string()
+def html_to_about(html):
 
-        return about
+    formatter = HTMLFormatter(html)
+    about = formatter.add_padding().modify_figure(max_width="50%").to_string()
+
+    return about
+
+###################################################################
+
+# user registration
+
+###################################################################
+
+def get_today():
+
+    if ENV == "debug":
+        today = datetime.now()
+    elif ENV == "prod":
+        today = datetime.now() + timedelta(hours=8)
+    return today
+
+class UserRegistration:
+    def __init__(self, request:Request, db_handler: MyDatabase, logger: MyLogger):
+
+        self._reg_form = request.form.to_dict()
+        self._db_handler = db_handler
+        self._logger = logger
+
+    def _form_validated(self)-> bool:
+
+        # valid email
+        email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if not re.match(email_regex, self._reg_form["email"]):
+            return False
+        
+        # at least 8 character, upper/lower cases, numbers
+        password_regex = r'^(?=.*[a-z])(?=.*[A-Z]).{8}$'
+        if not re.match(password_regex, self._reg_form["password"]):
+            return False
+        
+        # letters, numbers, dot, dash, underscore only
+        username_regex = r'^[a-zA-Z0-9.\-_]+$'
+        if not re.match(username_regex, self._reg_form["username"]):
+            return False
+        
+        # 20 characters maximum
+        blogname_regex = r'^.{1,20}$'
+        if not re.match(blogname_regex, self._reg_form["blogname"]):
+            return False
+        
+        return True
+
+    def _no_duplicates(self)-> bool:
+
+        if self._db_handler.user_login.exists("email", self._reg_form["email"]):
+            flash("Email is already used. Please try another one.", category="error")
+            self._logger.user.registration_failed(
+                msg=f'email {self._reg_form["email"]} already used',
+                request=request,
+            )
+            return True
+        
+        if self._db_handler.user_login.exists("username", self._reg_form["username"]):
+            flash("Username is already used. Please try another one.", category="error")
+            self._logger.user.registration_failed(
+                msg=f'username {self._reg_form["username"]} already used',
+                request=request,
+            )
+            return True
+        
+        if self._db_handler.user_info.exists("blogname", self._reg_form["blogname"]):
+            flash("Blog name is already used. Please try another one.")
+            self._logger.user.registration_failed(
+                msg=f'blog name {self._reg_form["blogname"]} already used',
+                request=request,
+            )
+            return True
+        
+        return False
 
 
-def create_user(request: request) -> str:
+    def _hash_password(self, password):
 
-    reg_form = request.form.to_dict()
-    # registeration
-    # with unique email, username and blog name
-    # make sure username has no space character
-    reg_form["username"] = reg_form["username"].strip().replace(" ", "-")
-    if db_users.login.exists("email", reg_form["email"]):
-        flash("Email is already used. Please try another one.", category="error")
-        logger.user.registration_failed(
-            username=reg_form["username"],
-            msg=f'email {reg_form["email"]} already used',
-            request=request,
+        hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(12))
+        hashed_pw = hashed_pw.decode("utf-8")
+        return hashed_pw
+
+    def _create_user_login(self, username, email, hashed_password):
+
+        new_user_login = {
+            "username": username,
+            "email": email,
+            "password": hashed_password,
+        }
+        return new_user_login
+
+
+    def _create_user_info(self, username, email, blogname):
+
+        new_user_info = {
+            "username": username,
+            "email": email,
+            "blogname": blogname,
+            "banner_url": "",
+            "profile_img_url": "",
+            "short_bio": "",
+            "social_links": [],
+            "change_log_enabled": False,
+            "portfolio_enabled": True,
+            "created_at": get_today(),
+        }
+        return new_user_info
+
+    def _create_user_about(self, username):
+        
+        new_user_about = {"username": username, "about": ""}
+        return new_user_about
+    
+    def create_user(self):
+
+        if not self._form_validated():
+            return render_template("register.html")
+
+        if self._no_duplicates():
+            return render_template("register.html")
+
+        hashed_pw = self._hash_password(self._reg_form["password"])
+        new_user_login = self._create_user_login(
+            self._reg_form["username"],
+            self._reg_form["email"],
+            hashed_pw
         )
-        return render_template("register.html")
-
-    if db_users.login.exists("username", reg_form["username"]):
-        flash("Username is already used. Please try another one.", category="error")
-        logger.user.registration_failed(
-            username=reg_form["username"],
-            msg=f'username {reg_form["username"]} already used',
-            request=request,
+        new_user_info = self._create_user_info(
+            self._reg_form["username"],
+            self._reg_form["email"],
+            self._reg_form["blogname"]
         )
-        return render_template("register.html")
+        new_user_about = self._create_user_about(self._reg_form["username"])
 
-    if db_users.info.exists("blogname", reg_form["blogname"]):
-        flash("Blog name is already used. Please try another one.")
-        logger.user.registration_failed(
-            username=reg_form["username"],
-            msg=f'blog name {reg_form["blogname"]} already used',
-            request=request,
-        )
-        return render_template("register.html")
+        self._db_handler.user_login.insert_one(new_user_login)
+        self._db_handler.user_info.insert_one(new_user_info)
+        self._db_handler.user_about.insert_one(new_user_about)
 
-    hashed_pw = bcrypt.hashpw(reg_form["password"].encode("utf-8"), bcrypt.gensalt(12))
-    hashed_pw = hashed_pw.decode("utf-8")
+        return self._reg_form["username"]  
+        
 
-    new_user_login = {
-        "username": reg_form["username"],
-        "email": reg_form["email"],
-        "password": hashed_pw,
-    }
+def create_user(request: request)-> str:
 
-    new_user_info = {
-        "username": reg_form["username"],
-        "blogname": reg_form["blogname"],
-        "email": reg_form["email"],
-        "posts_count": 0,
-        "banner_url": "",
-        "profile_img_url": "",
-        "short_bio": "",
-        "social_links": [],
-        "change_log_enabled": False,
-        "portfolio_enabled": True,
-        "created_at": get_today(),
-    }
+    user_registration = UserRegistration(request, my_database, logger)
+    return user_registration.create_user()
 
-    new_user_about = {"username": reg_form["username"], "about": ""}
+###################################################################
 
-    db_users.login.insert_one(new_user_login)
-    db_users.info.insert_one(new_user_info)
-    db_users.about.insert_one(new_user_about)
+# create new comment
 
-    return reg_form["username"]
+###################################################################
 
+class unique_comment_uid_generator:
+    def __init__(self, db_handler: MyDatabase) -> None:
+        self._db_handler = db_handler
+
+    def generate(self):
+        alphabet = string.ascii_lowercase + string.digits
+        while True:
+            comment_uid = "".join(random.choices(alphabet, k=8))
+            if not self._db_handler.comment.exists("comment_uid", comment_uid):
+                return comment_uid
+            
+
+class CommentSetup:
+    
+    def __init__(self, 
+                 request: Request, 
+                 post_uid: str, 
+                 comment_uid_generator: unique_comment_uid_generator, 
+                 db_handler: MyDatabase, 
+                 commenter: current_user
+        ) -> None:
+
+        self._request = request
+        self._post_uid = post_uid
+        self._db_handler = db_handler
+        self._comment_uid = comment_uid_generator.generate()
+        self._commenter = commenter
+
+    def _form_validated(self):
+        
+        return True
+    
+    def _recaptcha_verified(self):
+
+        token = self._request.form.get("g-recaptcha-response")
+        payload = {"secret": RECAPTCHA_SECRET, "response": token}
+        r = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
+        response = r.json()
+
+        if response["success"]:
+            return True
+        return False
+
+    def _is_authenticated_commenter(self):
+
+        if self._commenter.is_authenticated:
+            return True
+        return False
+    
+    def _create_authenticated_comment(self):
+        
+        commenter = self._db_handler.user_info.find_one({"username": current_user.username})
+        new_comment = {
+            "name": commenter["username"],
+            "email": commenter["email"],
+            "profile_link": f'/{commenter["username"]}/about',
+            "profile_pic": f'/{commenter["username"]}/get-profile-pic',
+            "post_uid": self._post_uid,
+            "comment_uid": self._comment_uid,
+            "comment": self._request.form.get("comment"),
+            "created_at": get_today(),
+        }
+        return new_comment
+
+    def _create_unauthenticated_comment(self):
+        
+        new_comment = {
+            "name": f'{request.form.get("name")} (Visitor)',
+            "email": request.form.get("email"),
+            "profile_link": "",
+            "profile_pic": "/static/img/visitor.png",
+            "post_uid": self._post_uid,
+            "comment_uid": self._comment_uid,
+            "comment": self._request.form.get("comment"),
+            "created_at": get_today(),
+        }
+        if new_comment["email"]:
+            new_comment["profile_link"] = f'mailto:{new_comment["email"]}'
+        return new_comment
+
+    def create_comment(self):
+
+        if not self._form_validated():
+            return
+        if not self._recaptcha_verified():
+            return
+        
+        if self._is_authenticated_commenter():
+            new_comment = self._create_authenticated_comment()
+        else:
+            new_comment = self._create_unauthenticated_comment()
+        
+        self._db_handler.comment.insert_one(new_comment)
 
 def create_comment(post_uid, request):
 
-    new_comment = {}
-    new_comment["created_at"] = get_today()
-    new_comment["post_uid"] = post_uid
-    new_comment["comment"] = request.form.get("comment")
-    alphabet = string.ascii_lowercase + string.digits
-    comment_uid = "".join(random.choices(alphabet, k=8))
-    while db_comments.comment.exists("comment_uid", comment_uid):
-        comment_uid = "".join(random.choices(alphabet, k=8))
-    new_comment["comment_uid"] = comment_uid
+    db = my_database
+    uid_generator = unique_comment_uid_generator(db_handler=db)
 
-    if current_user.is_authenticated:
-        commenter = db_users.info.find_one({"username": current_user.username})
-        new_comment["name"] = current_user.username
-        new_comment["email"] = commenter["email"]
-        new_comment["profile_link"] = f"/{current_user.username}/about"
-        new_comment["profile_pic"] = f"/{current_user.username}/get-profile-pic"
+    comment_setup = CommentSetup(
+        request=request, 
+        post_uid=post_uid, 
+        comment_uid_generator=uid_generator,
+        db_handler=db,
+        commenter=current_user
+    )
+    comment_setup.create_comment()
 
-    else:
-        new_comment["name"] = f'{request.form.get("name")} (Visitor)'
-        new_comment["email"] = request.form.get("email")
-        new_comment["profile_pic"] = "/static/img/visitor.png"
-        if new_comment["email"]:
-            new_comment["profile_link"] = f'mailto:{new_comment["email"]}'
-        else:
-            new_comment["profile_link"] = ""
+###################################################################
 
-    db_comments.comment.insert_one(new_comment)
+# to set pagination
 
-
-def all_tags_from_user(username):
-
-    result = db_posts.info.find({"author": username, "archived": False})
-    tags_dict = {}
-    for post in result:
-        post_tags = post["tags"]
-        for tag in post_tags:
-            if tag not in tags_dict:
-                tags_dict[tag] = 1
-            else:
-                tags_dict[tag] += 1
-
-    sorted_tags_key = sorted(tags_dict, key=tags_dict.get, reverse=True)
-    sorted_tags = {}
-    for key in sorted_tags_key:
-        sorted_tags[key] = tags_dict[key]
-
-    return sorted_tags
-
-
-def is_comment_verified(token):
-
-    payload = {"secret": RECAPTCHA_SECRET, "response": token}
-    r = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
-    response = r.json()
-
-    if response["success"]:
-        return True
-    return False
-
+###################################################################
 
 class Pagination:
-    def __init__(self, username, current_page, posts_per_page):
+    def __init__(self, db_handler: MyDatabase) -> None:
 
-        self.__allow_previous_page = False
-        self.__allow_next_page = False
-        self.__current_page = current_page
+        self._db_handler = db_handler
+        self._has_setup = False
+        self._allow_previous_page = None
+        self._allow_next_page = None
+        self._current_page = None
+
+    def setup(self, username, current_page, posts_per_page):
+
+        self._has_setup = True
+        self._allow_previous_page = False
+        self._allow_next_page = False
+        self._current_page = current_page
 
         # set up for pagination
-        num_not_archieved = db_posts.info.count_documents(
+        num_not_archieved = self._db_handler.post_info.count_documents(
             {"author": username, "archived": False}
         )
         if num_not_archieved == 0:
@@ -232,28 +380,159 @@ class Pagination:
             abort(404)
 
         if current_page * posts_per_page < num_not_archieved:
-            self.__allow_previous_page = True
+            self._allow_previous_page = True
 
         if current_page > 1:
-            self.__allow_next_page = True
+            self._allow_next_page = True
 
     @property
     def is_previous_page_allowed(self):
-        return self.__allow_previous_page
+        if not self._has_setup:
+            raise AttributeError('pagination has not setup yet.')
+        return self._allow_previous_page
 
     @property
     def is_next_page_allowed(self):
-        return self.__allow_next_page
+        if not self._has_setup:
+            raise AttributeError('pagination has not setup yet.')
+        return self._allow_next_page
 
     @property
     def current_page(self):
-        return self.__current_page
+        if not self._has_setup:
+            raise AttributeError('pagination has not setup yet.')
+        return self._current_page
+    
+pagination = Pagination(my_database)
+    
+###################################################################
 
+# to find tags from a user
 
-def get_today():
+###################################################################
+  
+class All_Tags:
 
-    if ENV == "debug":
-        today = datetime.now()
-    elif ENV == "prod":
-        today = datetime.now() + timedelta(hours=8)
-    return today
+    def __init__(self, db_handler: MyDatabase) -> None:
+        self._db_handler  = db_handler
+
+    def from_user(self, username):
+
+        result = self._db_handler.post_info.find({"author": username, "archived": False})
+        tags_dict = {}
+        for post in result:
+            post_tags = post["tags"]
+            for tag in post_tags:
+                if tag not in tags_dict:
+                    tags_dict[tag] = 1
+                else:
+                    tags_dict[tag] += 1
+
+        sorted_tags_key = sorted(tags_dict, key=tags_dict.get, reverse=True)
+        sorted_tags = {}
+        for key in sorted_tags_key:
+            sorted_tags[key] = tags_dict[key]
+
+        return sorted_tags
+    
+all_tags = All_Tags(my_database)
+    
+###################################################################
+
+# post utilities
+
+###################################################################    
+
+class PostUtils:
+    def __init__(self, db_handler: MyDatabase):
+
+        self._db_handler = db_handler
+
+    def find_featured_posts_info(self, username: str):
+
+        result = (
+            self._db_handler.post_info
+            .find({"author": username, "featured": True, "archived": False})
+            .sort("created_at", -1)
+            .limit(10)
+            .as_list()
+        )
+        return result
+
+    def find_all_posts_info(self, username: str):
+
+        result = (
+            self._db_handler.post_info
+            .find({"author": username, "archived": False})
+            .sort("created_at", -1)
+            .as_list()
+        )
+        return result
+
+    def find_all_archived_posts_info(self, username: str):
+
+        result = (
+            self._db_handler.post_info
+            .find({"author": username, "archived": True})
+            .sort("created_at", -1)
+            .as_list()
+        )
+        return result
+
+    def find_posts_with_pagination(self, username: str, page_number: int, posts_per_page: int):
+
+        if page_number == 1:
+
+            result = (
+                self._db_handler.post_info
+                .find({"author": username, "archived": False})
+                .sort("created_at", -1)
+                .limit(posts_per_page)
+                .as_list()
+            )
+
+        elif page_number > 1:
+
+            result = (
+                self._db_handler.post_info
+                .find({"author": username, "archived": False})
+                .sort("created_at", -1)
+                .skip((page_number - 1) * posts_per_page)
+                .limit(posts_per_page)
+                .as_list()
+            )
+
+        return result
+    
+    def get_full_post(self, post_uid: str):
+
+        target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
+        target_post_content = self._db_handler.post_content.find_one({"post_uid": post_uid})["content"]
+        target_post["content"] = target_post_content
+
+        return target_post
+
+post_utils = PostUtils(my_database)
+
+###################################################################
+
+# comment utilities
+
+################################################################### 
+
+class CommentUtils:
+
+    def __init__(self, db_handler: MyDatabase):
+        self._db_handler = db_handler
+
+    def find_comments_by_post_uid(self, post_uid: str):
+
+        result = (
+            self._db_handler.comment
+            .find({"post_uid": post_uid})
+            .sort("created_at", 1)
+            .as_list()
+        )
+        return result
+
+comment_utils = CommentUtils(my_database)

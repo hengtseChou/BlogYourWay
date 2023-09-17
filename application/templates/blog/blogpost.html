@@ -105,7 +105,7 @@
 				</div>
 				<div class="text-end mb-4">
 					<button class="g-recaptcha btn panel-btn text-center" data-sitekey="6LcxqWgnAAAAALNxCvk7tu1tVBikm_zKG54nCP3C" data-callback="onSubmit"
-					style="width: 25%; min-width: 150px;">Submit</button>
+					style="width: 25%; min-width: 150px;" onclick="return validateForm()">Submit</button>
 				</div>
 			</form>
 
@@ -147,6 +147,39 @@
 {% endblock %}
 
 {% block script %}
+<script>
+	function validateForm() {
+		// Perform input validation for Step 1
+		// var email = document.getElementById('email').value;
+		// var password = document.getElementById('password').value;
+
+		// // both fields not empty
+		// if (email.trim() === '' || password.trim() === '') {
+		// 	alert('Enter email and password to continue.');
+		// 	return false;
+		// }
+
+		// var emailRegex = /^\S+@\S+\.\S+$/;
+		// if (!emailRegex.test(email)) {
+		// 	alert('Enter a valid email address.');
+		// 	return false;
+		// }
+
+		// var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+		// if (!passwordRegex.test(password)) {
+		// 	alert('Password must be 8 characters long and contain both uppercase and lowercase letters.');
+		// 	return false;
+		// }
+
+		return true;
+	}
+
+	document.getElementById('comment-form').addEventListener('keypress', function(event) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+		}
+	});
+</script>
 <script>
 	// reading progress js
 	const readingProgress = document.querySelector('#reading-progress-fill');

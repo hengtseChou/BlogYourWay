@@ -3,7 +3,7 @@ from flask import request
 from application.config import ENV
 
 
-class Logger_Obj:
+class MyLogger:
     def __init__(self):
         if ENV == "prod":
             self._logger = setup_prod_logger()
@@ -63,7 +63,7 @@ class Logger_Obj:
 
 
 class Log_for_User_Actions:
-    def __init__(self, logger: Logger_Obj):
+    def __init__(self, logger: MyLogger):
         self._logger = logger
 
     def login_failed(self, username: str, msg: str, request: request):
@@ -77,10 +77,10 @@ class Log_for_User_Actions:
             f"User {username} has logged in successflly from {request.remote_addr}. "
         )
 
-    def registration_failed(self, username: str, msg: str, request: request):
+    def registration_failed(self, msg: str, request: request):
         msg = msg.strip().strip(".")
         self._logger.debug(
-            f"Registration for user {username} failed. Msg: {msg}. IP: {request.remote_addr}."
+            f"Registration failed. Msg: {msg}. IP: {request.remote_addr}."
         )
 
     def registration_succeeded(self, username: str, request: request):
@@ -152,4 +152,4 @@ def setup_debug_logger():
     return logger
 
 
-logger = Logger_Obj()
+logger = MyLogger()
