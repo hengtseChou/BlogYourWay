@@ -1,104 +1,201 @@
 import random
 import string
+from flask import Request
 from flask_login import current_user
-from application.extensions.mongo import db_users, db_posts, db_comments
-from application.extensions.log import logger
+from application.extensions.mongo import my_database, MyDatabase
+from application.extensions.log import logger, MyLogger
 from application.extensions.redis import redis_method
-from application.blog.utils import get_today
+from application.blog.utils import get_today, uid_generator
 
-alphabet = string.ascii_lowercase + string.digits
+###################################################################
 
+# create new post
 
-def create_post(request):
+###################################################################
 
-    form = request.form.to_dict()
-
-    new_post_info = {}
-    post_uid = "".join(random.choices(alphabet, k=8))
-    while db_posts.info.exists("post_uid", post_uid):
-        post_uid = "".join(random.choices(alphabet, k=8))
-    new_post_info["post_uid"] = post_uid
-
-    new_post_info["created_at"] = get_today()
-    new_post_info["last_updated"] = get_today()
-    new_post_info["title"] = form["title"]
-    new_post_info["subtitle"] = form["subtitle"]
-    new_post_info["banner_url"] = form["banner_url"]
-    new_post_info["author"] = current_user.username
-    new_post_info["tags"] = process_tags(form["tags"])
-
-    new_post_info["comments"] = 0
-    new_post_info["archived"] = False
-    new_post_info["featured"] = False
-
-    db_posts.content.insert_one({"post_uid": post_uid, "content": form["content"]})
-    db_posts.info.insert_one(new_post_info)
-
-    return post_uid
-
-
-def update_post(post_uid, request):
-
-    form = request.form.to_dict()
-    updated_post_info = {}
-    updated_post_info["last_updated"] = get_today()
-    updated_post_info["title"] = form["title"]
-    updated_post_info["subtitle"] = form["subtitle"]
-    updated_post_info["banner_url"] = form["banner_url"]
-    updated_post_info["tags"] = process_tags(form["tags"])
-
-    db_posts.content.simple_update(
-        filter={"post_uid": post_uid}, update={"content": form["content"]}
-    )
-    db_posts.info.simple_update(filter={"post_uid": post_uid}, update=updated_post_info)
-
-
-def process_tags(tag_string):    
-
+def process_tags(tag_string: str):
     if tag_string == "":
         return []
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
 
+class NewPostSetup:
+    def __init__(self, 
+                 request: Request, 
+                 post_uid_generator: uid_generator, 
+                 db_handler: MyDatabase,
+                 author_name: str
+        ) -> None:
+        self._request = request
+        self._post_uid = post_uid_generator.generate_post_uid()
+        self._db_handler = db_handler
+        self._author_name = author_name
+
+    def _form_validatd(self):
+        return True
+    
+    def _create_post_info(self) -> dict:
+        new_post_info = {
+            "title": self._request.form.get("title"),
+            "subtitle": self._request.form.get("subtitle"),
+            "author": self._author_name,
+            "post_uid": self._post_uid, 
+            "tags": process_tags(self._request.form.get("tags")),
+            "banner_url": self._request.form.get("banner_url"),
+            "created_at": get_today(),
+            "last_updated": get_today(),
+            "archived": False, 
+            "featured": False
+        }
+        return new_post_info
+    
+    def _create_post_content(self) -> dict:
+        new_post_content = {
+            "post_uid": self._post_uid,
+            "author": self._author_name,
+            "content": self._request.form.get("content")
+        }
+        return new_post_content
+    
+    def create_post(self):
+        new_post_info = self._create_post_info()
+        new_post_content = self._create_post_content()
+
+        self._db_handler.post_info.insert_one(new_post_info)
+        self._db_handler.post_content.insert_one(new_post_content)
+
+        return self._post_uid
+
+def create_post(request):
+
+    new_post_setup = NewPostSetup(
+        request=request,
+        post_uid_generator=uid_generator,
+        db_handler=my_database, 
+        author_name=current_user.username
+    )
+    return new_post_setup.create_post()
+
+###################################################################
+
+# updating a post
+
+###################################################################
+
+class PostUpdateSetup:
+
+    def __init__(self, 
+                 post_uid: str, 
+                 request: Request, 
+                 db_handler = MyDatabase
+        ) -> None:
+        self._post_uid = post_uid
+        self._request = request
+        self._db_handler = db_handler
+
+    def _updated_post_info(self) -> dict:
+        updated_post_info = {
+            "title": self._request.form.get("title"),
+            "subtitle": self._request.form.get("subtitle"),
+            "tags": process_tags(self._request.form.get("tags")),
+            "banner_url": self._request.form.get("banner_url"),
+            "last_updated": get_today()
+        }
+        return updated_post_info
+    
+    def _updated_post_content(self) -> dict:
+        updated_post_content = {
+            "content": self._request.form.get("content")
+        }
+        return updated_post_content
+    
+    def update_post(self):
+
+        updated_post_info = self._updated_post_info()
+        updated_post_content = self._updated_post_content()
+        
+        self._db_handler.post_info.simple_update(
+            filter={"post_uid": self._post_uid},
+            update=updated_post_info
+        )
+        self._db_handler.post_content.simple_update(
+            filter={"post_uid": self._post_uid},
+            update=updated_post_content
+        )        
+
+def update_post(post_uid, request):
+    post_update_setup = PostUpdateSetup(
+        post_uid=post_uid,
+        request=request,
+        db_handler=my_database
+    )
+    post_update_setup.update_post()
+
+###################################################################
+
+# deleting user
+
+###################################################################
+
+class UserDeletionSetup:
+    def __init__(self,
+                 username: str, 
+                 db_handler: MyDatabase,
+                 logger: MyLogger
+        ) -> None:
+        self._user_to_be_deleted = username
+        self._db_handler = db_handler
+        self._logger = logger
+    
+    def _get_posts_uid_by_user(self) -> list:
+        target_posts = self._db_handler.post_info.find({"author": self._user_to_be_deleted})
+        target_posts_uid = [post["post_uid"] for post in target_posts]
+
+        return target_posts_uid
+    
+    def _remove_all_posts(self):
+        self._db_handler.post_info.delete_many({"author": self._user_to_be_deleted})
+        self._db_handler.post_content.delete_many({"author": self._user_to_be_deleted})
+        self._logger.debug(f"Deleted all posts written by user {self._user_to_be_deleted}.")
+    
+    def _remove_all_related_comments(self, post_uids: list):
+        for post_uid in post_uids:
+            self._db_handler.comment.delete_many({"post_uid": post_uid})
+        self._logger.debug(f"Deleted relevant comments from user {self._user_to_be_deleted}.")
+
+    def _remove_user(self):
+        self._db_handler.user_login.delete_one({"username": self._user_to_be_deleted})
+        self._db_handler.user_info.delete_one({"username": self._user_to_be_deleted})
+        self._db_handler.user_about.delete_one({"username": self._user_to_be_deleted})
+        logger.debug(f"Deleted user information for user {self._user_to_be_deleted}.")
+
+    def start_deletion_process(self):
+        target_posts_uid = self._get_posts_uid_by_user()
+        self._remove_all_posts()
+        self._remove_all_related_comments(target_posts_uid)
+        # this place should includes removing metrics data for the user
+        # redis_method.delete_with_prefix(username)
+        self._remove_user()
 
 def delete_user(username):
-
-    # get all post id, because we want to also remove relevant comments
-    # remove all posts
-    # remove comments within the post
-    # remove postfolio
-    # remove user
-
-    posts_uid_to_delete = []
-    posts_to_delete = db_posts.info.find({"author": username})
-
-    for post in posts_to_delete:
-        posts_uid_to_delete.append(post["post_uid"])
-    for post_uid in posts_uid_to_delete:
-        db_posts.info.delete_one({"post_uid": post_uid})
-        db_posts.content.delete_one({"post_uid": post_uid})
-        db_comments.comment.delete_many({"post_uid": post_uid})
-        redis_method.delete(f"post_uid_{post_uid}")
-
-    logger.debug(
-        f"Deleted all posts by {username} and relevant comments from the post and the comment databases."
+    user_deletion = UserDeletionSetup(
+        username=username, 
+        db_handler=my_database,
+        logger=logger
     )
-    redis_method.delete_with_prefix(username)
-    logger.debug(f"Deleted all log with {username} in the redis memory.")
+    user_deletion.start_deletion_process()
 
-    db_users.login.delete_one({"username": username})
-    db_users.info.delete_one({"username": username})
-    db_users.about.delete_one({"username": username})
-    logger.debug(f"Deleted {username} from the user database.")
+###################################################################
 
+# other utilities
+
+###################################################################
 
 def switch_to_bool(switch_value: str | None)-> bool:
-
     if switch_value is None:
         return False
     return True
 
 def string_truncate(text:str, max_len:int):
-
     if len(text) <= max_len:
         return text
     return f"{text[:max_len]}..."

@@ -1,3 +1,4 @@
+from typing import Any, Optional
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 from pymongo.cursor import Cursor
@@ -9,20 +10,31 @@ class ExtendedCollection(Collection):
     def __init__(self, database: Database, name: str, create=False):
         super().__init__(database, name, create)
 
-    def find(self, *args, **kwargs):
-        return ExtendedCursor(self, *args, **kwargs)
+    def exists(self, key: str, value: Any)-> bool:
+        """check if the values exists for this key in this collection
 
-    def exists(self, key, value):
+        Args:
+            key (str): the key to search from
+            value (any): the value to look for
 
+        Returns:
+            bool: return True if exists
+        """
         if self.find_one({key: value}):
             return True
         return False
+
+    def find(self, *args, **kwargs):
+        return ExtendedCursor(self, *args, **kwargs)
+    
+    # this application usually does not consider the case where records not found
+    def find_one(self, filter: Any | None = None, *args: Any, **kwargs: Any) -> dict:
+        return dict(super().find_one(filter, *args, **kwargs))
 
     def update_one(self, filter, update):
         return super().update_one(filter, update)
 
     def simple_update(self, filter, update):
-
         return self.update_one(filter=filter, update={"$set": update})
 
 
@@ -34,7 +46,6 @@ class ExtendedCursor(Cursor):
         return super(ExtendedCursor, self)._Cursor__check_okay_to_chain()
 
     def as_list(self):
-
         self.__check_okay_to_chain()
         return list(self)
 

@@ -100,7 +100,7 @@ def get_today():
         today = datetime.now() + timedelta(hours=8)
     return today
 
-class UserRegistration:
+class NewUserSetup:
     def __init__(self, request:Request, db_handler: MyDatabase, logger: MyLogger):
 
         self._reg_form = request.form.to_dict()
@@ -227,7 +227,7 @@ class UserRegistration:
 
 def create_user(request: request)-> str:
 
-    user_registration = UserRegistration(request, my_database, logger)
+    user_registration = NewUserSetup(request, my_database, logger)
     return user_registration.create_user()
 
 ###################################################################
@@ -236,16 +236,34 @@ def create_user(request: request)-> str:
 
 ###################################################################
 
-class unique_comment_uid_generator:
+class uid_generator:
     def __init__(self, db_handler: MyDatabase) -> None:
         self._db_handler = db_handler
 
-    def generate(self):
+    def generate_comment_uid(self) -> str:
+        """look into the comment database and give a unique id for new comment
+
+        Returns:
+            str: an unique comment uid string
+        """
+
         alphabet = string.ascii_lowercase + string.digits
         while True:
             comment_uid = "".join(random.choices(alphabet, k=8))
             if not self._db_handler.comment.exists("comment_uid", comment_uid):
                 return comment_uid
+            
+    def generate_post_uid(self) -> str:
+        """look into the post database and give a unique id for new post
+
+        Returns:
+            str: an unique post uid string
+        """
+        alphabet = string.ascii_lowercase + string.digits
+        while True:
+            post_uid = "".join(random.choices(alphabet, k=8))
+            if not self._db_handler.post_info.exists("post_uid", post_uid):
+                return post_uid
             
 
 class CommentSetup:
@@ -253,23 +271,20 @@ class CommentSetup:
     def __init__(self, 
                  request: Request, 
                  post_uid: str, 
-                 comment_uid_generator: unique_comment_uid_generator, 
+                 comment_uid_generator: uid_generator, 
                  db_handler: MyDatabase, 
                  commenter: current_user
         ) -> None:
-
         self._request = request
         self._post_uid = post_uid
         self._db_handler = db_handler
-        self._comment_uid = comment_uid_generator.generate()
+        self._comment_uid = comment_uid_generator.generate_comment_uid()
         self._commenter = commenter
 
-    def _form_validated(self):
-        
+    def _form_validated(self):        
         return True
     
     def _recaptcha_verified(self):
-
         token = self._request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
         r = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
@@ -280,13 +295,11 @@ class CommentSetup:
         return False
 
     def _is_authenticated_commenter(self):
-
         if self._commenter.is_authenticated:
             return True
         return False
     
-    def _create_authenticated_comment(self):
-        
+    def _create_authenticated_comment(self):        
         commenter = self._db_handler.user_info.find_one({"username": current_user.username})
         new_comment = {
             "name": commenter["username"],
@@ -300,8 +313,7 @@ class CommentSetup:
         }
         return new_comment
 
-    def _create_unauthenticated_comment(self):
-        
+    def _create_unauthenticated_comment(self):        
         new_comment = {
             "name": f'{request.form.get("name")} (Visitor)',
             "email": request.form.get("email"),
@@ -317,7 +329,6 @@ class CommentSetup:
         return new_comment
 
     def create_comment(self):
-
         if not self._form_validated():
             return
         if not self._recaptcha_verified():
@@ -331,9 +342,8 @@ class CommentSetup:
         self._db_handler.comment.insert_one(new_comment)
 
 def create_comment(post_uid, request):
-
     db = my_database
-    uid_generator = unique_comment_uid_generator(db_handler=db)
+    uid_generator = uid_generator(db_handler=db)
 
     comment_setup = CommentSetup(
         request=request, 
@@ -350,9 +360,8 @@ def create_comment(post_uid, request):
 
 ###################################################################
 
-class Pagination:
+class Paging:
     def __init__(self, db_handler: MyDatabase) -> None:
-
         self._db_handler = db_handler
         self._has_setup = False
         self._allow_previous_page = None
@@ -360,7 +369,6 @@ class Pagination:
         self._current_page = None
 
     def setup(self, username, current_page, posts_per_page):
-
         self._has_setup = True
         self._allow_previous_page = False
         self._allow_next_page = False
@@ -403,7 +411,7 @@ class Pagination:
             raise AttributeError('pagination has not setup yet.')
         return self._current_page
     
-pagination = Pagination(my_database)
+paging = Paging(db_handler=my_database)
     
 ###################################################################
 
@@ -412,12 +420,10 @@ pagination = Pagination(my_database)
 ###################################################################
   
 class All_Tags:
-
     def __init__(self, db_handler: MyDatabase) -> None:
         self._db_handler  = db_handler
 
     def from_user(self, username):
-
         result = self._db_handler.post_info.find({"author": username, "archived": False})
         tags_dict = {}
         for post in result:
@@ -435,7 +441,7 @@ class All_Tags:
 
         return sorted_tags
     
-all_tags = All_Tags(my_database)
+all_tags = All_Tags(db_handler=my_database)
     
 ###################################################################
 
@@ -445,11 +451,9 @@ all_tags = All_Tags(my_database)
 
 class PostUtils:
     def __init__(self, db_handler: MyDatabase):
-
         self._db_handler = db_handler
 
     def find_featured_posts_info(self, username: str):
-
         result = (
             self._db_handler.post_info
             .find({"author": username, "featured": True, "archived": False})
@@ -460,7 +464,6 @@ class PostUtils:
         return result
 
     def find_all_posts_info(self, username: str):
-
         result = (
             self._db_handler.post_info
             .find({"author": username, "archived": False})
@@ -468,9 +471,8 @@ class PostUtils:
             .as_list()
         )
         return result
-
+    
     def find_all_archived_posts_info(self, username: str):
-
         result = (
             self._db_handler.post_info
             .find({"author": username, "archived": True})
@@ -479,10 +481,12 @@ class PostUtils:
         )
         return result
 
-    def find_posts_with_pagination(self, username: str, page_number: int, posts_per_page: int):
-
+    def find_posts_with_pagination(self, 
+                                   username: str, 
+                                   page_number: int, 
+                                   posts_per_page: int
+        ):        
         if page_number == 1:
-
             result = (
                 self._db_handler.post_info
                 .find({"author": username, "archived": False})
@@ -492,7 +496,6 @@ class PostUtils:
             )
 
         elif page_number > 1:
-
             result = (
                 self._db_handler.post_info
                 .find({"author": username, "archived": False})
@@ -505,14 +508,13 @@ class PostUtils:
         return result
     
     def get_full_post(self, post_uid: str):
-
         target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
         target_post_content = self._db_handler.post_content.find_one({"post_uid": post_uid})["content"]
         target_post["content"] = target_post_content
 
         return target_post
 
-post_utils = PostUtils(my_database)
+post_utils = PostUtils(db_handler=my_database)
 
 ###################################################################
 
@@ -521,12 +523,10 @@ post_utils = PostUtils(my_database)
 ################################################################### 
 
 class CommentUtils:
-
     def __init__(self, db_handler: MyDatabase):
         self._db_handler = db_handler
 
     def find_comments_by_post_uid(self, post_uid: str):
-
         result = (
             self._db_handler.comment
             .find({"post_uid": post_uid})
@@ -535,4 +535,4 @@ class CommentUtils:
         )
         return result
 
-comment_utils = CommentUtils(my_database)
+comment_utils = CommentUtils(db_handler=my_database)

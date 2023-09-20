@@ -2,9 +2,10 @@ from bcrypt import hashpw, checkpw, gensalt
 from datetime import datetime
 from flask import Blueprint, request, session, render_template, flash, redirect, url_for
 from flask_login import login_required, logout_user, current_user
+from application.extensions.mongo import my_database
 from application.extensions.redis import redis_method
 from application.extensions.log import logger
-from application.blog.utils import Pagination
+from application.blog.utils import paging, post_utils
 from application.backstage.utils import (
     create_post, 
     update_post, 
@@ -39,6 +40,7 @@ def overview():
     )
 
     ###################################################################
+    user = my_database.user_info.find_one({"username": current_user.username})
 
     # main actions
 
@@ -47,7 +49,7 @@ def overview():
     logger.debug(f"Retrieving stats for user {current_user.username} started.")
 
     now = datetime.now()
-    user = db_users.info.find_one({"username": current_user.username})
+    user = my_database.user_info.find_one({"username": current_user.username})
 
     time_difference = now - user["created_at"]
     user["days_joined"] = format(time_difference.days + 1, ",")
@@ -90,16 +92,12 @@ def post_control():
     ###################################################################
 
     current_page = request.args.get("page", default=1, type=int)
-    user = db_users.info.find_one({"username": current_user.username})
+    user = my_database.user_info.find_one({"username": current_user.username})
 
     if request.method == "POST":
 
         # logging for this is inside the create post function
         post_uid = create_post(request)
-        db_users.info.simple_update(
-            filter={"username": current_user.username},
-            update={"posts_count": user["posts_count"] + 1},
-        )
         logger.user.data_created(
             username=current_user.username,
             data_info=f"post {post_uid}",
@@ -110,9 +108,10 @@ def post_control():
     # query through posts
     # 20 posts for each page
     POSTS_EACH_PAGE = 20
-    pagination = Pagination(current_user.username, current_page, POSTS_EACH_PAGE)
-
-    posts = db_posts.find_posts_with_pagination(
+    pagination = paging.setup(
+        current_user.username, current_page, POSTS_EACH_PAGE
+    )
+    posts = post_utils.find_posts_with_pagination(
         username=current_user.username,
         page_number=current_page,
         posts_per_page=POSTS_EACH_PAGE,
@@ -121,7 +120,7 @@ def post_control():
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
         post["clicks"] = format(post["clicks"], ",")
-        post["comments"] = db_comments.comment.count_documents(
+        post["comments"] = my_database.comment.count_documents(
             {"post_uid": post["post_uid"]}
         )
         post["comments"] = format(post["comments"], ",")
@@ -154,8 +153,8 @@ def about_control():
         username=current_user.username, tab="about control", request=request
     )
 
-    user_info = db_users.info.find_one({"username": current_user.username})
-    user_about = db_users.about.find_one({"username": current_user.username})
+    user_info = my_database.user_info.find_one({"username": current_user.username})
+    user_about = my_database.user_about.find_one({"username": current_user.username})
     user = {**user_info, **user_about}
 
     ###################################################################
@@ -177,8 +176,8 @@ def sending_updated_about():
 
     ###################################################################
 
-    user_info = db_users.info.find_one({"username": current_user.username})
-    user_about = db_users.about.find_one({"username": current_user.username})
+    user_info = my_database.user_info.find_one({"username": current_user.username})
+    user_about = my_database.user_about.find_one({"username": current_user.username})
     user = user_info | user_about
 
     form = request.form.to_dict()
@@ -187,10 +186,10 @@ def sending_updated_about():
         "short_bio": form["short_bio"],
     }
     updated_about = {"about": form["about"]}
-    db_users.info.simple_update(
+    my_database.user_info.simple_update(
         filter={"username": user["username"]}, update=updated_info
     )
-    db_users.about.simple_update(
+    my_database.user_about.simple_update(
         filter={"username": user["username"]}, update={"$set": updated_about}
     )
     user.update(updated_info)
@@ -230,8 +229,8 @@ def archive_control():
 
     ###################################################################
 
-    user = db_users.info.find_one({"username": current_user.username})
-    posts = db_posts.find_all_archived_posts_info(current_user.username)
+    user = my_database.user_info.find_one({"username": current_user.username})
+    posts = post_utils.find_all_archived_posts_info(current_user.username)
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
@@ -272,7 +271,7 @@ def social_link_control():
 
     ###################################################################
 
-    user = db_users.info.find_one({"username": current_user.username})
+    user = my_database.user_info.find_one({"username": current_user.username})
     social_links = user["social_links"]
 
     ###################################################################
@@ -294,7 +293,7 @@ def sending_updated_social_links():
 
     ###################################################################
 
-    user = db_users.info.find_one({"username": current_user.username})
+    user = my_database.user_info.find_one({"username": current_user.username})
     updated_links = []
     form = request.form.to_dict()
     form_values = list(form.values())
@@ -302,7 +301,7 @@ def sending_updated_social_links():
     for i in range(0, len(form_values), 2):
         updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
 
-    db_users.info.simple_update(
+    my_database.user_info.simple_update(
         filter={"username": current_user.username},
         update={"social_links": updated_links},
     )
@@ -341,7 +340,7 @@ def theme():
 
     ###################################################################
 
-    user = db_users.info.find_one({"username": current_user.username})
+    user = my_database.user_info.find_one({"username": current_user.username})
 
     ###################################################################
 
@@ -373,7 +372,7 @@ def settings():
 
     ###################################################################
 
-    user = db_users.info.find_one({"username": current_user.username})
+    user = my_database.user_info.find_one({"username": current_user.username})
 
     ###################################################################
 
@@ -405,7 +404,7 @@ def sending_updated_settings():
         enable_change_log = switch_to_bool(request.form.get("enable_change_log"))
         enable_portfolio = switch_to_bool(request.form.get("enable_portfolio"))
 
-        db_users.info.simple_update(
+        my_database.user_info.simple_update(
             filter={"username": current_user.username},
             update={
                 "banner_url": banner_url, 
@@ -427,8 +426,8 @@ def sending_updated_settings():
         encoded_current_pw_input = current_pw_input.encode("utf8")
         new_pw = request.form.get("new")
 
-        user_creds = db_users.login.find_one({"username": current_user.username})
-        user = db_users.info.find_one({"username": current_user.username})
+        user_creds = my_database.user_login.find_one({"username": current_user.username})
+        user = my_database.user_info.find_one({"username": current_user.username})
         encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
         # check pw
@@ -443,7 +442,7 @@ def sending_updated_settings():
 
         # update new password
         hashed_new_pw = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
-        db_users.login.simple_update(
+        my_database.user_login.simple_update(
             filter={"username": current_user.username},
             update={"password": hashed_new_pw},
         )
@@ -457,8 +456,8 @@ def sending_updated_settings():
         current_pw_input = request.form.get("delete-confirm-pw")
         encoded_current_pw_input = current_pw_input.encode("utf8")
         username = current_user.username
-        user = db_users.info.find_one({"username": username})
-        user_creds = db_users.login.find_one({"username": username})
+        user = my_database.user_info.find_one({"username": username})
+        user_creds = my_database.user_login.find_one({"username": username})
         encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
@@ -478,7 +477,7 @@ def sending_updated_settings():
         logger.user.deleted(username=username, request=request)
         return redirect(url_for("blog.register"))
 
-    user = db_users.info.find_one({"username": current_user.username})
+    user = my_database.user_info.find_one({"username": current_user.username})
 
     ###################################################################
 
@@ -518,8 +517,8 @@ def edit_post(post_uid):
 
     ###################################################################
 
-    user = db_users.info.find({"username": current_user.username})
-    target_post = db_posts.get_full_post(post_uid)
+    user = my_database.user_info.find({"username": current_user.username})
+    target_post = post_utils.get_full_post(post_uid)
     target_post["tags"] = ", ".join(target_post["tags"])
 
     ###################################################################
@@ -545,7 +544,10 @@ def sending_edited_post(post_uid):
     logger.user.data_updated(
         username=current_user.username, data_info=f"post {post_uid}", request=request
     )
-    truncated_post_title = string_truncate(db_posts.info.find_one({'post_uid': post_uid})['title'], 20)
+    truncated_post_title = string_truncate(
+        my_database.post_info.find_one({'post_uid': post_uid})['title'], 
+        max_len=20
+    )
     flash(f"Your post \"{truncated_post_title}\" has been updated!", category="success")
 
     ###################################################################
@@ -583,7 +585,10 @@ def edit_featured():
 
     ###################################################################
 
-    truncated_post_title = string_truncate(db_posts.info.find_one({'post_uid': post_uid})['title'], 20)
+    truncated_post_title = string_truncate(
+        my_database.post_info.find_one({'post_uid': post_uid})['title'], 
+        max_len=20
+    )
 
     if request.args.get("featured") == "to_true":
         updated_featured_status = True
@@ -593,7 +598,7 @@ def edit_featured():
         updated_featured_status = False
         flash(f"Your post \"{truncated_post_title}\" is now removed from the home page!", category="success")
 
-    db_posts.info.simple_update(
+    my_database.post_info.simple_update(
         filter={"post_uid": post_uid},
         update={"featured": updated_featured_status},
     )
@@ -638,8 +643,10 @@ def edit_archived():
 
     ###################################################################
 
-    truncated_post_title = string_truncate(db_posts.info.find_one({'post_uid': post_uid})['title'], 20)
-
+    truncated_post_title = string_truncate(
+        my_database.post_info.find_one({'post_uid': post_uid})['title'], 
+        max_len=20
+    )
     if request.args.get("archived") == "to_true":
         updated_archived_status = True
         flash(f"Your post \"{truncated_post_title}\" is now archived!", category="success")
@@ -648,7 +655,7 @@ def edit_archived():
         updated_archived_status = False
         flash(f"Your post \"{truncated_post_title}\" is now restored from the archive!", category="success")
 
-    db_posts.info.simple_update(
+    my_database.user_info.simple_update(
         filter={"post_uid": post_uid},
         update={"archived": updated_archived_status},
     )
@@ -698,9 +705,12 @@ def delete_post():
 
     ###################################################################
 
-    truncated_post_title = string_truncate(db_posts.info.find_one({'post_uid': post_uid})['title'], 20)
-    db_posts.info.delete_one({"post_uid": post_uid})
-    db_posts.content.delete_one({"post_uid": post_uid})
+    truncated_post_title = string_truncate(
+        my_database.post_info.find_one({'post_uid': post_uid})['title'], 
+        max_len=20
+    )
+    my_database.post_info.delete_one({"post_uid": post_uid})
+    my_database.post_content.delete_one({"post_uid": post_uid})
     logger.user.data_deleted(
         username=current_user.username, data_info=f"post {post_uid}", request=request
     )

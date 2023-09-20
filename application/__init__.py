@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request
 from flask_login import LoginManager
 import os
-from application.blog.views import blog, User
+from application.blog.views import blog
 from application.backstage.views import backstage
 from application.extensions.log import logger
-from application.extensions.mongo import db_users
+from application.extensions.mongo import my_database
+from application.extensions.user import User
 
 
 def create_app():
@@ -19,7 +20,7 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(username):
-        user_creds = db_users.login.find_one({"username": username})
+        user_creds = my_database.user_login.find_one({"username": username})
         user = User(user_creds)
         # return none if the ID is not valid
         return user

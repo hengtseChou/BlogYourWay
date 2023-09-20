@@ -12,10 +12,11 @@ from flask import (
     abort,
     jsonify,
 )
-from flask_login import UserMixin, current_user, login_user
+from flask_login import current_user, login_user
 from application.extensions.mongo import my_database
 from application.extensions.redis import redis_method
 from application.extensions.log import logger
+from application.extensions.user import User
 from application.blog.utils import (
     html_to_blogpost,
     html_to_about, 
@@ -23,7 +24,7 @@ from application.blog.utils import (
     create_comment, 
     get_today, 
     all_tags, 
-    pagination,
+    paging,
     post_utils, 
     comment_utils
 )
@@ -31,15 +32,7 @@ from application.blog.utils import (
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
 
-class User(UserMixin):
-    # user id is set as username
-    def __init__(self, user_data):
-        for key, value in user_data.items():
-            if key == "username":
-                self.id = value
-                self.username = value
-                continue
-            setattr(self, key, value)
+
 
 
 @blog.route("/", methods=["GET"])
@@ -227,7 +220,7 @@ def home(username):
     return render_template("home.html", user=user, posts=featured_posts)
 
 
-@blog.route("/<username>/tags", methods=["GET"])
+@blog.route("/@<username>/tags", methods=["GET"])
 def tag(username):
 
     ###################################################################
@@ -287,7 +280,7 @@ def tag(username):
     return render_template("tag.html", user=user, posts=posts_with_desired_tag, tag=tag)
 
 
-@blog.route("/<username>/posts/<post_uid>", methods=["GET", "POST"])
+@blog.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
 def post(username, post_uid):
 
     ###################################################################
@@ -364,7 +357,7 @@ def post(username, post_uid):
     )
 
 
-@blog.route("/<username>/about", methods=["GET"])
+@blog.route("/@<username>/about", methods=["GET"])
 def about(username):
 
     ###################################################################
@@ -411,7 +404,7 @@ def about(username):
     return render_template("about.html", user=user, about=about)
 
 
-@blog.route("/<username>/blog", methods=["GET"])
+@blog.route("/@<username>/blog", methods=["GET"])
 def blogg(username):
 
     ###################################################################
@@ -438,7 +431,7 @@ def blogg(username):
     tags_dict = all_tags.from_user(username)
 
     # set up pagination
-    paging = pagination.setup(username, current_page, POSTS_EACH_PAGE)
+    pagination = paging.setup(username, current_page, POSTS_EACH_PAGE)
 
     # skip and limit posts with given page
     posts = post_utils.find_posts_with_pagination(
@@ -466,7 +459,7 @@ def blogg(username):
     ###################################################################
 
     return render_template(
-        "blog.html", user=user, posts=posts, tags=tags_dict, pagination=paging
+        "blog.html", user=user, posts=posts, tags=tags_dict, pagination=pagination
     )
 
 
