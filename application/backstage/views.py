@@ -2,7 +2,6 @@ from bcrypt import hashpw, checkpw, gensalt
 from datetime import datetime
 from flask import Blueprint, request, session, render_template, flash, redirect, url_for
 from flask_login import login_required, logout_user, current_user
-from application.extensions.mongo import db_users, db_posts, db_comments
 from application.extensions.redis import redis_method
 from application.extensions.log import logger
 from application.blog.utils import Pagination

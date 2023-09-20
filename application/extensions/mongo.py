@@ -1,4 +1,3 @@
-from markdown import Markdown
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
 from pymongo.cursor import Cursor
@@ -6,12 +5,12 @@ from pymongo.database import Database
 from application.config import MONGO_URL
 
 
-class Extended_Mongo_Collection(Collection):
+class ExtendedCollection(Collection):
     def __init__(self, database: Database, name: str, create=False):
         super().__init__(database, name, create)
 
     def find(self, *args, **kwargs):
-        return Extended_Mongo_Cursor(self, *args, **kwargs)
+        return ExtendedCursor(self, *args, **kwargs)
 
     def exists(self, key, value):
 
@@ -27,12 +26,12 @@ class Extended_Mongo_Collection(Collection):
         return self.update_one(filter=filter, update={"$set": update})
 
 
-class Extended_Mongo_Cursor(Cursor):
-    def __init__(self, collection: Extended_Mongo_Collection, filter=None):
+class ExtendedCursor(Cursor):
+    def __init__(self, collection: ExtendedCollection, filter=None):
         super().__init__(collection, filter)
 
     def __check_okay_to_chain(self):
-        return super(Extended_Mongo_Cursor, self)._Cursor__check_okay_to_chain()
+        return super(ExtendedCursor, self)._Cursor__check_okay_to_chain()
 
     def as_list(self):
 
@@ -52,12 +51,12 @@ class MyDatabase:
         self._posts_db = Database(client=MongoClient(MONGO_URL, connect=False), name="posts")
         self._comments_db = Database(client=MongoClient(MONGO_URL, connect=False), name="comments")  
 
-        self._user_login = Extended_Mongo_Collection(self._users_db, "user-login")
-        self._user_info = Extended_Mongo_Collection(self._users_db, "user-info")
-        self._user_about = Extended_Mongo_Collection(self._users_db, "user-about")
-        self._post_info = Extended_Mongo_Collection(self._posts_db, "post-info")
-        self._post_content = Extended_Mongo_Collection(self._posts_db, "post-content")
-        self._comment = Extended_Mongo_Collection(self._comments_db, "comment")
+        self._user_login = ExtendedCollection(self._users_db, "user-login")
+        self._user_info = ExtendedCollection(self._users_db, "user-info")
+        self._user_about = ExtendedCollection(self._users_db, "user-about")
+        self._post_info = ExtendedCollection(self._posts_db, "post-info")
+        self._post_content = ExtendedCollection(self._posts_db, "post-content")
+        self._comment = ExtendedCollection(self._comments_db, "comment")
     
     @property
     def user_login(self):

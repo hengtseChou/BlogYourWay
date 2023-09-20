@@ -13,7 +13,7 @@ from flask import (
     jsonify,
 )
 from flask_login import UserMixin, current_user, login_user
-from application.extensions.mongo import my_database, MyDatabase
+from application.extensions.mongo import my_database
 from application.extensions.redis import redis_method
 from application.extensions.log import logger
 from application.blog.utils import (
@@ -322,7 +322,7 @@ def post(username, post_uid):
     author_info = my_database.user_info.find_one({"username": username})
     target_post = post_utils.get_full_post(post_uid)
 
-    md = Markdown(extensions=["markdown_captions", "fenced_code"])
+    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
     target_post["content"] = md.convert(target_post["content"])
     target_post["content"] = html_to_blogpost(target_post["content"])
     target_post["last_updated"] = target_post["last_updated"].strftime("%Y-%m-%d")
