@@ -89,15 +89,79 @@ def html_to_about(html):
 
 ###################################################################
 
+# form validator
+
+###################################################################
+
+class FormValidator:
+
+    def validate_email(self, email: str) -> bool:
+        """Check if email is valid. E.g., test123@test.com.
+
+        Args:
+            email (str): plain text email address.
+
+        Returns:
+            bool: True is email address is valid..
+        """
+        email_regex = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z]{2,7})+$"
+        if re.match(email_regex, email):
+            return True
+        return False
+    
+    def validate_password(self, password:str) -> bool:
+        """Check if the plain (unhashed) password is valid. Password is at least 8 character, and must contains an uppercase/lowercase/number character.
+
+        Args:
+            password (str): plain text password.
+
+        Returns:
+            bool: True if password is valid
+        """
+        password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{8,}$"
+        if re.match(password_regex, password):
+            return True
+        return False
+    
+    def validate_username(self, username: str) -> bool:
+        """Check if username is valid. Username is letters, numbers, dot, dash, underscore only.
+
+        Args:
+            username (str): plain text username.
+
+        Returns:
+            bool: True if username is valid.
+        """
+        username_regex = r"^[a-zA-Z0-9][a-zA-Z0-9.\-_]*[a-zA-Z0-9]$"
+        if re.match(username_regex, username):
+            return True
+        return False
+    
+    def validate_blogname(self, blogname: str) -> bool:
+        """Check if the blog name is not longer than 20 characters.
+
+        Args:
+            blogname (str): plain text blog name.
+
+        Returns:
+            bool: True if the blog name is valid.
+        """
+        blogname_regex = r"^.{1,20}$"
+        if re.match(blogname_regex, blogname):
+            return True
+        return False
+
+###################################################################
+
 # user registration
 
 ###################################################################
 
-def get_today():
+def get_today(env):
 
-    if ENV == "debug":
+    if env == "debug":
         today = datetime.now()
-    elif ENV == "prod":
+    elif env == "prod":
         today = datetime.now() + timedelta(hours=8)
     return today
 
@@ -111,63 +175,49 @@ class NewUserSetup:
 
     def _form_validated(self) -> bool:
 
-        # valid email
-        email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
-        if not re.match(email_regex, self._reg_form["email"]):
-            return False
+        validator = FormValidator()
 
-        # at least 8 character, upper/lower cases, numbers
-        password_regex = r"^(?=.*[a-z])(?=.*[A-Z]).{8,}$"
-        if not re.match(password_regex, self._reg_form["password"]):
+        if not validator.validate_email(self._reg_form["email"]):
             return False
-
-        # letters, numbers, dot, dash, underscore only
-        username_regex = r"^[a-zA-Z0-9.\-_]+$"
-        if not re.match(username_regex, self._reg_form["username"]):
+        if not validator.validate_password(self._reg_form["password"]):
             return False
-
-        # 20 characters maximum
-        blogname_regex = r"^.{1,20}$"
-        if not re.match(blogname_regex, self._reg_form["blogname"]):
+        if not validator.validate_username(self._reg_form["username"]):
             return False
-
-        return True
+        if not validator.validate_blogname(self._reg_form["blogname"]):
+            return False
+        return True    
 
     def _no_duplicates(self) -> bool:
 
-        if self._db_handler.user_login.exists("email", self._reg_form["email"]):
-            flash("Email is already used. Please try another one.", category="error")
-            self._logger.user.registration_failed(
-                msg=f'email {self._reg_form["email"]} already used',
-                request=request,
-            )
-            return True
+        for field in ["email", "username", "blogname"]:
 
-        if self._db_handler.user_login.exists("username", self._reg_form["username"]):
-            flash("Username is already used. Please try another one.", category="error")
-            self._logger.user.registration_failed(
-                msg=f'username {self._reg_form["username"]} already used',
-                request=request,
-            )
-            return True
-
-        if self._db_handler.user_info.exists("blogname", self._reg_form["blogname"]):
-            flash("Blog name is already used. Please try another one.")
-            self._logger.user.registration_failed(
-                msg=f'blog name {self._reg_form["blogname"]} already used',
-                request=request,
-            )
-            return True
+            if self._db_handler.user_login.exists(field, self._reg_form[field]):
+                flash(f"{field.capitalize()} is already used. Please try another one.", category="error")
+                self._logger.user.registration_failed(
+                    msg=f'{field} {self._reg_form[field]} already used',
+                    request=request,
+                )
+                return True
 
         return False
 
-    def _hash_password(self, password):
+    def _hash_password(self, password: str) -> str:
+        """Hashing user input password.
+
+        Args:
+            password (str): plain text password.
+
+        Returns:
+            str: a string of the hashed password encoded back to utf-8.
+        """
 
         hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(12))
         hashed_pw = hashed_pw.decode("utf-8")
         return hashed_pw
 
-    def _create_user_login(self, username, email, hashed_password):
+    def _create_user_login(
+        self, username: str, email: str, hashed_password: str
+    ) -> dict:
 
         new_user_login = {
             "username": username,
@@ -176,7 +226,7 @@ class NewUserSetup:
         }
         return new_user_login
 
-    def _create_user_info(self, username, email, blogname):
+    def _create_user_info(self, username: str, email: str, blogname: str) -> dict:
 
         new_user_info = {
             "username": username,
@@ -188,11 +238,11 @@ class NewUserSetup:
             "social_links": [],
             "change_log_enabled": False,
             "portfolio_enabled": True,
-            "created_at": get_today(),
+            "created_at": get_today(env=ENV),
         }
         return new_user_info
 
-    def _create_user_about(self, username):
+    def _create_user_about(self, username: str) -> dict:
 
         new_user_about = {"username": username, "about": ""}
         return new_user_about
@@ -317,7 +367,7 @@ class CommentSetup:
             "post_uid": self._post_uid,
             "comment_uid": self._comment_uid,
             "comment": self._request.form.get("comment"),
-            "created_at": get_today(),
+            "created_at": get_today(env=ENV),
         }
         return new_comment
 
@@ -331,7 +381,7 @@ class CommentSetup:
             "post_uid": self._post_uid,
             "comment_uid": self._comment_uid,
             "comment": self._request.form.get("comment"),
-            "created_at": get_today(),
+            "created_at": get_today(env=ENV),
         }
         if new_comment["email"]:
             new_comment["profile_link"] = f'mailto:{new_comment["email"]}'

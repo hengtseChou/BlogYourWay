@@ -1,7 +1,7 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
-from pymongo.cursor import Cursor
+from pymongo.cursor import _Hint, Cursor
 from pymongo.database import Database
 from application.config import MONGO_URL
 
@@ -45,12 +45,27 @@ class ExtendedCollection(Collection):
 
 class ExtendedCursor(Cursor):
     def __init__(self, collection: ExtendedCollection, filter=None):
-        super().__init__(collection, filter)
+        super().__init__(collection, filter)    
 
     def __check_okay_to_chain(self):
 
         return super(ExtendedCursor, self)._Cursor__check_okay_to_chain()
+    
+    def sort(self, key_or_list: _Hint, direction: int | str | None = None):
 
+        super().sort(key_or_list, direction)
+        return self
+    
+    def skip(self, skip: int):
+
+        super().skip(skip)
+        return self
+    
+    def limit(self, limit: int):
+        
+        super().limit(limit)
+        return self
+    
     def as_list(self):
 
         self.__check_okay_to_chain()

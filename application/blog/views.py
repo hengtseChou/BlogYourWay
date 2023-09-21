@@ -13,6 +13,7 @@ from flask import (
     jsonify,
 )
 from flask_login import current_user, login_user
+from application.config import ENV
 from application.extensions.mongo import my_database
 from application.extensions.redis import redis_method
 from application.extensions.log import logger
@@ -41,7 +42,7 @@ def landing_page():
     ###################################################################
 
     logger.page_visited(request=request)
-    today = get_today().strftime("%Y%m%d")
+    today = get_today(env=ENV).strftime("%Y%m%d")
     redis_method.increment_count(f"landing_page_{today}", request)
 
     ###################################################################
@@ -202,7 +203,7 @@ def home(username):
     ###################################################################
 
     redis_method.increment_count(f"{username}_home", request)
-    today = get_today().strftime("%Y%m%d")
+    today = get_today(env=ENV).strftime("%Y%m%d")
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
     logger.page_visited(request=request)
@@ -262,7 +263,7 @@ def tag(username):
     ###################################################################
 
     redis_method.increment_count(f"{username}_tag: {tag}", request)
-    today = get_today().strftime("%Y%m%d")
+    today = get_today(env=ENV).strftime("%Y%m%d")
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
     logger.debug(f"{request.full_path} was visited from {request.remote_addr}.")
@@ -337,7 +338,7 @@ def post(username, post_uid):
     ###################################################################
 
     redis_method.increment_count(f"post_uid_{target_post['post_uid']}", request)
-    today = get_today().strftime("%Y%m%d")
+    today = get_today(env=ENV).strftime("%Y%m%d")
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
     logger.page_visited(request=request)
@@ -386,7 +387,7 @@ def about(username):
     ###################################################################
 
     redis_method.increment_count(f"{username}_about", request)
-    today = get_today().strftime("%Y%m%d")
+    today = get_today(env=ENV).strftime("%Y%m%d")
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
     logger.page_visited(request=request)
@@ -443,7 +444,7 @@ def blogg(username):
     ###################################################################
 
     redis_method.increment_count(f"{username}_blog", request)
-    today = get_today().strftime("%Y%m%d")
+    today = get_today(env=ENV).strftime("%Y%m%d")
     redis_method.increment_count(f"{username}_uv_{today}", request)
 
     logger.debug(f"{request.path} was visited from {request.remote_addr}.")
