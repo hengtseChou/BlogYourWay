@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
-from application.blog.utils import UserRegistration
+from application.blog.utils import NewUserSetup
 
-class TestUserRegistration:
+class TestNewUserSetup:
 
     mock_request = MagicMock()
     mock_db_handler = MagicMock()
@@ -16,7 +16,7 @@ class TestUserRegistration:
             'blogname': 'myblog'
         }
 
-        user_registration = UserRegistration(
+        user_registration = NewUserSetup(
             request=self.mock_request, 
             db_handler=self.mock_db_handler,
             logger=self.mock_logger

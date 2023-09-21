@@ -18,6 +18,7 @@ from application.config import ENV, RECAPTCHA_SECRET
 
 ###################################################################
 
+
 class HTMLFormatter:
     def __init__(self, html):
 
@@ -79,6 +80,7 @@ def html_to_blogpost(html):
 
     return blogpost
 
+
 def html_to_about(html):
 
     formatter = HTMLFormatter(html)
@@ -86,11 +88,13 @@ def html_to_about(html):
 
     return about
 
+
 ###################################################################
 
 # user registration
 
 ###################################################################
+
 
 def get_today():
 
@@ -100,38 +104,39 @@ def get_today():
         today = datetime.now() + timedelta(hours=8)
     return today
 
+
 class NewUserSetup:
-    def __init__(self, request:Request, db_handler: MyDatabase, logger: MyLogger):
+    def __init__(self, request: Request, db_handler: MyDatabase, logger: MyLogger):
 
         self._reg_form = request.form.to_dict()
         self._db_handler = db_handler
         self._logger = logger
 
-    def _form_validated(self)-> bool:
+    def _form_validated(self) -> bool:
 
         # valid email
-        email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
         if not re.match(email_regex, self._reg_form["email"]):
             return False
-        
+
         # at least 8 character, upper/lower cases, numbers
-        password_regex = r'^(?=.*[a-z])(?=.*[A-Z]).{8}$'
+        password_regex = r"^(?=.*[a-z])(?=.*[A-Z]).{8,}$"
         if not re.match(password_regex, self._reg_form["password"]):
             return False
-        
+
         # letters, numbers, dot, dash, underscore only
-        username_regex = r'^[a-zA-Z0-9.\-_]+$'
+        username_regex = r"^[a-zA-Z0-9.\-_]+$"
         if not re.match(username_regex, self._reg_form["username"]):
             return False
-        
+
         # 20 characters maximum
-        blogname_regex = r'^.{1,20}$'
+        blogname_regex = r"^.{1,20}$"
         if not re.match(blogname_regex, self._reg_form["blogname"]):
             return False
-        
+
         return True
 
-    def _no_duplicates(self)-> bool:
+    def _no_duplicates(self) -> bool:
 
         if self._db_handler.user_login.exists("email", self._reg_form["email"]):
             flash("Email is already used. Please try another one.", category="error")
@@ -140,7 +145,7 @@ class NewUserSetup:
                 request=request,
             )
             return True
-        
+
         if self._db_handler.user_login.exists("username", self._reg_form["username"]):
             flash("Username is already used. Please try another one.", category="error")
             self._logger.user.registration_failed(
@@ -148,7 +153,7 @@ class NewUserSetup:
                 request=request,
             )
             return True
-        
+
         if self._db_handler.user_info.exists("blogname", self._reg_form["blogname"]):
             flash("Blog name is already used. Please try another one.")
             self._logger.user.registration_failed(
@@ -156,9 +161,8 @@ class NewUserSetup:
                 request=request,
             )
             return True
-        
-        return False
 
+        return False
 
     def _hash_password(self, password):
 
@@ -174,7 +178,6 @@ class NewUserSetup:
             "password": hashed_password,
         }
         return new_user_login
-
 
     def _create_user_info(self, username, email, blogname):
 
@@ -193,10 +196,10 @@ class NewUserSetup:
         return new_user_info
 
     def _create_user_about(self, username):
-        
+
         new_user_about = {"username": username, "about": ""}
         return new_user_about
-    
+
     def create_user(self):
 
         if not self._form_validated():
@@ -207,14 +210,12 @@ class NewUserSetup:
 
         hashed_pw = self._hash_password(self._reg_form["password"])
         new_user_login = self._create_user_login(
-            self._reg_form["username"],
-            self._reg_form["email"],
-            hashed_pw
+            self._reg_form["username"], self._reg_form["email"], hashed_pw
         )
         new_user_info = self._create_user_info(
             self._reg_form["username"],
             self._reg_form["email"],
-            self._reg_form["blogname"]
+            self._reg_form["blogname"],
         )
         new_user_about = self._create_user_about(self._reg_form["username"])
 
@@ -222,19 +223,21 @@ class NewUserSetup:
         self._db_handler.user_info.insert_one(new_user_info)
         self._db_handler.user_about.insert_one(new_user_about)
 
-        return self._reg_form["username"]  
-        
+        return self._reg_form["username"]
 
-def create_user(request: request)-> str:
+
+def create_user(request: request) -> str:
 
     user_registration = NewUserSetup(request, my_database, logger)
     return user_registration.create_user()
+
 
 ###################################################################
 
 # create new comment
 
 ###################################################################
+
 
 class uid_generator:
     def __init__(self, db_handler: MyDatabase) -> None:
@@ -252,7 +255,7 @@ class uid_generator:
             comment_uid = "".join(random.choices(alphabet, k=8))
             if not self._db_handler.comment.exists("comment_uid", comment_uid):
                 return comment_uid
-            
+
     def generate_post_uid(self) -> str:
         """look into the post database and give a unique id for new post
 
@@ -264,30 +267,33 @@ class uid_generator:
             post_uid = "".join(random.choices(alphabet, k=8))
             if not self._db_handler.post_info.exists("post_uid", post_uid):
                 return post_uid
-            
+
 
 class CommentSetup:
-    
-    def __init__(self, 
-                 request: Request, 
-                 post_uid: str, 
-                 comment_uid_generator: uid_generator, 
-                 db_handler: MyDatabase, 
-                 commenter: current_user
-        ) -> None:
+    def __init__(
+        self,
+        request: Request,
+        post_uid: str,
+        comment_uid_generator: uid_generator,
+        db_handler: MyDatabase,
+        commenter: current_user,
+    ) -> None:
+
         self._request = request
         self._post_uid = post_uid
         self._db_handler = db_handler
         self._comment_uid = comment_uid_generator.generate_comment_uid()
         self._commenter = commenter
 
-    def _form_validated(self):        
+    def _form_validated(self):
         return True
-    
+
     def _recaptcha_verified(self):
         token = self._request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
-        r = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
+        r = requests.post(
+            "https://www.google.com/recaptcha/api/siteverify", params=payload
+        )
         response = r.json()
 
         if response["success"]:
@@ -295,12 +301,16 @@ class CommentSetup:
         return False
 
     def _is_authenticated_commenter(self):
+
         if self._commenter.is_authenticated:
             return True
         return False
-    
-    def _create_authenticated_comment(self):        
-        commenter = self._db_handler.user_info.find_one({"username": current_user.username})
+
+    def _create_authenticated_comment(self):
+
+        commenter = self._db_handler.user_info.find_one(
+            {"username": current_user.username}
+        )
         new_comment = {
             "name": commenter["username"],
             "email": commenter["email"],
@@ -313,7 +323,8 @@ class CommentSetup:
         }
         return new_comment
 
-    def _create_unauthenticated_comment(self):        
+    def _create_unauthenticated_comment(self):
+
         new_comment = {
             "name": f'{request.form.get("name")} (Visitor)',
             "email": request.form.get("email"),
@@ -329,30 +340,34 @@ class CommentSetup:
         return new_comment
 
     def create_comment(self):
+
         if not self._form_validated():
             return
         if not self._recaptcha_verified():
             return
-        
+
         if self._is_authenticated_commenter():
             new_comment = self._create_authenticated_comment()
         else:
             new_comment = self._create_unauthenticated_comment()
-        
+
         self._db_handler.comment.insert_one(new_comment)
 
+
 def create_comment(post_uid, request):
+
     db = my_database
     uid_generator = uid_generator(db_handler=db)
 
     comment_setup = CommentSetup(
-        request=request, 
-        post_uid=post_uid, 
+        request=request,
+        post_uid=post_uid,
         comment_uid_generator=uid_generator,
         db_handler=db,
-        commenter=current_user
+        commenter=current_user,
     )
     comment_setup.create_comment()
+
 
 ###################################################################
 
@@ -360,8 +375,10 @@ def create_comment(post_uid, request):
 
 ###################################################################
 
+
 class Paging:
     def __init__(self, db_handler: MyDatabase) -> None:
+
         self._db_handler = db_handler
         self._has_setup = False
         self._allow_previous_page = None
@@ -369,6 +386,7 @@ class Paging:
         self._current_page = None
 
     def setup(self, username, current_page, posts_per_page):
+
         self._has_setup = True
         self._allow_previous_page = False
         self._allow_next_page = False
@@ -395,36 +413,45 @@ class Paging:
 
     @property
     def is_previous_page_allowed(self):
+
         if not self._has_setup:
-            raise AttributeError('pagination has not setup yet.')
+            raise AttributeError("pagination has not setup yet.")
         return self._allow_previous_page
 
     @property
     def is_next_page_allowed(self):
+
         if not self._has_setup:
-            raise AttributeError('pagination has not setup yet.')
+            raise AttributeError("pagination has not setup yet.")
         return self._allow_next_page
 
     @property
     def current_page(self):
+
         if not self._has_setup:
-            raise AttributeError('pagination has not setup yet.')
+            raise AttributeError("pagination has not setup yet.")
         return self._current_page
-    
+
+
 paging = Paging(db_handler=my_database)
-    
+
 ###################################################################
 
 # to find tags from a user
 
 ###################################################################
-  
+
+
 class All_Tags:
     def __init__(self, db_handler: MyDatabase) -> None:
-        self._db_handler  = db_handler
+
+        self._db_handler = db_handler
 
     def from_user(self, username):
-        result = self._db_handler.post_info.find({"author": username, "archived": False})
+
+        result = self._db_handler.post_info.find(
+            {"author": username, "archived": False}
+        )
         tags_dict = {}
         for post in result:
             post_tags = post["tags"]
@@ -440,20 +467,24 @@ class All_Tags:
             sorted_tags[key] = tags_dict[key]
 
         return sorted_tags
-    
+
+
 all_tags = All_Tags(db_handler=my_database)
-    
+
 ###################################################################
 
 # post utilities
 
-###################################################################    
+###################################################################
+
 
 class PostUtils:
     def __init__(self, db_handler: MyDatabase):
+
         self._db_handler = db_handler
 
     def find_featured_posts_info(self, username: str):
+
         result = (
             self._db_handler.post_info
             .find({"author": username, "featured": True, "archived": False})
@@ -464,15 +495,16 @@ class PostUtils:
         return result
 
     def find_all_posts_info(self, username: str):
+
         result = (
-            self._db_handler.post_info
-            .find({"author": username, "archived": False})
+            self._db_handler.post_info.find({"author": username, "archived": False})
             .sort("created_at", -1)
             .as_list()
         )
         return result
-    
+
     def find_all_archived_posts_info(self, username: str):
+
         result = (
             self._db_handler.post_info
             .find({"author": username, "archived": True})
@@ -481,11 +513,10 @@ class PostUtils:
         )
         return result
 
-    def find_posts_with_pagination(self, 
-                                   username: str, 
-                                   page_number: int, 
-                                   posts_per_page: int
-        ):        
+    def find_posts_with_pagination(
+        self, username: str, page_number: int, posts_per_page: int
+    ):
+        
         if page_number == 1:
             result = (
                 self._db_handler.post_info
@@ -506,13 +537,17 @@ class PostUtils:
             )
 
         return result
-    
+
     def get_full_post(self, post_uid: str):
+
         target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
-        target_post_content = self._db_handler.post_content.find_one({"post_uid": post_uid})["content"]
+        target_post_content = self._db_handler.post_content.find_one(
+            {"post_uid": post_uid}
+        )["content"]
         target_post["content"] = target_post_content
 
         return target_post
+
 
 post_utils = PostUtils(db_handler=my_database)
 
@@ -520,19 +555,22 @@ post_utils = PostUtils(db_handler=my_database)
 
 # comment utilities
 
-################################################################### 
+###################################################################
+
 
 class CommentUtils:
     def __init__(self, db_handler: MyDatabase):
+
         self._db_handler = db_handler
 
     def find_comments_by_post_uid(self, post_uid: str):
+        
         result = (
-            self._db_handler.comment
-            .find({"post_uid": post_uid})
+            self._db_handler.comment.find({"post_uid": post_uid})
             .sort("created_at", 1)
             .as_list()
         )
         return result
+
 
 comment_utils = CommentUtils(db_handler=my_database)

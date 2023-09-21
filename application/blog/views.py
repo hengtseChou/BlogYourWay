@@ -31,10 +31,6 @@ from application.blog.utils import (
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
-
-
-
-
 @blog.route("/", methods=["GET"])
 def landing_page():
 
