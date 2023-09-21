@@ -14,17 +14,20 @@ from application.blog.utils import get_today, uid_generator
 ###################################################################
 
 def process_tags(tag_string: str):
+
     if tag_string == "":
         return []
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
 
 class NewPostSetup:
-    def __init__(self, 
-                 request: Request, 
-                 post_uid_generator: uid_generator, 
-                 db_handler: MyDatabase,
-                 author_name: str
-        ) -> None:
+    def __init__(
+        self,
+        request: Request, 
+        post_uid_generator: uid_generator, 
+        db_handler: MyDatabase,
+        author_name: str
+    ) -> None:
+
         self._request = request
         self._post_uid = post_uid_generator.generate_post_uid()
         self._db_handler = db_handler
@@ -34,6 +37,7 @@ class NewPostSetup:
         return True
     
     def _create_post_info(self) -> dict:
+
         new_post_info = {
             "title": self._request.form.get("title"),
             "subtitle": self._request.form.get("subtitle"),
@@ -49,6 +53,7 @@ class NewPostSetup:
         return new_post_info
     
     def _create_post_content(self) -> dict:
+
         new_post_content = {
             "post_uid": self._post_uid,
             "author": self._author_name,
@@ -57,6 +62,7 @@ class NewPostSetup:
         return new_post_content
     
     def create_post(self):
+        
         new_post_info = self._create_post_info()
         new_post_content = self._create_post_content()
 
@@ -83,16 +89,16 @@ def create_post(request):
 
 class PostUpdateSetup:
 
-    def __init__(self, 
-                 post_uid: str, 
-                 request: Request, 
-                 db_handler = MyDatabase
-        ) -> None:
+    def __init__(
+        self, post_uid: str, request: Request, db_handler = MyDatabase
+    ) -> None:
+        
         self._post_uid = post_uid
         self._request = request
         self._db_handler = db_handler
 
     def _updated_post_info(self) -> dict:
+
         updated_post_info = {
             "title": self._request.form.get("title"),
             "subtitle": self._request.form.get("subtitle"),
@@ -103,6 +109,7 @@ class PostUpdateSetup:
         return updated_post_info
     
     def _updated_post_content(self) -> dict:
+
         updated_post_content = {
             "content": self._request.form.get("content")
         }
@@ -123,6 +130,7 @@ class PostUpdateSetup:
         )        
 
 def update_post(post_uid, request):
+
     post_update_setup = PostUpdateSetup(
         post_uid=post_uid,
         request=request,
@@ -137,38 +145,42 @@ def update_post(post_uid, request):
 ###################################################################
 
 class UserDeletionSetup:
-    def __init__(self,
-                 username: str, 
-                 db_handler: MyDatabase,
-                 logger: MyLogger
-        ) -> None:
+    def __init__(
+        self, username: str, db_handler: MyDatabase,logger: MyLogger
+    ) -> None:
+
         self._user_to_be_deleted = username
         self._db_handler = db_handler
         self._logger = logger
     
     def _get_posts_uid_by_user(self) -> list:
+
         target_posts = self._db_handler.post_info.find({"author": self._user_to_be_deleted})
         target_posts_uid = [post["post_uid"] for post in target_posts]
 
         return target_posts_uid
     
     def _remove_all_posts(self):
+
         self._db_handler.post_info.delete_many({"author": self._user_to_be_deleted})
         self._db_handler.post_content.delete_many({"author": self._user_to_be_deleted})
         self._logger.debug(f"Deleted all posts written by user {self._user_to_be_deleted}.")
     
     def _remove_all_related_comments(self, post_uids: list):
+
         for post_uid in post_uids:
             self._db_handler.comment.delete_many({"post_uid": post_uid})
         self._logger.debug(f"Deleted relevant comments from user {self._user_to_be_deleted}.")
 
     def _remove_user(self):
+
         self._db_handler.user_login.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_info.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_about.delete_one({"username": self._user_to_be_deleted})
         logger.debug(f"Deleted user information for user {self._user_to_be_deleted}.")
 
     def start_deletion_process(self):
+
         target_posts_uid = self._get_posts_uid_by_user()
         self._remove_all_posts()
         self._remove_all_related_comments(target_posts_uid)
@@ -177,6 +189,7 @@ class UserDeletionSetup:
         self._remove_user()
 
 def delete_user(username):
+
     user_deletion = UserDeletionSetup(
         username=username, 
         db_handler=my_database,
@@ -191,11 +204,20 @@ def delete_user(username):
 ###################################################################
 
 def switch_to_bool(switch_value: str | None)-> bool:
+    """convert the return value of the bootstrap switch from the form into boolean.
+
+    Args:
+        switch_value (str | None): return value of switch checkbox from the form, possible values: "on" and None.
+
+    Returns:
+        bool: a boolean value.
+    """
     if switch_value is None:
         return False
     return True
 
 def string_truncate(text:str, max_len:int):
+
     if len(text) <= max_len:
         return text
     return f"{text[:max_len]}..."

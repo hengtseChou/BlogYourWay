@@ -1,7 +1,6 @@
 import logging
-from flask import request
+from flask import Request
 from application.config import ENV
-
 
 class MyLogger:
     def __init__(self):
@@ -24,41 +23,37 @@ class MyLogger:
     def error(self, msg):
         self._logger.error(msg)
 
-    def page_visited(self, request: request):
+    def page_visited(self, request: Request):
         self.debug(f"{request.path} was visited from {request.remote_addr}.")
 
-    def invalid_username(self, username: str, request: request):
+    def invalid_username(self, username: str, request: Request):
         self.debug(
             f"Invalid username {username} at {request.path}. IP: {request.remote_addr}."
         )
 
-    def invalid_post_uid(self, username: str, post_uid: str, request: request):
+    def invalid_post_uid(self, username: str, post_uid: str, request: Request):
         self.debug(
             f"Invalid post uid {post_uid} for user {username} was entered from {request.remote_addr}"
         )
 
-    def invalid_autor_for_the_post(
-        self, username: str, post_uid: str, request: request
-    ):
+    def invalid_autor_for_post(self, username: str, post_uid: str, request: Request):
         self.debug(
             f"The author entered ({username}) was not the author of the post {post_uid}. IP: {request.remote_addr}."
         )
 
-    def invalid_procedure(self, username: str, procedure: str, request: request):
+    def invalid_procedure(self, username: str, procedure: str, request: Request):
         self.debug(
             f"Invalid procedure to {procedure} for {username} from {request.remote_addr}."
         )
 
-    def log_for_backstage_tab(self, username: str, tab: str, request: request):
+    def log_for_backstage_tab(self, username: str, tab: str, request: Request):
         self.debug(
             f"User {username} is now at the {tab} tab. IP: {request.remote_addr}."
         )
 
-    def log_for_pagination(
-        self, username: str, num_of_posts_showing: int, request: request
-    ):
+    def log_for_pagination(self, username: str, num_of_posts: int, request: Request):
         self.debug(
-            f"Showing {num_of_posts_showing} posts for user {username} at {request.full_path} from {request.remote_addr}."
+            f"Showing {num_of_posts} posts for user {username} at {request.full_path} from {request.remote_addr}."
         )
 
 
@@ -66,49 +61,49 @@ class Log_for_User_Actions:
     def __init__(self, logger: MyLogger):
         self._logger = logger
 
-    def login_failed(self, username: str, msg: str, request: request):
+    def login_failed(self, username: str, msg: str, request: Request):
         msg = msg.strip().strip(".")
         self._logger.debug(
             f"User {username} login failed. Msg: {msg}. IP: {request.remote_addr}."
         )
 
-    def login_succeeded(self, username: str, request: request):
+    def login_succeeded(self, username: str, request: Request):
         self._logger.info(
             f"User {username} has logged in successflly from {request.remote_addr}. "
         )
 
-    def registration_failed(self, msg: str, request: request):
+    def registration_failed(self, msg: str, request: Request):
         msg = msg.strip().strip(".")
         self._logger.debug(
             f"Registration failed. Msg: {msg}. IP: {request.remote_addr}."
         )
 
-    def registration_succeeded(self, username: str, request: request):
+    def registration_succeeded(self, username: str, request: Request):
         self._logger.info(
             f"New user {username} has been created from {request.remote_addr}"
         )
 
-    def logout(self, username: str, request: request):
+    def logout(self, username: str, request: Request):
         self._logger.info(f"User {username} has logged out from {request.remote_addr}.")
 
-    def deleted(self, username: str, request: request):
+    def deleted(self, username: str, request: Request):
         self._logger.info(
             f"User {username} has been deleted from {request.remote_addr}."
         )
 
-    def data_created(self, username: str, data_info: str, request: request):
+    def data_created(self, username: str, data_info: str, request: Request):
         data_info_capitalized = data_info.capitalize().strip()
         self._logger.info(
             f"{data_info_capitalized} for user {username} has been created from {request.remote_addr}."
         )
 
-    def data_updated(self, username: str, data_info: str, request: request):
+    def data_updated(self, username: str, data_info: str, request: Request):
         data_info_capitalized = data_info.capitalize().strip()
         self._logger.info(
             f"{data_info_capitalized} for user {username} has been updated from {request.remote_addr}."
         )
 
-    def data_deleted(self, username: str, data_info: str, request: request):
+    def data_deleted(self, username: str, data_info: str, request: Request):
         data_info_capitalized = data_info.capitalize().strip()
         self._logger.info(
             f"{data_info_capitalized} for user {username} has been deleted from {request.remote_addr}."

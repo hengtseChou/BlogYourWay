@@ -21,7 +21,7 @@
 					{% if posts|length != 0 %}
 					<h5 class="text-start pt-4 pt-md-5 fw-bold" style="color: rgb(100, 100, 100);">Featured Posts</h5>
 					{% for post in posts %}
-					{% set post_link = 'posts/' ~ post.post_uid  %}
+					{% set post_link = '/@' ~ post.author ~'/posts/' ~ post.post_uid  %}
 					<div class="mt-4 mb-5">
 						<a href="{{ post_link }}" class="header-link"><h1 class="fw-bold">{{ post.title }}</h1></a>
 						<div class="d-flex align-items-center my-3">

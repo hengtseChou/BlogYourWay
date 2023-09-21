@@ -80,7 +80,6 @@ def html_to_blogpost(html):
 
     return blogpost
 
-
 def html_to_about(html):
 
     formatter = HTMLFormatter(html)
@@ -88,13 +87,11 @@ def html_to_about(html):
 
     return about
 
-
 ###################################################################
 
 # user registration
 
 ###################################################################
-
 
 def get_today():
 
@@ -231,7 +228,6 @@ def create_user(request: request) -> str:
     user_registration = NewUserSetup(request, my_database, logger)
     return user_registration.create_user()
 
-
 ###################################################################
 
 # create new comment
@@ -286,9 +282,11 @@ class CommentSetup:
         self._commenter = commenter
 
     def _form_validated(self):
+        
         return True
 
     def _recaptcha_verified(self):
+
         token = self._request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
         r = requests.post(
