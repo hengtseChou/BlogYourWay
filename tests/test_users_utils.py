@@ -10,12 +10,13 @@ from application.utils.users import User, NewUserSetup
 
 ###################################################################
 
+
 def test_user_setup():
 
     user_creds = {
-        "username": "hank", 
+        "username": "hank",
         "email": "hank@test.com",
-        "paswword": "3456somehasedthing789"
+        "paswword": "3456somehasedthing789",
     }
     user = User(user_creds)
     assert user.id == "hank"
@@ -29,19 +30,21 @@ def app():
     with app.app_context():
         yield app
 
+
 @pytest.fixture
 def test_current_user_property(app):
 
-    with app.test_request_context():      
+    with app.test_request_context():
 
         user_creds = {
-            "username": "hank", 
+            "username": "hank",
             "email": "hank@test.com",
-            "password": "3456somehashedthing789"  # Corrected the typo in "password"
+            "password": "3456somehashedthing789",  # Corrected the typo in "password"
         }
         user = User(user_creds)
         login_user(user)
         assert current_user.username == "hank"
+
 
 ###################################################################
 
@@ -140,4 +143,3 @@ class TestNewUserSetup:
         validate_result = user_registration._form_validated(validator=mock_validator)
 
         assert validate_result == False
-

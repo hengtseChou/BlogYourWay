@@ -12,7 +12,6 @@ from application.services.mongo import MyDatabase
 
 
 class FormValidator:
-
     def validate_email(self, email: str) -> bool:
         """
         Validate an email address.
@@ -38,8 +37,8 @@ class FormValidator:
         if re.match(email_regex, email):
             return True
         return False
-    
-    def validate_password(self, password:str) -> bool:
+
+    def validate_password(self, password: str) -> bool:
         """
         Validate a password.
 
@@ -63,12 +62,11 @@ class FormValidator:
             validate_password("Pwd 123") -> False
         """
 
-
         password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{8,}$"
         if re.match(password_regex, password):
             return True
         return False
-    
+
     def validate_username(self, username: str) -> bool:
         """
         Validate a username.
@@ -88,7 +86,7 @@ class FormValidator:
         if re.match(username_regex, username):
             return True
         return False
-    
+
     def validate_blogname(self, blogname: str) -> bool:
         """Check if the blog name is not longer than 20 characters.
 
@@ -102,13 +100,14 @@ class FormValidator:
         if re.match(blogname_regex, blogname):
             return True
         return False
-    
+
+
 ###################################################################
 
 # uid generator
 
 ###################################################################
-    
+
 
 class UIDGenerator:
     def __init__(self, db_handler: MyDatabase) -> None:
@@ -138,12 +137,14 @@ class UIDGenerator:
             post_uid = "".join(random.choices(alphabet, k=8))
             if not self._db_handler.post_info.exists("post_uid", post_uid):
                 return post_uid
-            
- ###################################################################
+
+
+###################################################################
 
 # some other utility functions
 
-###################################################################    
+###################################################################
+
 
 def get_today(env):
 
@@ -151,9 +152,10 @@ def get_today(env):
         today = datetime.now()
     elif env == "prod":
         today = datetime.now() + timedelta(hours=8)
-    else: 
+    else:
         raise ValueError("Unknown enviroment argument.")
     return today
+
 
 def switch_to_bool(switch_value: str | None) -> bool:
     """convert the return value of the bootstrap switch from the form into boolean.

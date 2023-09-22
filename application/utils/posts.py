@@ -1,5 +1,5 @@
-from bs4 import BeautifulSoup
 from math import ceil
+from bs4 import BeautifulSoup
 from flask import abort, Request
 from flask_login import current_user
 from application.config import ENV
@@ -134,6 +134,7 @@ def update_post(post_uid, request):
     )
     post_update_setup.update_post()
 
+
 ###################################################################
 
 # formatter for posts that are saved as markdown
@@ -202,12 +203,14 @@ def html_to_blogpost(html):
 
     return blogpost
 
+
 def html_to_about(html):
 
     formatter = HTMLFormatter(html)
     about = formatter.add_padding().modify_figure(max_width="50%").to_string()
 
     return about
+
 
 ###################################################################
 
@@ -216,7 +219,7 @@ def html_to_about(html):
 ###################################################################
 
 
-class All_Tags:
+class AllTags:
     def __init__(self, db_handler: MyDatabase) -> None:
 
         self._db_handler = db_handler
@@ -243,7 +246,7 @@ class All_Tags:
         return sorted_tags
 
 
-all_tags = All_Tags(db_handler=my_database)
+all_tags = AllTags(db_handler=my_database)
 
 ###################################################################
 
@@ -327,8 +330,9 @@ class PostUtils:
     def find_featured_posts_info(self, username: str):
 
         result = (
-            self._db_handler.post_info
-            .find({"author": username, "featured": True, "archived": False})
+            self._db_handler.post_info.find(
+                {"author": username, "featured": True, "archived": False}
+            )
             .sort("created_at", -1)
             .limit(10)
             .as_list()
@@ -347,8 +351,7 @@ class PostUtils:
     def find_all_archived_posts_info(self, username: str):
 
         result = (
-            self._db_handler.post_info
-            .find({"author": username, "archived": True})
+            self._db_handler.post_info.find({"author": username, "archived": True})
             .sort("created_at", -1)
             .as_list()
         )
@@ -357,11 +360,10 @@ class PostUtils:
     def find_posts_with_pagination(
         self, username: str, page_number: int, posts_per_page: int
     ):
-        
+
         if page_number == 1:
             result = (
-                self._db_handler.post_info
-                .find({"author": username, "archived": False})
+                self._db_handler.post_info.find({"author": username, "archived": False})
                 .sort("created_at", -1)
                 .limit(posts_per_page)
                 .as_list()
@@ -369,8 +371,7 @@ class PostUtils:
 
         elif page_number > 1:
             result = (
-                self._db_handler.post_info
-                .find({"author": username, "archived": False})
+                self._db_handler.post_info.find({"author": username, "archived": False})
                 .sort("created_at", -1)
                 .skip((page_number - 1) * posts_per_page)
                 .limit(posts_per_page)
