@@ -2,7 +2,7 @@ from redis import Redis
 from datetime import timedelta
 from functools import lru_cache
 from application.config import REDIS_HOST, REDIS_PORT, REDIS_PW
-from application.blog.utils import get_today
+from application.utils.common import get_today
 
 
 class Redis_method:

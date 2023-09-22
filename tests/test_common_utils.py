@@ -1,7 +1,7 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import pytest
 from datetime import datetime
-from application.blog.utils import FormValidator, NewUserSetup, get_today
+from application.utils.common import FormValidator, get_today
 
 ###################################################################
 
@@ -222,7 +222,7 @@ class TestFormValidatorUsername:
 ###################################################################
 
 
-@patch("application.blog.utils.datetime")
+@patch("application.utils.common.datetime")
 def test_get_today_as_in_debug(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
@@ -230,7 +230,7 @@ def test_get_today_as_in_debug(mock_datetime):
     assert today == datetime(2023, 9, 22, 12, 0, 0)
 
 
-@patch("application.blog.utils.datetime")
+@patch("application.utils.common.datetime")
 def test_get_today_as_in_prod(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
@@ -238,40 +238,9 @@ def test_get_today_as_in_prod(mock_datetime):
     assert today == datetime(2023, 9, 22, 20, 0, 0)
 
 
-@patch("application.blog.utils.datetime")
+@patch("application.utils.common.datetime")
 def test_get_today_random_env_argument(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
     with pytest.raises(ValueError):
         today = get_today("hello world")
-
-
-###################################################################
-
-# testing new user setup
-
-###################################################################
-
-
-class TestNewUserSetup:
-
-    mock_request = MagicMock()
-    mock_db_handler = MagicMock()
-    mock_logger = MagicMock()
-
-    def test_form_validate1(self):
-
-        self.mock_request.form.to_dict.return_value = {
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "Password123",
-            "blogname": "myblog",
-        }
-
-        user_registration = NewUserSetup(
-            request=self.mock_request,
-            db_handler=self.mock_db_handler,
-            logger=self.mock_logger,
-        )
-
-        assert user_registration._form_validated() == True

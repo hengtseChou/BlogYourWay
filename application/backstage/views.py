@@ -2,17 +2,12 @@ from bcrypt import hashpw, checkpw, gensalt
 from datetime import datetime
 from flask import Blueprint, request, session, render_template, flash, redirect, url_for
 from flask_login import login_required, logout_user, current_user
-from application.extensions.mongo import my_database
-from application.extensions.redis import redis_method
-from application.extensions.log import logger
-from application.blog.utils import paging, post_utils
-from application.backstage.utils import (
-    create_post, 
-    update_post, 
-    delete_user, 
-    switch_to_bool,
-    string_truncate
-)
+from application.services.mongo import my_database
+from application.services.redis import redis_method
+from application.services.log import my_logger
+from application.utils.posts import create_post, update_post, paging, post_utils
+from application.utils.users import delete_user
+from application.utils.common import switch_to_bool, string_truncate
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
@@ -35,7 +30,7 @@ def overview():
     ###################################################################
 
     session["user_current_tab"] = "overview"
-    logger.log_for_backstage_tab(
+    my_logger.log_for_backstage_tab(
         username=current_user.username, tab="overview", request=request
     )
 
@@ -47,7 +42,7 @@ def overview():
 
     ###################################################################
 
-    logger.debug(f"Retrieving stats for user {current_user.username} started.")
+    my_logger.debug(f"Retrieving stats for user {current_user.username} started.")
 
     now = datetime.now()
     user = my_database.user_info.find_one({"username": current_user.username})
@@ -58,7 +53,7 @@ def overview():
     visitor_stats = redis_method.get_visitor_stats(current_user.username)
     daily_count = redis_method.get_daily_visitor_data(current_user.username)
 
-    logger.debug(f"Retrieving stats for user {current_user.username} completed.")
+    my_logger.debug(f"Retrieving stats for user {current_user.username} completed.")
 
     ###################################################################
 
@@ -82,7 +77,7 @@ def post_control():
     ###################################################################
 
     session["user_current_tab"] = "posts"
-    logger.log_for_backstage_tab(
+    my_logger.log_for_backstage_tab(
         username=current_user.username, tab="posts control", request=request
     )
 
@@ -99,7 +94,7 @@ def post_control():
 
         # logging for this is inside the create post function
         post_uid = create_post(request)
-        logger.user.data_created(
+        my_logger.user.data_created(
             username=current_user.username,
             data_info=f"post {post_uid}",
             request=request,
@@ -126,7 +121,7 @@ def post_control():
         )
         post["comments"] = format(post["comments"], ",")
 
-    logger.log_for_pagination(
+    my_logger.log_for_pagination(
         username=current_user.username, num_of_posts_showing=len(posts), request=request
     )
 
@@ -150,7 +145,7 @@ def about_control():
     ###################################################################
 
     session["user_current_tab"] = "about"
-    logger.log_for_backstage_tab(
+    my_logger.log_for_backstage_tab(
         username=current_user.username, tab="about control", request=request
     )
 
@@ -195,7 +190,7 @@ def sending_updated_about():
     )
     user.update(updated_info)
     user.update(updated_about)
-    logger.user.data_updated(
+    my_logger.user.data_updated(
         username=current_user.username, data_info="about", request=request
     )
     flash("Information updated!", category="success")
@@ -220,7 +215,7 @@ def archive_control():
     ###################################################################
 
     session["user_current_tab"] = "archive"
-    logger.log_for_backstage_tab(
+    my_logger.log_for_backstage_tab(
         username=current_user.username, tab="archive control", request=request
     )
 
@@ -238,7 +233,7 @@ def archive_control():
         post["clicks"] = format(post["clicks"], ",")
         post["comments"] = format(post["comments"], ",")
 
-    logger.log_for_pagination(
+    my_logger.log_for_pagination(
         username=current_user.username, num_of_posts_showing=len(posts), request=request
     )
 
@@ -262,7 +257,7 @@ def social_link_control():
     ###################################################################
 
     session["user_current_tab"] = "social_link"
-    logger.log_for_backstage_tab(
+    my_logger.log_for_backstage_tab(
         username=current_user.username, tab="social link control", request=request
     )
 
@@ -306,7 +301,7 @@ def sending_updated_social_links():
         filter={"username": current_user.username},
         update={"social_links": updated_links},
     )
-    logger.user.data_updated(
+    my_logger.user.data_updated(
         username=current_user.username, data_info="social links", request=request
     )
     flash("Social Links updated", category="success")
@@ -331,7 +326,7 @@ def theme():
     ###################################################################
 
     session["user_current_tab"] = "theme"
-    logger.log_for_backstage_tab(
+    my_logger.log_for_backstage_tab(
         username=current_user.username, tab="theme", request=request
     )
 
@@ -363,7 +358,7 @@ def settings():
     ###################################################################
 
     session["user_current_tab"] = "settings"
-    logger.log_for_backstage_tab(
+    my_logger.log_for_backstage_tab(
         username=current_user.username, tab="settings", request=request
     )
 
@@ -414,7 +409,7 @@ def sending_updated_settings():
                 "portfolio_enabled": enable_portfolio
             },
         )
-        logger.user.data_updated(
+        my_logger.user.data_updated(
             username=current_user.username,
             data_info="general settings",
             request=request,
@@ -433,7 +428,7 @@ def sending_updated_settings():
 
         # check pw
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
-            logger.invalid_procedure(
+            my_logger.invalid_procedure(
                 username=current_user.username,
                 procedure="update password (invalid old password)",
                 request=request,
@@ -447,7 +442,7 @@ def sending_updated_settings():
             filter={"username": current_user.username},
             update={"password": hashed_new_pw},
         )
-        logger.user.data_updated(
+        my_logger.user.data_updated(
             username=current_user.username, data_info="password", request=request
         )
         flash("Password update succeeded!", category="success")
@@ -462,7 +457,7 @@ def sending_updated_settings():
         encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
-            logger.invalid_procedure(
+            my_logger.invalid_procedure(
                 username=current_user.username,
                 procedure="delete account (invalid password)",
                 request=request,
@@ -472,10 +467,10 @@ def sending_updated_settings():
 
         # deletion procedure
         logout_user()
-        logger.user.logout(username=username, request=request)
+        my_logger.user.logout(username=username, request=request)
         delete_user(username)
         flash("Account deleted successfully!", category="success")
-        logger.user.deleted(username=username, request=request)
+        my_logger.user.deleted(username=username, request=request)
         return redirect(url_for("blog.register"))
 
     user = my_database.user_info.find_one({"username": current_user.username})
@@ -500,7 +495,7 @@ def edit_post(post_uid):
     ###################################################################
 
     if session["user_current_tab"] != "posts":
-        logger.invalid_procedure(
+        my_logger.invalid_procedure(
             username=current_user.username,
             procedure=f"edit post {post_uid}",
             request=request,
@@ -509,7 +504,7 @@ def edit_post(post_uid):
         return redirect(url_for("backstage.post_control"))
 
     session["user_current_tab"] = "editing_post"
-    logger.log_for_backstage_tab(
+    my_logger.log_for_backstage_tab(
         username=current_user.username, tab="edit post", request=request
     )
     ###################################################################
@@ -542,7 +537,7 @@ def sending_edited_post(post_uid):
     ###################################################################
 
     update_post(post_uid, request)
-    logger.user.data_updated(
+    my_logger.user.data_updated(
         username=current_user.username, data_info=f"post {post_uid}", request=request
     )
     truncated_post_title = string_truncate(
@@ -572,7 +567,7 @@ def edit_featured():
 
     post_uid = request.args.get("uid")
     if session["user_current_tab"] != "posts":
-        logger.invalid_procedure(
+        my_logger.invalid_procedure(
             username=current_user.username,
             procedure=f"change featured status for post {post_uid}",
             request=request,
@@ -603,7 +598,7 @@ def edit_featured():
         filter={"post_uid": post_uid},
         update={"featured": updated_featured_status},
     )
-    logger.user.data_updated(
+    my_logger.user.data_updated(
         username=current_user.username,
         data_info=f"featured status for post {post_uid} (now set to {updated_featured_status})",
         request=request,
@@ -630,7 +625,7 @@ def edit_archived():
 
     post_uid = request.args.get("uid")
     if session["user_current_tab"] not in ["posts", "archive"]:
-        logger.invalid_procedure(
+        my_logger.invalid_procedure(
             username=current_user.username,
             procedure=f"change archived status for post {post_uid}",
             request=request,
@@ -660,7 +655,7 @@ def edit_archived():
         filter={"post_uid": post_uid},
         update={"archived": updated_archived_status},
     )
-    logger.user.data_updated(
+    my_logger.user.data_updated(
         username=current_user.username,
         data_info=f"archived status for post {post_uid} (now set to {updated_archived_status})",
         request=request,
@@ -692,7 +687,7 @@ def delete_post():
     post_uid = request.args.get("uid")
 
     if session["user_current_tab"] != "archive":
-        logger.invalid_procedure(
+        my_logger.invalid_procedure(
             username=current_user.username,
             procedure=f"deleting post {post_uid}",
             request=request,
@@ -712,7 +707,7 @@ def delete_post():
     )
     my_database.post_info.delete_one({"post_uid": post_uid})
     my_database.post_content.delete_one({"post_uid": post_uid})
-    logger.user.data_deleted(
+    my_logger.user.data_deleted(
         username=current_user.username, data_info=f"post {post_uid}", request=request
     )
     flash(f"Your post \"{truncated_post_title}\" has been deleted!", category="success")
@@ -738,7 +733,7 @@ def logout():
 
     username = current_user.username
     logout_user()
-    logger.user.logout(username=username, request=request)
+    my_logger.user.logout(username=username, request=request)
 
     ###################################################################
 

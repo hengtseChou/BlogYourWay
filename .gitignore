@@ -2,6 +2,7 @@
 *.env
 *.pyc
 *.log
+.coverage
 test_post.md
 # folder
 __pycache__/
