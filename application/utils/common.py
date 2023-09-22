@@ -14,41 +14,75 @@ from application.services.mongo import MyDatabase
 class FormValidator:
 
     def validate_email(self, email: str) -> bool:
-        """Check if email is valid. E.g., test123@test.com.
+        """
+        Validate an email address.
 
-        Args:
-            email (str): plain text email address.
+        Parameters:
+            email (str): The email address to be validated.
 
         Returns:
-            bool: True is email address is valid..
+            bool: True if the email address is valid; False otherwise.
+
+        Criteria:
+        - Must have a valid format with '@' and a top-level domain (TLD).
+        - Local part (before '@') must not have spaces or start/end with a space.
+        - Domain part (after '@') must not have consecutive dots or special characters.
+        - Should not be empty and should contain both local and domain parts.
+
+        Example:
+            validate_email("john.doe@example.com") -> True
+            validate_email("invalid.email") -> False
         """
+
         email_regex = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z]{2,7})+$"
         if re.match(email_regex, email):
             return True
         return False
     
     def validate_password(self, password:str) -> bool:
-        """Check if the plain (unhashed) password is valid. Password is at least 8 character, and must contains an uppercase/lowercase/number character.
+        """
+        Validate a password.
 
-        Args:
-            password (str): plain text password.
+        Parameters:
+            password (str): The password to be validated.
 
         Returns:
-            bool: True if password is valid
+            bool: True if the password is valid; False otherwise.
+
+        Criteria:
+        - At least 8 characters long.
+        - At least one uppercase letter.
+        - At least one lowercase letter.
+        - At least one number.
+        - May include special characters.
+        - No spaces allowed (leading or trailing).
+
+        Example:
+            validate_password("P@ssw0rd") -> True
+            validate_password("short") -> False
+            validate_password("Pwd 123") -> False
         """
+
+
         password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{8,}$"
         if re.match(password_regex, password):
             return True
         return False
     
     def validate_username(self, username: str) -> bool:
-        """Check if username is valid. Username is letters, numbers, dot, dash, underscore only.
+        """
+        Validate a username.
 
-        Args:
-            username (str): plain text username.
+        Parameters:
+            username (str): The username to be validated.
 
         Returns:
-            bool: True if username is valid.
+            bool: True if the username is valid; False otherwise.
+
+        Criteria:
+        - Must consist of letters (both uppercase and lowercase), numbers, hyphens, dots, and underscores.
+        - Cannot contain special characters like '@', '#', '^', '~', spaces, or leading/trailing dashes, dots, or underscores.
+        - Can be a mix of letters and numbers but should start with a letter.
         """
         username_regex = r"^[a-zA-Z0-9][a-zA-Z0-9.\-_]*[a-zA-Z0-9]$"
         if re.match(username_regex, username):
@@ -76,7 +110,7 @@ class FormValidator:
 ###################################################################
     
 
-class uid_generator:
+class UIDGenerator:
     def __init__(self, db_handler: MyDatabase) -> None:
         self._db_handler = db_handler
 

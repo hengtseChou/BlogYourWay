@@ -4,7 +4,7 @@ from flask import abort, Request
 from flask_login import current_user
 from application.config import ENV
 from application.services.mongo import my_database, MyDatabase
-from application.utils.common import uid_generator, get_today
+from application.utils.common import UIDGenerator, get_today
 
 ###################################################################
 
@@ -24,7 +24,7 @@ class NewPostSetup:
     def __init__(
         self,
         request: Request,
-        post_uid_generator: uid_generator,
+        post_uid_generator: UIDGenerator,
         db_handler: MyDatabase,
         author_name: str,
     ) -> None:
@@ -77,7 +77,7 @@ def create_post(request):
 
     new_post_setup = NewPostSetup(
         request=request,
-        post_uid_generator=uid_generator,
+        post_uid_generator=UIDGenerator,
         db_handler=my_database,
         author_name=current_user.username,
     )

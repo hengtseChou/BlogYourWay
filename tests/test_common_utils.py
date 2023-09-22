@@ -1,7 +1,7 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import pytest
 from datetime import datetime
-from application.utils.common import FormValidator, get_today
+from application.utils.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################
 
@@ -214,6 +214,83 @@ class TestFormValidatorUsername:
         input_ = "username測試"
         assert self.validator.validate_username(input_) == False
 
+class TestFormValidatorBlogname:
+
+    validator = FormValidator()
+
+    def test_validate_blogname_valid(self):
+
+        input_ = "This is Hank"
+        assert self.validator.validate_blogname(input_) == True
+
+    def test_validate_blogname_mandarin(self):
+
+        input_ = "小小部落格"
+        assert self.validator.validate_blogname(input_) == True
+
+    def test_validate_blogname_languages_combind(self):
+
+        input_ = "This is 小小部落格"
+        assert self.validator.validate_blogname(input_) == True
+
+    def test_validate_blogname_too_long(self):
+
+        input_ = "Hank's personal blogging website"
+        assert self.validator.validate_blogname(input_) == False
+
+    def test_validate_blogname_empty(self):
+
+        input_ = ""
+        assert self.validator.validate_blogname(input_) == False
+
+###################################################################
+
+# testing uid generator
+
+###################################################################
+
+
+class TestUIDGenerator:
+
+    @patch('random.choices', side_effect=['postuid1'])
+    def test_generate_post_uid(self, mock_random_choices):
+
+        db_handler = MagicMock()
+        db_handler.post_info.exists.side_effect = [False]
+        uid_generator = UIDGenerator(db_handler)
+        generated_uid = uid_generator.generate_post_uid()
+
+        assert generated_uid == 'postuid1'
+
+    @patch('random.choices', side_effect=[['postuid1'], ['postuid2']])
+    def test_generate_another_post_uid_if_exists(self, mock_random_choices):
+
+        db_handler = MagicMock()
+        db_handler.post_info.exists.side_effect = [True, False]
+        uid_generator = UIDGenerator(db_handler)
+        generated_uid = uid_generator.generate_post_uid()
+
+        assert generated_uid == 'postuid2'
+
+    @patch('random.choices', side_effect=['commentuid1'])
+    def test_generate_comment_uid(self, mock_random_choices):
+
+        db_handler = MagicMock()
+        db_handler.comment.exists.side_effect = [False]
+        uid_generator = UIDGenerator(db_handler)
+        generated_uid = uid_generator.generate_comment_uid()
+
+        assert generated_uid == 'commentuid1'
+
+    @patch('random.choices', side_effect=[['commentuid1'], ['commentuid2']])
+    def test_generate_another_comment_uid_if_exists(self, mock_random_choices):
+
+        db_handler = MagicMock()
+        db_handler.comment.exists.side_effect = [True, False]
+        uid_generator = UIDGenerator(db_handler)
+        generated_uid = uid_generator.generate_comment_uid()
+
+        assert generated_uid == 'commentuid2'
 
 ###################################################################
 

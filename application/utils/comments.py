@@ -2,7 +2,7 @@ import requests
 from flask import Request, request
 from flask_login import current_user
 from application.config import RECAPTCHA_SECRET, ENV
-from application.utils.common import uid_generator, get_today
+from application.utils.common import UIDGenerator, get_today
 from application.services.mongo import my_database, MyDatabase
 
 ###################################################################
@@ -17,7 +17,7 @@ class NewCommentSetup:
         self,
         request: Request,
         post_uid: str,
-        comment_uid_generator: uid_generator,
+        comment_uid_generator: UIDGenerator,
         db_handler: MyDatabase,
         commenter: current_user,
     ) -> None:
@@ -102,12 +102,12 @@ class NewCommentSetup:
 def create_comment(post_uid, request):
 
     db = my_database
-    uid_generator = uid_generator(db_handler=db)
+    UIDGenerator = UIDGenerator(db_handler=db)
 
     comment_setup = NewCommentSetup(
         request=request,
         post_uid=post_uid,
-        comment_uid_generator=uid_generator,
+        comment_uid_generator=UIDGenerator,
         db_handler=db,
         commenter=current_user,
     )

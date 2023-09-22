@@ -9,6 +9,7 @@ from application.utils.users import User
 
 
 def create_app():
+    
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.urandom(16).hex()
 
@@ -19,11 +20,11 @@ def create_app():
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def load_user(username):
+    def user_loader(username):
         user_creds = my_database.user_login.find_one({"username": username})
         user = User(user_creds)
         # return none if the ID is not valid
-        return user
+        return user       
 
     # Register the custom error page
     @app.errorhandler(404)
