@@ -1,8 +1,14 @@
-from unittest.mock import MagicMock
-from application.blog.utils import (
-    FormValidator, 
-    NewUserSetup
-)
+from unittest.mock import MagicMock, patch
+import pytest
+from datetime import datetime
+from application.blog.utils import FormValidator, NewUserSetup, get_today
+
+###################################################################
+
+# testing form validator
+
+###################################################################
+
 
 class TestFormValidatorEmail:
 
@@ -19,10 +25,10 @@ class TestFormValidatorEmail:
         assert self.validator.validate_email(input_) == False
 
     def test_validate_email_missing_at(self):
-        
+
         input_ = "johndoeexample.com"
         assert self.validator.validate_email(input_) == False
-        
+
     def test_validate_email_missing_tld(self):
 
         input_ = "johndoe@example"
@@ -32,7 +38,7 @@ class TestFormValidatorEmail:
 
         input_ = "john doe@example.com"
         assert self.validator.validate_email(input_) == False
-        
+
     def test_validate_email_leading_space(self):
 
         input_ = " johndoe@example.com"
@@ -84,22 +90,22 @@ class TestFormValidatorPassword:
         assert self.validator.validate_password(input_) == True
 
     def test_validate_password_too_short(self):
-        
+
         input_ = "P@w0rd"
         assert self.validator.validate_password(input_) == False
 
     def test_validate_password_missing_uppercase(self):
-        
+
         input_ = "password1"
         assert self.validator.validate_password(input_) == False
 
     def test_validate_password_missing_lowercase(self):
-        
+
         input_ = "PASSWORD1"
         assert self.validator.validate_password(input_) == False
 
     def test_validate_password_missing_number(self):
-        
+
         input_ = "Password"
         assert self.validator.validate_password(input_) == False
 
@@ -117,6 +123,7 @@ class TestFormValidatorPassword:
 
         input_ = "Passwor1 "
         assert self.validator.validate_password(input_) == False
+
 
 class TestFormValidatorUsername:
 
@@ -204,9 +211,47 @@ class TestFormValidatorUsername:
 
     def test_validate_username_chinese(self):
 
-        input_ = "測試"
-        assert self.validator.validate_username(input_) == False   
-    
+        input_ = "username測試"
+        assert self.validator.validate_username(input_) == False
+
+
+###################################################################
+
+# testing get_today()
+
+###################################################################
+
+
+@patch("application.blog.utils.datetime")
+def test_get_today_as_in_debug(mock_datetime):
+
+    mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
+    today = get_today("debug")
+    assert today == datetime(2023, 9, 22, 12, 0, 0)
+
+
+@patch("application.blog.utils.datetime")
+def test_get_today_as_in_prod(mock_datetime):
+
+    mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
+    today = get_today("prod")
+    assert today == datetime(2023, 9, 22, 20, 0, 0)
+
+
+@patch("application.blog.utils.datetime")
+def test_get_today_random_env_argument(mock_datetime):
+
+    mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
+    with pytest.raises(ValueError):
+        today = get_today("hello world")
+
+
+###################################################################
+
+# testing new user setup
+
+###################################################################
+
 
 class TestNewUserSetup:
 
@@ -217,17 +262,16 @@ class TestNewUserSetup:
     def test_form_validate1(self):
 
         self.mock_request.form.to_dict.return_value = {
-            'username': 'testuser',
-            'email': 'test@example.com',
-            'password': 'Password123',
-            'blogname': 'myblog'
+            "username": "testuser",
+            "email": "test@example.com",
+            "password": "Password123",
+            "blogname": "myblog",
         }
 
         user_registration = NewUserSetup(
-            request=self.mock_request, 
+            request=self.mock_request,
             db_handler=self.mock_db_handler,
-            logger=self.mock_logger
+            logger=self.mock_logger,
         )
 
         assert user_registration._form_validated() == True
-

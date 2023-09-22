@@ -3,4 +3,3 @@ omit =
     tests/* 
     */__init__.py 
     */config.py
-command_line = --cov=application tests/ --cov-report html

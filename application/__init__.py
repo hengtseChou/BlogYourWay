@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request
 from flask_login import LoginManager
 import os
-from application.blog.views import blog
-from application.backstage.views import backstage
+from application.blog.views import blog as blog_bp
+from application.backstage.views import backstage as backstage_bp
 from application.extensions.log import logger
 from application.extensions.mongo import my_database
 from application.extensions.user import User
@@ -37,8 +37,8 @@ def create_app():
         return render_template("500.html"), 500
 
     # blueprints
-    app.register_blueprint(blog, url_prefix="/")
-    app.register_blueprint(backstage, url_prefix="/backstage/")
+    app.register_blueprint(blog_bp, url_prefix="/")
+    app.register_blueprint(backstage_bp, url_prefix="/backstage/")
 
     logger.info("APP INIT")
 

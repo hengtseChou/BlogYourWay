@@ -163,6 +163,8 @@ def get_today(env):
         today = datetime.now()
     elif env == "prod":
         today = datetime.now() + timedelta(hours=8)
+    else: 
+        raise ValueError("Unknown enviroment argument.")
     return today
 
 
