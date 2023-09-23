@@ -1,5 +1,8 @@
-from dotenv import load_dotenv
+"""
+This module load enviroment variables (from .env) and let them be accessed by other modules.
+"""
 import os
+from dotenv import load_dotenv
 
 load_dotenv()
 

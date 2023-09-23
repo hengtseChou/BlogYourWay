@@ -1,8 +1,11 @@
+"""
+This module includes a create comment function, and a comment utility class.
+"""
 import requests
-from flask import Request, request
+from flask import Request
 from flask_login import current_user
 from application.config import RECAPTCHA_SECRET, ENV
-from application.utils.common import UIDGenerator, get_today
+from application.utils.common import UIDGenerator, get_today, FormValidator
 from application.services.mongo import my_database, MyDatabase
 
 ###################################################################
@@ -13,105 +16,122 @@ from application.services.mongo import my_database, MyDatabase
 
 
 class NewCommentSetup:
+    """Setup a new instance for uploading a new comment.
+
+    Args:
+    - request_ (Request): the https request received.
+    - post_uid (str): the post uid which the comment is associated with.
+    - comment_uid_generator (UIDGenerator): the dependent uid generator.
+    - db_handler (MyDatabase): database.
+    - commenter_name (str): pass the plain text commenter name.
+
+    Procedure:
+    1. Validate the request form.
+    2. Validate the Recaptcha response.
+    3. Process the form into comment dict, based on if the user is authenticated.
+    4. Upload via the database handler.
+    """
+
     def __init__(
-        self,
-        request: Request,
-        post_uid: str,
-        comment_uid_generator: UIDGenerator,
-        db_handler: MyDatabase,
-        commenter: current_user,
+        self, comment_uid_generator: UIDGenerator, db_handler: MyDatabase
     ) -> None:
 
-        self._request = request
-        self._post_uid = post_uid
         self._db_handler = db_handler
         self._comment_uid = comment_uid_generator.generate_comment_uid()
-        self._commenter = commenter
 
-    def _form_validated(self):
-        
+    def _form_validated(self, request: Request, validator: FormValidator):
+
         return True
 
-    def _recaptcha_verified(self):
+    def _recaptcha_verified(self, request: Request):
 
-        token = self._request.form.get("g-recaptcha-response")
+        token = request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
-        r = requests.post(
+        resp = requests.post(
             "https://www.google.com/recaptcha/api/siteverify", params=payload
         )
-        response = r.json()
+        resp = resp.json()
 
-        if response["success"]:
+        if resp["success"]:
             return True
         return False
 
-    def _is_authenticated_commenter(self):
+    def _is_authenticated_commenter(self, user):
 
-        if self._commenter.is_authenticated:
+        if user.is_authenticated:
             return True
         return False
 
-    def _create_authenticated_comment(self):
+    def _create_authenticated_comment(
+        self, request: Request, commenter_name: str, post_uid: str
+    ):
 
-        commenter = self._db_handler.user_info.find_one(
-            {"username": current_user.username}
-        )
+        commenter = self._db_handler.user_info.find_one({"username": commenter_name})
         new_comment = {
             "name": commenter["username"],
             "email": commenter["email"],
             "profile_link": f'/{commenter["username"]}/about',
             "profile_pic": f'/{commenter["username"]}/get-profile-pic',
-            "post_uid": self._post_uid,
+            "post_uid": post_uid,
             "comment_uid": self._comment_uid,
-            "comment": self._request.form.get("comment"),
+            "comment": request.form.get("comment"),
             "created_at": get_today(env=ENV),
         }
+
         return new_comment
 
-    def _create_unauthenticated_comment(self):
+    def _create_unauthenticated_comment(self, request: Request, post_uid: str):
 
         new_comment = {
             "name": f'{request.form.get("name")} (Visitor)',
             "email": request.form.get("email"),
             "profile_link": "",
             "profile_pic": "/static/img/visitor.png",
-            "post_uid": self._post_uid,
+            "post_uid": post_uid,
             "comment_uid": self._comment_uid,
-            "comment": self._request.form.get("comment"),
+            "comment": request.form.get("comment"),
             "created_at": get_today(env=ENV),
         }
+
         if new_comment["email"]:
             new_comment["profile_link"] = f'mailto:{new_comment["email"]}'
+
         return new_comment
 
-    def create_comment(self):
+    def create_comment(self, post_uid: str, request: Request):
 
-        if not self._form_validated():
+        validator = FormValidator()
+        if not self._form_validated(request, validator):
             return
-        if not self._recaptcha_verified():
+        if not self._recaptcha_verified(request):
             return
 
-        if self._is_authenticated_commenter():
-            new_comment = self._create_authenticated_comment()
+        if self._is_authenticated_commenter(current_user):
+            new_comment = self._create_authenticated_comment(
+                request=request, commenter_name=current_user.username, post_uid=post_uid
+            )
         else:
-            new_comment = self._create_unauthenticated_comment()
+            new_comment = self._create_unauthenticated_comment(request, post_uid)
 
         self._db_handler.comment.insert_one(new_comment)
 
 
-def create_comment(post_uid, request):
+def create_comment(post_uid: str, request: Request):
+    """initialize a new comment setup instance, process the request and upload new comment.
 
-    db = my_database
-    UIDGenerator = UIDGenerator(db_handler=db)
+    Args:
+        post_uid (str): the post uid which the comment is associated with.
+        request (Request): the request with form sent.
+    """
+
+    db_handler = my_database
+    uid_generator = UIDGenerator(db_handler=db_handler)
 
     comment_setup = NewCommentSetup(
-        request=request,
-        post_uid=post_uid,
-        comment_uid_generator=UIDGenerator,
-        db_handler=db,
-        commenter=current_user,
+        comment_uid_generator=uid_generator, db_handler=db_handler
     )
-    comment_setup.create_comment()
+    comment_setup.create_comment(post_uid=post_uid, request=request)
+
 
 ###################################################################
 
@@ -126,7 +146,7 @@ class CommentUtils:
         self._db_handler = db_handler
 
     def find_comments_by_post_uid(self, post_uid: str):
-        
+
         result = (
             self._db_handler.comment.find({"post_uid": post_uid})
             .sort("created_at", 1)

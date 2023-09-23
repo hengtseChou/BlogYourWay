@@ -1,7 +1,7 @@
 from redis import Redis
 from datetime import timedelta
 from functools import lru_cache
-from application.config import REDIS_HOST, REDIS_PORT, REDIS_PW
+from application.config import REDIS_HOST, REDIS_PORT, REDIS_PW, ENV
 from application.utils.common import get_today
 
 
@@ -30,7 +30,7 @@ class Redis_method:
     @lru_cache(maxsize=None)  # Caching to optimize repeated calls
     def get_daily_visitor_data(self, username):
 
-        start_time = get_today() - timedelta(days=30)
+        start_time = get_today(ENV) - timedelta(days=30)
 
         keys = []
         dates = []

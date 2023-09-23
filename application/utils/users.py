@@ -62,7 +62,7 @@ class NewUserSetup:
         """Hashing user input password.
 
         Args:
-            password (str): plain text password.
+            password (str): a string of plain text password.
 
         Returns:
             str: a string of the hashed password encoded back to utf-8.

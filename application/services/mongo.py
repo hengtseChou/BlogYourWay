@@ -1,7 +1,6 @@
-from typing import Any, Optional, Union
 from pymongo.mongo_client import MongoClient
 from pymongo.collection import Collection
-from pymongo.cursor import _Hint, Cursor
+from pymongo.cursor import Cursor
 from pymongo.database import Database
 from application.config import MONGO_URL
 
@@ -11,7 +10,7 @@ class ExtendedCollection(Collection):
 
         super().__init__(database, name, create)
 
-    def exists(self, key: str, value: Any) -> bool:
+    def exists(self, key: str, value: str) -> bool:
         """check if the values exists for this key in this collection
 
         Args:
@@ -30,9 +29,12 @@ class ExtendedCollection(Collection):
         return ExtendedCursor(self, *args, **kwargs)
 
     # this application usually does not consider the case where records not found
-    def find_one(self, filter: Any | None = None, *args: Any, **kwargs: Any) -> dict:
+    def find_one(self, filter, *args, **kwargs) -> dict:
 
-        return dict(super().find_one(filter, *args, **kwargs))
+        result = super().find_one(filter, *args, **kwargs)
+        if result is None:
+            return result
+        return dict(result)
 
     def update_one(self, filter, update):
 
@@ -51,7 +53,7 @@ class ExtendedCursor(Cursor):
 
         return super(ExtendedCursor, self)._Cursor__check_okay_to_chain()
     
-    def sort(self, key_or_list: _Hint, direction: int | str | None = None):
+    def sort(self, key_or_list, direction):
 
         super().sort(key_or_list, direction)
         return self

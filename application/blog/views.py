@@ -22,7 +22,8 @@ from application.utils.users import create_user
 from application.utils.posts import (
     html_to_about, 
     html_to_blogpost, 
-    all_tags, post_utils, 
+    all_tags, 
+    post_utils, 
     paging
 )
 from application.utils.comments import create_comment, comment_utils

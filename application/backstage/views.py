@@ -97,7 +97,7 @@ def post_control():
         my_logger.user.data_created(
             username=current_user.username,
             data_info=f"post {post_uid}",
-            request=request,
+            request=request
         )
         flash("New post published successfully!", category="success")
 
@@ -122,7 +122,7 @@ def post_control():
         post["comments"] = format(post["comments"], ",")
 
     my_logger.log_for_pagination(
-        username=current_user.username, num_of_posts_showing=len(posts), request=request
+        username=current_user.username, num_of_posts=len(posts), request=request
     )
 
     ###################################################################
@@ -234,7 +234,7 @@ def archive_control():
         post["comments"] = format(post["comments"], ",")
 
     my_logger.log_for_pagination(
-        username=current_user.username, num_of_posts_showing=len(posts), request=request
+        username=current_user.username, num_of_posts=len(posts), request=request
     )
 
     ###################################################################

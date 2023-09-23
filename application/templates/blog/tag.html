@@ -15,7 +15,7 @@
 			<hr>
 			<h5 class="pt-3 fw-bold" style="color: rgb(100, 100, 100);">Found {{ posts|length }} posts</h5>	
 			{% for post in posts %}
-			{% set post_link = 'posts/' ~ post.uid  %}
+			{% set post_link = 'posts/' ~ post.post_uid  %}
 			<div class="my-5">
 				<a href="{{ post_link }}" class="header-link"><h1 class="fw-bold">{{ post.title }}</h1></a>
 				<div class="d-flex align-items-center my-3">

@@ -3,13 +3,9 @@ from flask import Request
 from application.config import ENV
 
 class MyLogger:
-    def __init__(self):
-        
-        if ENV == "prod":
-            self._logger = setup_prod_logger()
-        elif ENV == "debug":
-            self._logger = setup_debug_logger()
+    def __init__(self, logger: logging.Logger):
 
+        self._logger = logger
         self.user = Log_for_User_Actions(self._logger)
 
     def debug(self, msg):
@@ -70,7 +66,7 @@ class MyLogger:
 
 
 class Log_for_User_Actions:
-    def __init__(self, logger: MyLogger):
+    def __init__(self, logger: logging.Logger):
 
         self._logger = logger
 
@@ -168,5 +164,9 @@ def setup_debug_logger():
 
     return logger
 
+if ENV == "prod":
+    logger_initialized = setup_prod_logger()
+elif ENV == "debug":
+    logger_initialized = setup_debug_logger()
 
-my_logger = MyLogger()
+my_logger = MyLogger(logger=logger_initialized)

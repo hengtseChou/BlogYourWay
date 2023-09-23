@@ -4,7 +4,7 @@ from flask import abort, Request
 from flask_login import current_user
 from application.config import ENV
 from application.services.mongo import my_database, MyDatabase
-from application.utils.common import UIDGenerator, get_today
+from application.utils.common import UIDGenerator, get_today, FormValidator
 
 ###################################################################
 
@@ -23,29 +23,29 @@ def process_tags(tag_string: str):
 class NewPostSetup:
     def __init__(
         self,
-        request: Request,
+        # request: Request,
         post_uid_generator: UIDGenerator,
         db_handler: MyDatabase,
-        author_name: str,
+        # author_name: str,
     ) -> None:
 
-        self._request = request
+        # self._request = request
         self._post_uid = post_uid_generator.generate_post_uid()
         self._db_handler = db_handler
-        self._author_name = author_name
+        # self._author_name = author_name
 
-    def _form_validatd(self):
+    def _form_validatd(self, request: Request, validator: FormValidator):
         return True
 
-    def _create_post_info(self) -> dict:
+    def _create_post_info(self, request: Request, author_name: str) -> dict:
 
         new_post_info = {
-            "title": self._request.form.get("title"),
-            "subtitle": self._request.form.get("subtitle"),
-            "author": self._author_name,
+            "title": request.form.get("title"),
+            "subtitle": request.form.get("subtitle"),
+            "author": author_name,
             "post_uid": self._post_uid,
-            "tags": process_tags(self._request.form.get("tags")),
-            "banner_url": self._request.form.get("banner_url"),
+            "tags": process_tags(request.form.get("tags")),
+            "banner_url": request.form.get("banner_url"),
             "created_at": get_today(env=ENV),
             "last_updated": get_today(env=ENV),
             "archived": False,
@@ -53,20 +53,25 @@ class NewPostSetup:
         }
         return new_post_info
 
-    def _create_post_content(self) -> dict:
+    def _create_post_content(self, request: Request, author_name: str) -> dict:
 
         new_post_content = {
             "post_uid": self._post_uid,
-            "author": self._author_name,
-            "content": self._request.form.get("content"),
+            "author": author_name,
+            "content": request.form.get("content"),
         }
         return new_post_content
 
-    def create_post(self):
+    def create_post(self, author_name: str, request: Request) -> str:
 
-        new_post_info = self._create_post_info()
-        new_post_content = self._create_post_content()
-
+        validator = FormValidator()
+        if not self._form_validatd(request=request, validator=validator):
+            return "Unvalidated"
+        # validated
+        new_post_info = self._create_post_info(author_name=author_name, request=request)
+        new_post_content = self._create_post_content(
+            author_name=author_name, request=request
+        )
         self._db_handler.post_info.insert_one(new_post_info)
         self._db_handler.post_content.insert_one(new_post_content)
 
@@ -76,12 +81,12 @@ class NewPostSetup:
 def create_post(request):
 
     new_post_setup = NewPostSetup(
-        request=request,
-        post_uid_generator=UIDGenerator,
-        db_handler=my_database,
-        author_name=current_user.username,
+        post_uid_generator=UIDGenerator, db_handler=my_database
     )
-    return new_post_setup.create_post()
+    new_post_uid = new_post_setup.create_post(
+        author_name=current_user.username, request=request
+    )
+    return new_post_uid
 
 
 ###################################################################
@@ -92,47 +97,50 @@ def create_post(request):
 
 
 class PostUpdateSetup:
-    def __init__(self, post_uid: str, request: Request, db_handler=MyDatabase) -> None:
+    def __init__(self, db_handler=MyDatabase) -> None:
 
-        self._post_uid = post_uid
-        self._request = request
         self._db_handler = db_handler
 
-    def _updated_post_info(self) -> dict:
+    def _form_validatd(self, request: Request, validator: FormValidator):
+        return True
+
+    def _updated_post_info(self, request: Request) -> dict:
 
         updated_post_info = {
-            "title": self._request.form.get("title"),
-            "subtitle": self._request.form.get("subtitle"),
-            "tags": process_tags(self._request.form.get("tags")),
-            "banner_url": self._request.form.get("banner_url"),
+            "title": request.form.get("title"),
+            "subtitle": request.form.get("subtitle"),
+            "tags": process_tags(request.form.get("tags")),
+            "banner_url": request.form.get("banner_url"),
             "last_updated": get_today(env=ENV),
         }
         return updated_post_info
 
-    def _updated_post_content(self) -> dict:
+    def _updated_post_content(self, request: Request) -> dict:
 
-        updated_post_content = {"content": self._request.form.get("content")}
+        updated_post_content = {"content": request.form.get("content")}
         return updated_post_content
 
-    def update_post(self):
+    def update_post(self, post_uid: str, request: Request):
 
-        updated_post_info = self._updated_post_info()
-        updated_post_content = self._updated_post_content()
+        validator = FormValidator()
+        if not self._form_validatd(request=request, validator=validator):
+            return
+        # validated
+        updated_post_info = self._updated_post_info(request=request)
+        updated_post_content = self._updated_post_content(request=request)
 
         self._db_handler.post_info.simple_update(
-            filter={"post_uid": self._post_uid}, update=updated_post_info
+            filter={"post_uid": post_uid}, update=updated_post_info
         )
         self._db_handler.post_content.simple_update(
-            filter={"post_uid": self._post_uid}, update=updated_post_content
+            filter={"post_uid": post_uid}, update=updated_post_content
         )
 
 
 def update_post(post_uid, request):
 
-    post_update_setup = PostUpdateSetup(
-        post_uid=post_uid, request=request, db_handler=my_database
-    )
-    post_update_setup.update_post()
+    post_update_setup = PostUpdateSetup(db_handler=my_database)
+    post_update_setup.update_post(post_uid=post_uid, request=request)
 
 
 ###################################################################

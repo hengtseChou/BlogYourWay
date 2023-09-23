@@ -48,26 +48,26 @@
 			<h1 class="text-center fw-bold">{{ post.title }}</h1>
 			<!-- info row from desktop -->
 			<div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-4">
-				<a href="/{{ post.author }}/about">
+				<a href="/@{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
 					<img src="/static/img/default-profile.png" alt="profile-img" class="profile-xl me-2">
 					{% else %}
 					<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile-xl me-2">
 					{% endif %}
 				</a>
-				<a href="/{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
+				<a href="/@{{ post.author }}/about" class="author-link mx-2"><h4>{{ post.author }}</h4></a>
 				<div class="date-text"><h4> · {{ post.readtime }}</h4></div>
 			</div>
 			<!-- info row from mobile -->
 			<div class="d-flex d-lg-none align-items-center justify-content-center my-2">
-				<a href="/{{ post.author }}/about">
+				<a href="/@{{ post.author }}/about">
 					{% if user.profile_img_url|length == 0 %}
 					<img src="/static/img/default-profile.png" alt="profile-img" class="profile-sm me-1">
 					{% else %}
 					<img src="{{ user.profile_img_url }}" alt="profile-img" class="profile-sm me-1">
 					{% endif %}
 				</a>
-				<a href="/{{ post.author }}/about" class="author-link mx-1 mt-2"><h6>{{ post.author }}</h6></a>
+				<a href="/@{{ post.author }}/about" class="author-link mx-1 mt-2"><h6>{{ post.author }}</h6></a>
 				<div class="date-text mt-2"><h6>· {{ post.readtime }}</h6></div>
 			</div>
 			<hr>			
@@ -78,7 +78,7 @@
 			<div class="d-flex align-items-center mb-4" style="color: rgb(100, 100, 100) ; font-size: large;">
 				<span ><i class="fa-solid fa-tags"></i></span>
 				{% for tag in post.tags %}
-				{% set tag_link = 'tags?tag=' ~ tag %}
+				{% set tag_link = '/@'~ post.author ~ '/tags?tag=' ~ tag %}
 					<a href="{{ tag_link }}"><span class="badge badge-custom ms-2">{{ tag }}</span></a>
 				{% endfor %}
 			</div>
@@ -112,7 +112,7 @@
 			<hr class="mb-4">
 			<h3 class="mb-3">Comments</h3>
 			{% if comments|length == 0 %}
-			<p>Not comments yet!</p>
+			<p class="mb-5">Not comments yet!</p>
 			{% else %}
 			<div class="mb-5">
 				<h5 class="text-start my-4 fw-bold" style="color: rgb(100, 100, 100);">{{ comments|length }} comments</h5>

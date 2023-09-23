@@ -1,3 +1,6 @@
+"""
+This module collects the common utulity functions from the application.
+"""
 import re
 import string
 import random
@@ -17,10 +20,10 @@ class FormValidator:
         Validate an email address.
 
         Parameters:
-            email (str): The email address to be validated.
+        - email (str): a string of the email address to be validated.
 
         Returns:
-            bool: True if the email address is valid; False otherwise.
+        - bool: True if the email address is valid; False otherwise.
 
         Criteria:
         - Must have a valid format with '@' and a top-level domain (TLD).
@@ -29,8 +32,8 @@ class FormValidator:
         - Should not be empty and should contain both local and domain parts.
 
         Example:
-            validate_email("john.doe@example.com") -> True
-            validate_email("invalid.email") -> False
+        - validate_email("john.doe@example.com") -> True
+        - validate_email("invalid.email") -> False
         """
 
         email_regex = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z]{2,7})+$"
@@ -43,10 +46,10 @@ class FormValidator:
         Validate a password.
 
         Parameters:
-            password (str): The password to be validated.
+        - password (str): a string of the password to be validated.
 
         Returns:
-            bool: True if the password is valid; False otherwise.
+        - bool: True if the password is valid; False otherwise.
 
         Criteria:
         - At least 8 characters long.
@@ -57,9 +60,9 @@ class FormValidator:
         - No spaces allowed (leading or trailing).
 
         Example:
-            validate_password("P@ssw0rd") -> True
-            validate_password("short") -> False
-            validate_password("Pwd 123") -> False
+        - validate_password("P@ssw0rd") -> True
+        - validate_password("short") -> False
+        - validate_password("Pwd 123") -> False
         """
 
         password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{8,}$"
@@ -72,14 +75,16 @@ class FormValidator:
         Validate a username.
 
         Parameters:
-            username (str): The username to be validated.
+        - username (str): a string of the username to be validated.
 
         Returns:
-            bool: True if the username is valid; False otherwise.
+        - bool: True if the username is valid; False otherwise.
 
         Criteria:
-        - Must consist of letters (both uppercase and lowercase), numbers, hyphens, dots, and underscores.
-        - Cannot contain special characters like '@', '#', '^', '~', spaces, or leading/trailing dashes, dots, or underscores.
+        - Must consist of letters (both uppercase and lowercase), 
+                numbers, hyphens, dots, and underscores.
+        - Cannot contain special characters like '@', '#', '^', '~', spaces, 
+            or leading/trailing dashes, dots, or underscores.
         - Can be a mix of letters and numbers but should start with a letter.
         """
         username_regex = r"^[a-zA-Z0-9][a-zA-Z0-9.\-_]*[a-zA-Z0-9]$"
@@ -91,10 +96,10 @@ class FormValidator:
         """Check if the blog name is not longer than 20 characters.
 
         Args:
-            blogname (str): plain text blog name.
+        - blogname (str): a string of the blog name to be validated.
 
         Returns:
-            bool: True if the blog name is valid.
+        - bool: True if the blog name is valid.
         """
         blogname_regex = r"^.{1,20}$"
         if re.match(blogname_regex, blogname):
@@ -111,6 +116,7 @@ class FormValidator:
 
 class UIDGenerator:
     def __init__(self, db_handler: MyDatabase) -> None:
+        
         self._db_handler = db_handler
 
     def generate_comment_uid(self) -> str:
@@ -161,7 +167,8 @@ def switch_to_bool(switch_value: str | None) -> bool:
     """convert the return value of the bootstrap switch from the form into boolean.
 
     Args:
-        switch_value (str | None): return value of switch checkbox from the form, possible values: "on" and None.
+        switch_value (str | None): return value of switch checkbox from the form, 
+        possible values: "on" and None.
 
     Returns:
         bool: a boolean value.

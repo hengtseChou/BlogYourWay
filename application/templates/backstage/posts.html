@@ -93,10 +93,10 @@
 						<ul class="dropdown-menu">
 							{% if post['featured'] %}
 							{% set featured_link = '/backstage/edit-featured?featured=to_false&uid=' %}
-						  <li><a class="dropdown-item" href='{{ featured_link ~ post.post_uid }}'>Remove featured</a></li>
+						  <li><a class="dropdown-item" href='{{ featured_link ~ post.post_uid }}'>Remove from featured</a></li>
 							{% else %}
 							{% set featured_link = '/backstage/edit-featured?featured=to_true&uid=' %}
-						  <li><a class="dropdown-item" href='{{ featured_link ~ post.post_uid }}'>Add featured</a></li>
+						  <li><a class="dropdown-item" href='{{ featured_link ~ post.post_uid }}'>Add to featured</a></li>
 							{% endif %}
 							{% set archived_link = '/backstage/edit-archived?archived=to_true&uid=' %}
 						  <li><a class="dropdown-item" href='{{ archived_link ~ post.post_uid }}'>Move to archive</a></li>

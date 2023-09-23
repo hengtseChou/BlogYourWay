@@ -65,13 +65,13 @@
 				<div class="col-6 text-start">
 					{% if pagination.is_previous_page_allowed %}
 					{% set previous_page = pagination.current_page - 1 %}
-					<a href="{{ '/' ~ user.username ~ '/blog?page=' ~ previous_page }}" class="btn ms-3"><h5><span class="mx-1">⬅️</span> Newer Posts </h5></a>
+					<a href="{{ '/@' ~ user.username ~ '/blog?page=' ~ previous_page }}" class="btn ms-3"><h5><span class="mx-1">⬅️</span> Newer Posts </h5></a>
 					{% endif %}
 				</div>
 				<div class="col-6 text-end">
 					{% if pagination.is_next_page_allowed %}
 					{% set next_page = pagination.current_page + 1 %}
-					<a href="{{ '/' ~ user.username ~ '/blog?page=' ~ next_page }}" class="btn me-3"><h5> Older Posts <span class="mx-1">➡️</span></h5></a>
+					<a href="{{ '/@' ~ user.username ~ '/blog?page=' ~ next_page }}" class="btn me-3"><h5> Older Posts <span class="mx-1">➡️</span></h5></a>
 					{% endif %}
 				</div>
 			</div>

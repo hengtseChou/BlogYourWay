@@ -1,6 +1,9 @@
+"""
+Configure little-blog application in create_app() with a factory pattern.
+"""
+import os
 from flask import Flask, render_template, request
 from flask_login import LoginManager
-import os
 from application.blog.views import blog as blog_bp
 from application.backstage.views import backstage as backstage_bp
 from application.services.log import my_logger
@@ -8,8 +11,17 @@ from application.services.mongo import my_database
 from application.utils.users import User
 
 
-def create_app():
-    
+def create_app() -> Flask:
+    """
+    Defines:
+    - secret keys,
+    - login manager (login view, login message),
+    - user loader,
+    - 404 error handler page,
+    - 500 error handler page, 
+    - register blueprints (blog, backstage)
+    """
+
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.urandom(16).hex()
 
@@ -20,21 +32,23 @@ def create_app():
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def user_loader(username):
+    def user_loader(username: str) -> User:
+        """register user loader for current_user to access
+        """
         user_creds = my_database.user_login.find_one({"username": username})
         user = User(user_creds)
         # return none if the ID is not valid
-        return user       
+        return user
 
     # Register the custom error page
     @app.errorhandler(404)
-    def page_not_found(e):
-        my_logger.debug(f"404 not found at {request.path} from {request.remote_addr}.")
+    def page_not_found(error):
+        my_logger.debug(f"404 not found at {request.environ['RAW_URI']} from {request.remote_addr}.")
         return render_template("404.html"), 404
 
     @app.errorhandler(500)
-    def internal_server_error(e):
-        my_logger.error("Internal server error: %s", e)
+    def internal_server_error(error):
+        my_logger.error(f"Internal server error: {str(error)}")
         return render_template("500.html"), 500
 
     # blueprints

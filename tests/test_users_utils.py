@@ -27,8 +27,11 @@ def test_user_setup():
 def app():
 
     app = create_app()
-    with app.app_context():
-        yield app
+    app.config.update({
+        "TESTING": True,
+    })
+
+    yield app
 
 
 @pytest.fixture
