@@ -4,8 +4,7 @@ Configure little-blog application in create_app() with a factory pattern.
 import os
 from flask import Flask, render_template, request
 from flask_login import LoginManager
-from application.blog.views import blog as blog_bp
-from application.backstage.views import backstage as backstage_bp
+from application.views import blog_bp, backstage_bp
 from application.services.log import my_logger
 from application.services.mongo import my_database
 from application.utils.users import User
