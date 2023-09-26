@@ -472,3 +472,8 @@ def profile_pic_endpoint(username):
         profile_img_url = "/static/img/default-profile.png"
 
     return jsonify({"imageUrl": profile_img_url})
+
+
+@blog.route("/error", methods=["GET"])
+def raise_error():
+    raise Exception("this is a simulation error.")

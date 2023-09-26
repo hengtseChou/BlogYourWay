@@ -47,7 +47,6 @@ def create_app() -> Flask:
 
     @app.errorhandler(500)
     def internal_server_error(error):
-        my_logger.error(f"Internal server error: {str(error)}")
         return render_template("500.html"), 500
 
     # blueprints

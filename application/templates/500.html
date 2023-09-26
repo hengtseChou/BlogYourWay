@@ -6,7 +6,11 @@
 		background-color: #333;
 		color: #fff;
 		text-align: center;
-		padding-top: 100px;
+		padding-top: 23vh;
+
+		display: flex;
+	  	justify-content: center;
+		align-items: center;
 	}
 	h1 {
 		font-size: 6rem;
@@ -17,24 +21,68 @@
 	a {
 		color: #fff;
 	}
-
 	.hover-pointer:hover{
 		cursor: pointer;
 	}
+	.error-num {
+		font-size: 8em;
+	}
+	.eye {
+		background: #fff;
+  		border-radius: 50%;
+		display: inline-block;
+		height: 100px;
+		position: relative;
+		width: 100px;
+	}
+	.eye::after {
+
+	    background: #000;
+	    border-radius: 50%;
+	    bottom: 56.1px;
+	    content: '';
+	    height: 33px;
+	    position: absolute;
+	    right: 33px;
+    	width: 33px;
+	}
+
 </style>
 {% endblock %}
 
 {% block title %}500 Internal Server Error · Little Blog{% endblock %}
 
 {% block body%}
-
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<h1>404</h1>
+			<!-- <h1>500</h1>
 			<p class="mt-4">Oops! It seems like there is an internal server error. Please contact the provider about this situation. </p>
-			<p onclick="window.history.go(-1); return false;" class="hover-pointer"><u>👉 Go to the previous page</u></p>
+			<p onclick="window.history.go(-1); return false;" class="hover-pointer"><u>👉 Go to the previous page</u></p> -->
+			<div>
+				<span class='error-num'>5</span>
+				<div class='eye'></div>
+				<div class='eye'></div>
+				<p class='sub-text'>Oh eyeballs! Something went wrong. We're <i>looking</i> to see what happened.</p>
+				<p onclick="window.history.go(-1); return false;" class="hover-pointer"><u>👉 Go back</u></p>
+			</div>			
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+	$('body').mousemove(function(event) {
+		var e = $('.eye');
+		var x = (e.offset().left) + (e.width() / 2);
+		var y = (e.offset().top) + (e.height() / 2);
+		var rad = Math.atan2(event.pageX - x, event.pageY - y);
+		var rot = (rad * (180 / Math.PI) * -1) + 180;
+		e.css({
+			'-webkit-transform': 'rotate(' + rot + 'deg)',
+			'transform': 'rotate(' + rot + 'deg)'
+		});
+	});
+</script>
 {% endblock %}

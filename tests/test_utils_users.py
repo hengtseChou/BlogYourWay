@@ -42,7 +42,7 @@ def test_current_user_property(app):
         user_creds = {
             "username": "hank",
             "email": "hank@test.com",
-            "password": "3456somehashedthing789",  # Corrected the typo in "password"
+            "password": "3456somehashedthing789",
         }
         user = User(user_creds)
         login_user(user)
