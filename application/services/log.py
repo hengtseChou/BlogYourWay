@@ -80,7 +80,7 @@ class Log_for_User_Actions:
     def login_succeeded(self, username: str, request: Request):
 
         self._logger.info(
-            f"User {username} has logged in successflly from {request.remote_addr}. "
+            f"User {username} has logged in successfully from {request.remote_addr}. "  
         )
 
     def registration_failed(self, msg: str, request: Request):

@@ -330,6 +330,8 @@ def post(username, post_uid):
     for comment in comments:
         comment["created_at"] = comment["created_at"].strftime("%Y-%m-%d %H:%M:%S")
 
+    my_logger.debug(request.referrer)
+
     ###################################################################
 
     # redis and logging

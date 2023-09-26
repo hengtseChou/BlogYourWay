@@ -87,7 +87,7 @@ class FormValidator:
             or leading/trailing dashes, dots, or underscores.
         - Can be a mix of letters and numbers but should start with a letter.
         """
-        username_regex = r"^[a-zA-Z0-9][a-zA-Z0-9.\-_]*[a-zA-Z0-9]$"
+        username_regex = r"^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$"
         if re.match(username_regex, username):
             return True
         return False

@@ -124,11 +124,10 @@ def create_comment(post_uid: str, request: Request):
         request (Request): the request with form sent.
     """
 
-    db_handler = my_database
-    uid_generator = UIDGenerator(db_handler=db_handler)
+    uid_generator = UIDGenerator(db_handler=my_database)
 
     comment_setup = NewCommentSetup(
-        comment_uid_generator=uid_generator, db_handler=db_handler
+        comment_uid_generator=uid_generator, db_handler=my_database
     )
     comment_setup.create_comment(post_uid=post_uid, request=request)
 

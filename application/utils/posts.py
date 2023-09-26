@@ -80,8 +80,10 @@ class NewPostSetup:
 
 def create_post(request):
 
+    uid_generator = UIDGenerator(db_handler=my_database)
+
     new_post_setup = NewPostSetup(
-        post_uid_generator=UIDGenerator, db_handler=my_database
+        post_uid_generator=uid_generator, db_handler=my_database
     )
     new_post_uid = new_post_setup.create_post(
         author_name=current_user.username, request=request

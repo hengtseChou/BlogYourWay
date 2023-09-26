@@ -131,12 +131,7 @@ class TestFormValidatorUsername:
 
     def test_validate_username_valid1(self):
 
-        input_ = "john_doe123"
-        assert self.validator.validate_username(input_) == True
-
-    def test_validate_username_valid2(self):
-
-        input_ = "user.name"
+        input_ = "johndoe123"
         assert self.validator.validate_username(input_) == True
 
     def test_validate_username_valid3(self):
@@ -179,39 +174,34 @@ class TestFormValidatorUsername:
         input_ = "username "
         assert self.validator.validate_username(input_) == False
 
-    def test_validate_username_leading_dash(self):
+    def test_validate_username_leading_hyphen(self):
 
         input_ = "-username"
         assert self.validator.validate_username(input_) == False
 
-    def test_validate_username_trailing_dash(self):
+    def test_validate_username_trailing_hyphen(self):
 
         input_ = "username-"
         assert self.validator.validate_username(input_) == False
 
-    def test_validate_username_leading_dot(self):
+    def test_validate_username_contains_dot(self):
 
-        input_ = ".username"
+        input_ = "user.name"
         assert self.validator.validate_username(input_) == False
 
-    def test_validate_username_trailing_dot(self):
+    def test_validate_username_contains_underscore(self):
 
-        input_ = "username."
+        input_ = "user_name"
         assert self.validator.validate_username(input_) == False
 
-    def test_validate_username_leading_underscore(self):
-
-        input_ = "_username"
-        assert self.validator.validate_username(input_) == False
-
-    def test_validate_username_trailing_underscore(self):
-
-        input_ = "username_"
-        assert self.validator.validate_username(input_) == False
-
-    def test_validate_username_chinese(self):
+    def test_validate_username_contains_mandarin(self):
 
         input_ = "username測試"
+        assert self.validator.validate_username(input_) == False
+
+    def test_validate_username_contains_uppercases(self):
+
+        input_ = "Username123"
         assert self.validator.validate_username(input_) == False
 
 

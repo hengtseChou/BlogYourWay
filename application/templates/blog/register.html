@@ -59,12 +59,12 @@
 						<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
 						<input type="text" class="form-control" placeholder="Username" name="username" id="username">		
 				</div>
-				<small class="mb-4" style="color: #6c757d;"><p>Username will be used as your sub-domain.</p></small>      
-				<div class="input-group mb-4">
+				<small class="mb-4" style="color: #6c757d;"><p>Use only letters (lowercase), numbers, and "-".</p></small>      
+				<div class="input-group mb-1">
 					<span class="input-group-text"><i class="fa-solid fa-house"></i></span>
 					<input type="text" class="form-control" placeholder="Blog's name" name="blogname" id="blogname">
 				</div>
-				<small class="mb-4" style="color: #6c757d;"><p>20 characters maximum</p></small>      
+				<small class="mb-4" style="color: #6c757d;"><p>20 characters maximum.</p></small>      
 				<div class="form-check mb-4">
 					<input class="form-check-input" type="checkbox" name="terms" id="terms" style="background-color: #343a40; border: 0px;">
 					<label class="form-check-label" for="terms">
@@ -125,9 +125,14 @@
 			return false;
 		}
 
-		var usernameRegex = /^[a-zA-Z0-9.\-_]+$/;
+		if (username[0] === '-' || username[username.length - 1] === '-') {
+			alert('Username cannot begin or end in a hyphen.');
+			return false;
+		}
+
+		var usernameRegex = /^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/;
 		if (!usernameRegex.test(username)) {
-			alert("Invalid username. Please use only letters, numbers, '.', '-', and '_'.");
+			alert("Invalid username. Please use only letters (lowercase), numbers, and \"-\".");
 			return false;
 		}
 
