@@ -23,16 +23,12 @@ def process_tags(tag_string: str):
 class NewPostSetup:
     def __init__(
         self,
-        # request: Request,
         post_uid_generator: UIDGenerator,
         db_handler: MyDatabase,
-        # author_name: str,
     ) -> None:
 
-        # self._request = request
         self._post_uid = post_uid_generator.generate_post_uid()
         self._db_handler = db_handler
-        # self._author_name = author_name
 
     def _form_validatd(self, request: Request, validator: FormValidator):
         return True
@@ -50,6 +46,8 @@ class NewPostSetup:
             "last_updated": get_today(env=ENV),
             "archived": False,
             "featured": False,
+            "views": 0,
+            "reads": 0
         }
         return new_post_info
 
@@ -139,7 +137,7 @@ class PostUpdateSetup:
         )
 
 
-def update_post(post_uid, request):
+def update_post(post_uid: str, request: Request):
 
     post_update_setup = PostUpdateSetup(db_handler=my_database)
     post_update_setup.update_post(post_uid=post_uid, request=request)
@@ -153,7 +151,12 @@ def update_post(post_uid, request):
 
 
 class HTMLFormatter:
-    def __init__(self, html):
+    def __init__(self, html: str):
+        """Format markdown strings for additional styles for different pages.
+
+        Args:
+            html (str): a string that is already html.
+        """
 
         self.__soup = BeautifulSoup(html, "html.parser")
 
@@ -260,7 +263,7 @@ all_tags = AllTags(db_handler=my_database)
 
 ###################################################################
 
-# blogpost pagination (also apply for backstage)
+# blogpost pagination
 
 ###################################################################
 
@@ -372,6 +375,7 @@ class PostUtils:
     ):
 
         if page_number == 1:
+            
             result = (
                 self._db_handler.post_info.find({"author": username, "archived": False})
                 .sort("created_at", -1)
@@ -380,6 +384,7 @@ class PostUtils:
             )
 
         elif page_number > 1:
+
             result = (
                 self._db_handler.post_info.find({"author": username, "archived": False})
                 .sort("created_at", -1)

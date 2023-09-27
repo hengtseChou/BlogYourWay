@@ -33,48 +33,48 @@ class MyLogger:
     def page_visited(self, request: Request):
 
         client_ip = _return_client_ip(request)
-        self.debug(f"{request.path} was visited from {client_ip}.")
+        self.debug(f"{client_ip} - {request.path} was visited.")
 
     def invalid_username(self, username: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self.debug(
-            f"Invalid username {username} at {request.path}. IP: {client_ip}."
+            f"{client_ip} - Invalid username {username} at {request.path}."
         )
 
     def invalid_post_uid(self, username: str, post_uid: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self.debug(
-            f"Invalid post uid {post_uid} for user {username} was entered from {client_ip}"
+            f"{client_ip} - Invalid post uid {post_uid} for user {username} was entered. "
         )
 
     def invalid_autor_for_post(self, username: str, post_uid: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self.debug(
-            f"The author entered ({username}) was not the author of the post {post_uid}. IP: {client_ip}."
+            f"{client_ip} - The author entered ({username}) was not the author of the post {post_uid}. "
         )
 
     def invalid_procedure(self, username: str, procedure: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self.debug(
-            f"Invalid procedure to {procedure} for {username} from {client_ip}."
+            f"{client_ip} - Invalid procedure to {procedure} for {username}."
         )
 
     def log_for_backstage_tab(self, username: str, tab: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self.debug(
-            f"User {username} is now at the {tab} tab. IP: {client_ip}."
+            f"{client_ip} - User {username} is now at the {tab} tab. "
         )
 
     def log_for_pagination(self, username: str, num_of_posts: int, request: Request):
 
         client_ip = _return_client_ip(request)
         self.debug(
-            f"Showing {num_of_posts} posts for user {username} at {request.full_path} from {client_ip}."
+            f"{client_ip} - Showing {num_of_posts} posts for user {username} at {request.full_path}. "
         )
 
 
@@ -88,41 +88,42 @@ class Log_for_User_Actions:
         msg = msg.strip().strip(".")
         client_ip = _return_client_ip(request)
         self._logger.debug(
-            f"Login failed. Msg: {msg}. IP: {client_ip}."
+            f"{client_ip} - Login failed. Msg: {msg}. "
         )
 
     def login_succeeded(self, username: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self._logger.info(
-            f"User {username} has logged in successfully from {client_ip}. "  
+            f"{client_ip} - User {username} has logged in. "  
         )
+
+    def logout(self, username: str, request: Request):
+
+        client_ip = _return_client_ip(request)
+        self._logger.info(f"{client_ip} - User {username} has logged out.")
 
     def registration_failed(self, msg: str, request: Request):
 
         msg = msg.strip().strip(".")
         client_ip = _return_client_ip(request)
         self._logger.debug(
-            f"Registration failed. Msg: {msg}. IP: {client_ip}."
+            f"{client_ip} - Registration failed. Msg: {msg}. "
         )
 
     def registration_succeeded(self, username: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self._logger.info(
-            f"New user {username} has been created from {client_ip}"
+            f"{client_ip} - New user {username} has been created. "
         )
 
-    def logout(self, username: str, request: Request):
-
-        client_ip = _return_client_ip(request)
-        self._logger.info(f"User {username} has logged out from {client_ip}.")
 
     def deleted(self, username: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self._logger.info(
-            f"User {username} has been deleted from {client_ip}."
+            f"{client_ip} - User {username} has been deleted."
         )
 
     def data_created(self, username: str, data_info: str, request: Request):
@@ -130,7 +131,7 @@ class Log_for_User_Actions:
         data_info_capitalized = data_info.capitalize().strip()
         client_ip = _return_client_ip(request)
         self._logger.info(
-            f"{data_info_capitalized} for user {username} has been created from {client_ip}."
+            f"{client_ip} - {data_info_capitalized} for user {username} has been created."
         )
 
     def data_updated(self, username: str, data_info: str, request: Request):
@@ -138,7 +139,7 @@ class Log_for_User_Actions:
         data_info_capitalized = data_info.capitalize().strip()
         client_ip = _return_client_ip(request)
         self._logger.info(
-            f"{data_info_capitalized} for user {username} has been updated from {client_ip}."
+            f"{client_ip} - {data_info_capitalized} for user {username} has been updated."
         )
 
     def data_deleted(self, username: str, data_info: str, request: Request):
@@ -146,7 +147,7 @@ class Log_for_User_Actions:
         data_info_capitalized = data_info.capitalize().strip()
         client_ip = _return_client_ip(request)
         self._logger.info(
-            f"{data_info_capitalized} for user {username} has been deleted from {client_ip}."
+            f"{client_ip} - {data_info_capitalized} for user {username} has been deleted."
         )
 
 
@@ -160,7 +161,7 @@ def setup_prod_logger():
 
 def setup_debug_logger():
 
-    # to stop showing https log
+    # to stop showing CLF in my logger
     werkzeug_logger = logging.getLogger("werkzeug")
     werkzeug_logger.setLevel(logging.ERROR)
 

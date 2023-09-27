@@ -218,4 +218,21 @@
 	});
 </script>
 
+<script>
+	// Function to send an AJAX request to /add-read-count
+	function sendReadCountRequest() {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "/readcount-increment?post_uid={{ post.post_uid }}", true);
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+				console.log("Read count updated successfully.");
+			}
+		};
+		xhr.send();
+	}
+
+	// Set a timer to call sendReadCountRequest after 30 seconds
+	var timer = setTimeout(sendReadCountRequest, 30000);
+</script>
+
 {% endblock %}

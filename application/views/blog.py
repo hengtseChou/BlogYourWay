@@ -138,7 +138,6 @@ def register():
 
     ###################################################################
 
-    my_logger.debug(request.headers)
     my_logger.page_visited(request=request)
 
     ###################################################################
@@ -354,6 +353,13 @@ def post(username, post_uid):
     return render_template(
         "blogpost.html", user=author_info, post=target_post, comments=comments
     )
+
+@blog("/readcount-increment", methods=["GET"])
+def readcount_increment():
+
+    post_uid = request.args.get("post_uid", type=str)
+
+    return 'good'
 
 
 @blog.route("/@<username>/about", methods=["GET"])
