@@ -96,7 +96,7 @@ def sending_login_form():
     login_form = request.form.to_dict()
     if not my_database.user_login.exists("email", login_form["email"]):
         flash("Account not found. Please try again.", category="error")
-        my_logger.user.login_failed(msg="email not found", request=request)
+        my_logger.user.login_failed(msg=f"email {login_form['email']} not found", request=request)
         return render_template("login.html")
 
     # check pw
@@ -106,7 +106,7 @@ def sending_login_form():
 
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
-        my_logger.user.login_failed(msg="invalid password", request=request)
+        my_logger.user.login_failed(msg=f"invalid password with email {login_form['email']}", request=request)
         return render_template("login.html")
 
     ###################################################################
@@ -138,6 +138,7 @@ def register():
 
     ###################################################################
 
+    my_logger.debug(request.headers)
     my_logger.page_visited(request=request)
 
     ###################################################################

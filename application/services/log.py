@@ -2,6 +2,12 @@ import logging
 from flask import Request
 from application.config import ENV
 
+def _return_client_ip(request: Request):
+    if ENV == 'debug':
+        return request.remote_addr
+    elif ENV == 'prod':
+        return request.headers.get('X-Forwarded-For')
+    
 class MyLogger:
     def __init__(self, logger: logging.Logger):
 
@@ -26,42 +32,49 @@ class MyLogger:
 
     def page_visited(self, request: Request):
 
-        self.debug(f"{request.path} was visited from {request.remote_addr}.")
+        client_ip = _return_client_ip(request)
+        self.debug(f"{request.path} was visited from {client_ip}.")
 
     def invalid_username(self, username: str, request: Request):
 
+        client_ip = _return_client_ip(request)
         self.debug(
-            f"Invalid username {username} at {request.path}. IP: {request.remote_addr}."
+            f"Invalid username {username} at {request.path}. IP: {client_ip}."
         )
 
     def invalid_post_uid(self, username: str, post_uid: str, request: Request):
 
+        client_ip = _return_client_ip(request)
         self.debug(
-            f"Invalid post uid {post_uid} for user {username} was entered from {request.remote_addr}"
+            f"Invalid post uid {post_uid} for user {username} was entered from {client_ip}"
         )
 
     def invalid_autor_for_post(self, username: str, post_uid: str, request: Request):
 
+        client_ip = _return_client_ip(request)
         self.debug(
-            f"The author entered ({username}) was not the author of the post {post_uid}. IP: {request.remote_addr}."
+            f"The author entered ({username}) was not the author of the post {post_uid}. IP: {client_ip}."
         )
 
     def invalid_procedure(self, username: str, procedure: str, request: Request):
 
+        client_ip = _return_client_ip(request)
         self.debug(
-            f"Invalid procedure to {procedure} for {username} from {request.remote_addr}."
+            f"Invalid procedure to {procedure} for {username} from {client_ip}."
         )
 
     def log_for_backstage_tab(self, username: str, tab: str, request: Request):
 
+        client_ip = _return_client_ip(request)
         self.debug(
-            f"User {username} is now at the {tab} tab. IP: {request.remote_addr}."
+            f"User {username} is now at the {tab} tab. IP: {client_ip}."
         )
 
     def log_for_pagination(self, username: str, num_of_posts: int, request: Request):
 
+        client_ip = _return_client_ip(request)
         self.debug(
-            f"Showing {num_of_posts} posts for user {username} at {request.full_path} from {request.remote_addr}."
+            f"Showing {num_of_posts} posts for user {username} at {request.full_path} from {client_ip}."
         )
 
 
@@ -70,61 +83,70 @@ class Log_for_User_Actions:
 
         self._logger = logger
 
-    def login_failed(self, username: str, msg: str, request: Request):
+    def login_failed(self, msg: str, request: Request):
 
         msg = msg.strip().strip(".")
+        client_ip = _return_client_ip(request)
         self._logger.debug(
-            f"User {username} login failed. Msg: {msg}. IP: {request.remote_addr}."
+            f"Login failed. Msg: {msg}. IP: {client_ip}."
         )
 
     def login_succeeded(self, username: str, request: Request):
 
+        client_ip = _return_client_ip(request)
         self._logger.info(
-            f"User {username} has logged in successfully from {request.remote_addr}. "  
+            f"User {username} has logged in successfully from {client_ip}. "  
         )
 
     def registration_failed(self, msg: str, request: Request):
 
         msg = msg.strip().strip(".")
+        client_ip = _return_client_ip(request)
         self._logger.debug(
-            f"Registration failed. Msg: {msg}. IP: {request.remote_addr}."
+            f"Registration failed. Msg: {msg}. IP: {client_ip}."
         )
 
     def registration_succeeded(self, username: str, request: Request):
 
+        client_ip = _return_client_ip(request)
         self._logger.info(
-            f"New user {username} has been created from {request.remote_addr}"
+            f"New user {username} has been created from {client_ip}"
         )
 
     def logout(self, username: str, request: Request):
 
-        self._logger.info(f"User {username} has logged out from {request.remote_addr}.")
+        client_ip = _return_client_ip(request)
+        self._logger.info(f"User {username} has logged out from {client_ip}.")
 
     def deleted(self, username: str, request: Request):
 
+        client_ip = _return_client_ip(request)
         self._logger.info(
-            f"User {username} has been deleted from {request.remote_addr}."
+            f"User {username} has been deleted from {client_ip}."
         )
 
     def data_created(self, username: str, data_info: str, request: Request):
 
         data_info_capitalized = data_info.capitalize().strip()
+        client_ip = _return_client_ip(request)
         self._logger.info(
-            f"{data_info_capitalized} for user {username} has been created from {request.remote_addr}."
+            f"{data_info_capitalized} for user {username} has been created from {client_ip}."
         )
 
     def data_updated(self, username: str, data_info: str, request: Request):
 
         data_info_capitalized = data_info.capitalize().strip()
+        client_ip = _return_client_ip(request)
         self._logger.info(
-            f"{data_info_capitalized} for user {username} has been updated from {request.remote_addr}."
+            f"{data_info_capitalized} for user {username} has been updated from {client_ip}."
         )
 
     def data_deleted(self, username: str, data_info: str, request: Request):
 
         data_info_capitalized = data_info.capitalize().strip()
+        client_ip = _return_client_ip(request)
         self._logger.info(
-            f"{data_info_capitalized} for user {username} has been deleted from {request.remote_addr}."
+            f"{data_info_capitalized} for user {username} has been deleted from {client_ip}."
         )
 
 
