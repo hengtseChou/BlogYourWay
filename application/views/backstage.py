@@ -3,7 +3,6 @@ from datetime import datetime
 from flask import Blueprint, request, session, render_template, flash, redirect, url_for
 from flask_login import login_required, logout_user, current_user
 from application.services.mongo import my_database
-from application.services.redis import redis_method
 from application.services.log import my_logger
 from application.utils.posts import create_post, update_post, paging, post_utils
 from application.utils.users import delete_user
@@ -36,13 +35,10 @@ def overview():
 
     ###################################################################
     
-    user = my_database.user_info.find_one({"username": current_user.username})
-
     # main actions
 
     ###################################################################
 
-    my_logger.debug(f"Retrieving stats for user {current_user.username} started.")
 
     now = datetime.now()
     user = my_database.user_info.find_one({"username": current_user.username})
@@ -50,10 +46,19 @@ def overview():
     time_difference = now - user["created_at"]
     user["days_joined"] = format(time_difference.days + 1, ",")
 
-    visitor_stats = redis_method.get_visitor_stats(current_user.username)
-    daily_count = redis_method.get_daily_visitor_data(current_user.username)
+    visitor_stats = {
+        "home": 1,
+        "blog": 1,
+        "portfolio": 1,
+        "about": 1, 
+        "total": 5
+    }
+    daily_count = {
+        "labels": ["2023-09-28", "2023-09-29", "2023-09-30"], 
+        "data": [1, 2, 2]
+    }
+    
 
-    my_logger.debug(f"Retrieving stats for user {current_user.username} completed.")
 
     ###################################################################
 
@@ -114,12 +119,11 @@ def post_control():
     )
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
-        post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
-        post["clicks"] = format(post["clicks"], ",")
-        post["comments"] = my_database.comment.count_documents(
+        post["views"] = format(post["views"], ",")
+        comment_count = my_database.comment.count_documents(
             {"post_uid": post["post_uid"]}
         )
-        post["comments"] = format(post["comments"], ",")
+        post["comments"] = format(comment_count, ",")
 
     my_logger.log_for_pagination(
         username=current_user.username, num_of_posts=len(posts), request=request
@@ -229,9 +233,11 @@ def archive_control():
     posts = post_utils.find_all_archived_posts_info(current_user.username)
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
-        post["clicks"] = redis_method.get_count(f"post_uid_{post['post_uid']}")
-        post["clicks"] = format(post["clicks"], ",")
-        post["comments"] = format(post["comments"], ",")
+        post["views"] = format(post["views"], ",")
+        comment_count = my_database.comment.count_documents(
+            {"post_uid": post["post_uid"]}
+        )
+        post["comments"] = format(comment_count, ",")
 
     my_logger.log_for_pagination(
         username=current_user.username, num_of_posts=len(posts), request=request

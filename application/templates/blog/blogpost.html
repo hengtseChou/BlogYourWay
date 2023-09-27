@@ -217,17 +217,11 @@
 		});
 	});
 </script>
-
 <script>
-	// Function to send an AJAX request to /add-read-count
+	// Function to send an AJAX request to /readcount-increment
 	function sendReadCountRequest() {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", "/readcount-increment?post_uid={{ post.post_uid }}", true);
-		xhr.onreadystatechange = function () {
-			if (xhr.readyState === 4 && xhr.status === 200) {
-				console.log("Read count updated successfully.");
-			}
-		};
 		xhr.send();
 	}
 

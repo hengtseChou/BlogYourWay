@@ -15,34 +15,33 @@ from flask import (
 from flask_login import current_user, login_user
 from application.config import ENV
 from application.services.mongo import my_database
-from application.services.redis import redis_method
 from application.services.log import my_logger
 from application.utils.users import User
 from application.utils.users import create_user
 from application.utils.posts import (
-    html_to_about, 
-    html_to_blogpost, 
-    all_tags, 
-    post_utils, 
-    paging
+    html_to_about,
+    html_to_blogpost,
+    all_tags,
+    post_utils,
+    paging,
 )
 from application.utils.comments import create_comment, comment_utils
 from application.utils.common import get_today
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
+
 @blog.route("/", methods=["GET"])
 def landing_page():
 
     ###################################################################
 
-    # redis and logging
+    # logging / metrics
 
     ###################################################################
 
     my_logger.page_visited(request=request)
     today = get_today(env=ENV).strftime("%Y%m%d")
-    redis_method.increment_count(f"landing_page_{today}", request)
 
     ###################################################################
 
@@ -69,7 +68,7 @@ def login():
 
     ###################################################################
 
-    # redis and logging
+    # logging / metrics
 
     ###################################################################
 
@@ -96,7 +95,9 @@ def sending_login_form():
     login_form = request.form.to_dict()
     if not my_database.user_login.exists("email", login_form["email"]):
         flash("Account not found. Please try again.", category="error")
-        my_logger.user.login_failed(msg=f"email {login_form['email']} not found", request=request)
+        my_logger.user.login_failed(
+            msg=f"email {login_form['email']} not found", request=request
+        )
         return render_template("login.html")
 
     # check pw
@@ -106,7 +107,9 @@ def sending_login_form():
 
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
-        my_logger.user.login_failed(msg=f"invalid password with email {login_form['email']}", request=request)
+        my_logger.user.login_failed(
+            msg=f"invalid password with email {login_form['email']}", request=request
+        )
         return render_template("login.html")
 
     ###################################################################
@@ -134,7 +137,7 @@ def register():
 
     ###################################################################
 
-    # redis and logging
+    # logging / metrics
 
     ###################################################################
 
@@ -197,13 +200,11 @@ def home(username):
 
     ###################################################################
 
-    # redis and logging
+    # logging / metrics
 
     ###################################################################
 
-    redis_method.increment_count(f"{username}_home", request)
     today = get_today(env=ENV).strftime("%Y%m%d")
-    redis_method.increment_count(f"{username}_uv_{today}", request)
 
     my_logger.page_visited(request=request)
 
@@ -261,11 +262,9 @@ def tag(username):
 
     ###################################################################
 
-    redis_method.increment_count(f"{username}_tag: {tag}", request)
     today = get_today(env=ENV).strftime("%Y%m%d")
-    redis_method.increment_count(f"{username}_uv_{today}", request)
 
-    my_logger.debug(f"{request.full_path} was visited from {request.remote_addr}.")
+    my_logger.page_visited(request=request)
 
     ###################################################################
 
@@ -289,13 +288,14 @@ def post(username, post_uid):
         my_logger.invalid_username(username=username, request=request)
         abort(404)
     if not my_database.post_info.exists("post_uid", post_uid):
-        my_logger.invalid_post_uid(username=username, post_uid=post_uid, request=request)
+        my_logger.invalid_post_uid(
+            username=username, post_uid=post_uid, request=request
+        )
         abort(404)
 
-    author_found_with_post_uid = (
-        my_database.post_info
-        .find_one({"post_uid": post_uid})["author"]
-    )
+    author_found_with_post_uid = my_database.post_info.find_one({"post_uid": post_uid})[
+        "author"
+    ]
     if username != author_found_with_post_uid:
         my_logger.invalid_autor_for_the_post(
             username=username, post_uid=post_uid, request=request
@@ -322,7 +322,7 @@ def post(username, post_uid):
     if request.method == "POST":
 
         create_comment(post_uid, request)
-        flash("Comment published!", category="success")            
+        flash("Comment published!", category="success")
 
     # find comments
     # oldest to newest comment
@@ -334,13 +334,11 @@ def post(username, post_uid):
 
     ###################################################################
 
-    # redis and logging
+    # logging / metrics
 
     ###################################################################
 
-    redis_method.increment_count(f"post_uid_{target_post['post_uid']}", request)
     today = get_today(env=ENV).strftime("%Y%m%d")
-    redis_method.increment_count(f"{username}_uv_{today}", request)
 
     my_logger.page_visited(request=request)
 
@@ -354,12 +352,14 @@ def post(username, post_uid):
         "blogpost.html", user=author_info, post=target_post, comments=comments
     )
 
-@blog("/readcount-increment", methods=["GET"])
+
+@blog.route("/readcount-increment", methods=["GET"])
 def readcount_increment():
 
     post_uid = request.args.get("post_uid", type=str)
+    my_logger.debug(post_uid)
 
-    return 'good'
+    return "good"
 
 
 @blog.route("/@<username>/about", methods=["GET"])
@@ -394,9 +394,7 @@ def about(username):
 
     ###################################################################
 
-    redis_method.increment_count(f"{username}_about", request)
     today = get_today(env=ENV).strftime("%Y%m%d")
-    redis_method.increment_count(f"{username}_uv_{today}", request)
 
     my_logger.page_visited(request=request)
 
@@ -451,9 +449,7 @@ def blogg(username):
 
     ###################################################################
 
-    redis_method.increment_count(f"{username}_blog", request)
     today = get_today(env=ENV).strftime("%Y%m%d")
-    redis_method.increment_count(f"{username}_uv_{today}", request)
 
     my_logger.debug(f"{request.path} was visited from {request.remote_addr}.")
 

@@ -33,13 +33,13 @@ class MyLogger:
     def page_visited(self, request: Request):
 
         client_ip = _return_client_ip(request)
-        self.debug(f"{client_ip} - {request.path} was visited.")
+        self.debug(f"{client_ip} - {request.environ['RAW_URI']} was visited.")
 
     def invalid_username(self, username: str, request: Request):
 
         client_ip = _return_client_ip(request)
         self.debug(
-            f"{client_ip} - Invalid username {username} at {request.path}."
+            f"{client_ip} - Invalid username {username} at {request.environ['RAW_URI']}."
         )
 
     def invalid_post_uid(self, username: str, post_uid: str, request: Request):
@@ -74,7 +74,7 @@ class MyLogger:
 
         client_ip = _return_client_ip(request)
         self.debug(
-            f"{client_ip} - Showing {num_of_posts} posts for user {username} at {request.full_path}. "
+            f"{client_ip} - Showing {num_of_posts} posts for user {username} at {request.environ['RAW_URI']}. "
         )
 
 

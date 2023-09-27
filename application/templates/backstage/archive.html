@@ -29,7 +29,7 @@
 				<td>{{ post['title'] }}			
 				</td>
 				<td>{{ post['created_at'] }}</td>
-				<td class="text-center">{{ post['clicks'] }}</td>
+				<td class="text-center">{{ post['views'] }}</td>
 				<td class="text-center">{{ post['comments'] }}</td>			
 				{% set rchived_link = '/backstage/edit-archived?archived=to_false&uid=' %}
 				<td class="text-center"><a href="{{ archived_link ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-regular fa-thumbs-up"></i></a></td>
@@ -61,7 +61,7 @@
 						{% if post['featured'] %}
 						<button class="btn btn-sm btn-success rounded-4 me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Featured posts will be on your home page">Featured</button>
 						{% endif %}						
-						<span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['clicks'] }}</span>
+						<span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['views'] }}</span>
 						<span><i class="fa-regular fa-comment me-2"></i>{{ post['comments'] }}</span>						
 					</div>
 				</div>
