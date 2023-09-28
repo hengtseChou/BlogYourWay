@@ -297,7 +297,7 @@ def post(username, post_uid):
         "author"
     ]
     if username != author_found_with_post_uid:
-        my_logger.invalid_autor_for_the_post(
+        my_logger.invalid_autor_for_post(
             username=username, post_uid=post_uid, request=request
         )
         abort(404)
@@ -330,8 +330,6 @@ def post(username, post_uid):
     for comment in comments:
         comment["created_at"] = comment["created_at"].strftime("%Y-%m-%d %H:%M:%S")
 
-    my_logger.debug(request.referrer)
-
     ###################################################################
 
     # logging / metrics
@@ -357,9 +355,8 @@ def post(username, post_uid):
 def readcount_increment():
 
     post_uid = request.args.get("post_uid", type=str)
-    my_logger.debug(post_uid)
 
-    return "good"
+    return "OK"
 
 
 @blog.route("/@<username>/about", methods=["GET"])
@@ -451,7 +448,7 @@ def blogg(username):
 
     today = get_today(env=ENV).strftime("%Y%m%d")
 
-    my_logger.debug(f"{request.path} was visited from {request.remote_addr}.")
+    my_logger.page_visited(request=request)
 
     ###################################################################
 
