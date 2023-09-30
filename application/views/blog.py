@@ -15,7 +15,7 @@ from flask import (
 from flask_login import current_user, login_user
 from application.config import ENV
 from application.services.mongo import my_database
-from application.services.log import my_logger
+from application.services.log import my_logger, return_client_ip
 from application.utils.users import User
 from application.utils.users import create_user
 from application.utils.posts import (
@@ -63,7 +63,9 @@ def login():
 
     if current_user.is_authenticated:
         flash("You are already logged in.")
-        my_logger.debug(f"Attempt to duplicate logging in from {request.remote_addr}.")
+        my_logger.debug(
+            f"{return_client_ip(request)} - Attempt to duplicate logging from user {current_user.username}."
+        )
         return redirect(url_for("backstage.panel"))
 
     ###################################################################

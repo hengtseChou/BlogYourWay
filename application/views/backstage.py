@@ -186,10 +186,10 @@ def sending_updated_about():
         "short_bio": form["short_bio"],
     }
     updated_about = {"about": form["about"]}
-    my_database.user_info.update_value(
+    my_database.user_info.update_values(
         filter={"username": user["username"]}, update=updated_info
     )
-    my_database.user_about.update_value(
+    my_database.user_about.update_values(
         filter={"username": user["username"]}, update={"$set": updated_about}
     )
     user.update(updated_info)
@@ -303,7 +303,7 @@ def sending_updated_social_links():
     for i in range(0, len(form_values), 2):
         updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
 
-    my_database.user_info.update_value(
+    my_database.user_info.update_values(
         filter={"username": current_user.username},
         update={"social_links": updated_links},
     )
@@ -406,7 +406,7 @@ def sending_updated_settings():
         enable_change_log = switch_to_bool(request.form.get("enable_change_log"))
         enable_portfolio = switch_to_bool(request.form.get("enable_portfolio"))
 
-        my_database.user_info.update_value(
+        my_database.user_info.update_values(
             filter={"username": current_user.username},
             update={
                 "banner_url": banner_url, 
@@ -444,7 +444,7 @@ def sending_updated_settings():
 
         # update new password
         hashed_new_pw = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
-        my_database.user_login.update_value(
+        my_database.user_login.update_values(
             filter={"username": current_user.username},
             update={"password": hashed_new_pw},
         )
@@ -600,7 +600,7 @@ def edit_featured():
         updated_featured_status = False
         flash(f"Your post \"{truncated_post_title}\" is now removed from the home page!", category="success")
 
-    my_database.post_info.update_value(
+    my_database.post_info.update_values(
         filter={"post_uid": post_uid},
         update={"featured": updated_featured_status},
     )
@@ -657,7 +657,7 @@ def edit_archived():
         updated_archived_status = False
         flash(f"Your post \"{truncated_post_title}\" is now restored from the archive!", category="success")
 
-    my_database.user_info.update_value(
+    my_database.user_info.update_values(
         filter={"post_uid": post_uid},
         update={"archived": updated_archived_status},
     )

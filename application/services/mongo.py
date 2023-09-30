@@ -40,34 +40,50 @@ class ExtendedCollection(Collection):
 
         return super().update_one(filter, update)
 
-    def update_value(self, filter, update):
+    def update_values(self, filter: dict, update: dict):
+        """This method wraps up the pymongo update_one method with "$set" operator.
 
+        Args:
+            filter (dict): A query that matches the document to update.
+            update (dict): The modified fields. No need to pass "$set".
+
+        """
         return self.update_one(filter=filter, update={"$set": update})
+
+    def make_increments(self, filter: dict, increments: dict):
+        """This method wraps up the pymongo update_one method with "$inc" operator.
+
+        Args:
+            filter (dict): A query that matches the document to update.
+            increments (dict): The values of these fields will be add by the values passed in this argument.
+
+        """
+        return self.update_one(filter=filter, update={"$inc": increments})
 
 
 class ExtendedCursor(Cursor):
     def __init__(self, collection: ExtendedCollection, filter=None):
-        super().__init__(collection, filter)    
+        super().__init__(collection, filter)
 
     def __check_okay_to_chain(self):
 
         return super(ExtendedCursor, self)._Cursor__check_okay_to_chain()
-    
+
     def sort(self, key_or_list, direction):
 
         super().sort(key_or_list, direction)
         return self
-    
+
     def skip(self, skip: int):
 
         super().skip(skip)
         return self
-    
+
     def limit(self, limit: int):
-        
+
         super().limit(limit)
         return self
-    
+
     def as_list(self):
 
         self.__check_okay_to_chain()
