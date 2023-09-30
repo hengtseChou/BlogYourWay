@@ -297,7 +297,7 @@ def post(username, post_uid):
         "author"
     ]
     if username != author_found_with_post_uid:
-        my_logger.invalid_autor_for_post(
+        my_logger.invalid_author_for_post(
             username=username, post_uid=post_uid, request=request
         )
         abort(404)
