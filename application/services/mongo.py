@@ -40,7 +40,7 @@ class ExtendedCollection(Collection):
 
         return super().update_one(filter, update)
 
-    def simple_update(self, filter, update):
+    def update_value(self, filter, update):
 
         return self.update_one(filter=filter, update={"$set": update})
 

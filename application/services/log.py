@@ -155,7 +155,7 @@ class Log_for_User_Actions:
         client_ip = _return_client_ip(request, ENV)
         self._logger.info(f"{client_ip} - New user {username} has been created. ")
 
-    def deleted(self, username: str, request: Request):
+    def user_deleted(self, username: str, request: Request):
 
         client_ip = _return_client_ip(request, ENV)
         self._logger.info(f"{client_ip} - User {username} has been deleted.")

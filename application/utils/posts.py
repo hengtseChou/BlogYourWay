@@ -129,10 +129,10 @@ class PostUpdateSetup:
         updated_post_info = self._updated_post_info(request=request)
         updated_post_content = self._updated_post_content(request=request)
 
-        self._db_handler.post_info.simple_update(
+        self._db_handler.post_info.update_value(
             filter={"post_uid": post_uid}, update=updated_post_info
         )
-        self._db_handler.post_content.simple_update(
+        self._db_handler.post_content.update_value(
             filter={"post_uid": post_uid}, update=updated_post_content
         )
 
