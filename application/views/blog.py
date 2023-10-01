@@ -16,8 +16,7 @@ from flask_login import current_user, login_user
 from application.config import ENV
 from application.services.mongo import my_database
 from application.services.log import my_logger, return_client_ip
-from application.utils.users import User
-from application.utils.users import create_user
+from application.utils.users import User, create_user
 from application.utils.posts import (
     html_to_about,
     html_to_blogpost,
@@ -27,6 +26,7 @@ from application.utils.posts import (
 )
 from application.utils.comments import create_comment, comment_utils
 from application.utils.common import get_today
+from application.utils.metrics import metrics_recorder
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
@@ -209,6 +209,8 @@ def home(username):
     today = get_today(env=ENV).strftime("%Y%m%d")
 
     my_logger.page_viewed(request=request)
+    metrics_recorder.page_viewed(request=request)
+    metrics_recorder.track_index_pageviews(request=request)
 
     ###################################################################
 

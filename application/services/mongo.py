@@ -36,9 +36,9 @@ class ExtendedCollection(Collection):
             return result
         return dict(result)
 
-    def update_one(self, filter, update):
+    def update_one(self, filter, update, upsert=None):
 
-        return super().update_one(filter, update)
+        return super().update_one(filter, update, upsert=upsert)
 
     def update_values(self, filter: dict, update: dict):
         """This method wraps up the pymongo update_one method with "$set" operator.
@@ -58,7 +58,9 @@ class ExtendedCollection(Collection):
             increments (dict): The values of these fields will be add by the values passed in this argument.
 
         """
-        return self.update_one(filter=filter, update={"$inc": increments}, upsert=upsert)
+        return self.update_one(
+            filter=filter, update={"$inc": increments}, upsert=upsert
+        )
 
 
 class ExtendedCursor(Cursor):
@@ -114,7 +116,6 @@ class MyDatabase:
         self._post_content = ExtendedCollection(posts_db, "post-content")
         self._comment = ExtendedCollection(comments_db, "comment")
         self._metrics_log = ExtendedCollection(metrics_db, "metrics-log")
-        
 
     @property
     def user_login(self):
@@ -130,7 +131,7 @@ class MyDatabase:
     def user_about(self):
 
         return self._user_about
-    
+
     @property
     def user_views(self):
 
@@ -150,13 +151,11 @@ class MyDatabase:
     def comment(self):
 
         return self._comment
-    
+
     @property
     def metrics_log(self):
 
         return self._metrics_log
-    
-
 
 
 my_database = MyDatabase()

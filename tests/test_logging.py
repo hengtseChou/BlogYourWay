@@ -14,7 +14,7 @@ def test_page_visited(mock_client_ip, caplog):
     mock_request = MagicMock()
     mock_request.environ = {"RAW_URI": "test.com"}
 
-    my_logger.page_visited(mock_request)
+    my_logger.page_viewed(mock_request)
 
     assert "127.0.0.1 - test.com was visited." in caplog.text
 

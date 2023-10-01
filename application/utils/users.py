@@ -18,6 +18,7 @@ class User(UserMixin):
                 continue
             setattr(self, key, value)
 
+
 ###################################################################
 
 # user registration
@@ -42,16 +43,19 @@ class NewUserSetup:
             return False
         if not validator.validate_blogname(self._reg_form["blogname"]):
             return False
-        return True    
+        return True
 
     def _no_duplicates(self) -> bool:
 
         for field in ["email", "username", "blogname"]:
 
             if self._db_handler.user_login.exists(field, self._reg_form[field]):
-                flash(f"{field.capitalize()} is already used. Please try another one.", category="error")
+                flash(
+                    f"{field.capitalize()} is already used. Please try another one.",
+                    category="error",
+                )
                 self._logger.user.registration_failed(
-                    msg=f'{field} {self._reg_form[field]} already used',
+                    msg=f"{field} {self._reg_form[field]} already used",
                     request=request,
                 )
                 return True
@@ -103,10 +107,10 @@ class NewUserSetup:
 
         new_user_about = {"username": username, "about": ""}
         return new_user_about
-    
+
     def _create_user_views(self, username: str) -> dict:
 
-        new_user_views = {"username": username, "views": 0}
+        new_user_views = {"username": username, "unique_visitors": []}
         return new_user_views
 
     def create_user(self):
@@ -143,6 +147,7 @@ def create_user(request: request) -> str:
 
     user_registration = NewUserSetup(request, my_database, my_logger)
     return user_registration.create_user()
+
 
 ###################################################################
 
@@ -183,12 +188,16 @@ class UserDeletionSetup:
             f"Deleted relevant comments from user {self._user_to_be_deleted}."
         )
 
-    def _remove_user(self):
+    def _remove_all_user_data(self):
 
         self._db_handler.user_login.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_info.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_about.delete_one({"username": self._user_to_be_deleted})
-        self._logger.debug(f"Deleted user information for user {self._user_to_be_deleted}.")
+        self._db_handler.user_views.delete_one({"username": self._user_to_be_deleted})
+
+        self._logger.debug(
+            f"Deleted user information for user {self._user_to_be_deleted}."
+        )
 
     def start_deletion_process(self):
 
@@ -197,7 +206,7 @@ class UserDeletionSetup:
         self._remove_all_related_comments(target_posts_uid)
         # this place should includes removing metrics data for the user
         # redis_method.delete_with_prefix(username)
-        self._remove_user()
+        self._remove_all_user_data()
 
 
 def delete_user(username):

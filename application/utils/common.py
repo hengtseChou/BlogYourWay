@@ -152,7 +152,7 @@ class UIDGenerator:
 ###################################################################
 
 
-def get_today(env):
+def get_today(env) -> datetime:
 
     if env == "debug":
         today = datetime.now()
