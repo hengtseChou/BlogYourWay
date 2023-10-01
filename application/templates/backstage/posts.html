@@ -33,14 +33,11 @@
 					<td class="text-center">{{ post['views'] }}</td>
 					<td class="text-center">{{ post['comments'] }}</td>
 					{% if post['featured'] %}
-					{% set featured_link = '/backstage/edit-featured?featured=to_false&uid=' %}
-					<td class="text-center"><a href='{{ featured_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
+					<td class="text-center"><a href='/backstage/edit-featured?featured=to_false&uid={{ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
 					{% else %}
-					{% set featured_link = '/backstage/edit-featured?featured=to_true&uid=' %}
-					<td class="text-center"><a href='{{ featured_link ~ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
+					<td class="text-center"><a href='/backstage/edit-featured?featured=to_true&uid={{ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
 					{% endif %}
-					{% set archived_link = '/backstage/edit-archived?archived=to_true&uid=' %}
-					<td class="text-center"><a href="{{ archived_link ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
+					<td class="text-center"><a href="/backstage/edit-archived?archived=to_true&uid={{ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
 				</tr>		
 				{% endfor %}
 			</tbody>
@@ -92,14 +89,11 @@
 						<a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>					  
 						<ul class="dropdown-menu">
 							{% if post['featured'] %}
-							{% set featured_link = '/backstage/edit-featured?featured=to_false&uid=' %}
-						  <li><a class="dropdown-item" href='{{ featured_link ~ post.post_uid }}'>Remove from featured</a></li>
+						  	<li><a class="dropdown-item" href='/backstage/edit-featured?featured=to_false&uid={{ post.post_uid }}'>Remove from featured</a></li>
 							{% else %}
-							{% set featured_link = '/backstage/edit-featured?featured=to_true&uid=' %}
-						  <li><a class="dropdown-item" href='{{ featured_link ~ post.post_uid }}'>Add to featured</a></li>
+							<li><a class="dropdown-item" href='/backstage/edit-featured?featured=to_true&uid={{ post.post_uid }}'>Add to featured</a></li>
 							{% endif %}
-							{% set archived_link = '/backstage/edit-archived?archived=to_true&uid=' %}
-						  <li><a class="dropdown-item" href='{{ archived_link ~ post.post_uid }}'>Move to archive</a></li>
+							<li><a class="dropdown-item" href='/backstage/edit-archived?archived=to_true&uid={{  post.post_uid }}'>Move to archive</a></li>
 						</ul>
 					</div>					
 				</div>

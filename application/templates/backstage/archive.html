@@ -31,10 +31,8 @@
 				<td>{{ post['created_at'] }}</td>
 				<td class="text-center">{{ post['views'] }}</td>
 				<td class="text-center">{{ post['comments'] }}</td>			
-				{% set rchived_link = '/backstage/edit-archived?archived=to_false&uid=' %}
-				<td class="text-center"><a href="{{ archived_link ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-regular fa-thumbs-up"></i></a></td>
-				{% set delete_link = '/backstage/delete/post?&uid=' %}
-				<td class="text-center"><a href="{{ delete_link ~ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-trash-can"></i></a></td>
+				<td class="text-center"><a href="/backstage/edit-archived?archived=to_false&uid={{ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-regular fa-thumbs-up"></i></a></td>
+				<td class="text-center"><a href="/backstage/delete/post?&uid={{ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-trash-can"></i></a></td>
 			</tr>		
 			{% endfor %}
 		</tbody>
@@ -69,10 +67,8 @@
 					<div class="text-end dropdown">
 						<a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>					  
 						<ul class="dropdown-menu">
-							{% set archived_link = '/backstage/edit-archived?archived=to_false&uid=' %}
-						    <li><a class="dropdown-item" href='{{ archived_link ~ post.post_uid }}'>Restore</a></li>
-							{% set delete_link = '/backstage/delete/post?&uid=' %}
-						    <li><a class="dropdown-item" href="{{ delete_link ~ post.post_uid }}">Delete</a></li>
+						    <li><a class="dropdown-item" href='/backstage/edit-archived?archived=to_false&uid={{ post.post_uid }}'>Restore</a></li>
+						    <li><a class="dropdown-item" href="/backstage/delete/post?&uid={{ post.post_uid }}">Delete</a></li>
 						</ul>
 					</div>					
 				</div>

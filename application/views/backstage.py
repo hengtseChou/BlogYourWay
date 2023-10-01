@@ -652,12 +652,11 @@ def edit_archived():
     if request.args.get("archived") == "to_true":
         updated_archived_status = True
         flash(f"Your post \"{truncated_post_title}\" is now archived!", category="success")
-
     else:
         updated_archived_status = False
         flash(f"Your post \"{truncated_post_title}\" is now restored from the archive!", category="success")
 
-    my_database.user_info.update_values(
+    my_database.post_info.update_values(
         filter={"post_uid": post_uid},
         update={"archived": updated_archived_status},
     )

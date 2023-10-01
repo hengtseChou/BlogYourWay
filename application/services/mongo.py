@@ -100,22 +100,20 @@ class ExtendedCursor(Cursor):
 class MyDatabase:
     def __init__(self) -> None:
 
-        self._users_db = Database(
-            client=MongoClient(MONGO_URL, connect=False), name="users"
-        )
-        self._posts_db = Database(
-            client=MongoClient(MONGO_URL, connect=False), name="posts"
-        )
-        self._comments_db = Database(
-            client=MongoClient(MONGO_URL, connect=False), name="comments"
-        )
+        client = MongoClient(MONGO_URL, connect=False)
+        users_db = Database(client=client, name="users")
+        posts_db = Database(client=client, name="posts")
+        comments_db = Database(client=client, name="comments")
+        metrics_db = Database(client=client, name="metrics")
 
-        self._user_login = ExtendedCollection(self._users_db, "user-login")
-        self._user_info = ExtendedCollection(self._users_db, "user-info")
-        self._user_about = ExtendedCollection(self._users_db, "user-about")
-        self._post_info = ExtendedCollection(self._posts_db, "post-info")
-        self._post_content = ExtendedCollection(self._posts_db, "post-content")
-        self._comment = ExtendedCollection(self._comments_db, "comment")
+        self._user_login = ExtendedCollection(users_db, "user-login")
+        self._user_info = ExtendedCollection(users_db, "user-info")
+        self._user_about = ExtendedCollection(users_db, "user-about")
+        self._post_info = ExtendedCollection(posts_db, "post-info")
+        self._post_content = ExtendedCollection(posts_db, "post-content")
+        self._comment = ExtendedCollection(comments_db, "comment")
+        self._metrics_log = ExtendedCollection(metrics_db, "metrics-log")
+        
 
     @property
     def user_login(self):
@@ -146,6 +144,13 @@ class MyDatabase:
     def comment(self):
 
         return self._comment
+    
+    @property
+    def metrics_log(self):
+
+        return self._metrics_log
+    
+
 
 
 my_database = MyDatabase()

@@ -40,7 +40,7 @@ def landing_page():
 
     ###################################################################
 
-    my_logger.page_visited(request=request)
+    my_logger.page_viewed(request=request)
     today = get_today(env=ENV).strftime("%Y%m%d")
 
     ###################################################################
@@ -74,7 +74,7 @@ def login():
 
     ###################################################################
 
-    my_logger.page_visited(request=request)
+    my_logger.page_viewed(request=request)
 
     ###################################################################
 
@@ -143,7 +143,7 @@ def register():
 
     ###################################################################
 
-    my_logger.page_visited(request=request)
+    my_logger.page_viewed(request=request)
 
     ###################################################################
 
@@ -208,7 +208,7 @@ def home(username):
 
     today = get_today(env=ENV).strftime("%Y%m%d")
 
-    my_logger.page_visited(request=request)
+    my_logger.page_viewed(request=request)
 
     ###################################################################
 
@@ -266,7 +266,7 @@ def tag(username):
 
     today = get_today(env=ENV).strftime("%Y%m%d")
 
-    my_logger.page_visited(request=request)
+    my_logger.page_viewed(request=request)
 
     ###################################################################
 
@@ -340,7 +340,7 @@ def post(username, post_uid):
 
     today = get_today(env=ENV).strftime("%Y%m%d")
 
-    my_logger.page_visited(request=request)
+    my_logger.page_viewed(request=request)
 
     ###################################################################
 
@@ -395,7 +395,7 @@ def about(username):
 
     today = get_today(env=ENV).strftime("%Y%m%d")
 
-    my_logger.page_visited(request=request)
+    my_logger.page_viewed(request=request)
 
     ###################################################################
 
@@ -450,7 +450,7 @@ def blogg(username):
 
     today = get_today(env=ENV).strftime("%Y%m%d")
 
-    my_logger.page_visited(request=request)
+    my_logger.page_viewed(request=request)
 
     ###################################################################
 
@@ -461,6 +461,37 @@ def blogg(username):
     return render_template(
         "blog.html", user=user, posts=posts, tags=tags_dict, pagination=pagination
     )
+
+@blog.route("@<username>/social-links", methods=["GET"])
+def social_link_tracker(username):
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    user = my_database.user_info.find_one({"username": username})
+    social_links = user["social_links"]
+    link_idx = request.args.get("idx", type=int)
+    target_url = social_links[link_idx - 1]["url"]
+    if not target_url.startswith("https://"):
+        target_url = "https://" + target_url
+
+    ###################################################################
+
+    # visiting counts and logging
+
+    ###################################################################
+
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return redirect(target_url)
 
 
 @blog.route("/<username>/get-profile-pic", methods=["GET"])

@@ -36,27 +36,27 @@
 				{% for dict in user['social_links'] %}
 				{% if dict['platform'] == 'medium' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-medium"></i></a>
+					<a class="nav-link me-lg-3" href="/@{{ user.username }}/social-links?idx={{ loop.index }}"><i class="fa-brands fa-medium"></i></a>
 				</li>
 				{% elif dict['platform'] == 'linkedin' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-linkedin"></i></a>
+					<a class="nav-link me-lg-3" href="/@{{ user.username }}/social-links?idx={{ loop.index }}"><i class="fa-brands fa-linkedin"></i></a>
 				</li>
 				{% elif dict['platform'] == 'github' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-github"></i></a>
+					<a class="nav-link me-lg-3" href="/@{{ user.username }}/social-links?idx={{ loop.index }}"><i class="fa-brands fa-github"></i></a>
 				</li>
 				{% elif dict['platform'] == 'facebook' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-facebook-f"></i></a>
+					<a class="nav-link me-lg-3" href="/@{{ user.username }}/social-links?idx={{ loop.index }}"><i class="fa-brands fa-facebook-f"></i></a>
 				</li>
 				{% elif dict['platform'] == 'instagram' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-instagram"></i></a>
+					<a class="nav-link me-lg-3" href="/@{{ user.username }}/social-links?idx={{ loop.index }}"><i class="fa-brands fa-instagram"></i></a>
 				</li>
 				{% elif dict['platform'] == 'twitter' %}
 				<li class="nav-item">
-					<a class="nav-link me-lg-3" href="{{ dict['url'] }}"><i class="fa-brands fa-twitter"></i></a>
+					<a class="nav-link me-lg-3" href="/@{{ user.username }}/social-links?idx={{ loop.index }}"><i class="fa-brands fa-twitter"></i></a>
 				</li>
 				{% endif %}
 				{% endfor %}

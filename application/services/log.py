@@ -87,7 +87,7 @@ class MyLogger:
 
         self._logger.error(msg)
 
-    def page_visited(self, request: Request):
+    def page_viewed(self, request: Request):
 
         client_ip = return_client_ip(request, ENV)
         self.debug(f"{client_ip} - {request.environ['RAW_URI']} was visited.")

@@ -4,6 +4,7 @@ Configure little-blog application in create_app() with a factory pattern.
 import os
 from flask import Flask, render_template, request
 from flask_login import LoginManager
+from application.config import ENV
 from application.views import blog_bp, backstage_bp
 from application.services.log import my_logger, return_client_ip
 from application.services.mongo import my_database
@@ -42,13 +43,13 @@ def create_app() -> Flask:
     # Register the custom error page
     @app.errorhandler(404)
     def page_not_found(error):
-        client_ip = return_client_ip(request)
+        client_ip = return_client_ip(request, ENV)
         my_logger.debug(f"{client_ip} - 404 not found at {request.environ['RAW_URI']}. ")
         return render_template("404.html"), 404
 
     @app.errorhandler(500)
     def internal_server_error(error):
-        client_ip = return_client_ip(request)
+        client_ip = return_client_ip(request, ENV)
         my_logger.error(f"{client_ip} - 500 internal error at {request.environ['RAW_URI']}.")
         return render_template("500.html"), 500
 
