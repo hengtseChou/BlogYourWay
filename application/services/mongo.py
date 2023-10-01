@@ -50,7 +50,7 @@ class ExtendedCollection(Collection):
         """
         return self.update_one(filter=filter, update={"$set": update})
 
-    def make_increments(self, filter: dict, increments: dict):
+    def make_increments(self, filter: dict, increments: dict, upsert=None):
         """This method wraps up the pymongo update_one method with "$inc" operator.
 
         Args:
@@ -58,7 +58,7 @@ class ExtendedCollection(Collection):
             increments (dict): The values of these fields will be add by the values passed in this argument.
 
         """
-        return self.update_one(filter=filter, update={"$inc": increments})
+        return self.update_one(filter=filter, update={"$inc": increments}, upsert=upsert)
 
 
 class ExtendedCursor(Cursor):
@@ -109,6 +109,7 @@ class MyDatabase:
         self._user_login = ExtendedCollection(users_db, "user-login")
         self._user_info = ExtendedCollection(users_db, "user-info")
         self._user_about = ExtendedCollection(users_db, "user-about")
+        self._user_views = ExtendedCollection(users_db, "user-views")
         self._post_info = ExtendedCollection(posts_db, "post-info")
         self._post_content = ExtendedCollection(posts_db, "post-content")
         self._comment = ExtendedCollection(comments_db, "comment")
@@ -129,6 +130,11 @@ class MyDatabase:
     def user_about(self):
 
         return self._user_about
+    
+    @property
+    def user_views(self):
+
+        return self._user_views
 
     @property
     def post_info(self):

@@ -103,6 +103,11 @@ class NewUserSetup:
 
         new_user_about = {"username": username, "about": ""}
         return new_user_about
+    
+    def _create_user_views(self, username: str) -> dict:
+
+        new_user_views = {"username": username, "views": 0}
+        return new_user_views
 
     def create_user(self):
 
@@ -124,10 +129,12 @@ class NewUserSetup:
             self._reg_form["blogname"],
         )
         new_user_about = self._create_user_about(self._reg_form["username"])
+        new_user_views = self._create_user_views(self._reg_form["username"])
 
         self._db_handler.user_login.insert_one(new_user_login)
         self._db_handler.user_info.insert_one(new_user_info)
         self._db_handler.user_about.insert_one(new_user_about)
+        self._db_handler.user_views.insert_one(new_user_views)
 
         return self._reg_form["username"]
 
