@@ -1,11 +1,10 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from application.services.log import my_logger, Log_for_User_Actions
-
+from application.services.log import my_logger
 
 @pytest.fixture
 def mock_client_ip():
-    with patch("application.services.log._return_client_ip") as mock:
+    with patch("application.services.log.return_client_ip") as mock:
         mock.return_value = "127.0.0.1"
         yield mock
 
