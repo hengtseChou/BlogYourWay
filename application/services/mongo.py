@@ -65,6 +65,7 @@ class ExtendedCollection(Collection):
 
 class ExtendedCursor(Cursor):
     def __init__(self, collection: ExtendedCollection, filter=None):
+        
         super().__init__(collection, filter)
 
     def __check_okay_to_chain(self):

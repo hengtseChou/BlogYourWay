@@ -26,7 +26,7 @@ from application.utils.posts import (
 )
 from application.utils.comments import create_comment, comment_utils
 from application.utils.common import get_today
-from application.utils.metrics import metrics_recorder
+from application.utils.metrics import lifetime_metrics, timely_metrics
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
@@ -206,11 +206,11 @@ def home(username):
 
     ###################################################################
 
-    today = get_today(env=ENV).strftime("%Y%m%d")
 
     my_logger.page_viewed(request=request)
-    metrics_recorder.page_viewed(request=request)
-    metrics_recorder.track_index_pageviews(request=request)
+    lifetime_metrics.page_viewed(request=request)
+    timely_metrics.page_viewed(request=request)
+    timely_metrics.index_page_viewed(request=request)
 
     ###################################################################
 
