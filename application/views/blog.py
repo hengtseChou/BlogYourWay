@@ -25,15 +25,13 @@ from application.utils.posts import (
     paging,
 )
 from application.utils.comments import create_comment, comment_utils
-from application.utils.common import get_today
-from application.utils.metrics import lifetime_metrics, timely_metrics
+from application.utils.metrics import lifetime_metrics, timely_metrics, admin_metrics
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
 
 @blog.route("/", methods=["GET"])
 def landing_page():
-
     ###################################################################
 
     # logging / metrics
@@ -41,7 +39,7 @@ def landing_page():
     ###################################################################
 
     my_logger.page_viewed(request=request)
-    today = get_today(env=ENV).strftime("%Y%m%d")
+    admin_metrics.page_viewed(request, page="landing_page")
 
     ###################################################################
 
@@ -54,7 +52,6 @@ def landing_page():
 
 @blog.route("/login", methods=["GET"])
 def login():
-
     ###################################################################
 
     # early returns
@@ -87,7 +84,6 @@ def login():
 
 @blog.route("/login", methods=["POST"])
 def sending_login_form():
-
     ###################################################################
 
     # early returns
@@ -136,7 +132,6 @@ def sending_login_form():
 
 @blog.route("/register", methods=["GET"])
 def register():
-
     ###################################################################
 
     # logging / metrics
@@ -156,7 +151,6 @@ def register():
 
 @blog.route("/register", methods=["POST"])
 def sending_register_form():
-
     ###################################################################
 
     # main actions
@@ -178,7 +172,6 @@ def sending_register_form():
 
 @blog.route("/@<username>", methods=["GET"])
 def home(username):
-
     ###################################################################
 
     # early returns
@@ -206,7 +199,6 @@ def home(username):
 
     ###################################################################
 
-
     my_logger.page_viewed(request=request)
     lifetime_metrics.page_viewed(request=request)
     timely_metrics.page_viewed(request=request)
@@ -223,7 +215,6 @@ def home(username):
 
 @blog.route("/@<username>/tags", methods=["GET"])
 def tag(username):
-
     ###################################################################
 
     # early returns
@@ -234,22 +225,22 @@ def tag(username):
         my_logger.invalid_username(username=username, request=request)
         abort(404)
 
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
     # if no tag specified, show blog page
     tag_url_encoded = request.args.get("tag", default=None, type=str)
     if tag_url_encoded is None:
-        return redirect(url_for("blog.blogpage", username=username))
-
+        return redirect(url_for("blog.blogg", username=username))
+    
     # abort for unknown tag
     tag = unquote(tag_url_encoded)
     tags_found = all_tags.from_user(username)
     if tag not in tags_found.keys():
         abort(404)
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
 
     user = my_database.user_info.find_one({"username": username})
     posts = post_utils.find_all_posts_info(username)
@@ -262,13 +253,14 @@ def tag(username):
 
     ###################################################################
 
-    # visiting counts and logging
+    # logging / metrics
 
     ###################################################################
 
-    today = get_today(env=ENV).strftime("%Y%m%d")
-
     my_logger.page_viewed(request=request)
+    lifetime_metrics.page_viewed(request=request)
+    timely_metrics.page_viewed(request=request)
+    timely_metrics.index_page_viewed(request=request)
 
     ###################################################################
 
@@ -281,7 +273,6 @@ def tag(username):
 
 @blog.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
 def post(username, post_uid):
-
     ###################################################################
 
     # early return for invalid inputs
@@ -324,7 +315,6 @@ def post(username, post_uid):
     # add comments
     # this section should be placed before finding comments to show on the postu'1 min read'
     if request.method == "POST":
-
         create_comment(post_uid, request)
         flash("Comment published!", category="success")
 
@@ -340,9 +330,11 @@ def post(username, post_uid):
 
     ###################################################################
 
-    today = get_today(env=ENV).strftime("%Y%m%d")
-
     my_logger.page_viewed(request=request)
+    lifetime_metrics.page_viewed(request=request)
+    lifetime_metrics.post_viewed(request=request)
+    timely_metrics.page_viewed(request=request)
+    timely_metrics.post_viewed(request=request)
 
     ###################################################################
 
@@ -357,15 +349,26 @@ def post(username, post_uid):
 
 @blog.route("/readcount-increment", methods=["GET"])
 def readcount_increment():
+    ###################################################################
 
-    post_uid = request.args.get("post_uid", type=str)
+    # logging / metrics
+
+    ###################################################################
+
+    lifetime_metrics.post_read(request=request)
+    timely_metrics.post_read(request=request)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
 
     return "OK"
 
 
 @blog.route("/@<username>/about", methods=["GET"])
 def about(username):
-
     ###################################################################
 
     # early return for invalid inputs
@@ -391,13 +394,20 @@ def about(username):
 
     ###################################################################
 
-    # visiting counts and logging
+    # logging / metrics
 
     ###################################################################
 
-    today = get_today(env=ENV).strftime("%Y%m%d")
-
     my_logger.page_viewed(request=request)
+    lifetime_metrics.page_viewed(request=request)
+    lifetime_metrics.index_page_viewed(request=request)
+    timely_metrics.page_viewed(request=request)
+    timely_metrics.index_page_viewed(request=request)
+    my_database.user_about.make_increments(
+        filter={"username": username}, 
+        increments={"about_views": 1},
+        # upsert=True
+    )
 
     ###################################################################
 
@@ -410,7 +420,6 @@ def about(username):
 
 @blog.route("/@<username>/blog", methods=["GET"])
 def blogg(username):
-
     ###################################################################
 
     # early returns
@@ -446,13 +455,15 @@ def blogg(username):
 
     ###################################################################
 
-    # visiting counts and logging
+    # logging / metrics
 
     ###################################################################
 
-    today = get_today(env=ENV).strftime("%Y%m%d")
-
     my_logger.page_viewed(request=request)
+    lifetime_metrics.page_viewed(request=request)
+    lifetime_metrics.index_page_viewed(request=request)
+    timely_metrics.page_viewed(request=request)
+    timely_metrics.index_page_viewed(request=request)
 
     ###################################################################
 
@@ -464,9 +475,9 @@ def blogg(username):
         "blog.html", user=user, posts=posts, tags=tags_dict, pagination=pagination
     )
 
-@blog.route("@<username>/social-links", methods=["GET"])
-def social_link_tracker(username):
 
+@blog.route("@<username>/social-links", methods=["GET"])
+def social_link_transfer(username):
     ###################################################################
 
     # main actions
@@ -482,10 +493,13 @@ def social_link_tracker(username):
 
     ###################################################################
 
-    # visiting counts and logging
+    # logging / metrics
 
     ###################################################################
 
+    client_ip = return_client_ip(request)
+    my_logger.debug(f"{client_ip} - redirect to social link {target_url}")
+    timely_metrics.social_link_fired(request)
 
     ###################################################################
 
@@ -498,7 +512,6 @@ def social_link_tracker(username):
 
 @blog.route("/<username>/get-profile-pic", methods=["GET"])
 def profile_pic_endpoint(username):
-
     user = my_database.user_info.find_one({"username": username})
 
     if user["profile_img_url"]:

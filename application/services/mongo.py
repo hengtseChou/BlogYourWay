@@ -36,7 +36,7 @@ class ExtendedCollection(Collection):
             return result
         return dict(result)
 
-    def update_one(self, filter, update, upsert=None):
+    def update_one(self, filter, update, upsert=False):
 
         return super().update_one(filter, update, upsert=upsert)
 
@@ -50,7 +50,7 @@ class ExtendedCollection(Collection):
         """
         return self.update_one(filter=filter, update={"$set": update})
 
-    def make_increments(self, filter: dict, increments: dict, upsert=None):
+    def make_increments(self, filter: dict, increments: dict, upsert=False):
         """This method wraps up the pymongo update_one method with "$inc" operator.
 
         Args:
@@ -96,6 +96,7 @@ class ExtendedCursor(Cursor):
 ###################################################################
 
 # my database handler
+# the "interface" for mongo db
 
 ###################################################################
 
@@ -115,6 +116,7 @@ class MyDatabase:
         self._user_views = ExtendedCollection(users_db, "user-views")
         self._post_info = ExtendedCollection(posts_db, "post-info")
         self._post_content = ExtendedCollection(posts_db, "post-content")
+        self._post_view_sources = ExtendedCollection(posts_db, "post-view-sources")
         self._comment = ExtendedCollection(comments_db, "comment")
         self._metrics_log = ExtendedCollection(metrics_db, "metrics-log")
 
@@ -147,6 +149,11 @@ class MyDatabase:
     def post_content(self):
 
         return self._post_content
+    
+    @property
+    def post_view_sources(self):
+
+        return self._post_view_sources
 
     @property
     def comment(self):

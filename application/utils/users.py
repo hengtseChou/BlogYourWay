@@ -105,7 +105,7 @@ class NewUserSetup:
 
     def _create_user_about(self, username: str) -> dict:
 
-        new_user_about = {"username": username, "about": ""}
+        new_user_about = {"username": username, "about": "", "about_views": 0}
         return new_user_about
 
     def _create_user_views(self, username: str) -> dict:
@@ -176,6 +176,7 @@ class UserDeletionSetup:
 
         self._db_handler.post_info.delete_many({"author": self._user_to_be_deleted})
         self._db_handler.post_content.delete_many({"author": self._user_to_be_deleted})
+        self._db_handler.post_view_sources.delete_many({"author": self._user_to_be_deleted})
         self._logger.debug(
             f"Deleted all posts written by user {self._user_to_be_deleted}."
         )
@@ -187,6 +188,10 @@ class UserDeletionSetup:
         self._logger.debug(
             f"Deleted relevant comments from user {self._user_to_be_deleted}."
         )
+
+    def _remove_related_metrics(self):
+
+        self._db_handler.metrics_log.delete_many({"username": self._user_to_be_deleted})
 
     def _remove_all_user_data(self):
 
@@ -205,7 +210,7 @@ class UserDeletionSetup:
         self._remove_all_posts()
         self._remove_all_related_comments(target_posts_uid)
         # this place should includes removing metrics data for the user
-        # redis_method.delete_with_prefix(username)
+        self._remove_related_metrics()
         self._remove_all_user_data()
 
 

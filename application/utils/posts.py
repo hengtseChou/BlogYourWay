@@ -36,10 +36,10 @@ class NewPostSetup:
     def _create_post_info(self, request: Request, author_name: str) -> dict:
 
         new_post_info = {
+            "post_uid": self._post_uid,
             "title": request.form.get("title"),
             "subtitle": request.form.get("subtitle"),
             "author": author_name,
-            "post_uid": self._post_uid,
             "tags": process_tags(request.form.get("tags")),
             "banner_url": request.form.get("banner_url"),
             "created_at": get_today(env=ENV),
@@ -59,6 +59,14 @@ class NewPostSetup:
             "content": request.form.get("content"),
         }
         return new_post_content
+    
+    def _create_post_view_sources(self, author_name: str) -> dict:
+
+        new_post_view_sources = {
+            "post_uid": self._post_uid, 
+            "author": author_name,
+            "sources": {}}
+        return new_post_view_sources
 
     def create_post(self, author_name: str, request: Request) -> str:
 
@@ -70,8 +78,11 @@ class NewPostSetup:
         new_post_content = self._create_post_content(
             author_name=author_name, request=request
         )
+        new_post_view_sources = self._create_post_view_sources(author_name)
+
         self._db_handler.post_info.insert_one(new_post_info)
         self._db_handler.post_content.insert_one(new_post_content)
+        self._db_handler.post_view_sources.insert_one(new_post_view_sources)
 
         return self._post_uid
 
