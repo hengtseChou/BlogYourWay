@@ -5,7 +5,7 @@ from application.config import ENV
 
 def return_client_ip(request: Request, env: str):
 
-    if env == "debug":
+    if env == "develop":
         return request.remote_addr
     elif env == "prod":
         return request.headers.get("X-Forwarded-For")
@@ -66,7 +66,7 @@ class MyLogger:
 
         if env == "prod":
             self._logger = _setup_prod_logger()
-        elif env == "debug":
+        elif env == "develop":
             self._logger = _setup_debug_logger()
 
         self.user = Log_for_User_Actions(self._logger)
@@ -90,13 +90,13 @@ class MyLogger:
     def page_viewed(self, request: Request):
 
         client_ip = return_client_ip(request, ENV)
-        self.debug(f"{client_ip} - {request.environ['RAW_URI']} was visited.")
+        self.debug(f"{client_ip} - {request.environ.get('RAW_URI')} was visited.")
 
     def invalid_username(self, username: str, request: Request):
 
         client_ip = return_client_ip(request, ENV)
         self.debug(
-            f"{client_ip} - Invalid username {username} at {request.environ['RAW_URI']}."
+            f"{client_ip} - Invalid username {username} at {request.environ.get('RAW_URI')}."
         )
 
     def invalid_post_uid(self, username: str, post_uid: str, request: Request):
@@ -127,7 +127,7 @@ class MyLogger:
 
         client_ip = return_client_ip(request, ENV)
         self.debug(
-            f"{client_ip} - Showing {num_of_posts} posts for user {username} at {request.environ['RAW_URI']}. "
+            f"{client_ip} - Showing {num_of_posts} posts for user {username} at {request.environ.get('RAW_URI')}. "
         )
 
 

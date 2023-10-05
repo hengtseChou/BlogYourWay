@@ -64,7 +64,7 @@ class NewCommentSetup:
 
     def _create_authenticated_comment(
         self, request: Request, commenter_name: str, post_uid: str
-    ):
+    ) -> str:
 
         commenter = self._db_handler.user_info.find_one({"username": commenter_name})
         new_comment = {
@@ -80,7 +80,9 @@ class NewCommentSetup:
 
         return new_comment
 
-    def _create_unauthenticated_comment(self, request: Request, post_uid: str):
+    def _create_unauthenticated_comment(
+        self, request: Request, post_uid: str
+    ) -> str:
 
         new_comment = {
             "name": f'{request.form.get("name")} (Visitor)',

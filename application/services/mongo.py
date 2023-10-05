@@ -149,7 +149,7 @@ class MyDatabase:
     def post_content(self):
 
         return self._post_content
-    
+
     @property
     def post_view_sources(self):
 

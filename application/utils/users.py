@@ -26,6 +26,20 @@ class User(UserMixin):
 ###################################################################
 
 
+def _hash_password(password: str) -> str:
+    """Hashing user input password.
+
+    Args:
+        password (str): a string of plain text password.
+
+    Returns:
+        str: a string of the hashed password encoded back to utf-8.
+    """
+
+    hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(12))
+    hashed_pw = hashed_pw.decode("utf-8")
+    return hashed_pw
+
 class NewUserSetup:
     def __init__(self, request: Request, db_handler: MyDatabase, logger: MyLogger):
 
@@ -48,7 +62,6 @@ class NewUserSetup:
     def _no_duplicates(self) -> bool:
 
         for field in ["email", "username", "blogname"]:
-
             if self._db_handler.user_login.exists(field, self._reg_form[field]):
                 flash(
                     f"{field.capitalize()} is already used. Please try another one.",
@@ -59,22 +72,9 @@ class NewUserSetup:
                     request=request,
                 )
                 return True
-
         return False
 
-    def _hash_password(self, password: str) -> str:
-        """Hashing user input password.
-
-        Args:
-            password (str): a string of plain text password.
-
-        Returns:
-            str: a string of the hashed password encoded back to utf-8.
-        """
-
-        hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(12))
-        hashed_pw = hashed_pw.decode("utf-8")
-        return hashed_pw
+    
 
     def _create_user_login(
         self, username: str, email: str, hashed_password: str
@@ -123,7 +123,7 @@ class NewUserSetup:
         if self._no_duplicates():
             return render_template("register.html")
 
-        hashed_pw = self._hash_password(self._reg_form["password"])
+        hashed_pw = _hash_password(self._reg_form["password"])
         new_user_login = self._create_user_login(
             self._reg_form["username"], self._reg_form["email"], hashed_pw
         )

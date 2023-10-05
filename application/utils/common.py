@@ -81,9 +81,9 @@ class FormValidator:
         - bool: True if the username is valid; False otherwise.
 
         Criteria:
-        - Must consist of letters (both uppercase and lowercase), 
+        - Must consist of letters (both uppercase and lowercase),
                 numbers, hyphens, dots, and underscores.
-        - Cannot contain special characters like '@', '#', '^', '~', spaces, 
+        - Cannot contain special characters like '@', '#', '^', '~', spaces,
             or leading/trailing dashes, dots, or underscores.
         - Can be a mix of letters and numbers but should start with a letter.
         """
@@ -116,7 +116,7 @@ class FormValidator:
 
 class UIDGenerator:
     def __init__(self, db_handler: MyDatabase) -> None:
-        
+
         self._db_handler = db_handler
 
     def generate_comment_uid(self) -> str:
@@ -154,7 +154,7 @@ class UIDGenerator:
 
 def get_today(env) -> datetime:
 
-    if env == "debug":
+    if env == "develop":
         today = datetime.now()
     elif env == "prod":
         today = datetime.now() + timedelta(hours=8)
@@ -167,7 +167,7 @@ def switch_to_bool(switch_value: str | None) -> bool:
     """convert the return value of the bootstrap switch from the form into boolean.
 
     Args:
-        switch_value (str | None): return value of switch checkbox from the form, 
+        switch_value (str | None): return value of switch checkbox from the form,
         possible values: "on" and None.
 
     Returns:

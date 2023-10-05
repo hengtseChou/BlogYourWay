@@ -215,7 +215,7 @@ class HTMLFormatter:
 
         return self
 
-    def to_string(self):
+    def to_string(self) -> str:
 
         return str(self.__soup)
 
@@ -354,9 +354,8 @@ class PostUtils:
     def find_featured_posts_info(self, username: str):
 
         result = (
-            self._db_handler.post_info.find(
-                {"author": username, "featured": True, "archived": False}
-            )
+            self._db_handler.post_info
+            .find({"author": username, "featured": True, "archived": False})
             .sort("created_at", -1)
             .limit(10)
             .as_list()
@@ -366,7 +365,8 @@ class PostUtils:
     def find_all_posts_info(self, username: str):
 
         result = (
-            self._db_handler.post_info.find({"author": username, "archived": False})
+            self._db_handler.post_info
+            .find({"author": username, "archived": False})
             .sort("created_at", -1)
             .as_list()
         )
@@ -375,7 +375,8 @@ class PostUtils:
     def find_all_archived_posts_info(self, username: str):
 
         result = (
-            self._db_handler.post_info.find({"author": username, "archived": True})
+            self._db_handler.post_info
+            .find({"author": username, "archived": True})
             .sort("created_at", -1)
             .as_list()
         )
@@ -388,7 +389,8 @@ class PostUtils:
         if page_number == 1:
             
             result = (
-                self._db_handler.post_info.find({"author": username, "archived": False})
+                self._db_handler.post_info
+                .find({"author": username, "archived": False})
                 .sort("created_at", -1)
                 .limit(posts_per_page)
                 .as_list()
@@ -397,7 +399,8 @@ class PostUtils:
         elif page_number > 1:
 
             result = (
-                self._db_handler.post_info.find({"author": username, "archived": False})
+                self._db_handler.post_info
+                .find({"author": username, "archived": False})
                 .sort("created_at", -1)
                 .skip((page_number - 1) * posts_per_page)
                 .limit(posts_per_page)
@@ -409,9 +412,11 @@ class PostUtils:
     def get_full_post(self, post_uid: str):
 
         target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
-        target_post_content = self._db_handler.post_content.find_one(
-            {"post_uid": post_uid}
-        )["content"]
+        target_post_content = (
+            self._db_handler.post_content
+            .find_one({"post_uid": post_uid})
+            .get("content")
+        )
         target_post["content"] = target_post_content
 
         return target_post

@@ -292,10 +292,10 @@ class TestUIDGenerator:
 
 
 @patch("application.utils.common.datetime")
-def test_get_today_as_in_debug(mock_datetime):
+def test_get_today_as_in_develop(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
-    today = get_today("debug")
+    today = get_today(env="develop")
     assert today == datetime(2023, 9, 22, 12, 0, 0)
 
 
@@ -303,7 +303,7 @@ def test_get_today_as_in_debug(mock_datetime):
 def test_get_today_as_in_prod(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
-    today = get_today("prod")
+    today = get_today(env="prod")
     assert today == datetime(2023, 9, 22, 20, 0, 0)
 
 
@@ -312,4 +312,4 @@ def test_get_today_random_env_argument(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
     with pytest.raises(ValueError):
-        today = get_today("hello world")
+        today = get_today(env="wrong input")

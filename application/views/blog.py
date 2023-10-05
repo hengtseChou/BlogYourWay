@@ -13,7 +13,6 @@ from flask import (
     jsonify,
 )
 from flask_login import current_user, login_user
-from application.config import ENV
 from application.services.mongo import my_database
 from application.services.log import my_logger, return_client_ip
 from application.utils.users import User, create_user
@@ -288,10 +287,8 @@ def post(username, post_uid):
         )
         abort(404)
 
-    author_found_with_post_uid = my_database.post_info.find_one({"post_uid": post_uid})[
-        "author"
-    ]
-    if username != author_found_with_post_uid:
+    author = my_database.post_info.find_one({"post_uid": post_uid})["author"]
+    if username != author:
         my_logger.invalid_author_for_post(
             username=username, post_uid=post_uid, request=request
         )

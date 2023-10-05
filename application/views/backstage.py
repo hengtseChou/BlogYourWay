@@ -57,8 +57,6 @@ def overview():
         "labels": ["2023-09-28", "2023-09-29", "2023-09-30"], 
         "data": [1, 2, 2]
     }
-    
-
 
     ###################################################################
 
@@ -155,7 +153,7 @@ def about_control():
 
     user_info = my_database.user_info.find_one({"username": current_user.username})
     user_about = my_database.user_about.find_one({"username": current_user.username})
-    user = {**user_info, **user_about}
+    user = user_info | user_about
 
     ###################################################################
 
@@ -190,7 +188,7 @@ def sending_updated_about():
         filter={"username": user["username"]}, update=updated_info
     )
     my_database.user_about.update_values(
-        filter={"username": user["username"]}, update={"$set": updated_about}
+        filter={"username": user["username"]}, update=updated_about
     )
     user.update(updated_info)
     user.update(updated_about)
@@ -296,13 +294,12 @@ def sending_updated_social_links():
     ###################################################################
 
     user = my_database.user_info.find_one({"username": current_user.username})
-    updated_links = []
     form = request.form.to_dict()
     form_values = list(form.values())
 
+    updated_links = []
     for i in range(0, len(form_values), 2):
         updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
-
     my_database.user_info.update_values(
         filter={"username": current_user.username},
         update={"social_links": updated_links},
@@ -310,7 +307,7 @@ def sending_updated_social_links():
     my_logger.user.data_updated(
         username=current_user.username, data_info="social links", request=request
     )
-    flash("Social Links updated", category="success")
+    flash("Social Links updated!", category="success")
 
     ###################################################################
 
@@ -547,7 +544,7 @@ def sending_edited_post(post_uid):
         username=current_user.username, data_info=f"post {post_uid}", request=request
     )
     truncated_post_title = string_truncate(
-        my_database.post_info.find_one({'post_uid': post_uid})['title'], 
+        my_database.post_info.find_one({"post_uid": post_uid}).get("title"), 
         max_len=20
     )
     flash(f"Your post \"{truncated_post_title}\" has been updated!", category="success")
@@ -588,7 +585,7 @@ def edit_featured():
     ###################################################################
 
     truncated_post_title = string_truncate(
-        my_database.post_info.find_one({'post_uid': post_uid})['title'], 
+        my_database.post_info.find_one({"post_uid": post_uid}).get("title"), 
         max_len=20
     )
 
@@ -646,7 +643,7 @@ def edit_archived():
     ###################################################################
 
     truncated_post_title = string_truncate(
-        my_database.post_info.find_one({'post_uid': post_uid})['title'], 
+        my_database.post_info.find_one({"post_uid": post_uid}).get("title"), 
         max_len=20
     )
     if request.args.get("archived") == "to_true":
@@ -707,7 +704,7 @@ def delete_post():
     ###################################################################
 
     truncated_post_title = string_truncate(
-        my_database.post_info.find_one({'post_uid': post_uid})['title'], 
+        my_database.post_info.find_one({"post_uid": post_uid}).get("title"), 
         max_len=20
     )
     my_database.post_info.delete_one({"post_uid": post_uid})
