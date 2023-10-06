@@ -33,8 +33,7 @@ def create_app() -> Flask:
 
     @login_manager.user_loader
     def user_loader(username: str) -> User:
-        """register user loader for current_user to access
-        """
+        """register user loader for current_user to access"""
         user_creds = my_database.user_login.find_one({"username": username})
         user = User(user_creds)
         # return none if the ID is not valid
@@ -50,7 +49,9 @@ def create_app() -> Flask:
     @app.errorhandler(500)
     def internal_server_error(error):
         client_ip = return_client_ip(request, ENV)
-        my_logger.error(f"{client_ip} - 500 internal error at {request.environ['RAW_URI']}.")
+        my_logger.error(
+            f"{client_ip} - 500 internal error at {request.environ['RAW_URI']}."
+        )
         return render_template("500.html"), 500
 
     # blueprints

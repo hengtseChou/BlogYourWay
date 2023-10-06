@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "little-blog"
+version = "0.1.0"
+description = "a blogging engine with additional features."
+authors = ["hank chou <hengtse.me@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10.12,<4"
+Flask-Login = "^0.6.2"
+bs4 = "^0.0.1"
+gunicorn = "^21.2.0"
+Markdown = "^3.4.4"
+requests = "^2.31.0"
+flask = "2.3.2"
+werkzeug = "2.3.3"
+python-dotenv = "^1.0.0"
+bcrypt = "^4.0.1"
+readtime = "^3.0.0"
+pymongo = "^4.5.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.1"
+pytest = "^7.4.2"
+pytest-cov = "^4.1.0"
+
+[tool.coverage.run]
+omit = [
+    "tests/*", 
+    "*/__init__.py",
+    "*/config.py"
+]
+
+[tool.coverage.html]
+directory = "coverage_report"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov=application",
+    "--cov-report=html"
+]
+
+[tool.black]
+line-length = 92
+skip-magic-trailing-comma = 0
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

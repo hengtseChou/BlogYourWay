@@ -10,7 +10,6 @@ from application.utils.common import FormValidator, get_today
 class User(UserMixin):
     # user id is set as username
     def __init__(self, user_data):
-
         for key, value in user_data.items():
             if key == "username":
                 self.id = value
@@ -40,15 +39,14 @@ def _hash_password(password: str) -> str:
     hashed_pw = hashed_pw.decode("utf-8")
     return hashed_pw
 
+
 class NewUserSetup:
     def __init__(self, request: Request, db_handler: MyDatabase, logger: MyLogger):
-
         self._reg_form = request.form.to_dict()
         self._db_handler = db_handler
         self._logger = logger
 
     def _form_validated(self, validator: FormValidator) -> bool:
-
         if not validator.validate_email(self._reg_form["email"]):
             return False
         if not validator.validate_password(self._reg_form["password"]):
@@ -60,7 +58,6 @@ class NewUserSetup:
         return True
 
     def _no_duplicates(self) -> bool:
-
         for field in ["email", "username", "blogname"]:
             if self._db_handler.user_login.exists(field, self._reg_form[field]):
                 flash(
@@ -68,27 +65,16 @@ class NewUserSetup:
                     category="error",
                 )
                 self._logger.user.registration_failed(
-                    msg=f"{field} {self._reg_form[field]} already used",
-                    request=request,
+                    msg=f"{field} {self._reg_form[field]} already used", request=request
                 )
                 return True
         return False
 
-    
-
-    def _create_user_login(
-        self, username: str, email: str, hashed_password: str
-    ) -> dict:
-
-        new_user_login = {
-            "username": username,
-            "email": email,
-            "password": hashed_password,
-        }
+    def _create_user_login(self, username: str, email: str, hashed_password: str) -> dict:
+        new_user_login = {"username": username, "email": email, "password": hashed_password}
         return new_user_login
 
     def _create_user_info(self, username: str, email: str, blogname: str) -> dict:
-
         new_user_info = {
             "username": username,
             "email": email,
@@ -104,17 +90,14 @@ class NewUserSetup:
         return new_user_info
 
     def _create_user_about(self, username: str) -> dict:
-
         new_user_about = {"username": username, "about": "", "about_views": 0}
         return new_user_about
 
     def _create_user_views(self, username: str) -> dict:
-
         new_user_views = {"username": username, "unique_visitors": []}
         return new_user_views
 
     def create_user(self):
-
         validator = FormValidator()
 
         if not self._form_validated(validator=validator):
@@ -128,9 +111,7 @@ class NewUserSetup:
             self._reg_form["username"], self._reg_form["email"], hashed_pw
         )
         new_user_info = self._create_user_info(
-            self._reg_form["username"],
-            self._reg_form["email"],
-            self._reg_form["blogname"],
+            self._reg_form["username"], self._reg_form["email"], self._reg_form["blogname"]
         )
         new_user_about = self._create_user_about(self._reg_form["username"])
         new_user_views = self._create_user_views(self._reg_form["username"])
@@ -144,7 +125,6 @@ class NewUserSetup:
 
 
 def create_user(request: request) -> str:
-
     user_registration = NewUserSetup(request, my_database, my_logger)
     return user_registration.create_user()
 
@@ -158,31 +138,23 @@ def create_user(request: request) -> str:
 
 class UserDeletionSetup:
     def __init__(self, username: str, db_handler: MyDatabase, logger: MyLogger) -> None:
-
         self._user_to_be_deleted = username
         self._db_handler = db_handler
         self._logger = logger
 
     def _get_posts_uid_by_user(self) -> list:
-
-        target_posts = self._db_handler.post_info.find(
-            {"author": self._user_to_be_deleted}
-        )
+        target_posts = self._db_handler.post_info.find({"author": self._user_to_be_deleted})
         target_posts_uid = [post["post_uid"] for post in target_posts]
 
         return target_posts_uid
 
     def _remove_all_posts(self):
-
         self._db_handler.post_info.delete_many({"author": self._user_to_be_deleted})
         self._db_handler.post_content.delete_many({"author": self._user_to_be_deleted})
         self._db_handler.post_view_sources.delete_many({"author": self._user_to_be_deleted})
-        self._logger.debug(
-            f"Deleted all posts written by user {self._user_to_be_deleted}."
-        )
+        self._logger.debug(f"Deleted all posts written by user {self._user_to_be_deleted}.")
 
     def _remove_all_related_comments(self, post_uids: list):
-
         for post_uid in post_uids:
             self._db_handler.comment.delete_many({"post_uid": post_uid})
         self._logger.debug(
@@ -190,22 +162,17 @@ class UserDeletionSetup:
         )
 
     def _remove_related_metrics(self):
-
         self._db_handler.metrics_log.delete_many({"username": self._user_to_be_deleted})
 
     def _remove_all_user_data(self):
-
         self._db_handler.user_login.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_info.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_about.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_views.delete_one({"username": self._user_to_be_deleted})
 
-        self._logger.debug(
-            f"Deleted user information for user {self._user_to_be_deleted}."
-        )
+        self._logger.debug(f"Deleted user information for user {self._user_to_be_deleted}.")
 
     def start_deletion_process(self):
-
         target_posts_uid = self._get_posts_uid_by_user()
         self._remove_all_posts()
         self._remove_all_related_comments(target_posts_uid)
@@ -215,7 +182,6 @@ class UserDeletionSetup:
 
 
 def delete_user(username):
-
     user_deletion = UserDeletionSetup(
         username=username, db_handler=my_database, logger=my_logger
     )

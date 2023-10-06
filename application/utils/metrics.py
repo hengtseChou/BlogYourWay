@@ -172,10 +172,7 @@ class LifeTimeMetricRecorder(MetricsRecorder):
             filter={"post_uid": mid_result["post_uid"]}, increments={"views": 1}
         )
         self._db_handler.post_view_sources.make_increments(
-            filter={
-                "post_uid": mid_result["post_uid"],
-                "referrer": mid_result["referrer"],
-            },
+            filter={"post_uid": mid_result["post_uid"], "referrer": mid_result["referrer"]},
             increments={"count": 1},
             upsert=True,
         )

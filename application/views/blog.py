@@ -228,7 +228,7 @@ def tag(username):
     tag_url_encoded = request.args.get("tag", default=None, type=str)
     if tag_url_encoded is None:
         return redirect(url_for("blog.blogg", username=username))
-    
+
     # abort for unknown tag
     tag = unquote(tag_url_encoded)
     tags_found = all_tags.from_user(username)
@@ -282,9 +282,7 @@ def post(username, post_uid):
         my_logger.invalid_username(username=username, request=request)
         abort(404)
     if not my_database.post_info.exists("post_uid", post_uid):
-        my_logger.invalid_post_uid(
-            username=username, post_uid=post_uid, request=request
-        )
+        my_logger.invalid_post_uid(username=username, post_uid=post_uid, request=request)
         abort(404)
 
     author = my_database.post_info.find_one({"post_uid": post_uid})["author"]
@@ -401,7 +399,7 @@ def about(username):
     timely_metrics.page_viewed(request=request)
     timely_metrics.index_page_viewed(request=request)
     my_database.user_about.make_increments(
-        filter={"username": username}, 
+        filter={"username": username},
         increments={"about_views": 1},
         # upsert=True
     )

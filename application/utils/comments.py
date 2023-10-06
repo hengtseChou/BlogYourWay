@@ -32,19 +32,14 @@ class NewCommentSetup:
     4. Upload via the database handler.
     """
 
-    def __init__(
-        self, comment_uid_generator: UIDGenerator, db_handler: MyDatabase
-    ) -> None:
-
+    def __init__(self, comment_uid_generator: UIDGenerator, db_handler: MyDatabase) -> None:
         self._db_handler = db_handler
         self._comment_uid = comment_uid_generator.generate_comment_uid()
 
     def _form_validated(self, request: Request, validator: FormValidator):
-
         return True
 
     def _recaptcha_verified(self, request: Request):
-
         token = request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
         resp = requests.post(
@@ -57,7 +52,6 @@ class NewCommentSetup:
         return False
 
     def _is_authenticated_commenter(self, user):
-
         if user.is_authenticated:
             return True
         return False
@@ -65,7 +59,6 @@ class NewCommentSetup:
     def _create_authenticated_comment(
         self, request: Request, commenter_name: str, post_uid: str
     ) -> str:
-
         commenter = self._db_handler.user_info.find_one({"username": commenter_name})
         new_comment = {
             "name": commenter["username"],
@@ -80,10 +73,7 @@ class NewCommentSetup:
 
         return new_comment
 
-    def _create_unauthenticated_comment(
-        self, request: Request, post_uid: str
-    ) -> str:
-
+    def _create_unauthenticated_comment(self, request: Request, post_uid: str) -> str:
         new_comment = {
             "name": f'{request.form.get("name")} (Visitor)',
             "email": request.form.get("email"),
@@ -101,7 +91,6 @@ class NewCommentSetup:
         return new_comment
 
     def create_comment(self, post_uid: str, request: Request):
-
         validator = FormValidator()
         if not self._form_validated(request, validator):
             return
@@ -143,11 +132,9 @@ def create_comment(post_uid: str, request: Request):
 
 class CommentUtils:
     def __init__(self, db_handler: MyDatabase):
-
         self._db_handler = db_handler
 
     def find_comments_by_post_uid(self, post_uid: str):
-
         result = (
             self._db_handler.comment.find({"post_uid": post_uid})
             .sort("created_at", 1)

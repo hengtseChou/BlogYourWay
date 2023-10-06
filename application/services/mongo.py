@@ -7,7 +7,6 @@ from application.config import MONGO_URL
 
 class ExtendedCollection(Collection):
     def __init__(self, database: Database, name: str, create=False):
-
         super().__init__(database, name, create)
 
     def exists(self, key: str, value: str) -> bool:
@@ -25,19 +24,16 @@ class ExtendedCollection(Collection):
         return False
 
     def find(self, *args, **kwargs):
-
         return ExtendedCursor(self, *args, **kwargs)
 
     # this application usually does not consider the case where records not found
     def find_one(self, filter, *args, **kwargs) -> dict:
-
         result = super().find_one(filter, *args, **kwargs)
         if result is None:
             return result
         return dict(result)
 
     def update_one(self, filter, update, upsert=False):
-
         return super().update_one(filter, update, upsert=upsert)
 
     def update_values(self, filter: dict, update: dict):
@@ -58,37 +54,29 @@ class ExtendedCollection(Collection):
             increments (dict): The values of these fields will be add by the values passed in this argument.
 
         """
-        return self.update_one(
-            filter=filter, update={"$inc": increments}, upsert=upsert
-        )
+        return self.update_one(filter=filter, update={"$inc": increments}, upsert=upsert)
 
 
 class ExtendedCursor(Cursor):
     def __init__(self, collection: ExtendedCollection, filter=None):
-        
         super().__init__(collection, filter)
 
     def __check_okay_to_chain(self):
-
         return super(ExtendedCursor, self)._Cursor__check_okay_to_chain()
 
     def sort(self, key_or_list, direction):
-
         super().sort(key_or_list, direction)
         return self
 
     def skip(self, skip: int):
-
         super().skip(skip)
         return self
 
     def limit(self, limit: int):
-
         super().limit(limit)
         return self
 
     def as_list(self):
-
         self.__check_okay_to_chain()
         return list(self)
 
@@ -103,7 +91,6 @@ class ExtendedCursor(Cursor):
 
 class MyDatabase:
     def __init__(self) -> None:
-
         client = MongoClient(MONGO_URL, connect=False)
         users_db = Database(client=client, name="users")
         posts_db = Database(client=client, name="posts")
@@ -122,47 +109,38 @@ class MyDatabase:
 
     @property
     def user_login(self):
-
         return self._user_login
 
     @property
     def user_info(self):
-
         return self._user_info
 
     @property
     def user_about(self):
-
         return self._user_about
 
     @property
     def user_views(self):
-
         return self._user_views
 
     @property
     def post_info(self):
-
         return self._post_info
 
     @property
     def post_content(self):
-
         return self._post_content
 
     @property
     def post_view_sources(self):
-
         return self._post_view_sources
 
     @property
     def comment(self):
-
         return self._comment
 
     @property
     def metrics_log(self):
-
         return self._metrics_log
 
 

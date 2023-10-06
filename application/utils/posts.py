@@ -14,19 +14,13 @@ from application.utils.common import UIDGenerator, get_today, FormValidator
 
 
 def process_tags(tag_string: str):
-
     if tag_string == "":
         return []
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
 
 
 class NewPostSetup:
-    def __init__(
-        self,
-        post_uid_generator: UIDGenerator,
-        db_handler: MyDatabase,
-    ) -> None:
-
+    def __init__(self, post_uid_generator: UIDGenerator, db_handler: MyDatabase) -> None:
         self._post_uid = post_uid_generator.generate_post_uid()
         self._db_handler = db_handler
 
@@ -34,7 +28,6 @@ class NewPostSetup:
         return True
 
     def _create_post_info(self, request: Request, author_name: str) -> dict:
-
         new_post_info = {
             "post_uid": self._post_uid,
             "title": request.form.get("title"),
@@ -47,29 +40,27 @@ class NewPostSetup:
             "archived": False,
             "featured": False,
             "views": 0,
-            "reads": 0
+            "reads": 0,
         }
         return new_post_info
 
     def _create_post_content(self, request: Request, author_name: str) -> dict:
-
         new_post_content = {
             "post_uid": self._post_uid,
             "author": author_name,
             "content": request.form.get("content"),
         }
         return new_post_content
-    
-    def _create_post_view_sources(self, author_name: str) -> dict:
 
+    def _create_post_view_sources(self, author_name: str) -> dict:
         new_post_view_sources = {
-            "post_uid": self._post_uid, 
+            "post_uid": self._post_uid,
             "author": author_name,
-            "sources": {}}
+            "sources": {},
+        }
         return new_post_view_sources
 
     def create_post(self, author_name: str, request: Request) -> str:
-
         validator = FormValidator()
         if not self._form_validatd(request=request, validator=validator):
             return "Unvalidated"
@@ -88,12 +79,9 @@ class NewPostSetup:
 
 
 def create_post(request):
-
     uid_generator = UIDGenerator(db_handler=my_database)
 
-    new_post_setup = NewPostSetup(
-        post_uid_generator=uid_generator, db_handler=my_database
-    )
+    new_post_setup = NewPostSetup(post_uid_generator=uid_generator, db_handler=my_database)
     new_post_uid = new_post_setup.create_post(
         author_name=current_user.username, request=request
     )
@@ -109,14 +97,12 @@ def create_post(request):
 
 class PostUpdateSetup:
     def __init__(self, db_handler=MyDatabase) -> None:
-
         self._db_handler = db_handler
 
     def _form_validatd(self, request: Request, validator: FormValidator):
         return True
 
     def _updated_post_info(self, request: Request) -> dict:
-
         updated_post_info = {
             "title": request.form.get("title"),
             "subtitle": request.form.get("subtitle"),
@@ -127,12 +113,10 @@ class PostUpdateSetup:
         return updated_post_info
 
     def _updated_post_content(self, request: Request) -> dict:
-
         updated_post_content = {"content": request.form.get("content")}
         return updated_post_content
 
     def update_post(self, post_uid: str, request: Request):
-
         validator = FormValidator()
         if not self._form_validatd(request=request, validator=validator):
             return
@@ -149,7 +133,6 @@ class PostUpdateSetup:
 
 
 def update_post(post_uid: str, request: Request):
-
     post_update_setup = PostUpdateSetup(db_handler=my_database)
     post_update_setup.update_post(post_uid=post_uid, request=request)
 
@@ -172,7 +155,6 @@ class HTMLFormatter:
         self.__soup = BeautifulSoup(html, "html.parser")
 
     def add_padding(self):
-
         # add padding for all first level tags, except figure and img
         tags = self.__soup.find_all(
             lambda tag: tag.name not in ["figure", "img"], recursive=False
@@ -185,7 +167,6 @@ class HTMLFormatter:
         return self
 
     def change_heading_font(self):
-
         # Modify the style attribute for each heading tag
         headings = self.__soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
 
@@ -198,7 +179,6 @@ class HTMLFormatter:
         return self
 
     def modify_figure(self, max_width="90%"):
-
         # center image and modify size
         imgs = self.__soup.find_all(["img"])
         for img in imgs:
@@ -216,12 +196,10 @@ class HTMLFormatter:
         return self
 
     def to_string(self) -> str:
-
         return str(self.__soup)
 
 
 def html_to_blogpost(html):
-
     formatter = HTMLFormatter(html)
     blogpost = formatter.add_padding().change_heading_font().modify_figure().to_string()
 
@@ -229,7 +207,6 @@ def html_to_blogpost(html):
 
 
 def html_to_about(html):
-
     formatter = HTMLFormatter(html)
     about = formatter.add_padding().modify_figure(max_width="50%").to_string()
 
@@ -245,14 +222,10 @@ def html_to_about(html):
 
 class AllTags:
     def __init__(self, db_handler: MyDatabase) -> None:
-
         self._db_handler = db_handler
 
     def from_user(self, username):
-
-        result = self._db_handler.post_info.find(
-            {"author": username, "archived": False}
-        )
+        result = self._db_handler.post_info.find({"author": username, "archived": False})
         tags_dict = {}
         for post in result:
             post_tags = post["tags"]
@@ -281,7 +254,6 @@ all_tags = AllTags(db_handler=my_database)
 
 class Paging:
     def __init__(self, db_handler: MyDatabase) -> None:
-
         self._db_handler = db_handler
         self._has_setup = False
         self._allow_previous_page = None
@@ -289,7 +261,6 @@ class Paging:
         self._current_page = None
 
     def setup(self, username, current_page, posts_per_page):
-
         self._has_setup = True
         self._allow_previous_page = False
         self._allow_next_page = False
@@ -316,21 +287,18 @@ class Paging:
 
     @property
     def is_previous_page_allowed(self):
-
         if not self._has_setup:
             raise AttributeError("pagination has not setup yet.")
         return self._allow_previous_page
 
     @property
     def is_next_page_allowed(self):
-
         if not self._has_setup:
             raise AttributeError("pagination has not setup yet.")
         return self._allow_next_page
 
     @property
     def current_page(self):
-
         if not self._has_setup:
             raise AttributeError("pagination has not setup yet.")
         return self._current_page
@@ -348,14 +316,13 @@ paging = Paging(db_handler=my_database)
 
 class PostUtils:
     def __init__(self, db_handler: MyDatabase):
-
         self._db_handler = db_handler
 
     def find_featured_posts_info(self, username: str):
-
         result = (
-            self._db_handler.post_info
-            .find({"author": username, "featured": True, "archived": False})
+            self._db_handler.post_info.find(
+                {"author": username, "featured": True, "archived": False}
+            )
             .sort("created_at", -1)
             .limit(10)
             .as_list()
@@ -363,20 +330,16 @@ class PostUtils:
         return result
 
     def find_all_posts_info(self, username: str):
-
         result = (
-            self._db_handler.post_info
-            .find({"author": username, "archived": False})
+            self._db_handler.post_info.find({"author": username, "archived": False})
             .sort("created_at", -1)
             .as_list()
         )
         return result
 
     def find_all_archived_posts_info(self, username: str):
-
         result = (
-            self._db_handler.post_info
-            .find({"author": username, "archived": True})
+            self._db_handler.post_info.find({"author": username, "archived": True})
             .sort("created_at", -1)
             .as_list()
         )
@@ -385,22 +348,17 @@ class PostUtils:
     def find_posts_with_pagination(
         self, username: str, page_number: int, posts_per_page: int
     ):
-
         if page_number == 1:
-            
             result = (
-                self._db_handler.post_info
-                .find({"author": username, "archived": False})
+                self._db_handler.post_info.find({"author": username, "archived": False})
                 .sort("created_at", -1)
                 .limit(posts_per_page)
                 .as_list()
             )
 
         elif page_number > 1:
-
             result = (
-                self._db_handler.post_info
-                .find({"author": username, "archived": False})
+                self._db_handler.post_info.find({"author": username, "archived": False})
                 .sort("created_at", -1)
                 .skip((page_number - 1) * posts_per_page)
                 .limit(posts_per_page)
@@ -410,13 +368,10 @@ class PostUtils:
         return result
 
     def get_full_post(self, post_uid: str):
-
         target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
-        target_post_content = (
-            self._db_handler.post_content
-            .find_one({"post_uid": post_uid})
-            .get("content")
-        )
+        target_post_content = self._db_handler.post_content.find_one(
+            {"post_uid": post_uid}
+        ).get("content")
         target_post["content"] = target_post_content
 
         return target_post

@@ -116,7 +116,6 @@ class FormValidator:
 
 class UIDGenerator:
     def __init__(self, db_handler: MyDatabase) -> None:
-
         self._db_handler = db_handler
 
     def generate_comment_uid(self) -> str:
@@ -153,7 +152,6 @@ class UIDGenerator:
 
 
 def get_today(env) -> datetime:
-
     if env == "develop":
         today = datetime.now()
     elif env == "prod":
