@@ -5,9 +5,25 @@ from pymongo.database import Database
 from application.config import MONGO_URL
 
 
-class ExtendedCollection(Collection):
-    def __init__(self, database: Database, name: str, create=False):
-        super().__init__(database, name, create)
+class ExtendedCollection:
+    def __init__(self, collection: Collection):
+        self._col = collection
+
+    def find(self, filter):
+        return ExtendedCursor(self._col, filter)
+
+    def insert_one(self, document: dict):
+        self._col.insert_one(document)
+
+    def count_documents(self, filter: dict):
+        return self._col.count_documents(filter)
+
+    # this application usually does not consider the case where records not found
+    def find_one(self, filter) -> dict:
+        result = self._col.find_one(filter)
+        if result is None:
+            return result
+        return dict(result)
 
     def exists(self, key: str, value: str) -> bool:
         """check if the values exists for this key in this collection
@@ -23,18 +39,8 @@ class ExtendedCollection(Collection):
             return True
         return False
 
-    def find(self, *args, **kwargs):
-        return ExtendedCursor(self, *args, **kwargs)
-
-    # this application usually does not consider the case where records not found
-    def find_one(self, filter, *args, **kwargs) -> dict:
-        result = super().find_one(filter, *args, **kwargs)
-        if result is None:
-            return result
-        return dict(result)
-
     def update_one(self, filter, update, upsert=False):
-        return super().update_one(filter, update, upsert=upsert)
+        return self._col.update_one(filter, update, upsert=upsert)
 
     def update_values(self, filter: dict, update: dict):
         """This method wraps up the pymongo update_one method with "$set" operator.
@@ -90,22 +96,21 @@ class ExtendedCursor(Cursor):
 
 
 class MyDatabase:
-    def __init__(self) -> None:
-        client = MongoClient(MONGO_URL, connect=False)
-        users_db = Database(client=client, name="users")
-        posts_db = Database(client=client, name="posts")
-        comments_db = Database(client=client, name="comments")
-        metrics_db = Database(client=client, name="metrics")
+    def __init__(self, client: MongoClient) -> None:
+        users_db = client["users"]
+        posts_db = client["posts"]
+        comments_db = client["comments"]
+        metrics_db = client["metrics"]
 
-        self._user_login = ExtendedCollection(users_db, "user-login")
-        self._user_info = ExtendedCollection(users_db, "user-info")
-        self._user_about = ExtendedCollection(users_db, "user-about")
-        self._user_views = ExtendedCollection(users_db, "user-views")
-        self._post_info = ExtendedCollection(posts_db, "post-info")
-        self._post_content = ExtendedCollection(posts_db, "post-content")
-        self._post_view_sources = ExtendedCollection(posts_db, "post-view-sources")
-        self._comment = ExtendedCollection(comments_db, "comment")
-        self._metrics_log = ExtendedCollection(metrics_db, "metrics-log")
+        self._user_login = ExtendedCollection(users_db["user-login"])
+        self._user_info = ExtendedCollection(users_db["user-info"])
+        self._user_about = ExtendedCollection(users_db["user-about"])
+        self._user_views = ExtendedCollection(users_db["user-views"])
+        self._post_info = ExtendedCollection(posts_db["post-info"])
+        self._post_content = ExtendedCollection(posts_db["post-content"])
+        self._post_view_sources = ExtendedCollection(posts_db["post-view-sources"])
+        self._comment = ExtendedCollection(comments_db["comment"])
+        self._metrics_log = ExtendedCollection(metrics_db["metrics-log"])
 
     @property
     def user_login(self):
@@ -144,4 +149,5 @@ class MyDatabase:
         return self._metrics_log
 
 
-my_database = MyDatabase()
+client = MongoClient(MONGO_URL, connect=False)
+my_database = MyDatabase(client=client)

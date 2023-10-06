@@ -18,11 +18,14 @@ python-dotenv = "^1.0.0"
 bcrypt = "^4.0.1"
 readtime = "^3.0.0"
 pymongo = "^4.5.0"
+markdown-captions = "^2.1.2"
+redis = "^5.0.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
 pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
+mongomock = "^4.1.2"
 
 [tool.coverage.run]
 omit = [

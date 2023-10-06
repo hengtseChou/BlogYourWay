@@ -25,19 +25,7 @@ class User(UserMixin):
 ###################################################################
 
 
-def _hash_password(password: str) -> str:
-    """Hashing user input password.
 
-    Args:
-        password (str): a string of plain text password.
-
-    Returns:
-        str: a string of the hashed password encoded back to utf-8.
-    """
-
-    hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(12))
-    hashed_pw = hashed_pw.decode("utf-8")
-    return hashed_pw
 
 
 class NewUserSetup:
@@ -96,6 +84,21 @@ class NewUserSetup:
     def _create_user_views(self, username: str) -> dict:
         new_user_views = {"username": username, "unique_visitors": []}
         return new_user_views
+    
+    @staticmethod
+    def _hash_password(password: str) -> str:
+        """Hashing user input password.
+
+        Args:
+            password (str): a string of plain text password.
+
+        Returns:
+            str: a string of the hashed password encoded back to utf-8.
+        """
+
+        hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(12))
+        hashed_pw = hashed_pw.decode("utf-8")
+        return hashed_pw
 
     def create_user(self):
         validator = FormValidator()
@@ -106,7 +109,7 @@ class NewUserSetup:
         if self._no_duplicates():
             return render_template("register.html")
 
-        hashed_pw = _hash_password(self._reg_form["password"])
+        hashed_pw = self._hash_password(self._reg_form["password"])
         new_user_login = self._create_user_login(
             self._reg_form["username"], self._reg_form["email"], hashed_pw
         )

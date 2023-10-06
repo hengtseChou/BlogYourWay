@@ -81,11 +81,9 @@ class FormValidator:
         - bool: True if the username is valid; False otherwise.
 
         Criteria:
-        - Must consist of letters (both uppercase and lowercase),
-                numbers, hyphens, dots, and underscores.
-        - Cannot contain special characters like '@', '#', '^', '~', spaces,
-            or leading/trailing dashes, dots, or underscores.
-        - Can be a mix of letters and numbers but should start with a letter.
+        - Must start with a lowercase letter or digit.
+        - Can have zero or more lowercase letters, digits, or hyphens in the middle.
+        - Optionally, may end with a lowercase letter or digit.
         """
         username_regex = r"^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$"
         if re.match(username_regex, username):
