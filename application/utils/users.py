@@ -25,9 +25,6 @@ class User(UserMixin):
 ###################################################################
 
 
-
-
-
 class NewUserSetup:
     def __init__(self, request: Request, db_handler: MyDatabase, logger: MyLogger):
         self._reg_form = request.form.to_dict()
@@ -84,7 +81,7 @@ class NewUserSetup:
     def _create_user_views(self, username: str) -> dict:
         new_user_views = {"username": username, "unique_visitors": []}
         return new_user_views
-    
+
     @staticmethod
     def _hash_password(password: str) -> str:
         """Hashing user input password.
