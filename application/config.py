@@ -9,6 +9,7 @@ if not load_dotenv():
     raise Exception(".env file not found.")
 
 ENV = os.getenv("ENV")
+APP_SECRET = os.getenv("APP_SECRET")
 MONGO_URL = os.getenv("MONGO_URL")
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")

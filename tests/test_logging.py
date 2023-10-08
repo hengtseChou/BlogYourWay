@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 from application.services.log import my_logger
 
+
 @pytest.fixture
 def mock_client_ip():
     with patch("application.services.log.return_client_ip") as mock:
@@ -10,7 +11,6 @@ def mock_client_ip():
 
 
 def test_page_visited(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     mock_request.environ = {"RAW_URI": "test.com"}
 
@@ -20,7 +20,6 @@ def test_page_visited(mock_client_ip, caplog):
 
 
 def test_invalid_username(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     mock_request.environ = {"RAW_URI": "test.com"}
     username = "invalid_user"
@@ -31,7 +30,6 @@ def test_invalid_username(mock_client_ip, caplog):
 
 
 def test_invalid_post_uid(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     mock_request.environ = {"RAW_URI": "test.com"}
     username = "user"
@@ -46,7 +44,6 @@ def test_invalid_post_uid(mock_client_ip, caplog):
 
 
 def test_invalid_author_for_post(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     mock_request.environ = {"RAW_URI": "test.com"}
     username = "user"
@@ -61,7 +58,6 @@ def test_invalid_author_for_post(mock_client_ip, caplog):
 
 
 def test_invalid_procedure(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     mock_request.environ = {"RAW_URI": "test.com"}
     username = "user"
@@ -69,9 +65,7 @@ def test_invalid_procedure(mock_client_ip, caplog):
 
     my_logger.invalid_procedure(username, procedure, mock_request)
 
-    assert (
-        f"127.0.0.1 - Invalid procedure to {procedure} for {username}." in caplog.text
-    )
+    assert f"127.0.0.1 - Invalid procedure to {procedure} for {username}." in caplog.text
 
 
 def test_log_for_backstage_tab(mock_client_ip, caplog):
@@ -113,7 +107,6 @@ def test_log_for_pagination(mock_client_ip, caplog):
 
 
 def test_login_failed(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     msg = "Invalid username"
 
@@ -123,7 +116,6 @@ def test_login_failed(mock_client_ip, caplog):
 
 
 def test_login_succeeded(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     username = "test"
 
@@ -133,7 +125,6 @@ def test_login_succeeded(mock_client_ip, caplog):
 
 
 def test_logout(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     username = "test"
 
@@ -143,7 +134,6 @@ def test_logout(mock_client_ip, caplog):
 
 
 def test_registration_failed(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     msg = "Registration failed"
 
@@ -153,7 +143,6 @@ def test_registration_failed(mock_client_ip, caplog):
 
 
 def test_registration_succeeded(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     username = "new_user"
 
@@ -163,7 +152,6 @@ def test_registration_succeeded(mock_client_ip, caplog):
 
 
 def test_deleted(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     username = "user_to_delete"
 
@@ -173,7 +161,6 @@ def test_deleted(mock_client_ip, caplog):
 
 
 def test_data_created(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     username = "user"
     data_info = "new_data"
@@ -188,7 +175,6 @@ def test_data_created(mock_client_ip, caplog):
 
 
 def test_data_updated(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     username = "user"
     data_info = "updated_data"
@@ -204,7 +190,6 @@ def test_data_updated(mock_client_ip, caplog):
 
 
 def test_data_deleted(mock_client_ip, caplog):
-
     mock_request = MagicMock()
     username = "user"
     data_info = "deleted_data"

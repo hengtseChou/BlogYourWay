@@ -17,62 +17,62 @@ class TestFormValidatorEmail:
     def test_validate_email_valid(self):
 
         input_ = "test123@example.com"
-        assert self.validator.validate_email(input_) == True
+        assert self.validator.validate_email(input_) is True
 
     def test_validate_email_empty(self):
 
         input_ = ""
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_missing_at(self):
 
         input_ = "johndoeexample.com"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_missing_tld(self):
 
         input_ = "johndoe@example"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_contains_space(self):
 
         input_ = "john doe@example.com"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_leading_space(self):
 
         input_ = " johndoe@example.com"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_trailing_space(self):
 
         input_ = "johndoe@example.com "
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_consecutive_dots_in_domain(self):
 
         input_ = "johndoe@example..com"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_special_character_in_local(self):
 
         input_ = "john.doe@ex@mple.com"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_special_character_in_domain(self):
 
         input_ = "john&doe@example.com"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_missing_local(self):
 
         input_ = "@example.com"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
     def test_validate_email_missing_domain(self):
 
         input_ = "johndoe"
-        assert self.validator.validate_email(input_) == False
+        assert self.validator.validate_email(input_) is False
 
 
 class TestFormValidatorPassword:
@@ -82,47 +82,47 @@ class TestFormValidatorPassword:
     def test_validate_password_valid(self):
 
         input_ = "Password1"
-        assert self.validator.validate_password(input_) == True
+        assert self.validator.validate_password(input_) is True
 
     def test_validate_password_valid_with_special_character(self):
 
         input_ = "P@ssw0rd"
-        assert self.validator.validate_password(input_) == True
+        assert self.validator.validate_password(input_) is True
 
     def test_validate_password_too_short(self):
 
         input_ = "P@w0rd"
-        assert self.validator.validate_password(input_) == False
+        assert self.validator.validate_password(input_) is False
 
     def test_validate_password_missing_uppercase(self):
 
         input_ = "password1"
-        assert self.validator.validate_password(input_) == False
+        assert self.validator.validate_password(input_) is False
 
     def test_validate_password_missing_lowercase(self):
 
         input_ = "PASSWORD1"
-        assert self.validator.validate_password(input_) == False
+        assert self.validator.validate_password(input_) is False
 
     def test_validate_password_missing_number(self):
 
         input_ = "Password"
-        assert self.validator.validate_password(input_) == False
+        assert self.validator.validate_password(input_) is False
 
     def test_validate_password_contains_space(self):
 
         input_ = "Pas4 word"
-        assert self.validator.validate_password(input_) == False
+        assert self.validator.validate_password(input_) is False
 
     def test_validate_password_leading_space(self):
 
         input_ = " Passwor1"
-        assert self.validator.validate_password(input_) == False
+        assert self.validator.validate_password(input_) is False
 
     def test_validate_password_trailing_space(self):
 
         input_ = "Passwor1 "
-        assert self.validator.validate_password(input_) == False
+        assert self.validator.validate_password(input_) is False
 
 
 class TestFormValidatorUsername:
@@ -132,77 +132,77 @@ class TestFormValidatorUsername:
     def test_validate_username_valid1(self):
 
         input_ = "johndoe123"
-        assert self.validator.validate_username(input_) == True
+        assert self.validator.validate_username(input_) is True
 
     def test_validate_username_valid3(self):
 
         input_ = "123-username"
-        assert self.validator.validate_username(input_) == True
+        assert self.validator.validate_username(input_) is True
 
     def test_validate_username_contains_at(self):
 
         input_ = "user@name"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_contains_hash(self):
 
         input_ = "user#name"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_contains_caret(self):
 
         input_ = "user^name"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_contains_tilde(self):
 
         input_ = "user~name"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_contains_space(self):
 
         input_ = "user name"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_leading_space(self):
 
         input_ = " username"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_trailing_space(self):
 
         input_ = "username "
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_leading_hyphen(self):
 
         input_ = "-username"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_trailing_hyphen(self):
 
         input_ = "username-"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_contains_dot(self):
 
         input_ = "user.name"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_contains_underscore(self):
 
         input_ = "user_name"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_contains_mandarin(self):
 
         input_ = "username測試"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
     def test_validate_username_contains_uppercases(self):
 
         input_ = "Username123"
-        assert self.validator.validate_username(input_) == False
+        assert self.validator.validate_username(input_) is False
 
 
 class TestFormValidatorBlogname:
@@ -212,27 +212,27 @@ class TestFormValidatorBlogname:
     def test_validate_blogname_valid(self):
 
         input_ = "This is Hank"
-        assert self.validator.validate_blogname(input_) == True
+        assert self.validator.validate_blogname(input_) is True
 
     def test_validate_blogname_mandarin(self):
 
         input_ = "小小部落格"
-        assert self.validator.validate_blogname(input_) == True
+        assert self.validator.validate_blogname(input_) is True
 
     def test_validate_blogname_languages_combind(self):
 
         input_ = "This is 小小部落格"
-        assert self.validator.validate_blogname(input_) == True
+        assert self.validator.validate_blogname(input_) is True
 
     def test_validate_blogname_too_long(self):
 
         input_ = "Hank's personal blogging website"
-        assert self.validator.validate_blogname(input_) == False
+        assert self.validator.validate_blogname(input_) is False
 
     def test_validate_blogname_empty(self):
 
         input_ = ""
-        assert self.validator.validate_blogname(input_) == False
+        assert self.validator.validate_blogname(input_) is False
 
 
 ###################################################################
@@ -312,4 +312,4 @@ def test_get_today_random_env_argument(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
     with pytest.raises(ValueError):
-        today = get_today(env="wrong input")
+        get_today(env="wrong input")

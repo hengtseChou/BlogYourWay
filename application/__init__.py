@@ -6,7 +6,7 @@ import os
 from flask import Flask, render_template, request
 from flask_login import LoginManager
 
-from application.config import ENV
+from application.config import ENV, APP_SECRET
 from application.services.log import my_logger, return_client_ip
 from application.services.mongo import my_database
 from application.utils.users import User
@@ -25,7 +25,7 @@ def create_app() -> Flask:
     """
 
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = os.urandom(16).hex()
+    app.config["SECRET_KEY"] = APP_SECRET
 
     ## login
     login_manager = LoginManager()
