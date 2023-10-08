@@ -9,39 +9,44 @@
 	</div>
 	<hr>
 	<p class="ms-2">Featured posts will be on your home page, sorted by time order. </p>
-	<div class="table-responsive">
-		<table class="table">
-			<thead>
-				<tr>
-					<th style="width: 48%">Title</th>
-					<th style="width: 16%">Created At</th>
-					<th style="width: 10%" class="text-center">Views</th>
-					<th style="width: 10%" class="text-center">Comments</th>
-					<th style="width: 8%" class="text-center">Feature</th>
-					<th style="width: 8%" class="text-center">Archive</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for post in posts %}
-				<tr>
-					<td class="align-middle"><a href="posts/edit/{{ post.post_uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
-					{% if post['featured'] %}
-					<span class="badge rounded-pill bg-success">Featured</span>
-					{% endif %}
-					</td>
-					<td>{{ post['created_at'] }}</td>
-					<td class="text-center">{{ post['views'] }}</td>
-					<td class="text-center">{{ post['comments'] }}</td>
-					{% if post['featured'] %}
-					<td class="text-center"><a href='/backstage/edit-featured?featured=to_false&uid={{ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
-					{% else %}
-					<td class="text-center"><a href='/backstage/edit-featured?featured=to_true&uid={{ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
-					{% endif %}
-					<td class="text-center"><a href="/backstage/edit-archived?archived=to_true&uid={{ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
-				</tr>		
-				{% endfor %}
-			</tbody>
-		</table>
+	<div class="col-11">
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th style="width: 40%">Title</th>
+						<th style="width: 16%">Created At</th>
+						<th style="width: 10%" class="text-center">Views</th>
+						<th style="width: 10%" class="text-center">Comments</th>
+						<th style="width: 8%" class="text-center">Edit</th>
+						<th style="width: 8%" class="text-center">Feature</th>
+						<th style="width: 8%" class="text-center">Archive</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for post in posts %}
+					<tr>
+						<td class="align-middle"><a href="/backstage/posts/stats/{{ post.post_uid }}" class="me-1" style="color: black;">{{ post['title'] }}</a>
+						{% if post['featured'] %}
+						<span class="badge rounded-pill bg-success">Featured</span>
+						{% endif %}
+						</td>
+						<td>{{ post['created_at'] }}</td>
+						<td class="text-center">{{ post['views'] }}</td>
+						<td class="text-center">{{ post['comments'] }}</td>
+						<td class="text-center"><a href="/backstage/posts/edit/{{ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-regular fa-pen-to-square"></i></a></td>
+						{% if post['featured'] %}
+						<td class="text-center"><a href='/backstage/edit-featured?featured=to_false&uid={{ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-minus"></i></a></td>
+						{% else %}
+						<td class="text-center"><a href='/backstage/edit-featured?featured=to_true&uid={{ post.post_uid }}' style="color: black; font-size: 18px;"><i class="fa-regular fa-square-plus"></i></a></td>
+						{% endif %}
+						<td class="text-center"><a href="/backstage/edit-archived?archived=to_true&uid={{ post.post_uid }}" style="color: black; font-size: 18px;"><i class="fa-solid fa-box-archive"></i></a></td>
+						<td></td>
+					</tr>		
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
 	<div class="container">
 		<div class="row">
@@ -72,8 +77,8 @@
 		<div class="card-body">
 			<div class="row">
 				<div class="col-10">
-					<div class="text-truncate">
-						<a href="posts/edit/{{ post.post_uid }}" style="color: black;">{{ post['title'] }}</a>
+					<div class="">
+						<a href="" style="color: black;">{{ post['title'] }}</a>
 					</div>
 					<p style="font-size: small; font-style: italic;" class="date-text mb-2">Created at {{ post['created_at'] }}</p>
 					<div >
@@ -88,6 +93,7 @@
 					<div class="text-end dropdown">
 						<a class="btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>					  
 						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="posts/edit/{{ post.post_uid }}">Edit</a></li>
 							{% if post['featured'] %}
 						  	<li><a class="dropdown-item" href='/backstage/edit-featured?featured=to_false&uid={{ post.post_uid }}'>Remove from featured</a></li>
 							{% else %}

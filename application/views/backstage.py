@@ -7,6 +7,7 @@ from flask_login import current_user, login_required, logout_user
 from application.services.log import my_logger
 from application.services.mongo import my_database
 from application.utils.common import string_truncate, switch_to_bool
+from application.utils.dashboard import joined_for
 from application.utils.posts import create_post, paging, post_utils, update_post
 from application.utils.users import delete_user
 
@@ -39,11 +40,10 @@ def overview():
 
     ###################################################################
 
-    now = datetime.now()
     user = my_database.user_info.find_one({"username": current_user.username})
+    days_joined = joined_for(user)
 
-    time_difference = now - user["created_at"]
-    user["days_joined"] = format(time_difference.days + 1, ",")
+
 
     visitor_stats = {"home": 1, "blog": 1, "portfolio": 1, "about": 1, "total": 5}
     daily_count = {"labels": ["2023-09-28", "2023-09-29", "2023-09-30"], "data": [1, 2, 2]}
@@ -55,7 +55,7 @@ def overview():
     ###################################################################
 
     return render_template(
-        "overview.html", user=user, daily_count=daily_count, visitor_stats=visitor_stats
+        "overview.html", user=user, daily_count=daily_count, visitor_stats=visitor_stats, days_joined=days_joined
     )
 
 
@@ -100,6 +100,7 @@ def post_control():
         posts_per_page=POSTS_EACH_PAGE,
     )
     for post in posts:
+        post["title"] = string_truncate(post["title"], 30)
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["views"] = format(post["views"], ",")
         comment_count = my_database.comment.count_documents({"post_uid": post["post_uid"]})
