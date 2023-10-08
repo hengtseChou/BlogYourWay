@@ -10,11 +10,12 @@
 /* navbar.html */
 
 .navbar-custom {
-	background-color: rgba(0, 0, 0, 0.6);
-	backdrop-filter: blur(5px);
-	padding-top: 10px; /* Adjust the top padding as needed */
-	padding-bottom: 10px; /* Adjust the bottom padding as needed */
+	background-color: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(3px);
+	padding-top: 20px; /* Adjust the top padding as needed */
+	padding-bottom: 20px; /* Adjust the bottom padding as needed */
 	font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;
+	font-size: large;
 }
 
 .navbar-custom .navbar-toggler {

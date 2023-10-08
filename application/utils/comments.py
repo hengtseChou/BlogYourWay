@@ -65,7 +65,7 @@ class NewCommentSetup:
             "name": commenter["username"],
             "email": commenter["email"],
             "profile_link": f'/{commenter["username"]}/about',
-            "profile_pic": f'/{commenter["username"]}/get-profile-pic',
+            "profile_pic": f'/@{commenter["username"]}/get-profile-pic',
             "post_uid": post_uid,
             "comment_uid": self._comment_uid,
             "comment": request.form.get("comment"),

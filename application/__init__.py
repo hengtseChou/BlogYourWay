@@ -1,16 +1,26 @@
 """
 Configure little-blog application in create_app() with a factory pattern.
 """
-import os
-
 from flask import Flask, render_template, request
 from flask_login import LoginManager
+from flask_debugtoolbar import DebugToolbarExtension
 
-from application.config import ENV, APP_SECRET
+from application.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
+from application.services.cache import cache
 from application.services.log import my_logger, return_client_ip
 from application.services.mongo import my_database
 from application.utils.users import User
 from application.views import backstage_bp, blog_bp
+
+if ENV == "develop":
+    cache_config = {"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300}
+elif ENV == "prod":
+    cache_config = {
+        "CACHE_TYPE": "RedisCache",
+        "CACHE_REDIS_HOST": REDIS_HOST,
+        "CACHE_REDIS_PORT": REDIS_PORT,
+        "CACHE_REDIS_PASSWORD": REDIS_PW,
+    }
 
 
 def create_app() -> Flask:
@@ -27,9 +37,16 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = APP_SECRET
 
+    # debug mode
+    if ENV == "develop":
+        app.config["DEBUG"] = True
+        toolbar = DebugToolbarExtension()
+        toolbar.init_app(app)
+        app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
+
     ## login
     login_manager = LoginManager()
-    login_manager.login_view = "blog.login"
+    login_manager.login_view = "blog.login_get"
     login_manager.login_message = "Please login to proceed."
     login_manager.init_app(app)
 
@@ -59,6 +76,9 @@ def create_app() -> Flask:
     # blueprints
     app.register_blueprint(blog_bp, url_prefix="/")
     app.register_blueprint(backstage_bp, url_prefix="/backstage/")
+
+    # cache
+    cache.init_app(app, config=cache_config)
 
     my_logger.info("APP INIT")
 

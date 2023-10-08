@@ -15,6 +15,7 @@ from flask import (
 from flask_login import current_user, login_user
 from markdown import Markdown
 
+from application.config import ENV
 from application.services.log import my_logger, return_client_ip
 from application.services.mongo import my_database
 from application.utils.comments import comment_utils, create_comment
@@ -52,7 +53,7 @@ def landing_page():
 
 
 @blog.route("/login", methods=["GET"])
-def login():
+def login_get():
     ###################################################################
 
     # early returns
@@ -64,7 +65,7 @@ def login():
         my_logger.debug(
             f"{return_client_ip(request)} - Attempt to duplicate logging from user {current_user.username}."
         )
-        return redirect(url_for("backstage.panel"))
+        return redirect(url_for("backstage.overview"))
 
     ###################################################################
 
@@ -84,7 +85,7 @@ def login():
 
 
 @blog.route("/login", methods=["POST"])
-def sending_login_form():
+def login_post():
     ###################################################################
 
     # early returns
@@ -128,11 +129,11 @@ def sending_login_form():
 
     ###################################################################
 
-    return redirect(url_for("backstage.overview"))
+    return redirect(url_for("backstage.backstage_root"))
 
 
 @blog.route("/register", methods=["GET"])
-def register():
+def register_get():
     ###################################################################
 
     # logging / metrics
@@ -151,7 +152,7 @@ def register():
 
 
 @blog.route("/register", methods=["POST"])
-def sending_register_form():
+def register_post():
     ###################################################################
 
     # main actions
@@ -168,7 +169,7 @@ def sending_register_form():
 
     ###################################################################
 
-    return redirect(url_for("blog.login"))
+    return redirect(url_for("blog.login_get"))
 
 
 @blog.route("/@<username>", methods=["GET"])
@@ -229,7 +230,7 @@ def tag(username):
     # if no tag specified, show blog page
     tag_url_encoded = request.args.get("tag", default=None, type=str)
     if tag_url_encoded is None:
-        return redirect(url_for("blog.blogg", username=username))
+        return redirect(url_for("blog.blog_page", username=username))
 
     # abort for unknown tag
     tag = unquote(tag_url_encoded)
@@ -340,7 +341,7 @@ def post(username, post_uid):
     ###################################################################
 
     return render_template(
-        "blogpost.html", user=author_info, post=target_post, comments=comments
+        "post.html", user=author_info, post=target_post, comments=comments
     )
 
 
@@ -416,7 +417,7 @@ def about(username):
 
 
 @blog.route("/@<username>/blog", methods=["GET"])
-def blogg(username):
+def blog_page(username):
     ###################################################################
 
     # early returns
@@ -474,7 +475,7 @@ def blogg(username):
 
 
 @blog.route("@<username>/social-links", methods=["GET"])
-def social_link_transfer(username):
+def social_link_endpoint(username):
     ###################################################################
 
     # main actions
@@ -494,7 +495,7 @@ def social_link_transfer(username):
 
     ###################################################################
 
-    client_ip = return_client_ip(request)
+    client_ip = return_client_ip(request, ENV)
     my_logger.debug(f"{client_ip} - redirect to social link {target_url}")
     timely_metrics.social_link_fired(request)
 
@@ -507,7 +508,7 @@ def social_link_transfer(username):
     return redirect(target_url)
 
 
-@blog.route("/<username>/get-profile-pic", methods=["GET"])
+@blog.route("/@<username>/get-profile-pic", methods=["GET"])
 def profile_pic_endpoint(username):
     user = my_database.user_info.find_one({"username": username})
 
@@ -520,5 +521,5 @@ def profile_pic_endpoint(username):
 
 
 @blog.route("/error", methods=["GET"])
-def raise_error():
+def error_simulator():
     raise Exception("this is a simulation error.")

@@ -124,7 +124,7 @@ class MetricsRecorder:
         return mid_result
 
     def social_link_fired(self, request: Request):
-        username = _extract_username
+        username = _extract_username(request)
         user = my_database.user_info.find_one({"username": username})
         link_idx = request.args.get("idx", type=int)
         platform = user["social_links"][link_idx - 1]["platform"]
