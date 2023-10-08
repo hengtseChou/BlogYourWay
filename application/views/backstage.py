@@ -1,12 +1,14 @@
-from bcrypt import hashpw, checkpw, gensalt
 from datetime import datetime
-from flask import Blueprint, request, session, render_template, flash, redirect, url_for
-from flask_login import login_required, logout_user, current_user
-from application.services.mongo import my_database
+
+from bcrypt import checkpw, gensalt, hashpw
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask_login import current_user, login_required, logout_user
+
 from application.services.log import my_logger
-from application.utils.posts import create_post, update_post, paging, post_utils
+from application.services.mongo import my_database
+from application.utils.common import string_truncate, switch_to_bool
+from application.utils.posts import create_post, paging, post_utils, update_post
 from application.utils.users import delete_user
-from application.utils.common import switch_to_bool, string_truncate
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 

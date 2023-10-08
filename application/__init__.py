@@ -2,13 +2,15 @@
 Configure little-blog application in create_app() with a factory pattern.
 """
 import os
+
 from flask import Flask, render_template, request
 from flask_login import LoginManager
+
 from application.config import ENV
-from application.views import blog_bp, backstage_bp
 from application.services.log import my_logger, return_client_ip
 from application.services.mongo import my_database
 from application.utils.users import User
+from application.views import backstage_bp, blog_bp
 
 
 def create_app() -> Flask:

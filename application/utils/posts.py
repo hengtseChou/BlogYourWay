@@ -1,10 +1,12 @@
 from math import ceil
+
 from bs4 import BeautifulSoup
-from flask import abort, Request
+from flask import Request, abort
 from flask_login import current_user
+
 from application.config import ENV
-from application.services.mongo import my_database, MyDatabase
-from application.utils.common import UIDGenerator, get_today, FormValidator
+from application.services.mongo import MyDatabase, my_database
+from application.utils.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################
 

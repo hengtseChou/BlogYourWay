@@ -1,7 +1,7 @@
-from pymongo.mongo_client import MongoClient
+from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.cursor import Cursor
-from pymongo.database import Database
+
 from application.config import MONGO_URL
 
 

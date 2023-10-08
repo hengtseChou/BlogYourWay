@@ -4,9 +4,10 @@ This module includes a create comment function, and a comment utility class.
 import requests
 from flask import Request
 from flask_login import current_user
-from application.config import RECAPTCHA_SECRET, ENV
-from application.utils.common import UIDGenerator, get_today, FormValidator
-from application.services.mongo import my_database, MyDatabase
+
+from application.config import ENV, RECAPTCHA_SECRET
+from application.services.mongo import MyDatabase, my_database
+from application.utils.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################
 

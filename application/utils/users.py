@@ -1,9 +1,10 @@
 import bcrypt
+from flask import Request, flash, render_template, request
 from flask_login import UserMixin
-from flask import Request, flash, request, render_template
+
 from application.config import ENV
-from application.services.mongo import my_database, MyDatabase
-from application.services.log import my_logger, MyLogger
+from application.services.log import MyLogger, my_logger
+from application.services.mongo import MyDatabase, my_database
 from application.utils.common import FormValidator, get_today
 
 

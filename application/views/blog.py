@@ -1,30 +1,32 @@
+from urllib.parse import unquote
+
 import bcrypt
 import readtime
-from urllib.parse import unquote
-from markdown import Markdown
 from flask import (
     Blueprint,
-    request,
-    render_template,
-    flash,
-    redirect,
-    url_for,
     abort,
+    flash,
     jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
 from flask_login import current_user, login_user
-from application.services.mongo import my_database
+from markdown import Markdown
+
 from application.services.log import my_logger, return_client_ip
-from application.utils.users import User, create_user
+from application.services.mongo import my_database
+from application.utils.comments import comment_utils, create_comment
+from application.utils.metrics import admin_metrics, lifetime_metrics, timely_metrics
 from application.utils.posts import (
+    all_tags,
     html_to_about,
     html_to_blogpost,
-    all_tags,
-    post_utils,
     paging,
+    post_utils,
 )
-from application.utils.comments import create_comment, comment_utils
-from application.utils.metrics import lifetime_metrics, timely_metrics, admin_metrics
+from application.utils.users import User, create_user
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 

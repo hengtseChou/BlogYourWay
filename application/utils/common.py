@@ -1,10 +1,11 @@
 """
 This module collects the common utulity functions from the application.
 """
+import random
 import re
 import string
-import random
 from datetime import datetime, timedelta
+
 from application.services.mongo import MyDatabase
 
 ###################################################################

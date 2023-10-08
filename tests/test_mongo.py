@@ -5,7 +5,6 @@ mock_client = MongoClient()
 
 
 class TestMyDatabase:
-    
     test_db = MyDatabase(mock_client)
 
     def test_user_login_type(self):
