@@ -2,18 +2,18 @@
 Configure little-blog application in create_app() with a factory pattern.
 """
 from flask import Flask, render_template, request
-from flask_login import LoginManager
 from flask_debugtoolbar import DebugToolbarExtension
+from flask_login import LoginManager
+from flask_session import Session
 
 from application.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
 from application.services.cache import cache
 from application.services.log import my_logger, return_client_ip
 from application.services.mongo import my_database
-from application.services.socketio import socketio
 from application.services.redis import my_redis
+from application.services.socketio import socketio
 from application.utils.users import User
 from application.views import backstage_bp, blog_bp
-from flask_session import Session
 
 if ENV == "develop":
     cache_config = {"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300}
@@ -29,12 +29,15 @@ elif ENV == "prod":
 def create_app() -> Flask:
     """
     Defines:
-    - secret keys
+    - secret key of application
     - login manager (login view, login message)
     - user loader
     - 404 error handler page
     - 500 error handler page
     - register blueprints (blog, backstage)
+    - cache
+    - socketio
+    - server-side session
     """
 
     app = Flask(__name__)
@@ -74,6 +77,7 @@ def create_app() -> Flask:
         my_logger.error(
             f"{client_ip} - 500 internal error at {request.environ['RAW_URI']}."
         )
+        # flask app itself will show the error occurred
         return render_template("500.html"), 500
 
     # blueprints

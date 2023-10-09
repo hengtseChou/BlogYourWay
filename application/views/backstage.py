@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
@@ -43,8 +41,6 @@ def overview():
     user = my_database.user_info.find_one({"username": current_user.username})
     days_joined = joined_for(user)
 
-
-
     visitor_stats = {"home": 1, "blog": 1, "portfolio": 1, "about": 1, "total": 5}
     daily_count = {"labels": ["2023-09-28", "2023-09-29", "2023-09-30"], "data": [1, 2, 2]}
 
@@ -55,7 +51,11 @@ def overview():
     ###################################################################
 
     return render_template(
-        "overview.html", user=user, daily_count=daily_count, visitor_stats=visitor_stats, days_joined=days_joined
+        "overview.html",
+        user=user,
+        daily_count=daily_count,
+        visitor_stats=visitor_stats,
+        days_joined=days_joined,
     )
 
 

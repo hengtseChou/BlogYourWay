@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "little-blog"
 version = "1.0.0"
-description = "A blogging engine, with in-house metric trackers."
+description = "Full-end customized blogging engine."
 authors = ["hank chou <hengtse.me@gmail.com>"]
 readme = "README.md"
 
@@ -56,6 +56,9 @@ filterwarnings = [
 [tool.black]
 line-length = 92
 skip-magic-trailing-comma = 1
+
+[tool.ruff]
+line-length = 92
 
 [build-system]
 requires = ["poetry-core"]

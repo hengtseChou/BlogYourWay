@@ -134,7 +134,9 @@ class Log_for_User_Actions:
 
     def logout(self, username: str, request: Request):
         client_ip = return_client_ip(request, ENV)
-        self._logger.info(f"{client_ip} - User {username} has logged out and session data is cleared.")
+        self._logger.info(
+            f"{client_ip} - User {username} has logged out and session data is cleared."
+        )
 
     def registration_failed(self, msg: str, request: Request):
         msg = msg.strip().strip(".")
