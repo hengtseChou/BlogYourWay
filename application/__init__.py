@@ -5,6 +5,7 @@ from flask import Flask, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from flask_session import Session
+from pymongo.errors import ServerSelectionTimeoutError
 
 from application.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
 from application.services.cache import cache
@@ -38,9 +39,11 @@ def create_app() -> Flask:
     - cache
     - socketio
     - server-side session
+    - check connections for redis and mongo
     """
 
     app = Flask(__name__)
+    my_logger.info("App initialization started.")
     app.secret_key = APP_SECRET
 
     # debug mode
@@ -49,12 +52,14 @@ def create_app() -> Flask:
         toolbar = DebugToolbarExtension()
         toolbar.init_app(app)
         app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
+        my_logger.debug("Debugtoolbar configured.")
 
     ## login
     login_manager = LoginManager()
     login_manager.login_view = "blog.login_get"
     login_manager.login_message = "Please login to proceed."
     login_manager.init_app(app)
+    my_logger.debug("Login manager configured.")
 
     @login_manager.user_loader
     def user_loader(username: str) -> User:
@@ -80,15 +85,20 @@ def create_app() -> Flask:
         # flask app itself will show the error occurred
         return render_template("500.html"), 500
 
+    my_logger.debug("Error handlers registered.")
+
     # blueprints
     app.register_blueprint(blog_bp, url_prefix="/")
     app.register_blueprint(backstage_bp, url_prefix="/backstage/")
+    my_logger.debug("Blueprints registered.")
 
     # cache
     cache.init_app(app, config=cache_config)
+    my_logger.debug("Flask-caching configured.")
 
     # socketio
     socketio.init_app(app, manage_session=False)
+    my_logger.debug("Flask-socketio configured.")
 
     # session
     session = Session()
@@ -97,7 +107,23 @@ def create_app() -> Flask:
     app.config["SESSION_USE_SIGNER"] = True
     app.config["SESSION_REDIS"] = my_redis
     session.init_app(app)
+    my_logger.debug("Flask-session configured.")
 
-    my_logger.info("APP INIT")
+    # check connection
+    try:
+        my_database.client.server_info()
+        my_logger.debug("MongoDB is connected.")
+    except ServerSelectionTimeoutError as error:
+        my_logger.error(error)
+        exit("MongoDB is NOT connected. App initializaion failed.")
+
+    try:
+        my_redis.ping()
+        my_logger.debug("Redis is connected.")
+    except Exception as error:
+        my_logger.error(error)
+        exit("Redis is NOT connected. App initializaion failed.")
+
+    my_logger.info("App initialization completed.")
 
     return app

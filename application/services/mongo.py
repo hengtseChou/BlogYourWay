@@ -97,6 +97,7 @@ class ExtendedCursor(Cursor):
 
 class MyDatabase:
     def __init__(self, client: MongoClient) -> None:
+        self._client = client
         users_db = client["users"]
         posts_db = client["posts"]
         comments_db = client["comments"]
@@ -111,6 +112,10 @@ class MyDatabase:
         self._post_view_sources = ExtendedCollection(posts_db["post-view-sources"])
         self._comment = ExtendedCollection(comments_db["comment"])
         self._metrics_log = ExtendedCollection(metrics_db["metrics-log"])
+
+    @property
+    def client(self):
+        return self._client
 
     @property
     def user_login(self):
