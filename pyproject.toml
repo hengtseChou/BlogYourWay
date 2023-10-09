@@ -22,6 +22,8 @@ markdown-captions = "^2.1.2"
 redis = "^5.0.1"
 d = "^0.2.2"
 flask-caching = "^2.0.2"
+flask-socketio = "^5.3.6"
+flask-session = "^0.5.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"

@@ -698,6 +698,7 @@ def logout():
 
     username = current_user.username
     logout_user()
+    session.pop("user_current_tab", None)
     my_logger.user.logout(username=username, request=request)
 
     ###################################################################

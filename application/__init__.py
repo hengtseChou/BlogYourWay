@@ -9,8 +9,11 @@ from application.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
 from application.services.cache import cache
 from application.services.log import my_logger, return_client_ip
 from application.services.mongo import my_database
+from application.services.socketio import socketio
+from application.services.redis import my_redis
 from application.utils.users import User
 from application.views import backstage_bp, blog_bp
+from flask_session import Session
 
 if ENV == "develop":
     cache_config = {"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300}
@@ -35,7 +38,7 @@ def create_app() -> Flask:
     """
 
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = APP_SECRET
+    app.secret_key = APP_SECRET
 
     # debug mode
     if ENV == "develop":
@@ -79,6 +82,17 @@ def create_app() -> Flask:
 
     # cache
     cache.init_app(app, config=cache_config)
+
+    # socketio
+    socketio.init_app(app, manage_session=False)
+
+    # session
+    session = Session()
+    app.config["SESSION_TYPE"] = "redis"
+    app.config["SESSION_PERMANENT"] = False
+    app.config["SESSION_USE_SIGNER"] = True
+    app.config["SESSION_REDIS"] = my_redis
+    session.init_app(app)
 
     my_logger.info("APP INIT")
 
