@@ -6,5 +6,7 @@
 test_post.md
 # folder
 __pycache__/
+.venv/
+.ruff_cache/
 .pytest_cache/
 coverage_report/

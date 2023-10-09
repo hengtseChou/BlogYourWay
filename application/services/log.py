@@ -19,7 +19,7 @@ def _setup_prod_logger():
     file_formatter = logging.Formatter(
         fmt="[%(asctime)s] %(levelname)s in %(funcName)s, %(module)s: %(message)s"
     )
-    file_handler = logging.FileHandler("production.log", "w", "utf-8")
+    file_handler = logging.FileHandler("prod.log", "w", "utf-8")
     file_handler.setFormatter(file_formatter)
     file_handler.setLevel(logging.DEBUG)
     logger.addHandler(file_handler)

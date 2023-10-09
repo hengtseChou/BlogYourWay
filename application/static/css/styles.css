@@ -14,6 +14,7 @@
 	backdrop-filter: blur(3px);
 	padding-top: 20px; /* Adjust the top padding as needed */
 	padding-bottom: 20px; /* Adjust the bottom padding as needed */
+	height: 80px;
 	font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;
 	font-size: large;
 }
@@ -38,7 +39,7 @@
 
 .sidebar {
 	position: fixed;
-	top: 0px;
+	top: 0;
 	left: 0;
 	bottom: 0;
 	background-color: #333;
