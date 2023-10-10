@@ -1,13 +1,14 @@
 from bcrypt import checkpw, gensalt, hashpw
+from datetime import datetime, timedelta
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
 from application.services.log import my_logger
 from application.services.mongo import my_database
 from application.utils.common import string_truncate, switch_to_bool
-from application.utils.dashboard import joined_for
 from application.utils.posts import create_post, paging, post_utils, update_post
 from application.utils.users import delete_user
+from application.utils.dashboard import CollectMetricData
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
@@ -39,10 +40,19 @@ def overview():
     ###################################################################
 
     user = my_database.user_info.find_one({"username": current_user.username})
-    days_joined = joined_for(user)
+    user["created_at"] = user["created_at"].strftime("%b %d, %Y")
 
-    visitor_stats = {"home": 1, "blog": 1, "portfolio": 1, "about": 1, "total": 5}
-    daily_count = {"labels": ["2023-09-28", "2023-09-29", "2023-09-30"], "data": [1, 2, 2]}
+    data_collector = CollectMetricData(
+        username=current_user.username,
+        start_time=datetime.now() - timedelta(days=30),
+        end_time=datetime.now()
+    )
+
+
+    pv = data_collector.total_pv()
+    uv = data_collector.total_uv()
+    site_traffic = data_collector.site_traffic()
+    index_page_traffic = data_collector.index_pages_traffic()
 
     ###################################################################
 
@@ -53,9 +63,10 @@ def overview():
     return render_template(
         "overview.html",
         user=user,
-        daily_count=daily_count,
-        visitor_stats=visitor_stats,
-        days_joined=days_joined,
+        traffic=site_traffic,
+        index_page_traffic=index_page_traffic,
+        total_pv=pv,
+        total_uv=uv
     )
 
 
