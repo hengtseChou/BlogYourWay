@@ -63,7 +63,7 @@ def login_get():
     if current_user.is_authenticated:
         flash("You are already logged in.")
         my_logger.debug(
-            f"{return_client_ip(request)} - Attempt to duplicate logging from user {current_user.username}."
+            f"{return_client_ip(request, ENV)} - Attempt to duplicate logging from user {current_user.username}."
         )
         return redirect(url_for("backstage.overview"))
 
