@@ -46,27 +46,27 @@ Remember to add a `.env` file for enviroment variables (check `application/confi
 
 ### Now
 
-- [] Integrated user traffic dashboard.
+- [ ] Integrated user traffic dashboard.
 
-- [] Post traffic/read ratio dashboard for post control.
+- [ ] Post traffic/read ratio dashboard for post control.
 
 ### Next 
 
-- [] Portfolio CRUD.
+- [ ] Portfolio CRUD.
 
-- [] Personal changelog CRUD.
+- [ ] Personal changelog CRUD.
 
 ### Later
 
-- [] Support tags for both posts and portfolios.
+- [ ] Support tags for both posts and portfolios.
 
-- [] Enhance UI/UX on landing page.
+- [ ] Enhance UI/UX on landing page.
 
-- [] Track time spent on pages with sockerio.
+- [ ] Track time spent on pages with sockerio.
 
-- [] Modal box images in posts.
+- [ ] Modal box images in posts.
 
-- [] Admin dashboard for checking logging/view overall traffic.
+- [ ] Admin dashboard for checking logging/view overall traffic.
 
 ## Issue board
 
