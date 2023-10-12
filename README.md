@@ -1,8 +1,8 @@
 # Little Blog
 
-This is a hobby project, for building a independent blogging/portfolio engine to accommodate my preferences. Back-end is built with Flask, along with several extenstions; Front-end is mainly develop through Bootstrap and some javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor), which is adpoted as the content editor in this project.
+This is a hobby project, for building a independent blogging/portfolio engine to accommodate my preferences. Back-end is built with Flask, along with several extenstions; Front-end is mainly develop through Bootstrap 5 and some useful javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor), which is adpoted as the content editor in this project.
 
-This project uses <u><i>poetry</i></u> for managing dependencies, <u><i>pytest</i></u> and <u><i>pytest-cov</i></u> for testing, <u><i>black</i></u> and <u><i>isort</i></u> for formatting, and <u><i>ruff</i></u> for linting.
+This project uses <ins><i>poetry</i></ins> for managing dependencies, <ins><i>pytest</i></ins> and <ins><i>pytest-cov</i></ins> for testing, <ins><i>black</i></ins> and <ins><i>isort</i></ins> for formatting, and <ins><i>ruff</i></ins> for linting.
 
 ## Requirements for deployment
 
