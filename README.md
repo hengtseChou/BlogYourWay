@@ -21,53 +21,36 @@ Remember to add a `.env` file for enviroment variables (check `application/confi
 ### Done
 
 - [x] Posts CRUD (with markdown formation).
-
 - [x] Support tags for posts.
-
 - [x] Readtime and reading progress bar on each post.
-
-- [X] Good looking Comment section (with google reCAPTCHA).
-
+- [X] Good looking Comment section (with google reCAPCHA).
 - [x] Good looking code block in posts.
-
 - [x] Customized and click-through trackable social links. 
-
 - [x] Personalized blog banner and profile picture.
-
 - [x] Personalized user autobiography.
-
 - [x] Good looking website and backstage.
-
 - [x] RWD support.
-
 - [x] Track website traffic/post traffic and read ratios.
-
 - [x] Well defined event logging. 
 
 ### Now
 
 - [ ] Integrated user traffic dashboard.
-
 - [ ] Post traffic/read ratio dashboard for post control.
-
 ### Next 
 
 - [ ] Portfolio CRUD.
-
 - [ ] Personal changelog CRUD.
+- [ ] Table of Content for posts.
 
 ### Later
 
 - [ ] Support tags for both posts and portfolios.
-
 - [ ] Enhance UI/UX on landing page.
-
 - [ ] Track time spent on pages with sockerio.
-
 - [ ] Modal box images in posts.
-
 - [ ] Admin dashboard for checking logging/view overall traffic.
 
 ## Issue board
 
-[Little-blog notion issue board](https://www.notion.so/hengtse/Little-Blog-119b66fdef244c1ab3041aeb5bda473b?pvs=4)
+[Little-blog notion issue board](https://hengtse.notion.site/Little-Blog-119b66fdef244c1ab3041aeb5bda473b?pvs=4)
