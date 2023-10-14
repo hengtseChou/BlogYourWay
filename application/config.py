@@ -5,8 +5,7 @@ import os
 
 from dotenv import load_dotenv
 
-if not load_dotenv():
-    raise Exception(".env file not found.")
+load_dotenv()
 
 ENV = os.getenv("ENV")
 APP_SECRET = os.getenv("APP_SECRET")
