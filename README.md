@@ -23,7 +23,7 @@ Remember to add a `.env` file for enviroment variables (check `application/confi
 - [x] Posts CRUD (with markdown formation).
 - [x] Support tags for posts.
 - [x] Readtime and reading progress bar on each post.
-- [X] Good looking comment section (with google reCAPCHA).
+- [x] Good looking comment section (with google reCAPCHA).
 - [x] Good looking code block in posts (with highliht.js).
 - [x] Customized and click-through trackable social links. 
 - [x] Personalized blog banner and profile picture.

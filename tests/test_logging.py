@@ -121,7 +121,7 @@ def test_login_succeeded(mock_client_ip, caplog):
 
     my_logger.user.login_succeeded(username, mock_request)
 
-    assert f"127.0.0.1 - User {username} has logged in." in caplog.text
+    assert f"127.0.0.1 - User test has logged in." in caplog.text
 
 
 def test_logout(mock_client_ip, caplog):
@@ -130,7 +130,7 @@ def test_logout(mock_client_ip, caplog):
 
     my_logger.user.logout(username, mock_request)
 
-    assert f"127.0.0.1 - User {username} has logged out." in caplog.text
+    assert f"127.0.0.1 - User test has logged out and session data is cleared." in caplog.text
 
 
 def test_registration_failed(mock_client_ip, caplog):
@@ -144,61 +144,52 @@ def test_registration_failed(mock_client_ip, caplog):
 
 def test_registration_succeeded(mock_client_ip, caplog):
     mock_request = MagicMock()
-    username = "new_user"
+    username = "test"
 
     my_logger.user.registration_succeeded(username, mock_request)
 
-    assert f"127.0.0.1 - New user {username} has been created." in caplog.text
+    assert f"127.0.0.1 - New user test has been created." in caplog.text
 
 
 def test_deleted(mock_client_ip, caplog):
     mock_request = MagicMock()
-    username = "user_to_delete"
+    username = "test"
 
     my_logger.user.user_deleted(username, mock_request)
 
-    assert f"127.0.0.1 - User {username} has been deleted." in caplog.text
+    assert f"127.0.0.1 - User test has been deleted." in caplog.text
 
 
 def test_data_created(mock_client_ip, caplog):
     mock_request = MagicMock()
-    username = "user"
-    data_info = "new_data"
+    username = "test"
+    data_info = "new_data_info"
 
     my_logger.user.data_created(username, data_info, mock_request)
 
     # Assert
-    assert (
-        f"127.0.0.1 - {data_info.capitalize()} for user {username} has been created."
-        in caplog.text
-    )
+    assert f"127.0.0.1 - New_data_info for user test has been created." in caplog.text
 
 
 def test_data_updated(mock_client_ip, caplog):
     mock_request = MagicMock()
-    username = "user"
-    data_info = "updated_data"
+    username = "test"
+    data_info = "updated_data_info"
 
     # Act
     my_logger.user.data_updated(username, data_info, mock_request)
 
     # Assert
-    assert (
-        f"127.0.0.1 - {data_info.capitalize()} for user {username} has been updated."
-        in caplog.text
-    )
+    assert f"127.0.0.1 - Updated_data_info for user test has been updated." in caplog.text
 
 
 def test_data_deleted(mock_client_ip, caplog):
     mock_request = MagicMock()
-    username = "user"
-    data_info = "deleted_data"
+    username = "test"
+    data_info = "deleted_data_info"
 
     # Act
     my_logger.user.data_deleted(username, data_info, mock_request)
 
     # Assert
-    assert (
-        f"127.0.0.1 - {data_info.capitalize()} for user {username} has been deleted."
-        in caplog.text
-    )
+    assert f"127.0.0.1 - Deleted_data_info for user test has been deleted." in caplog.text

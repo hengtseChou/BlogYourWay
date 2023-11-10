@@ -54,7 +54,7 @@ filterwarnings = [
 ]
 
 [tool.black]
-line-length = 92
+line-length = 96
 skip-magic-trailing-comma = 1
 
 [tool.ruff]
