@@ -1,35 +1,27 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %}About · {{ user['blogname'] }}{%
+endblock %} {% block meta_tags %}
+<meta name="description" content="Some information about myself..." />
+<meta
+  property="og:image"
+  content="https://little-blog.up.railway.app/{{ user['username'] }}/get-profile-pic"
+/>
+{% endblock %} {% block body%} {% include 'navbar.html' %} {# css for navbar is
+in styles.css #} {% include 'banner.html' %}
 
-{% block title %}About · {{ user['blogname'] }}{% endblock %}
-
-{% block meta_tags %}
-<meta name="description" content="Some information about myself...">
-<meta property="og:image" content="https://little-blog.up.railway.app/{{ user['username'] }}/get-profile-pic">
-{% endblock %}
-
-{% block body%}
-
-{% include 'navbar.html' %}
-{# css for navbar is in styles.css #}
-
-{% include 'banner.html' %}
-
-<div class="container-fluid" style="min-height: calc(100vh - 330px);">
-	<div class="text-center mt-5"><h1>About Me</h1></div>
-	<div class="row my-3">
-		<div class="col-1 mx-auto"><hr></div>
-	</div>
-	<div class="row my-3">
-		<div class="col-12 col-md-6 mx-auto">
-		{% if about|length == 0 %}
-		<div class="text-center"><p>Well... it seems there's nothing here yet.</p></div>
-		{% else %}
-		{{ about|safe }}
-		{% endif %}
-		</div>
-	</div>	
+<div class="container-fluid" style="min-height: calc(100vh - 330px)">
+  <div class="text-center mt-5"><h1>About Me</h1></div>
+  <div class="row my-3">
+    <div class="col-1 mx-auto"><hr /></div>
+  </div>
+  <div class="row my-3">
+    <div class="col-12 col-md-6 mx-auto">
+      {% if about|length == 0 %}
+      <div class="text-center">
+        <p>Well... it seems there's nothing here yet.</p>
+      </div>
+      {% else %} {{ about|safe }} {% endif %}
+    </div>
+  </div>
 </div>
 
-{% include 'footer.html' %}
-
-{% endblock %}
+{% include 'footer.html' %} {% endblock %}

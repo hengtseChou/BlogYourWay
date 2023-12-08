@@ -1,114 +1,163 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>	
-	<title>{% block title %}{% endblock %}</title>	
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="Content-Security-Policy" content="img-src 'self' data: *;">
-	<meta name="language" content="en">
-	{% block meta_tags %}{% endblock %}
-	<!-- bootstrap -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu|Noto+Sans+TC|Noto+Serif+TC&display=swap">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>	
-	<!-- styles -->
-	<link href="/static/css/styles.css" rel="stylesheet" />
-	<!-- icon -->
-	<link rel="icon" href="/static/img/icon.ico" type="image/x-icon" />
-	<!-- easy markdown editor -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
-	<!-- highlight.js -->
-	<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css">
-	<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
-	<!-- jquery -->
-	<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-	<!-- font awesome -->
-	<script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-	<!-- chart.js -->
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.3/dist/chart.umd.min.js"></script>
-	<!-- count.js -->
-	<script src="https://inorganik.github.io/countUp.js/dist/countUp.umd.js"></script>
-	<!-- reCAPTCHA  -->
-	<link rel="preconnect" href="https://www.google.com">
-	<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-	{% block head %}{% endblock %}
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="img-src 'self' data: *;"
+    />
+    <meta name="language" content="en" />
+    {% block meta_tags %}{% endblock %}
+    <!-- bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Ubuntu|Noto+Sans+TC|Noto+Serif+TC&display=swap"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    <!-- styles -->
+    <link href="/static/css/styles.css" rel="stylesheet" />
+    <!-- icon -->
+    <link rel="icon" href="/static/img/icon.ico" type="image/x-icon" />
+    <!-- easy markdown editor -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <!-- highlight.js -->
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/default.min.css"
+    />
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+    <!-- jquery -->
+    <script
+      src="https://code.jquery.com/jquery-3.7.0.min.js"
+      integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+      crossorigin="anonymous"
+    ></script>
+    <!-- font awesome -->
+    <script
+      src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.3/dist/chart.umd.min.js"></script>
+    <!-- count.js -->
+    <script src="https://inorganik.github.io/countUp.js/dist/countUp.umd.js"></script>
+    <!-- reCAPTCHA  -->
+    <link rel="preconnect" href="https://www.google.com" />
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+    {% block head %}{% endblock %}
 
+    <style>
+      body {
+        font-family: "Ubuntu", "Noto Sans TC", sans-serif;
+      }
+      .toast {
+        opacity: 1 !important;
+        border-radius: 10px;
+      }
+      .toast-header {
+        border-radius: 9px 9px 0px 0px;
+        font-size: 16px;
+      }
+      .toast-body {
+        font-size: 16px;
+      }
+      footer {
+        background-color: #333;
+        color: white;
+        padding: 20px 0;
+        text-align: center;
+        bottom: 0;
+        width: 100%;
+      }
+      footer p {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toast-container bottom-0 end-0 p-3">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% for
+      category, message in messages %}
+      <div
+        class="toast show"
+        role="alert"
+        aria-live="polite"
+        aria-atomic="true"
+        id="notification"
+      >
+        {% if category == 'success' %}
+        <div class="toast-header" style="background-color: #7fda91">
+          <strong class="me-auto">Success!</strong>
+          <button
+            type="button"
+            class="btn-close me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        {% elif category == 'error' %}
+        <div class="toast-header" style="background-color: #ff6c6c">
+          <strong class="me-auto">Error!</strong>
+          <button
+            type="button"
+            class="btn-close me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        {% else %}
+        <div class="toast-header" style="background-color: #75c4ff">
+          <strong class="me-auto">Info</strong>
+          <button
+            type="button"
+            class="btn-close me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        {% endif %}
+        <div class="toast-body">{{ message }}</div>
+      </div>
+      {% endfor %} {% endwith %}
+    </div>
 
-	<style>
-		body {
-			font-family: 'Ubuntu', 'Noto Sans TC', sans-serif;
-		}
-		.toast {
-    	opacity: 1 !important;
-			border-radius: 10px;
-		}
-		.toast-header {
-			border-radius: 9px 9px 0px 0px;
-			font-size: 16px;
-		}
-		.toast-body {
-    	font-size: 16px;
-		}
-		footer {
-            background-color: #333;
-			color: white;
-            padding: 20px 0;
-            text-align: center;
-            bottom: 0;
-            width: 100%;
-        }
-        footer p {
-            margin: 0;
-        }
-
-	</style>
-</head>
-<body>
-	<div class="toast-container bottom-0 end-0 p-3">
-		{% with messages = get_flashed_messages(with_categories=true) %}
-			{% for category, message in messages %}			
-				<div class="toast show" role="alert" aria-live="polite" aria-atomic="true" id="notification">
-					{% if category == 'success' %}
-						<div class="toast-header" style="background-color: #7FDA91;">
-							<strong class="me-auto">Success!</strong>
-							<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-						</div>
-					{% elif category == 'error' %}
-						<div class="toast-header" style="background-color: #FF6C6C;">
-							<strong class="me-auto">Error!</strong>
-							<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-						</div>
-					{% else %}
-						<div class="toast-header" style="background-color: #75c4ff;">
-							<strong class="me-auto">Info</strong>
-							<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-						</div>
-					{% endif %}								
-					<div class="toast-body">
-						{{ message }}
-					</div>
-				</div>
-			{% endfor %}
-		{% endwith %}
-	</div>
-
-
-	{% block body %}{% endblock %}
-	<script>hljs.highlightAll();</script>
-	<script> 
-    // flash messages     
-		$(document).ready(function(){
-			setTimeout(function() {
-				$('#notification').fadeOut('fast');
-				}, 3000); // <-- time in milliseconds        
-		});
-      
+    {% block body %}{% endblock %}
+    <script>
+      hljs.highlightAll();
     </script>
-	<!-- socket.io import -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-	<script>
-		var socket = io();
-	</script>	
-	{% block script %}{% endblock %} 
-</body>
+    <script>
+      // flash messages
+      $(document).ready(function () {
+        setTimeout(function () {
+          $("#notification").fadeOut("fast");
+        }, 3000); // <-- time in milliseconds
+      });
+    </script>
+    <!-- socket.io import -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      var socket = io();
+    </script>
+    {% block script %}{% endblock %}
+  </body>
 </html>

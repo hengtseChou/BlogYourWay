@@ -1,5 +1,11 @@
 {% if user.banner_url|length != 0 %}
-<div class="banner-container" style="background-image: url('{{ user.banner_url }}');"></div>
+<div
+  class="banner-container"
+  style="background-image: url('{{ user.banner_url }}');"
+></div>
 {% else %}
-<div class="banner-container" style="background-image: url('/static/img/default-banner.jpg')"></div>
+<div
+  class="banner-container"
+  style="background-image: url(&quot;/static/img/default-banner.jpg&quot;)"
+></div>
 {% endif %}

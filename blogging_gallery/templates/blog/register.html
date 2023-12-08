@@ -1,155 +1,217 @@
-{% extends 'base.html' %}
-
-{% block head %}
+{% extends 'base.html' %} {% block head %}
 <style>
-	body {
-		background-color: #343a40;
-	}
+  body {
+    background-color: #343a40;
+  }
 
-	.card {
-		margin-top: calc(100vh * 0.25);
-		max-width: 400px;
-		margin-left: auto;
-		margin-right: auto;
-		padding: 30px;
-		border-radius: 20px;
-		transition: opacity 0.7s ease-in-out;
-	}
+  .card {
+    margin-top: calc(100vh * 0.25);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 30px;
+    border-radius: 20px;
+    transition: opacity 0.7s ease-in-out;
+  }
 
-	.card.hide {
-		opacity: 0;
-		pointer-events: none;
-	}
+  .card.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
 
-	.form-group {
-		margin-bottom: 20px;	
-	}
+  .form-group {
+    margin-bottom: 20px;
+  }
 </style>
-{% endblock %}
-
-{% block title %}Create an Account · Little Blog{% endblock %}
-
-
-{% block body %}
+{% endblock %} {% block title %}Create an Account · Little Blog{% endblock %} {%
+block body %}
 <div class="row">
-	<form method="post" autocomplete="off" class="col-10 offset-1 col-md-12 offset-md-0">
-		<div class="card text-white bg-dark shadow" id="step1">
-			<div class="card-body">
-				<h2 class="text-center mb-4">Register</h2>
-				<div class="input-group mb-4">
-					<span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-					<input type="email" class="form-control" placeholder="Email" name="email" id="email">
-				</div>
-				<div class="input-group mb-2">
-					<span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-					<input type="password" class="form-control" placeholder="Password" name="password" id="password">
-				</div>
-				<small style="color: #6c757d;"><p>Password must be 8 characters long, with upper and lower cases letters.</p></small>
-				<button type="button" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;" onclick="validateStep1()">Continue</button>
-				<div class="text-center mt-4">
-					Already have an account? <a href="/login">Login</a>
-				</div>
-			</div>
-		</div>
-	
-		<div class="card hide text-white bg-dark shadow" id="step2" style="display: none;">
-			<div class="card-body">
-				<h2 class="text-center mb-4">Almost Done...</h2>
-				<div class="input-group mb-1">
-						<span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-						<input type="text" class="form-control" placeholder="Username" name="username" id="username">		
-				</div>
-				<small class="mb-4" style="color: #6c757d;"><p>Use only letters (lowercase), numbers, and "-".</p></small>      
-				<div class="input-group mb-1">
-					<span class="input-group-text"><i class="fa-solid fa-house"></i></span>
-					<input type="text" class="form-control" placeholder="Blog's name" name="blogname" id="blogname">
-				</div>
-				<small class="mb-4" style="color: #6c757d;"><p>20 characters maximum.</p></small>      
-				<div class="form-check mb-4">
-					<input class="form-check-input" type="checkbox" name="terms" id="terms" style="background-color: #343a40; border: 0px;">
-					<label class="form-check-label" for="terms">
-						I understand this is a fully experimental project, there is no guarantee of complete data preservation.
-					</label>
-				</div>
-				<button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;" onclick="return validateStep2()">Create</button>
-			</div>
-		</div>
-	</form>
+  <form
+    method="post"
+    autocomplete="off"
+    class="col-10 offset-1 col-md-12 offset-md-0"
+  >
+    <div class="card text-white bg-dark shadow" id="step1">
+      <div class="card-body">
+        <h2 class="text-center mb-4">Register</h2>
+        <div class="input-group mb-4">
+          <span class="input-group-text"
+            ><i class="fa-solid fa-envelope"></i
+          ></span>
+          <input
+            type="email"
+            class="form-control"
+            placeholder="Email"
+            name="email"
+            id="email"
+          />
+        </div>
+        <div class="input-group mb-2">
+          <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Password"
+            name="password"
+            id="password"
+          />
+        </div>
+        <small style="color: #6c757d"
+          ><p>
+            Password must be 8 characters long, with upper and lower cases
+            letters.
+          </p></small
+        >
+        <button
+          type="button"
+          class="btn btn-primary w-100 rounded-pill"
+          style="background-color: gray; border: 0px"
+          onclick="validateStep1()"
+        >
+          Continue
+        </button>
+        <div class="text-center mt-4">
+          Already have an account? <a href="/login">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="card hide text-white bg-dark shadow"
+      id="step2"
+      style="display: none"
+    >
+      <div class="card-body">
+        <h2 class="text-center mb-4">Almost Done...</h2>
+        <div class="input-group mb-1">
+          <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Username"
+            name="username"
+            id="username"
+          />
+        </div>
+        <small class="mb-4" style="color: #6c757d"
+          ><p>Use only letters (lowercase), numbers, and "-".</p></small
+        >
+        <div class="input-group mb-1">
+          <span class="input-group-text"
+            ><i class="fa-solid fa-house"></i
+          ></span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Blog's name"
+            name="blogname"
+            id="blogname"
+          />
+        </div>
+        <small class="mb-4" style="color: #6c757d"
+          ><p>20 characters maximum.</p></small
+        >
+        <div class="form-check mb-4">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            name="terms"
+            id="terms"
+            style="background-color: #343a40; border: 0px"
+          />
+          <label class="form-check-label" for="terms">
+            I understand this is a fully experimental project, there is no
+            guarantee of complete data preservation.
+          </label>
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary w-100 rounded-pill"
+          style="background-color: gray; border: 0px"
+          onclick="return validateStep2()"
+        >
+          Create
+        </button>
+      </div>
+    </div>
+  </form>
 </div>
 
-{% endblock %}
-
-{% block script %}
+{% endblock %} {% block script %}
 <script>
-	function validateStep1() {
-		// Perform input validation for Step 1
-		var email = document.getElementById('email').value;
-		var password = document.getElementById('password').value;
+  function validateStep1() {
+    // Perform input validation for Step 1
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
 
-		// both fields not empty
-		if (email.trim() === '' || password.trim() === '') {
-			alert('Enter email and password to continue.');
-			return false;
-		}
+    // both fields not empty
+    if (email.trim() === "" || password.trim() === "") {
+      alert("Enter email and password to continue.");
+      return false;
+    }
 
-		var emailRegex = /^\S+@\S+\.\S+$/;
-		if (!emailRegex.test(email)) {
-			alert('Enter a valid email address.');
-			return false;
-		}
+    var emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      alert("Enter a valid email address.");
+      return false;
+    }
 
-		var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-		if (!passwordRegex.test(password)) {
-			alert('Password must be 8 characters long and contain both uppercase and lowercase letters.');
-			return false;
-		}
+    var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      alert(
+        "Password must be 8 characters long and contain both uppercase and lowercase letters.",
+      );
+      return false;
+    }
 
-		// // Hide Step 1, show Step 2
-		document.getElementById("step1").classList.add("hide");
-		document.getElementById('step1').style.display = 'none';
-		
-		document.getElementById("step2").style.display = "block";
-		setTimeout(function() {
-			document.getElementById("step2").classList.remove("hide");
-		}, 100); 
-	}
+    // // Hide Step 1, show Step 2
+    document.getElementById("step1").classList.add("hide");
+    document.getElementById("step1").style.display = "none";
 
-	function validateStep2() {
-		// Perform input validation for Step 2
-		var username = document.getElementById('username').value;
-		var blogname = document.getElementById('blogname').value;
-		var termsChecked = document.getElementById('terms').checked;
+    document.getElementById("step2").style.display = "block";
+    setTimeout(function () {
+      document.getElementById("step2").classList.remove("hide");
+    }, 100);
+  }
 
-		if (username.trim() === '' || blogname.trim() === '') {
-			alert('Enter username and blog name to continue.');
-			return false;
-		}
+  function validateStep2() {
+    // Perform input validation for Step 2
+    var username = document.getElementById("username").value;
+    var blogname = document.getElementById("blogname").value;
+    var termsChecked = document.getElementById("terms").checked;
 
-		if (username[0] === '-' || username[username.length - 1] === '-') {
-			alert('Username cannot begins or ends with a hyphen.');
-			return false;
-		}
+    if (username.trim() === "" || blogname.trim() === "") {
+      alert("Enter username and blog name to continue.");
+      return false;
+    }
 
-		var usernameRegex = /^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/;
-		if (!usernameRegex.test(username)) {
-			alert("Invalid username. Please use only letters (lowercase), numbers, and \"-\".");
-			return false;
-		}
+    if (username[0] === "-" || username[username.length - 1] === "-") {
+      alert("Username cannot begins or ends with a hyphen.");
+      return false;
+    }
 
-		if (!termsChecked) {
-			alert('You must read the terms to continue.');
-			return false;
-		}
+    var usernameRegex = /^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/;
+    if (!usernameRegex.test(username)) {
+      alert(
+        'Invalid username. Please use only letters (lowercase), numbers, and "-".',
+      );
+      return false;
+    }
 
-		return true;
-	}
+    if (!termsChecked) {
+      alert("You must read the terms to continue.");
+      return false;
+    }
 
-	document.getElementById('step1').addEventListener('keypress', function(event) {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-		}
-	});
+    return true;
+  }
+
+  document
+    .getElementById("step1")
+    .addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+      }
+    });
 </script>
 {% endblock %}
-
-

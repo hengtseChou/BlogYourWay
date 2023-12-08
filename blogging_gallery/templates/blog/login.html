@@ -1,54 +1,66 @@
-{% extends 'base.html' %}
-
-{% block head %}
+{% extends 'base.html' %} {% block head %}
 <style>
-	body {
-		background-color: #343a40;
-	}
+  body {
+    background-color: #343a40;
+  }
 
-	.card {
-		margin-top: calc(100vh * 0.25);
-		max-width: 400px;
-		margin-left: auto;
-		margin-right: auto;
-		padding: 30px;
-		border-radius: 20px;
-	}
+  .card {
+    margin-top: calc(100vh * 0.25);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 30px;
+    border-radius: 20px;
+  }
 
-	.form-group {
-		margin-bottom: 20px;
-	}
+  .form-group {
+    margin-bottom: 20px;
+  }
 </style>
-{% endblock %}
-
-{% block title %}Login · Little Blog{% endblock %}
-
-
-{% block body %}
+{% endblock %} {% block title %}Login · Little Blog{% endblock %} {% block body
+%}
 <div class="row">
-	<div class="col-10 offset-1 col-md-12 offset-md-0">
-		<div class=" card text-white bg-dark shadow">
-			<div class="card-body">
-				<h2 class="text-center mb-4">Login</h2>
-				<form method="post">
-					<div class="input-group mb-4">
-						<span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-						<input type="email" class="form-control" placeholder="Email" name="email">
-					</div>
-					<div class="input-group mb-4">
-						<span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-						<input type="password" class="form-control" placeholder="Password" name="password">
-					</div>
-					<button type="submit" class="btn btn-primary w-100 rounded-pill" style="background-color: gray; border: 0px;">Login</button>
-				</form>
-				<div class="text-center mt-4">
-					Don't have an account? <a href="/register">Register</a>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div class="col-10 offset-1 col-md-12 offset-md-0">
+    <div class="card text-white bg-dark shadow">
+      <div class="card-body">
+        <h2 class="text-center mb-4">Login</h2>
+        <form method="post">
+          <div class="input-group mb-4">
+            <span class="input-group-text"
+              ><i class="fa-solid fa-envelope"></i
+            ></span>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Email"
+              name="email"
+            />
+          </div>
+          <div class="input-group mb-4">
+            <span class="input-group-text"
+              ><i class="fa-solid fa-key"></i
+            ></span>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              name="password"
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary w-100 rounded-pill"
+            style="background-color: gray; border: 0px"
+          >
+            Login
+          </button>
+        </form>
+        <div class="text-center mt-4">
+          Don't have an account? <a href="/register">Register</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
-
-
