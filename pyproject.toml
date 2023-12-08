@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "little-blog"
+name = "blogging-gallery"
 version = "1.0.0"
-description = "Full-end customized blogging engine."
+description = "Flask blogging engine with a gallery feature."
 authors = ["hank chou <hengtse.me@gmail.com>"]
 readme = "README.md"
 
@@ -24,6 +24,7 @@ d = "^0.2.2"
 flask-caching = "^2.0.2"
 flask-socketio = "^5.3.6"
 flask-session = "^0.5.0"
+flask-paginate = "^2023.10.24"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"

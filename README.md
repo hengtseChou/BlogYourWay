@@ -1,6 +1,6 @@
-# Little Blog
+# Blogging Gallery
 
-This is a hobby project, for building a independent blogging/portfolio engine to accommodate my preferences. Back-end is built with <ins><i>Flask</i></ins>, along with several extenstions; Front-end is mainly develop through <ins><i>Bootstrap 5</i></ins> and some useful javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor), which is adpoted as the content editor in this project.
+This is a hobby project, for building a independent blogging engine to accommodate my preferences. Back-end is built with <ins><i>Flask</i></ins>, along with several extenstions; Front-end is mainly develop through <ins><i>Bootstrap 5</i></ins> and some useful javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor), which is adpoted as the content editor in this project.
 
 This project uses <ins><i>poetry</i></ins> for managing dependencies, <ins><i>pytest</i></ins> and <ins><i>pytest-cov</i></ins> for testing, <ins><i>black</i></ins> and <ins><i>isort</i></ins> for formatting, and <ins><i>ruff</i></ins> for linting.
 
@@ -37,6 +37,8 @@ Remember to add a `.env` file for enviroment variables (check `application/confi
 
 - [ ] Integrated user traffic dashboard.
 - [ ] Post traffic/read ratio dashboard for post control.
+- [ ] automatic logout due to inactive.
+  
 ### Next 
 
 - [ ] Portfolio CRUD.
