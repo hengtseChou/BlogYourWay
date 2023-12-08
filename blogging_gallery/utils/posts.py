@@ -4,9 +4,9 @@ from bs4 import BeautifulSoup
 from flask import Request, abort
 from flask_login import current_user
 
-from application.config import ENV
-from application.services.mongo import MyDatabase, my_database
-from application.utils.common import FormValidator, UIDGenerator, get_today
+from blogging_gallery.config import ENV
+from blogging_gallery.services.mongo import MyDatabase, my_database
+from blogging_gallery.utils.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################
 

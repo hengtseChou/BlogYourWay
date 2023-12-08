@@ -15,19 +15,19 @@ from flask import (
 from flask_login import current_user, login_user
 from markdown import Markdown
 
-from application.config import ENV
-from application.services.log import my_logger, return_client_ip
-from application.services.mongo import my_database
-from application.utils.comments import comment_utils, create_comment
-from application.utils.metrics import admin_metrics, lifetime_metrics, timely_metrics
-from application.utils.posts import (
+from blogging_gallery.config import ENV
+from blogging_gallery.services.log import my_logger, return_client_ip
+from blogging_gallery.services.mongo import my_database
+from blogging_gallery.utils.comments import comment_utils, create_comment
+from blogging_gallery.utils.metrics import admin_metrics, lifetime_metrics, timely_metrics
+from blogging_gallery.utils.posts import (
     all_tags,
     html_to_about,
     html_to_blogpost,
     paging,
     post_utils,
 )
-from application.utils.users import User, create_user
+from blogging_gallery.utils.users import User, create_user
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 

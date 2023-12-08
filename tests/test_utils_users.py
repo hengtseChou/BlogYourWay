@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
 import pytest
 from flask_login import login_user, current_user
-from application import create_app
-from application.utils.users import User, NewUserSetup
+from blogging_gallery import create_app
+from blogging_gallery.utils.users import User, NewUserSetup
 
 ###################################################################
 

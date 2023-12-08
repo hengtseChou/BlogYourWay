@@ -1,4 +1,4 @@
-from application.services.mongo import my_database
+from blogging_gallery.services.mongo import my_database
 from datetime import datetime, timedelta
 
 

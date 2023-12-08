@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from application.services.log import my_logger
+from blogging_gallery.services.log import my_logger
 
 
 @pytest.fixture

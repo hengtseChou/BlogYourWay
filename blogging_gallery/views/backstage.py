@@ -3,12 +3,12 @@ from datetime import datetime, timedelta
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
-from application.services.log import my_logger
-from application.services.mongo import my_database
-from application.utils.common import string_truncate, switch_to_bool
-from application.utils.posts import create_post, paging, post_utils, update_post
-from application.utils.users import delete_user
-from application.utils.dashboard import CollectMetricData
+from blogging_gallery.services.log import my_logger
+from blogging_gallery.services.mongo import my_database
+from blogging_gallery.utils.common import string_truncate, switch_to_bool
+from blogging_gallery.utils.posts import create_post, paging, post_utils, update_post
+from blogging_gallery.utils.users import delete_user
+from blogging_gallery.utils.dashboard import CollectMetricData
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 

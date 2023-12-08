@@ -2,7 +2,7 @@ from flask import request, session
 from flask_login import current_user, logout_user
 from flask_socketio import SocketIO
 
-from application.services.log import my_logger
+from blogging_gallery.services.log import my_logger
 
 socketio = SocketIO()
 

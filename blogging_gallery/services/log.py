@@ -2,7 +2,7 @@ import logging
 
 from flask import Request
 
-from application.config import ENV
+from blogging_gallery.config import ENV
 
 
 def return_client_ip(request: Request, env: str):
