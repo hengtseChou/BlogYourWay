@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 import pytest
 from datetime import datetime
-from blogging_gallery.utils.common import FormValidator, UIDGenerator, get_today
+from blogyourway.utils.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################
 

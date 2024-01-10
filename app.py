@@ -1,4 +1,4 @@
-from blogging_gallery import create_app
+from blogyourway import create_app
 
 
 app = create_app()

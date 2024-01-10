@@ -6,7 +6,7 @@ import re
 import string
 from datetime import datetime, timedelta
 
-from blogging_gallery.services.mongo import MyDatabase
+from blogyourway.services.mongo import MyDatabase
 
 ###################################################################
 

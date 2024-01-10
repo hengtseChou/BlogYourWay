@@ -7,14 +7,14 @@ from flask_login import LoginManager
 from flask_session import Session
 from pymongo.errors import ServerSelectionTimeoutError
 
-from blogging_gallery.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
-from blogging_gallery.services.cache import cache
-from blogging_gallery.services.log import my_logger, return_client_ip
-from blogging_gallery.services.mongo import my_database
-from blogging_gallery.services.redis import my_redis
-from blogging_gallery.services.socketio import socketio
-from blogging_gallery.utils.users import User
-from blogging_gallery.views import backstage_bp, blog_bp
+from blogyourway.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
+from blogyourway.services.cache import cache
+from blogyourway.services.log import my_logger, return_client_ip
+from blogyourway.services.mongo import my_database
+from blogyourway.services.redis import my_redis
+from blogyourway.services.socketio import socketio
+from blogyourway.utils.users import User
+from blogyourway.views import backstage_bp, blog_bp
 
 if ENV == "develop":
     cache_config = {"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300}

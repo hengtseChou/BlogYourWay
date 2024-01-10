@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.cursor import Cursor
 
-from blogging_gallery.config import MONGO_URL
+from blogyourway.config import MONGO_URL
 
 
 class ExtendedCollection:

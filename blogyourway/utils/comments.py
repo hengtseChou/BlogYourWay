@@ -5,9 +5,9 @@ import requests
 from flask import Request
 from flask_login import current_user
 
-from blogging_gallery.config import ENV, RECAPTCHA_SECRET
-from blogging_gallery.services.mongo import MyDatabase, my_database
-from blogging_gallery.utils.common import FormValidator, UIDGenerator, get_today
+from blogyourway.config import ENV, RECAPTCHA_SECRET
+from blogyourway.services.mongo import MyDatabase, my_database
+from blogyourway.utils.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################
 

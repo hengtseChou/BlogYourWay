@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "blogging-gallery"
+name = "blog your way"
 version = "1.0.0"
 description = "Flask blogging engine with a gallery feature."
 authors = ["hank chou <hengtse.me@gmail.com>"]

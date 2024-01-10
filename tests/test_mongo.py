@@ -1,5 +1,5 @@
 from mongomock import MongoClient
-from blogging_gallery.services.mongo import MyDatabase, ExtendedCollection, ExtendedCursor
+from blogyourway.services.mongo import MyDatabase, ExtendedCollection, ExtendedCursor
 
 mock_client = MongoClient()
 

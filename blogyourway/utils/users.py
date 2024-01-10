@@ -2,10 +2,10 @@ import bcrypt
 from flask import Request, flash, render_template, request
 from flask_login import UserMixin
 
-from blogging_gallery.config import ENV
-from blogging_gallery.services.log import MyLogger, my_logger
-from blogging_gallery.services.mongo import MyDatabase, my_database
-from blogging_gallery.utils.common import FormValidator, get_today
+from blogyourway.config import ENV
+from blogyourway.services.log import MyLogger, my_logger
+from blogyourway.services.mongo import MyDatabase, my_database
+from blogyourway.utils.common import FormValidator, get_today
 
 
 class User(UserMixin):

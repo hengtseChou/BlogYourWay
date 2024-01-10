@@ -3,10 +3,10 @@ from urllib.parse import urlparse
 
 from flask import Request
 
-from blogging_gallery.config import ENV
-from blogging_gallery.services.log import return_client_ip
-from blogging_gallery.services.mongo import MyDatabase, my_database
-from blogging_gallery.utils.common import get_today
+from blogyourway.config import ENV
+from blogyourway.services.log import return_client_ip
+from blogyourway.services.mongo import MyDatabase, my_database
+from blogyourway.utils.common import get_today
 
 
 def _get_referrer(request: Request) -> str:

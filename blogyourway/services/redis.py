@@ -1,6 +1,6 @@
 import redis
 
-from blogging_gallery.config import ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
+from blogyourway.config import ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
 
 if ENV == "develop":
     my_redis = redis.from_url("redis://localhost:6379")
