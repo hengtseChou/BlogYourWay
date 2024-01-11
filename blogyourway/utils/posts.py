@@ -36,7 +36,7 @@ class NewPostSetup:
             "subtitle": request.form.get("subtitle"),
             "author": author_name,
             "tags": process_tags(request.form.get("tags")),
-            "banner_url": request.form.get("banner_url"),
+            "cover_url": request.form.get("cover_url"),
             "created_at": get_today(env=ENV),
             "last_updated": get_today(env=ENV),
             "archived": False,
@@ -109,7 +109,7 @@ class PostUpdateSetup:
             "title": request.form.get("title"),
             "subtitle": request.form.get("subtitle"),
             "tags": process_tags(request.form.get("tags")),
-            "banner_url": request.form.get("banner_url"),
+            "coverer_url": request.form.get("cover_url"),
             "last_updated": get_today(env=ENV),
         }
         return updated_post_info

@@ -17,7 +17,7 @@ body {
 	font-size: 16px;
 }
 
-.banner-container {
+.cover-container {
 	width: 100%;
 	height: calc(100vw / 3);
 	min-height: 250px;
@@ -113,16 +113,6 @@ footer p {
 	height: 100vh;
 }
 
-.panel-btn {
-	text-align: left;
-	background-color: #333;
-	color: white;
-	border: 0px;
-}
-.panel-btn:hover {
-	background-color: #6c757d;
-	color: white;
-}
 
 /* profile pics */
 
@@ -192,7 +182,7 @@ img.profile-sm {
 
 .badge-custom {
 	color: rgb(100, 100, 100);
-	background-color: rgb(197, 197, 197);
+	background-color: rgb(150, 150, 150);
 }
 
 .badge-custom:hover {

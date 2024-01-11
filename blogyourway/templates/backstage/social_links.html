@@ -8,9 +8,9 @@
     <p class="ms-2">Modify social links on your navbar, as you wish.</p>
     <form method="post" autocomplete="off">
       <div id="inputContainer" class="mb-4">
-        {% for count in range(social_links|length) %} {% set platform =
-        social_links[count]['platform'] %} {% set url =
-        social_links[count]['url'] %}
+        {% for count in range(social_links|length) %} 
+        {% set platform = social_links[count]['platform'] %} 
+        {% set url = social_links[count]['url'] %}
         <div class="input-group mb-2">
           <span class="input-group-text">Link {{ count + 1 }}</span>
           <input
@@ -21,88 +21,22 @@
             value="{{ url }}"
           />
           <select class="form-select" name="platform-{{ count + 1 }}">
-            <option
-              value="facebook"
-              {%
-              if
-              platform=""
-              ="facebook"
-              %}
-              selected
-              {%
-              endif
-              %}
-            >
+            <option value="facebook" {% if platform=="facebook" %} selected {% endif %}>
               Facebook
             </option>
-            <option
-              value="instagram"
-              {%
-              if
-              platform=""
-              ="instagram"
-              %}
-              selected
-              {%
-              endif
-              %}
-            >
+            <option value="instagram" {% if platform=="instagram" %} selected {% endif %}>
               Instagram
             </option>
-            <option
-              value="twitter"
-              {%
-              if
-              platform=""
-              ="twitter"
-              %}
-              selected
-              {%
-              endif
-              %}
-            >
+            <option value="twitter" {% if platform=="twitter" %} selected {% endif %}>
               Twitter
             </option>
-            <option
-              value="medium"
-              {%
-              if
-              platform=""
-              ="medium"
-              %}
-              selected
-              {%
-              endif
-              %}
-            >
+            <option value="medium" {% if platform=="medium" %} selected {% endif %}>
               Medium
             </option>
-            <option
-              value="linkedin"
-              {%
-              if
-              platform=""
-              ="linkedin"
-              %}
-              selected
-              {%
-              endif
-              %}
-            >
+            <option value="linkedin" {% if platform=="linkedin" %} selected {% endif %}>
               Linkedin
             </option>
-            <option
-              value="github"
-              {%
-              if
-              platform=""
-              ="github"
-              %}
-              selected
-              {%
-              endif
-              %}
-            >
+            <option value="github" {% if platform=="github" %} selected {% endif %}>
               Github
             </option>
           </select>

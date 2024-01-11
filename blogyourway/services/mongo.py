@@ -17,6 +17,12 @@ class ExtendedCollection:
 
     def count_documents(self, filter: dict):
         return self._col.count_documents(filter)
+    
+    def delete_one(self, filter: dict):
+        self._col.delete_one(filter)
+
+    def delete_many(self, filter: dict):
+        self._col.delete_many(filter)
 
     # this application usually does not consider the case where records not found
     def find_one(self, filter) -> dict:

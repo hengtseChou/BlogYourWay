@@ -8,7 +8,6 @@ from blogyourway.services.mongo import my_database
 from blogyourway.utils.common import string_truncate, switch_to_bool
 from blogyourway.utils.posts import create_post, paging, post_utils, update_post
 from blogyourway.utils.users import delete_user
-from blogyourway.utils.dashboard import CollectMetricData
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
@@ -42,17 +41,7 @@ def overview():
     user = my_database.user_info.find_one({"username": current_user.username})
     user["created_at"] = user["created_at"].strftime("%b %d, %Y")
 
-    data_collector = CollectMetricData(
-        username=current_user.username,
-        start_time=datetime.now() - timedelta(days=30),
-        end_time=datetime.now()
-    )
 
-
-    pv = data_collector.total_pv()
-    uv = data_collector.total_uv()
-    site_traffic = data_collector.site_traffic()
-    index_page_traffic = data_collector.index_pages_traffic()
 
     ###################################################################
 
@@ -63,10 +52,10 @@ def overview():
     return render_template(
         "overview.html",
         user=user,
-        traffic=site_traffic,
-        index_page_traffic=index_page_traffic,
-        total_pv=pv,
-        total_uv=uv
+        traffic={},
+        index_page_traffic={"/@test/loll": 3},
+        total_pv=1,
+        total_uv=2
     )
 
 

@@ -1,8 +1,13 @@
-{% extends 'base.html' %} {% block title %}{{ post.title }}{% endblock %} {%
-block meta_tags %}
+{% extends 'base.html' %} 
+
+{% block title %}{{ post.title }}{% endblock %} 
+
+{% block meta_tags %}
 <meta name="description" content="{{ post['subtitle'] }}" />
 <meta property="og:image" content="{{ post['banner_url'] }}" />
-{% endblock %} {% block head %}
+{% endblock %}
+
+{% block head %}
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
   function onSubmit(token) {
@@ -28,11 +33,14 @@ block meta_tags %}
     background-color: #f7966b;
   }
 </style>
-{% endblock %} {% block body%} {% include 'navbar.html' %}
+{% endblock %} 
+
+{% block body%} 
+{% include 'navbar.html' %}
 <div id="reading-progress"><div id="reading-progress-fill"></div></div>
 <div
-  class="banner-container"
-  style="background-image: url('{{ post.banner_url }}')"
+  class="cover-container"
+  style="background-image: url('{{ post.cover_url }}')"
 ></div>
 <!-- post starts -->
 <div class="container">
@@ -40,13 +48,11 @@ block meta_tags %}
     <div class="col-12 col-md-7 mx-auto">
       <h1 class="text-center fw-bold">{{ post.title }}</h1>
       <!-- info row from desktop -->
-      <div
-        class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-4"
-      >
+      <div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-4">
         <a href="/@{{ post.author }}/about">
           {% if user.profile_img_url|length == 0 %}
           <img
-            src="/static/img/default-profile.png"
+            src="/static/_img/default-profile.png"
             alt="profile-img"
             class="profile-xl me-2"
           />
@@ -58,19 +64,17 @@ block meta_tags %}
           />
           {% endif %}
         </a>
-        <a href="/@{{ post.author }}/about" class="author-link mx-2"
-          ><h4>{{ post.author }}</h4></a
-        >
+        <a href="/@{{ post.author }}/about" class="author-link mx-2" >
+          <h4>{{ post.author }}</h4>
+        </a>
         <div class="date-text"><h4>· {{ post.readtime }}</h4></div>
       </div>
       <!-- info row from mobile -->
-      <div
-        class="d-flex d-lg-none align-items-center justify-content-center my-2"
-      >
+      <div class="d-flex d-lg-none align-items-center justify-content-center my-2">
         <a href="/@{{ post.author }}/about">
           {% if user.profile_img_url|length == 0 %}
           <img
-            src="/static/img/default-profile.png"
+            src="/static/_img/default-profile.png"
             alt="profile-img"
             class="profile-sm me-1"
           />
@@ -82,16 +86,13 @@ block meta_tags %}
           />
           {% endif %}
         </a>
-        <a href="/@{{ post.author }}/about" class="author-link mx-1 mt-2"
-          ><h6>{{ post.author }}</h6></a
-        >
+        <a href="/@{{ post.author }}/about" class="author-link mx-1 mt-2">
+          <h6>{{ post.author }}</h6>
+        </a>
         <div class="date-text mt-2"><h6>· {{ post.readtime }}</h6></div>
       </div>
       <hr />
-      <div
-        style="font-family: &quot;Noto Sans TC&quot;, sans; line-height: 1.6rem"
-        class="mb-3 px-2"
-      >
+      <div class="mb-3 px-2">
         <i class="date-text">- Last updated: {{ post.last_updated }}</i>
         {{ post.content | safe }}
       </div>
@@ -100,11 +101,11 @@ block meta_tags %}
         style="color: rgb(100, 100, 100); font-size: large"
       >
         <span><i class="fa-solid fa-tags"></i></span>
-        {% for tag in post.tags %} {% set tag_link = '/@'~ post.author ~
-        '/tags?tag=' ~ tag %}
-        <a href="{{ tag_link }}"
-          ><span class="badge badge-custom ms-2">{{ tag }}</span></a
-        >
+        {% for tag in post.tags %} 
+        {% set tag_link = '/@'~ post.author ~ '/tags?tag=' ~ tag %}
+        <a href="{{ tag_link }}">
+          <span class="badge badge-custom ms-2">{{ tag }}</span>
+        </a>
         {% endfor %}
       </div>
       <hr class="mb-4" />
@@ -118,9 +119,8 @@ block meta_tags %}
         {% else %}
         <div class="row">
           <div class="col-12 col-md-6 mb-3">
-            <label for="comment-name" class="form-label"
-              >Name <span style="color: red">*</span></label
-            >
+            <label for="comment-name" class="form-label">
+              Name <span style="color: red">*</span></label>
             <input
               type="text"
               class="form-control"
@@ -141,9 +141,9 @@ block meta_tags %}
         </div>
         {% endif %}
         <div class="mb-3">
-          <label for="comment-text" class="form-label"
-            >Comment <span style="color: red">*</span></label
-          >
+          <label for="comment-text" class="form-label">
+            Comment <span style="color: red">*</span>
+          </label>
           <textarea
             class="form-control"
             id="comment-text"
@@ -164,7 +164,6 @@ block meta_tags %}
           </button>
         </div>
       </form>
-
       <hr class="mb-4" />
       <h3 class="mb-3">Comments</h3>
       {% if comments|length == 0 %}
@@ -174,23 +173,24 @@ block meta_tags %}
         <h5 class="text-start my-4 fw-bold" style="color: rgb(100, 100, 100)">
           {{ comments|length }} comments
         </h5>
-        {% for comment in comments %} {% if comment['profile_link']| length != 0
-        %}
+        {% for comment in comments %} {% if comment['profile_link']| length != 0 %}
         <!-- registered user -->
         <div class="mb-4 d-flex flex-row">
-          <a href="{{ comment['profile_link'] }}"
-            ><img
+          <a href="{{ comment['profile_link'] }}">
+            <img
               src="{{ comment['profile_pic'] }}"
               alt="profile-pic"
               class="profile-lg ajax-profile-pic"
-          /></a>
+            />
+          </a>
           <div class="ms-3 mt-1">
             <div>
-              <a href="{{ comment['profile_link'] }}" style="color: black"
-                ><span class="fw-bold">{{ comment['name'] }}</span></a
-              ><span style="color: rgb(100, 100, 100)">
-                on {{ comment['created_at'] }}</span
-              >
+              <a href="{{ comment['profile_link'] }}" style="color: black">
+                <span class="fw-bold">{{ comment['name'] }}</span>
+              </a>
+              <span style="color: rgb(100, 100, 100)">
+                on {{ comment['created_at'] }}
+              </span>
             </div>
             <div class="mt-2">{{ comment['comment'] }}</div>
           </div>
@@ -220,30 +220,12 @@ block meta_tags %}
   </div>
 </div>
 
-{% include 'footer.html' %} {% endblock %} {% block script %}
+{% include 'footer.html' %} 
+{% endblock %} 
+
+{% block script %}
 <script>
-  function validateForm() {
-    // Perform input validation for Step 1
-    // var email = document.getElementById('email').value;
-    // var password = document.getElementById('password').value;
-
-    // // both fields not empty
-    // if (email.trim() === '' || password.trim() === '') {
-    // 	alert('Enter email and password to continue.');
-    // 	return false;
-    // }
-
-    // var emailRegex = /^\S+@\S+\.\S+$/;
-    // if (!emailRegex.test(email)) {
-    // 	alert('Enter a valid email address.');
-    // 	return false;
-    // }
-
-    // var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-    // if (!passwordRegex.test(password)) {
-    // 	alert('Password must be 8 characters long and contain both uppercase and lowercase letters.');
-    // 	return false;
-    // }
+  function validateForm() {   
 
     return true;
   }

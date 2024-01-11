@@ -11,10 +11,10 @@ from blogyourway.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
 from blogyourway.services.cache import cache
 from blogyourway.services.log import my_logger, return_client_ip
 from blogyourway.services.mongo import my_database
-from blogyourway.services.redis import my_redis
+from blogyourway.services.redis import redis
 from blogyourway.services.socketio import socketio
 from blogyourway.utils.users import User
-from blogyourway.views import backstage_bp, blog_bp
+from .views import backstage_bp, blog_bp
 
 if ENV == "develop":
     cache_config = {"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300}
@@ -52,14 +52,14 @@ def create_app() -> Flask:
         toolbar = DebugToolbarExtension()
         toolbar.init_app(app)
         app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
-        my_logger.debug("Debugtoolbar configured.")
+        my_logger.debug("Debugtoolbar initialized.")
 
     ## login
     login_manager = LoginManager()
     login_manager.login_view = "blog.login_get"
     login_manager.login_message = "Please login to proceed."
     login_manager.init_app(app)
-    my_logger.debug("Login manager configured.")
+    my_logger.debug("Login manager initialized.")
 
     @login_manager.user_loader
     def user_loader(username: str) -> User:
@@ -94,32 +94,32 @@ def create_app() -> Flask:
 
     # cache
     cache.init_app(app, config=cache_config)
-    my_logger.debug("Flask-caching configured.")
+    my_logger.debug("Flask-caching initialized.")
 
     # socketio
     socketio.init_app(app, manage_session=False)
-    my_logger.debug("Flask-socketio configured.")
+    my_logger.debug("Flask-socketio initialized.")
 
     # session
     session = Session()
     app.config["SESSION_TYPE"] = "redis"
     app.config["SESSION_PERMANENT"] = False
     app.config["SESSION_USE_SIGNER"] = True
-    app.config["SESSION_REDIS"] = my_redis
+    app.config["SESSION_REDIS"] = redis
     session.init_app(app)
-    my_logger.debug("Flask-session configured.")
+    my_logger.debug("Flask-session initialized.")
 
     # check connection
     try:
         my_database.client.server_info()
-        my_logger.debug("MongoDB is connected.")
+        my_logger.debug("MongoDB connected.")
     except ServerSelectionTimeoutError as error:
         my_logger.error(error)
         exit("MongoDB is NOT connected. App initializaion failed.")
 
     try:
-        my_redis.ping()
-        my_logger.debug("Redis is connected.")
+        redis.ping()
+        my_logger.debug("Redis connected.")
     except Exception as error:
         my_logger.error(error)
         exit("Redis is NOT connected. App initializaion failed.")

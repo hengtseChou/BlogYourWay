@@ -1,12 +1,13 @@
-{% extends 'base.html' %} {% block title %}About · {{ user['blogname'] }}{%
-endblock %} {% block meta_tags %}
-<meta name="description" content="Some information about myself..." />
-<meta
-  property="og:image"
-  content="https://little-blog.up.railway.app/{{ user['username'] }}/get-profile-pic"
-/>
-{% endblock %} {% block body%} {% include 'navbar.html' %} {# css for navbar is
-in styles.css #} {% include 'banner.html' %}
+{% extends 'base.html' %} 
+
+{% block title %}About · {{ user['blogname'] }}{% endblock %} 
+
+{% block meta_tags %}
+{% endblock %}
+
+{% block body%} 
+{% include 'navbar.html' %}
+{% include 'cover.html' %}
 
 <div class="container-fluid" style="min-height: calc(100vh - 330px)">
   <div class="text-center mt-5"><h1>About Me</h1></div>

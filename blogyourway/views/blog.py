@@ -19,7 +19,6 @@ from blogyourway.config import ENV
 from blogyourway.services.log import my_logger, return_client_ip
 from blogyourway.services.mongo import my_database
 from blogyourway.utils.comments import comment_utils, create_comment
-from blogyourway.utils.metrics import admin_metrics, lifetime_metrics, timely_metrics
 from blogyourway.utils.posts import (
     all_tags,
     html_to_about,
@@ -41,7 +40,6 @@ def landing_page():
     ###################################################################
 
     my_logger.page_viewed(request=request)
-    admin_metrics.page_viewed(request, page="landing_page")
 
     ###################################################################
 
@@ -202,9 +200,7 @@ def home(username):
     ###################################################################
 
     my_logger.page_viewed(request=request)
-    lifetime_metrics.page_viewed(request=request)
-    timely_metrics.page_viewed(request=request)
-    timely_metrics.index_page_viewed(request=request)
+
 
     ###################################################################
 
@@ -260,9 +256,7 @@ def tag(username):
     ###################################################################
 
     my_logger.page_viewed(request=request)
-    lifetime_metrics.page_viewed(request=request)
-    timely_metrics.page_viewed(request=request)
-    timely_metrics.index_page_viewed(request=request)
+
 
     ###################################################################
 
@@ -329,10 +323,7 @@ def post(username, post_uid):
     ###################################################################
 
     my_logger.page_viewed(request=request)
-    lifetime_metrics.page_viewed(request=request)
-    lifetime_metrics.post_viewed(request=request)
-    timely_metrics.page_viewed(request=request)
-    timely_metrics.post_viewed(request=request)
+
 
     ###################################################################
 
@@ -353,8 +344,7 @@ def readcount_increment():
 
     ###################################################################
 
-    lifetime_metrics.post_read(request=request)
-    timely_metrics.post_read(request=request)
+
 
     ###################################################################
 
@@ -397,10 +387,6 @@ def about(username):
     ###################################################################
 
     my_logger.page_viewed(request=request)
-    lifetime_metrics.page_viewed(request=request)
-    lifetime_metrics.index_page_viewed(request=request)
-    timely_metrics.page_viewed(request=request)
-    timely_metrics.index_page_viewed(request=request)
     my_database.user_about.make_increments(
         filter={"username": username},
         increments={"about_views": 1},
@@ -458,10 +444,7 @@ def blog_page(username):
     ###################################################################
 
     my_logger.page_viewed(request=request)
-    lifetime_metrics.page_viewed(request=request)
-    lifetime_metrics.index_page_viewed(request=request)
-    timely_metrics.page_viewed(request=request)
-    timely_metrics.index_page_viewed(request=request)
+
 
     ###################################################################
 
@@ -497,7 +480,6 @@ def social_link_endpoint(username):
 
     client_ip = return_client_ip(request, ENV)
     my_logger.debug(f"{client_ip} - redirect to social link {target_url}")
-    timely_metrics.social_link_fired(request)
 
     ###################################################################
 

@@ -1,12 +1,24 @@
-{% extends 'panel.html' %} {% block head %}
+{% extends 'panel.html' %}
+{% block head %}
 <style>
   .form-check-input:checked {
     background-color: #333 !important;
     border-color: #333;
   }
+  .panel-btn {
+		text-align: left;
+		background-color: #333;
+		color: white;
+		border: 0px;
+	}
+	.panel-btn:hover {
+		background-color: #6c757d;
+		color: white;
+	}
 </style>
 
-{% endblock %} {% block panel %}
+{% endblock %} 
+{% block panel %}
 <div style="height: 53px; margin-top: 20px">
   <h1 class="ms-2">Settings</h1>
 </div>
@@ -18,14 +30,14 @@
     <form method="post" autocomplete="off" id="general_form">
       <div class="mb-4">
         <label for="title" class="form-label ms-2 label-text">
-          · Add/update blog banner image</label
+          · Add/update blog cover image</label
         >
         <input
           type="text"
           class="form-control border-underline"
-          id="banner_url"
-          name="banner_url"
-          value="{{ user.banner_url }}"
+          id="cover_url"
+          name="cover_url"
+          value="{{ user.cover_url }}"
           placeholder="Insert image url"
         />
       </div>
@@ -47,12 +59,7 @@
           class="form-check-input custom-control-input card-checkbox"
           id="enable_change_log"
           name="enable_change_log"
-          {%
-          if
-          user.change_log_enabled
-          %}checked{%
-          endif
-          %}
+          {% if user.change_log_enabled %}checked{% endif %}
         />
         <label
           for="enable_change_log"
@@ -64,19 +71,14 @@
         <input
           type="checkbox"
           class="form-check-input custom-control-input card-checkbox"
-          id="enable_portfolio"
-          name="enable_portfolio"
-          {%
-          if
-          user.portfolio_enabled
-          %}checked{%
-          endif
-          %}
+          id="enable_gallery"
+          name="enable_gallery"
+          {% if user.gallery_enabled %}checked{% endif%}
         />
         <label
-          for="enable_portfolio"
+          for="enable_gallery"
           class="form-check-label ms-2 custom-control-label"
-          >Enable portfolio for your blog</label
+          >Enable gallery for your blog</label
         >
       </div>
       <div class="text-end mb-5">

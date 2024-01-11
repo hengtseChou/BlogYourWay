@@ -22,10 +22,10 @@
         <li class="nav-item">
           <a class="nav-link" href="/@{{ user.username}}/blog">Blog</a>
         </li>
-        {% if user.portfolio_enabled %}
+        {% if user.gallery_enabled %}
         <li class="nav-item">
-          <a class="nav-link" href="/@{{ user.username}}/portfolio"
-            >Portfolio</a
+          <a class="nav-link" href="/@{{ user.username}}/gallery"
+            >Gallery</a
           >
         </li>
         {% endif %} {% if user.change_log_enabled %}

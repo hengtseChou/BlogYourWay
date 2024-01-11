@@ -1,4 +1,5 @@
-{% extends 'panel.html' %} {% block panel %}
+{% extends 'panel.html' %} 
+{% block panel %}
 <!-- desktop view -->
 <div class="d-none d-md-block">
   <div class="d-flex align-items-center" style="height: 53px; margin-top: 20px">
@@ -275,14 +276,14 @@
             />
           </div>
           <div class="mb-4">
-            <label for="banner" class="form-label ms-2 label-text">
-              · Banner image</label
+            <label for="cover" class="form-label ms-2 label-text">
+              · Cover image</label
             >
             <input
               type="text"
               class="form-control border-underline"
-              id="banner"
-              name="banner_url"
+              id="cover"
+              name="cover_url"
               placeholder="Insert image url"
             />
           </div>
@@ -384,9 +385,9 @@
       return false;
     }
 
-    var banner = document.getElementById("banner").value;
-    if (banner.trim() === "") {
-      alert("You must add a banner image for the post.");
+    var cover = document.getElementById("cover").value;
+    if (cover.trim() === "") {
+      alert("You must add a cover image for the post.");
       return false;
     }
 

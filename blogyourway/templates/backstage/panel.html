@@ -2,13 +2,15 @@
 
 {% block head %}
 <style>
-	html,
-	body {
-		height: 100%;
-		margin: 0;
+	.panel-btn {
+		text-align: left;
+		background-color: #333;
+		color: white;
+		border: 0px;
 	}
-	.row {
-		flex-grow: 1;
+	.panel-btn:hover {
+		background-color: #6c757d;
+		color: white;
 	}
 
 	/* sidebar, main-panel: in styles.css */
@@ -25,16 +27,16 @@
 		<div class="d-none d-md-block col">
 			<div class="sidebar">
 				<div class="d-flex align-items-center" style="height: 50px;">
-					<img src="/static/img/logo.png" alt="logo" width="28" height="28">
-					<h5 class="ms-3 mt-2"><a href="/backstage/overview" style="text-decoration: none; color: white;">Little Blog</a></h5>
+					<img src="/static/_img/logo.png" alt="logo" width="36" height="36">
+					<h5 class="ms-3 mt-2"><a href="/backstage/overview" style="text-decoration: none; color: white;">BlogYourWay</a></h5>
 				</div>				
 				<hr>
 				<a class="btn w-100 px-2" href="/backstage/posts">
 					<span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts
 				</a>
-				{% if user.portfolio_enabled %}
+				{% if user.gallery_enabled %}
 				<a class="btn w-100 px-2">
-					<span class="ms-2 me-3"><i class="fa-solid fa-masks-theater"></i></span>Portfolio
+					<span class="ms-2 me-3"><i class="fa-solid fa-palette"></i></span>Gallery
 				</a>
 				{% endif %}
 				{% if user.change_log_enabled %}
@@ -49,7 +51,7 @@
 					<span class="ms-2 me-3"><i class="fa-solid fa-link"></i></span>Social Links
 				</a>
 				<a class="btn w-100 px-2" href="/backstage/theme">
-					<span class="ms-2 me-3"><i class="fa-solid fa-palette"></i></span>Blog Theme
+					<span class="ms-2 me-3"><i class="fa-solid fa-paint-roller"></i></span>Blog Theme
 				</a>
 				<a class="btn w-100 px-2" href="/backstage/archive">
 					<span class="ms-2 me-3"><i class="fa-solid fa-box-archive"></i></i></span>Archive
@@ -66,8 +68,8 @@
 		<div class="d-block d-md-none container-fluid" style="padding: 0; ">
 			<nav class="navbar navbar-expand-md" style="background-color: #333; ">
 				<div class="d-flex align-items-center ms-3">
-					<img src="/static/img/logo.png" alt="logo" width="28" height="28">
-					<h5 class="ms-3 mt-2"><a href="/backstage/overview" style="text-decoration: none; color: white;">Little Blog</a></h5>
+					<img src="/static/_img/logo.png" alt="logo" width="28" height="28">
+					<h5 class="ms-3 mt-2"><a href="/backstage/overview" style="text-decoration: none; color: white;">BlogYourWay	</a></h5>
 				</div>
 				<button class="btn me-2" data-bs-toggle="offcanvas" data-bs-target="#mobile-nav" style="border: 1px white; color: white;">
 					<span><i class="fa-solid fa-bars"></i></span>
@@ -81,13 +83,13 @@
 						<a class="btn w-100 px-2" href="/backstage/posts" id="mobile-nav-posts">
 							<span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts
 						</a>
-						{% if user.portfolio_enabled %}
-						<a class="btn w-100 px-2"id="mobile-nav-portfolio">
-							<span class="ms-2 me-3"><i class="fa-solid fa-masks-theater"></i></span>Portfolio
+						{% if user.gallery_enabled %}
+						<a class="btn w-100 px-2"id="mobile-nav-gallery">
+							<span class="ms-2 me-3"><i class="fa-solid fa-palette"></i></span>Gallery
 						</a>
 						{% endif %}
 						{% if user.change_log_enabled %}
-						<a class="btn w-100 px-2"id="mobile-nav-portfolio">
+						<a class="btn w-100 px-2"id="mobile-nav-changelog">
 							<span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Change Log
 						</a>
 						{% endif %}
@@ -98,7 +100,7 @@
 							<span class="ms-2 me-3"><i class="fa-solid fa-link"></i></span>Social Links
 						</a>
 						<a class="btn w-100 px-2" href="/backstage/theme" id="mobile-nav-theme">
-							<span class="ms-2 me-3"><i class="fa-solid fa-palette"></i></span>Blog Theme
+							<span class="ms-2 me-3"><i class="fa-solid fa-paint-roller"></i></span>Blog Theme
 						</a>
 						<a class="btn w-100 px-2" href="/backstage/archive" id="mobile-nav-archive">
 							<span class="ms-2 me-3"><i class="fa-solid fa-box-archive"></i></i></span>Archive

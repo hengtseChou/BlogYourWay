@@ -70,7 +70,7 @@ class NewUserSetup:
             "short_bio": "",
             "social_links": [],
             "change_log_enabled": False,
-            "portfolio_enabled": True,
+            "gallery_enabled": True,
             "created_at": get_today(env=ENV),
         }
         return new_user_info
