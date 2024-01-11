@@ -1,251 +1,98 @@
-{% extends 'base.html' %} {% block title %} Little Blog · Your All-in-One
-Personal Website and Blogging Platform {% endblock %} {% block meta_tags %}
-<meta
-  name="description"
-  content="Little blog is the best place to showcase your creative work and share your thoughts with the world, along with your style and in-house data metrics. "
-/>
-<meta property="og:title" content="Little Blog" />
-<meta
-  property="og:image"
-  content="https://little-blog.up.railway.app/static/img/landing-banner.jpg"
-/>
-<meta
-  property="og:description"
-  content="The best place to showcase your creative work and share your thoughts in styles."
-/>
-{% endblock %} {% block head %}
+{% extends 'base.html' %} 
+{% block title %} BlogYourWay · Share As You Want {% endblock %} 
+{% block meta_tags %} 
+{% endblock %} 
+{% block head %}
 <style>
-  /* Custom styles for the dark-themed landing page */
-  body {
-    background-color: #222;
-    color: #fff;
-  }
-
-  .navbar {
-    position: absolute; /* Set the navbar to absolute positioning */
+  img {
     width: 100%;
-    padding-top: 20px;
-    z-index: 2; /* Set a higher z-index to stack it above the jumbotron */
   }
-
-  .jumbotron {
-    background-image: url("/static/img/landing-banner.jpg");
-    background-size: cover;
-    background-position: center;
-    width: 100%;
-    height: 70vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    position: relative; /* Add this to set the jumbotron as a relative container for absolute positioning */
-    z-index: 1; /* Set a lower z-index for the jumbotron */
-  }
-
-  .jumbotron h1,
-  .jumbotron p {
-    color: #fff;
-  }
-
-  .feature-card {
-    background: #444;
-    color: #fff;
-    border: none;
-    border-radius: 0.5rem;
-  }
-
-  .footer {
-    background-color: #222;
-    color: #fff;
-  }
-
-  .btn-getting-start {
-    color: #fff;
-    font-weight: bold;
-    background-color: #f7966b;
-  }
-
-  .btn-getting-start:hover {
-    color: #fff;
-    font-weight: bold;
-    background-color: #f7966b;
-  }
+  .get-started-btn {
+    background-color: #e4622f;
+    color: #ffffff;
+    padding: 10px 30px;
+}
 </style>
 {% endblock %} {% block body %}
 
-<div class="nav-container">
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <a class="navbar-brand" href="/">
-        <img
-          src="/static/img/logo.png"
-          width="30"
-          height="30"
-          alt=""
-          class="mx-1"
-        />
-        Little Blog
-      </a>
-      <!-- Add your navigation links here if needed -->
+<div class="container pt-4">
+  <div class="row align-items-center">
+    <div class="offset-1 col-auto">
+      <img src="/static/_img/logo.png" alt="Logo" width="36" height="36">
     </div>
-  </nav>
+    <div class="col">
+      <a href="/" style="text-decoration:none; color: black;"><h3 class="fw-bold pt-2">BlogYourWay</h3></a>
+    </div>
+  </div>
 </div>
 
-<!-- Hero Section -->
-<header class="jumbotron">
+<div class="container">
+  <div class="row">
+    <div class="offset-1 col-11 col-md-5">
+      <h1
+        class="display-4 fw-bold"
+        style="padding-top: 30%; line-height: 105%"
+      >
+        Share thoughts <br />and works at once
+      </h1>
+      <p class="py-4" style="line-height: 150%">
+        BlogYourWay is a perfect solution for hosting your content, including
+        blogging and work showcases. All come with markdown-support.
+      </p>
+      <a class="btn get-started-btn fw-bold " href="/register">Get Started</a>
+    </div>
+    <div class="col-md-6 text-center">
+      <img src="/static/_img/l2.jpg" alt="" />
+    </div>
+  </div>
+</div>
+
+
+<div class="py-5" style="background-color: #f9f9f9">
   <div class="container">
-    <h1 class="display-4">Welcome to Little Blog</h1>
-    <p class="lead">Your All-in-One Personal Website and Blogging Platform</p>
-    <a href="/register" class="btn btn-lg btn-getting-start mt-2"
-      >Get Started</a
-    >
+    <div class="text-center pb-3">
+      <h3>Features</h3>
+    </div>
+    <div class="row">
+      <div class="col-md-4 pb-3">
+        <div class="card rounded-0 border-0 shadow-sm" style="height: 100%;">
+          <div class="card-body">
+            <h1 class="ps-3 py-3" style="color: #e4622f;"><i class="fa-solid fa-pen-to-square"></i></h1>
+            <h5 class="card-title py-3">Simple yet intuitive blogging</h5>
+            <p class="card-text" style="color: #656979;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut.</p>
+          </div>
+        </div>
+    
+      </div>
+      <div class="col-md-4 pb-3">
+        <div class="card rounded-0 border-0 shadow-sm" style="height: 100%;">
+          <div class="card-body">
+            <h1 class="ps-3 py-3" style="color: #e4622f;"><i class="fa-solid fa-palette"></i></h1>
+            <h5 class="card-title py-3">Share your work via BlogYourWay</h5>
+            <p class="card-text" style="color: #656979;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut.</p>
+          </div>
+        </div>
+    
+      </div>
+      <div class="col-md-4 pb-3">
+        <div class="card rounded-0 border-0 shadow-sm" style="height: 100%;">
+          <div class="card-body">
+            <h1 class="ps-3 py-3" style="color: #e4622f;"><i class="fa-solid fa-font-awesome"></i></h1>
+            <h5 class="card-title py-3">Create your personal changelog</h5>
+            <p class="card-text" style="color: #656979;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut.</p>
+          </div>
+        </div>
+    
+      </div>
+    </div>
   </div>
-</header>
+</div>
 
-<!-- Features Section -->
-<section class="py-5">
-  <hr style="width: 30%" class="mx-auto" />
-  <!-- wider view -->
-  <div class="d-none d-lg-block container">
-    <div class="row pt-5">
-      <div class="col-4 text-start offset-1">
-        <h2 class="mb-5">A Perfect Blend of Portfolio and Blogging</h2>
-        <p class="lh-lg">
-          Gone are the days of managing multiple websites to showcase your
-          creative work and share your thoughts with the world. Little Blog
-          brings together the best of both worlds, providing you with a seamless
-          and intuitive platform to exhibit your professional portfolio
-          alongside your captivating blog posts.
-        </p>
-      </div>
-      <div class="col-md-4 offset-md-1">
-        <img
-          src="/static/img/portfolio.jpg"
-          alt=""
-          class="img-fluid shadow-sm rounded-2 w-100"
-        />
-      </div>
-    </div>
-    <div class="row pt-5">
-      <div class="col-4 offset-1">
-        <img
-          src="/static/img/writing.jpg"
-          alt=""
-          class="img-fluid shadow-sm rounded-2 w-100"
-        />
-      </div>
-      <div class="col-4 text-start offset-1">
-        <h2 class="mb-5">Unleash Your Creativity with Markdown Editor</h2>
-        <p class="lh-lg">
-          Expressing yourself has never been easier. Little Blog's built-in
-          Markdown editor empowers you to create captivating blog posts in a
-          breeze. Effortlessly format your text, add images, embed videos, and
-          unleash your creativity without worrying about the technicalities.
-        </p>
-      </div>
-    </div>
-    <div class="row pt-5">
-      <div class="col-4 text-start offset-1">
-        <h2 class="mb-5">Tailor Your Website to Reflect Your Personality</h2>
-        <p class="lh-lg">
-          Stand out from the crowd with a personalized touch. Little Blog offers
-          a plethora of customizable options, allowing you to choose from a wide
-          range of themes, design a unique blog banner, and easily integrate
-          your social media links to create a truly bespoke experience.
-        </p>
-      </div>
-      <div class="col-md-4 offset-md-1">
-        <img
-          src="/static/img/style.jpg"
-          alt=""
-          class="img-fluid shadow-sm rounded-2 w-100"
-        />
-      </div>
-    </div>
-    <div class="row pt-5">
-      <div class="col-4 offset-1">
-        <img
-          src="/static/img/chart.jpg"
-          alt=""
-          class="img-fluid shadow-sm rounded-2 w-100"
-        />
-      </div>
-      <div class="col-4 text-start offset-1">
-        <h2 class="mb-5">
-          Keep Track of Your Success with Built-in Performance Monitoring
-        </h2>
-        <p class="lh-lg">
-          Understanding your audience and content performance is crucial in the
-          digital landscape. With Little Blog's integrated backstage, you can
-          effortlessly monitor your website's traffic, track visitor engagement,
-          and gain valuable insights to fine-tune your content strategy for
-          maximum impact.
-        </p>
-      </div>
-    </div>
-  </div>
-  <!-- smaller view -->
-  <div class="d-block d-lg-none container">
-    <img
-      src="/static/img/portfolio.jpg"
-      alt=""
-      class="img-fluid shadow-sm rounded-2 mt-3 w-100"
-    />
-    <h2 class="my-4">A Perfect Blend of Portfolio and Blogging</h2>
-    <p class="lh-lg">
-      Gone are the days of managing multiple websites to showcase your creative
-      work and share your thoughts with the world. Little Blog brings together
-      the best of both worlds, providing you with a seamless and intuitive
-      platform to exhibit your professional portfolio alongside your captivating
-      blog posts.
-    </p>
-    <img
-      src="/static/img/writing.jpg"
-      alt=""
-      class="img-fluid shadow-sm rounded-2 mt-3 w-100"
-    />
-    <h2 class="my-4">Unleash Your Creativity with Markdown Editor</h2>
-    <p class="lh-lg">
-      Expressing yourself has never been easier. Little Blog's built-in Markdown
-      editor empowers you to create captivating blog posts in a breeze.
-      Effortlessly format your text, add images, embed videos, and unleash your
-      creativity without worrying about the technicalities.
-    </p>
-    <img
-      src="/static/img/style.jpg"
-      alt=""
-      class="img-fluid shadow-sm rounded-2 mt-3 w-100"
-    />
-    <h2 class="my-4">Tailor Your Website to Reflect Your Personality</h2>
-    <p class="lh-lg">
-      Stand out from the crowd with a personalized touch. Little Blog offers a
-      plethora of customizable options, allowing you to choose from a wide range
-      of themes, design a unique blog banner, and easily integrate your social
-      media links to create a truly bespoke experience.
-    </p>
-    <img
-      src="/static/img/chart.jpg"
-      alt=""
-      class="img-fluid shadow-sm rounded-2 mt-3 w-100"
-    />
-    <h2 class="my-4">
-      Keep Track of Your Success with Built-in Performance Monitoring
-    </h2>
-    <p class="lh-lg">
-      Understanding your audience and content performance is crucial in the
-      digital landscape. With Little Blog's integrated backstage, you can
-      effortlessly monitor your website's traffic, track visitor engagement, and
-      gain valuable insights to fine-tune your content strategy for maximum
-      impact.
-    </p>
-  </div>
 
-  <hr style="width: 30%" class="mx-auto mt-5" />
-</section>
-
-<footer class="footer py-3">
-  <div class="container text-center">
-    <p>&copy; 2023 Little Blog. All rights reserved.</p>
-  </div>
+<footer class="text-center">
+  <p>
+    &copy; 2024 BlogYourWay.xyz. All rights reserved.
+  </p>
 </footer>
+
 {% endblock %}
