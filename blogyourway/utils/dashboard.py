@@ -17,7 +17,9 @@ class CollectMetricData:
         documents = my_database.user_views.find({"username": self._username})
         total_pv = 0
         for document in documents:
-            total_pv += document["count"]
+            document_count = document.get("count")
+            if document_count is not None:
+                total_pv += document_count
         total_pv = format(total_pv, ",")
         return total_pv
 
