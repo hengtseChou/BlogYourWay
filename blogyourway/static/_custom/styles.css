@@ -1,11 +1,43 @@
+/* base */
+body {
+	font-family: "Ubuntu", "Noto Sans TC", sans-serif;
+}
+
+.toast {
+	opacity: 1 !important;
+	border-radius: 10px;
+}
+
+.toast-header {
+	border-radius: 9px 9px 0px 0px;
+	font-size: 16px;
+}
+
+.toast-body {
+	font-size: 16px;
+}
+
 .banner-container {
 	width: 100%;
 	height: calc(100vw / 3);
-	min-height: 300px;
+	min-height: 250px;
 	background-size: cover; /* This will maintain the aspect ratio and crop the image */
   	background-position: center; /* This will center the image within the container */
 }
-  
+
+/* footer */
+
+footer {
+	background-color: #090909;
+	color: lightgray;
+	height: 100px;
+	padding: 60px 0;
+	
+}
+
+footer p {
+	margin: 0;
+}
 
 /* navbar.html */
 
