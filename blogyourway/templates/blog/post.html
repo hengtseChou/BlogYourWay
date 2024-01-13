@@ -19,8 +19,8 @@
     position: fixed;
     width: 100%;
     height: 5px;
-    z-index: 9999;
-    top: 80px;
+    z-index: 1000;
+    top: 68px;
     left: 0;
   }
 
@@ -32,6 +32,18 @@
     transition: width 100ms ease;
     background-color: #f7966b;
   }
+
+  .panel-btn {
+    text-align: left;
+    background-color: #333;
+    color: white;
+    border: 0px;
+  }
+  .panel-btn:hover {
+    background-color: #6c757d;
+    color: white;
+  }
+
 </style>
 {% endblock %} 
 
@@ -45,7 +57,7 @@
 <!-- post starts -->
 <div class="container">
   <div class="row mt-4 mt-md-5">
-    <div class="col-12 col-md-7 mx-auto">
+    <div class="col-lg-8 col-md-10 col-12 mx-auto px-4">
       <h1 class="text-center fw-bold">{{ post.title }}</h1>
       <!-- info row from desktop -->
       <div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-4">
