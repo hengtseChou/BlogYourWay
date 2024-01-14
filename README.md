@@ -1,4 +1,4 @@
-# Blogging Gallery
+# BlogYourWay
 
 This is a hobby project, for building a independent blogging engine to accommodate my preferences. Back-end is built with <ins><i>Flask</i></ins>, along with several extenstions; Front-end is mainly develop through <ins><i>Bootstrap 5</i></ins> and some useful javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor), which is adpoted as the content editor in this project.
 
@@ -26,29 +26,27 @@ Remember to add a `.env` file for enviroment variables (check `application/confi
 - [x] Good looking comment section (with google reCAPCHA).
 - [x] Good looking code block in posts (with highliht.js).
 - [x] Customized and click-through trackable social links. 
-- [x] Personalized blog banner and profile picture.
+- [x] Personalized blog cover and profile picture.
 - [x] Personalized user autobiography.
 - [x] Good looking website and backstage.
 - [x] RWD support.
-- [x] Track website traffic/post traffic and read ratios.
 - [x] Well defined event logging. 
 
 ### Now
 
-- [ ] Integrated user traffic dashboard.
-- [ ] Post traffic/read ratio dashboard for post control.
-- [ ] automatic logout due to inactive.
+- [ ] Gallery CRUD.
+- [ ] Personal changelog CRUD.
+- [ ] Table of Content for posts.
   
 ### Next 
 
-- [ ] Portfolio CRUD.
-- [ ] Personal changelog CRUD.
-- [ ] Table of Content for posts.
+- [ ] Integrated user traffic dashboard.
+- [ ] Post traffic/read ratio dashboard for post control.
+- [ ] automatic logout due to inactive.
 
 ### Later
 
 - [ ] Support tags for both posts and portfolios.
-- [ ] Enhance UI/UX on landing page.
 - [ ] Track time spent on pages with sockerio.
 - [ ] Modal box images in posts.
 - [ ] Serves images in the database.
