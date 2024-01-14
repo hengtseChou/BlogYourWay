@@ -6,7 +6,7 @@ from flask import Request
 from flask_login import current_user
 
 from blogyourway.config import ENV, RECAPTCHA_SECRET
-from blogyourway.services.mongo import MyDatabase, my_database
+from blogyourway.services.mongo import Database, mongodb
 from blogyourway.utils.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################
@@ -33,7 +33,7 @@ class NewCommentSetup:
     4. Upload via the database handler.
     """
 
-    def __init__(self, comment_uid_generator: UIDGenerator, db_handler: MyDatabase) -> None:
+    def __init__(self, comment_uid_generator: UIDGenerator, db_handler: Database) -> None:
         self._db_handler = db_handler
         self._comment_uid = comment_uid_generator.generate_comment_uid()
 
@@ -43,9 +43,7 @@ class NewCommentSetup:
     def _recaptcha_verified(self, request: Request):
         token = request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
-        resp = requests.post(
-            "https://www.google.com/recaptcha/api/siteverify", params=payload
-        )
+        resp = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
         resp = resp.json()
 
         if resp["success"]:
@@ -74,7 +72,7 @@ class NewCommentSetup:
 
         return new_comment
 
-    def _create_unauthenticated_comment(self, request: Request, post_uid: str) -> str:
+    def _create_anonymous_comment(self, request: Request, post_uid: str) -> str:
         new_comment = {
             "name": f'{request.form.get("name")} (Visitor)',
             "email": request.form.get("email"),
@@ -103,7 +101,7 @@ class NewCommentSetup:
                 request=request, commenter_name=current_user.username, post_uid=post_uid
             )
         else:
-            new_comment = self._create_unauthenticated_comment(request, post_uid)
+            new_comment = self._create_anonymous_comment(request, post_uid)
 
         self._db_handler.comment.insert_one(new_comment)
 
@@ -116,11 +114,9 @@ def create_comment(post_uid: str, request: Request):
         request (Request): the request with form sent.
     """
 
-    uid_generator = UIDGenerator(db_handler=my_database)
+    uid_generator = UIDGenerator(db_handler=mongodb)
 
-    comment_setup = NewCommentSetup(
-        comment_uid_generator=uid_generator, db_handler=my_database
-    )
+    comment_setup = NewCommentSetup(comment_uid_generator=uid_generator, db_handler=mongodb)
     comment_setup.create_comment(post_uid=post_uid, request=request)
 
 
@@ -132,7 +128,7 @@ def create_comment(post_uid: str, request: Request):
 
 
 class CommentUtils:
-    def __init__(self, db_handler: MyDatabase):
+    def __init__(self, db_handler: Database):
         self._db_handler = db_handler
 
     def find_comments_by_post_uid(self, post_uid: str):
@@ -144,4 +140,4 @@ class CommentUtils:
         return result
 
 
-comment_utils = CommentUtils(db_handler=my_database)
+comment_utils = CommentUtils(db_handler=mongodb)

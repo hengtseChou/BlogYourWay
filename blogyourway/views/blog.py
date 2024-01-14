@@ -16,8 +16,8 @@ from flask_login import current_user, login_user
 from markdown import Markdown
 
 from blogyourway.config import ENV
-from blogyourway.services.log import my_logger, return_client_ip
-from blogyourway.services.mongo import my_database
+from blogyourway.services.logging import logger, LoggerUtils
+from blogyourway.services.mongo import mongodb
 from blogyourway.utils.comments import comment_utils, create_comment
 from blogyourway.utils.posts import (
     all_tags,
@@ -39,7 +39,7 @@ def landing_page():
 
     ###################################################################
 
-    my_logger.page_viewed(request=request)
+    LoggerUtils.page_visited(logger, request)
 
     ###################################################################
 
@@ -60,8 +60,8 @@ def login_get():
 
     if current_user.is_authenticated:
         flash("You are already logged in.")
-        my_logger.debug(
-            f"{return_client_ip(request, ENV)} - Attempt to duplicate logging from user {current_user.username}."
+        logger.debug(
+            f"Attempt to duplicate logging from user {current_user.username}."
         )
         return redirect(url_for("backstage.overview"))
 
@@ -71,7 +71,7 @@ def login_get():
 
     ###################################################################
 
-    my_logger.page_viewed(request=request)
+    LoggerUtils.page_visited(logger, request)
 
     ###################################################################
 
@@ -91,22 +91,22 @@ def login_post():
     ###################################################################
 
     login_form = request.form.to_dict()
-    if not my_database.user_login.exists("email", login_form["email"]):
+    if not mongodb.user_login.exists("email", login_form["email"]):
         flash("Account not found. Please try again.", category="error")
-        my_logger.user.login_failed(
-            msg=f"email {login_form['email']} not found", request=request
+        LoggerUtils.login_failed(
+            logger=logger, request=request, msg=f"email {login_form['email']} not found"
         )
         return render_template("login.html")
 
     # check pw
-    user_creds = my_database.user_login.find_one({"email": login_form["email"]})
+    user_creds = mongodb.user_login.find_one({"email": login_form["email"]})
     encoded_input_pw = login_form["password"].encode("utf8")
     encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
-        my_logger.user.login_failed(
-            msg=f"invalid password with email {login_form['email']}", request=request
+        LoggerUtils.login_failed(
+            logger=logger, request=request, msg=f"invalid password with email {login_form['email']}"
         )
         return render_template("login.html")
 
@@ -118,7 +118,7 @@ def login_post():
 
     user = User(user_creds)
     login_user(user)
-    my_logger.user.login_succeeded(username=user_creds["username"], request=request)
+    LoggerUtils.login_succeeded(logger=logger, request=request)
     flash("Login Succeeded.", category="success")
 
     ###################################################################
@@ -138,7 +138,7 @@ def register_get():
 
     ###################################################################
 
-    my_logger.page_viewed(request=request)
+    LoggerUtils.page_visited(logger, request)
 
     ###################################################################
 
@@ -158,7 +158,7 @@ def register_post():
     ###################################################################
 
     username = create_user(request=request)
-    my_logger.user.registration_succeeded(username=username, request=request)
+    LoggerUtils.registration_succeeded(logger=logger, request=request)
     flash("Registration succeeded.", category="success")
 
     ###################################################################
@@ -178,8 +178,8 @@ def home(username):
 
     ###################################################################
 
-    if not my_database.user_info.exists("username", username):
-        my_logger.invalid_username(username=username, request=request)
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
         abort(404)
 
     ###################################################################
@@ -188,7 +188,7 @@ def home(username):
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": username})
+    user = mongodb.user_info.find_one({"username": username})
     featured_posts = post_utils.find_featured_posts_info(username)
     for post in featured_posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
@@ -199,8 +199,7 @@ def home(username):
 
     ###################################################################
 
-    my_logger.page_viewed(request=request)
-
+    LoggerUtils.page_visited(logger, request)
 
     ###################################################################
 
@@ -219,8 +218,8 @@ def tag(username):
 
     ###################################################################
 
-    if not my_database.user_info.exists("username", username):
-        my_logger.invalid_username(username=username, request=request)
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
         abort(404)
 
     # if no tag specified, show blog page
@@ -232,6 +231,7 @@ def tag(username):
     tag = unquote(tag_url_encoded)
     tags_found = all_tags.from_user(username)
     if tag not in tags_found.keys():
+        logger.debug(f"invalid tag {tag}")
         abort(404)
 
     ###################################################################
@@ -240,7 +240,7 @@ def tag(username):
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": username})
+    user = mongodb.user_info.find_one({"username": username})
     posts = post_utils.find_all_posts_info(username)
 
     posts_with_desired_tag = []
@@ -255,8 +255,7 @@ def tag(username):
 
     ###################################################################
 
-    my_logger.page_viewed(request=request)
-
+    LoggerUtils.page_visited(logger, request)
 
     ###################################################################
 
@@ -275,18 +274,16 @@ def post(username, post_uid):
 
     ###################################################################
 
-    if not my_database.user_info.exists("username", username):
-        my_logger.invalid_username(username=username, request=request)
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
         abort(404)
-    if not my_database.post_info.exists("post_uid", post_uid):
-        my_logger.invalid_post_uid(username=username, post_uid=post_uid, request=request)
+    if not mongodb.post_info.exists("post_uid", post_uid):
+        logger.debug(f"invalid post uid {post_uid}")
         abort(404)
 
-    author = my_database.post_info.find_one({"post_uid": post_uid})["author"]
+    author = mongodb.post_info.find_one({"post_uid": post_uid})["author"]
     if username != author:
-        my_logger.invalid_author_for_post(
-            username=username, post_uid=post_uid, request=request
-        )
+        logger.debug(f"User {username} does not own post {post_uid}.")
         abort(404)
 
     ###################################################################
@@ -295,7 +292,7 @@ def post(username, post_uid):
 
     ###################################################################
 
-    author_info = my_database.user_info.find_one({"username": username})
+    author_info = mongodb.user_info.find_one({"username": username})
     target_post = post_utils.get_full_post(post_uid)
 
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
@@ -322,8 +319,7 @@ def post(username, post_uid):
 
     ###################################################################
 
-    my_logger.page_viewed(request=request)
-
+    LoggerUtils.page_visited(logger, request)
 
     ###################################################################
 
@@ -363,8 +359,8 @@ def about(username):
 
     ###################################################################
 
-    if not my_database.user_info.exists("username", username):
-        my_logger.invalid_username(username=username, request=request)
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
         abort(404)
 
     ###################################################################
@@ -373,8 +369,8 @@ def about(username):
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": username})
-    user_about = my_database.user_about.find_one({"username": username})["about"]
+    user = mongodb.user_info.find_one({"username": username})
+    user_about = mongodb.user_about.find_one({"username": username})["about"]
 
     md = Markdown(extensions=["markdown_captions", "fenced_code"])
     about = md.convert(user_about)
@@ -386,8 +382,8 @@ def about(username):
 
     ###################################################################
 
-    my_logger.page_viewed(request=request)
-    my_database.user_about.make_increments(
+    LoggerUtils.page_visited(logger, request)
+    mongodb.user_about.make_increments(
         filter={"username": username},
         increments={"about_views": 1},
         # upsert=True
@@ -410,8 +406,8 @@ def blog_page(username):
 
     ###################################################################
 
-    if not my_database.user_info.exists("username", username):
-        my_logger.invalid_username(username=username, request=request)
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
         abort(404)
 
     ###################################################################
@@ -420,7 +416,7 @@ def blog_page(username):
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": username})
+    user = mongodb.user_info.find_one({"username": username})
     current_page = request.args.get("page", default=1, type=int)
     POSTS_EACH_PAGE = 10
 
@@ -443,8 +439,7 @@ def blog_page(username):
 
     ###################################################################
 
-    my_logger.page_viewed(request=request)
-
+    LoggerUtils.page_visited(logger, request)
 
     ###################################################################
 
@@ -465,7 +460,7 @@ def social_link_endpoint(username):
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": username})
+    user = mongodb.user_info.find_one({"username": username})
     social_links = user["social_links"]
     link_idx = request.args.get("idx", type=int)
     target_url = social_links[link_idx - 1]["url"]
@@ -478,8 +473,7 @@ def social_link_endpoint(username):
 
     ###################################################################
 
-    client_ip = return_client_ip(request, ENV)
-    my_logger.debug(f"{client_ip} - redirect to social link {target_url}")
+    logger.debug(f"redirect to social link {target_url}")
 
     ###################################################################
 
@@ -492,7 +486,7 @@ def social_link_endpoint(username):
 
 @blog.route("/@<username>/get-profile-pic", methods=["GET"])
 def profile_pic_endpoint(username):
-    user = my_database.user_info.find_one({"username": username})
+    user = mongodb.user_info.find_one({"username": username})
 
     if user["profile_img_url"]:
         profile_img_url = user["profile_img_url"]

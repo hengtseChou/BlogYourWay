@@ -3,8 +3,8 @@ from flask import Request, flash, render_template, request
 from flask_login import UserMixin
 
 from blogyourway.config import ENV
-from blogyourway.services.log import MyLogger, my_logger
-from blogyourway.services.mongo import MyDatabase, my_database
+from blogyourway.services.logging import Logger, logger, LoggerUtils
+from blogyourway.services.mongo import Database, mongodb
 from blogyourway.utils.common import FormValidator, get_today
 
 
@@ -27,32 +27,31 @@ class User(UserMixin):
 
 
 class NewUserSetup:
-    def __init__(self, request: Request, db_handler: MyDatabase, logger: MyLogger):
-        self._reg_form = request.form.to_dict()
+    def __init__(self, request: Request, db_handler: Database, logger: Logger):
+        self._regist_form = request.form.to_dict()
+        self._request = request
         self._db_handler = db_handler
         self._logger = logger
 
     def _form_validated(self, validator: FormValidator) -> bool:
-        if not validator.validate_email(self._reg_form["email"]):
+        if not validator.validate_email(self._regist_form["email"]):
             return False
-        if not validator.validate_password(self._reg_form["password"]):
+        if not validator.validate_password(self._regist_form["password"]):
             return False
-        if not validator.validate_username(self._reg_form["username"]):
+        if not validator.validate_username(self._regist_form["username"]):
             return False
-        if not validator.validate_blogname(self._reg_form["blogname"]):
+        if not validator.validate_blogname(self._regist_form["blogname"]):
             return False
         return True
 
     def _no_duplicates(self) -> bool:
         for field in ["email", "username", "blogname"]:
-            if self._db_handler.user_login.exists(field, self._reg_form[field]):
+            if self._db_handler.user_login.exists(field, self._regist_form[field]):
                 flash(
                     f"{field.capitalize()} is already used. Please try another one.",
                     category="error",
                 )
-                self._logger.user.registration_failed(
-                    msg=f"{field} {self._reg_form[field]} already used", request=request
-                )
+                LoggerUtils.registration_failed(logger=self._logger, request=self._request, msg=f"{field} {self._regist_form[field]} already used")
                 return True
         return False
 
@@ -65,7 +64,7 @@ class NewUserSetup:
             "username": username,
             "email": email,
             "blogname": blogname,
-            "banner_url": "",
+            "cover_url": "",
             "profile_img_url": "",
             "short_bio": "",
             "social_links": [],
@@ -107,26 +106,26 @@ class NewUserSetup:
         if self._no_duplicates():
             return render_template("register.html")
 
-        hashed_pw = self._hash_password(self._reg_form["password"])
+        hashed_pw = self._hash_password(self._regist_form["password"])
         new_user_login = self._create_user_login(
-            self._reg_form["username"], self._reg_form["email"], hashed_pw
+            self._regist_form["username"], self._regist_form["email"], hashed_pw
         )
         new_user_info = self._create_user_info(
-            self._reg_form["username"], self._reg_form["email"], self._reg_form["blogname"]
+            self._regist_form["username"], self._regist_form["email"], self._regist_form["blogname"]
         )
-        new_user_about = self._create_user_about(self._reg_form["username"])
-        new_user_views = self._create_user_views(self._reg_form["username"])
+        new_user_about = self._create_user_about(self._regist_form["username"])
+        new_user_views = self._create_user_views(self._regist_form["username"])
 
         self._db_handler.user_login.insert_one(new_user_login)
         self._db_handler.user_info.insert_one(new_user_info)
         self._db_handler.user_about.insert_one(new_user_about)
         self._db_handler.user_views.insert_one(new_user_views)
 
-        return self._reg_form["username"]
+        return self._regist_form["username"]
 
 
 def create_user(request: request) -> str:
-    user_registration = NewUserSetup(request, my_database, my_logger)
+    user_registration = NewUserSetup(request, mongodb, logger)
     return user_registration.create_user()
 
 
@@ -138,7 +137,7 @@ def create_user(request: request) -> str:
 
 
 class UserDeletionSetup:
-    def __init__(self, username: str, db_handler: MyDatabase, logger: MyLogger) -> None:
+    def __init__(self, username: str, db_handler: Database, logger: Logger) -> None:
         self._user_to_be_deleted = username
         self._db_handler = db_handler
         self._logger = logger
@@ -152,7 +151,6 @@ class UserDeletionSetup:
     def _remove_all_posts(self):
         self._db_handler.post_info.delete_many({"author": self._user_to_be_deleted})
         self._db_handler.post_content.delete_many({"author": self._user_to_be_deleted})
-        self._db_handler.post_view_sources.delete_many({"author": self._user_to_be_deleted})
         self._logger.debug(f"Deleted all posts written by user {self._user_to_be_deleted}.")
 
     def _remove_all_related_comments(self, post_uids: list):
@@ -163,7 +161,7 @@ class UserDeletionSetup:
         )
 
     def _remove_related_metrics(self):
-        self._db_handler.metrics_log.delete_many({"username": self._user_to_be_deleted})
+        pass
 
     def _remove_all_user_data(self):
         self._db_handler.user_login.delete_one({"username": self._user_to_be_deleted})
@@ -184,6 +182,6 @@ class UserDeletionSetup:
 
 def delete_user(username):
     user_deletion = UserDeletionSetup(
-        username=username, db_handler=my_database, logger=my_logger
+        username=username, db_handler=mongodb, logger=logger
     )
     user_deletion.start_deletion_process()

@@ -6,7 +6,7 @@ import re
 import string
 from datetime import datetime, timedelta
 
-from blogyourway.services.mongo import MyDatabase
+from blogyourway.services.mongo import Database
 
 ###################################################################
 
@@ -114,7 +114,7 @@ class FormValidator:
 
 
 class UIDGenerator:
-    def __init__(self, db_handler: MyDatabase) -> None:
+    def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
     def generate_comment_uid(self) -> str:

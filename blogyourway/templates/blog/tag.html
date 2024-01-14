@@ -1,6 +1,10 @@
-{% extends 'base.html' %} {% block title %}{{ tag }} · {{ user['blogname'] }}{%
-endblock %} {% block body%} {% include 'navbar.html' %} {% include 'banner.html'
-%}
+{% extends 'base.html' %} 
+{% block title %}
+{{ tag }} · {{ user['blogname'] }}
+{% endblock %} 
+{% block body%} 
+{% include 'navbar.html' %} 
+{% include 'cover.html' %}
 
 <div class="container-fluid">
   <div class="row">
@@ -19,7 +23,7 @@ endblock %} {% block body%} {% include 'navbar.html' %} {% include 'banner.html'
           <a href="about">
             {% if user.profile_img_url|length == 0 %}
             <img
-              src="/static/img/default-profile.png"
+              src="/static/_img/default-profile.png"
               alt="profile-img"
               class="profile-md me-2"
             />

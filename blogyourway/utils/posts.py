@@ -5,7 +5,7 @@ from flask import Request, abort
 from flask_login import current_user
 
 from blogyourway.config import ENV
-from blogyourway.services.mongo import MyDatabase, my_database
+from blogyourway.services.mongo import Database, mongodb
 from blogyourway.utils.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################
@@ -22,7 +22,7 @@ def process_tags(tag_string: str):
 
 
 class NewPostSetup:
-    def __init__(self, post_uid_generator: UIDGenerator, db_handler: MyDatabase) -> None:
+    def __init__(self, post_uid_generator: UIDGenerator, db_handler: Database) -> None:
         self._post_uid = post_uid_generator.generate_post_uid()
         self._db_handler = db_handler
 
@@ -68,22 +68,18 @@ class NewPostSetup:
             return "Unvalidated"
         # validated
         new_post_info = self._create_post_info(author_name=author_name, request=request)
-        new_post_content = self._create_post_content(
-            author_name=author_name, request=request
-        )
-        new_post_view_sources = self._create_post_view_sources(author_name)
+        new_post_content = self._create_post_content(author_name=author_name, request=request)
 
         self._db_handler.post_info.insert_one(new_post_info)
         self._db_handler.post_content.insert_one(new_post_content)
-        self._db_handler.post_view_sources.insert_one(new_post_view_sources)
 
         return self._post_uid
 
 
 def create_post(request):
-    uid_generator = UIDGenerator(db_handler=my_database)
+    uid_generator = UIDGenerator(db_handler=mongodb)
 
-    new_post_setup = NewPostSetup(post_uid_generator=uid_generator, db_handler=my_database)
+    new_post_setup = NewPostSetup(post_uid_generator=uid_generator, db_handler=mongodb)
     new_post_uid = new_post_setup.create_post(
         author_name=current_user.username, request=request
     )
@@ -98,7 +94,7 @@ def create_post(request):
 
 
 class PostUpdateSetup:
-    def __init__(self, db_handler=MyDatabase) -> None:
+    def __init__(self, db_handler=Database) -> None:
         self._db_handler = db_handler
 
     def _form_validatd(self, request: Request, validator: FormValidator):
@@ -109,7 +105,7 @@ class PostUpdateSetup:
             "title": request.form.get("title"),
             "subtitle": request.form.get("subtitle"),
             "tags": process_tags(request.form.get("tags")),
-            "coverer_url": request.form.get("cover_url"),
+            "cover_url": request.form.get("cover_url"),
             "last_updated": get_today(env=ENV),
         }
         return updated_post_info
@@ -135,7 +131,7 @@ class PostUpdateSetup:
 
 
 def update_post(post_uid: str, request: Request):
-    post_update_setup = PostUpdateSetup(db_handler=my_database)
+    post_update_setup = PostUpdateSetup(db_handler=mongodb)
     post_update_setup.update_post(post_uid=post_uid, request=request)
 
 
@@ -223,7 +219,7 @@ def html_to_about(html):
 
 
 class AllTags:
-    def __init__(self, db_handler: MyDatabase) -> None:
+    def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
     def from_user(self, username):
@@ -245,7 +241,7 @@ class AllTags:
         return sorted_tags
 
 
-all_tags = AllTags(db_handler=my_database)
+all_tags = AllTags(db_handler=mongodb)
 
 ###################################################################
 
@@ -255,7 +251,7 @@ all_tags = AllTags(db_handler=my_database)
 
 
 class Paging:
-    def __init__(self, db_handler: MyDatabase) -> None:
+    def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
         self._has_setup = False
         self._allow_previous_page = None
@@ -306,7 +302,7 @@ class Paging:
         return self._current_page
 
 
-paging = Paging(db_handler=my_database)
+paging = Paging(db_handler=mongodb)
 
 
 ###################################################################
@@ -317,7 +313,7 @@ paging = Paging(db_handler=my_database)
 
 
 class PostUtils:
-    def __init__(self, db_handler: MyDatabase):
+    def __init__(self, db_handler: Database):
         self._db_handler = db_handler
 
     def find_featured_posts_info(self, username: str):
@@ -347,9 +343,7 @@ class PostUtils:
         )
         return result
 
-    def find_posts_with_pagination(
-        self, username: str, page_number: int, posts_per_page: int
-    ):
+    def find_posts_with_pagination(self, username: str, page_number: int, posts_per_page: int):
         if page_number == 1:
             result = (
                 self._db_handler.post_info.find({"author": username, "archived": False})
@@ -379,4 +373,4 @@ class PostUtils:
         return target_post
 
 
-post_utils = PostUtils(db_handler=my_database)
+post_utils = PostUtils(db_handler=mongodb)

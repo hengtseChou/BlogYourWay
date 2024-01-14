@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
-from blogyourway.services.log import my_logger
-from blogyourway.services.mongo import my_database
+from blogyourway.services.logging import logger, LoggerUtils
+from blogyourway.services.mongo import mongodb
 from blogyourway.utils.common import string_truncate, switch_to_bool
 from blogyourway.utils.posts import create_post, paging, post_utils, update_post
 from blogyourway.utils.users import delete_user
@@ -28,9 +28,7 @@ def overview():
     ###################################################################
 
     session["user_current_tab"] = "overview"
-    my_logger.log_for_backstage_tab(
-        username=current_user.username, tab="overview", request=request
-    )
+    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="overview")
 
     ###################################################################
 
@@ -38,7 +36,7 @@ def overview():
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": current_user.username})
+    user = mongodb.user_info.find_one({"username": current_user.username})
     user["created_at"] = user["created_at"].strftime("%b %d, %Y")
 
 
@@ -69,9 +67,8 @@ def post_control():
     ###################################################################
 
     session["user_current_tab"] = "posts"
-    my_logger.log_for_backstage_tab(
-        username=current_user.username, tab="posts control", request=request
-    )
+    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="posts")
+
 
     ###################################################################
 
@@ -80,14 +77,12 @@ def post_control():
     ###################################################################
 
     current_page = request.args.get("page", default=1, type=int)
-    user = my_database.user_info.find_one({"username": current_user.username})
+    user = mongodb.user_info.find_one({"username": current_user.username})
 
     if request.method == "POST":
         # logging for this is inside the create post function
         post_uid = create_post(request)
-        my_logger.user.data_created(
-            username=current_user.username, data_info=f"post {post_uid}", request=request
-        )
+        logger.debug(f"post {post_uid} has been created.")
         flash("New post published successfully!", category="success")
 
     # query through posts
@@ -103,12 +98,10 @@ def post_control():
         post["title"] = string_truncate(post["title"], 30)
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["views"] = format(post["views"], ",")
-        comment_count = my_database.comment.count_documents({"post_uid": post["post_uid"]})
+        comment_count = mongodb.comment.count_documents({"post_uid": post["post_uid"]})
         post["comments"] = format(comment_count, ",")
 
-    my_logger.log_for_pagination(
-        username=current_user.username, num_of_posts=len(posts), request=request
-    )
+    LoggerUtils.pagination(logger=logger, tab="posts", num_of_posts=len(posts))
 
     ###################################################################
 
@@ -129,25 +122,20 @@ def edit_post_get(post_uid):
     ###################################################################
 
     if session["user_current_tab"] != "posts":
-        my_logger.invalid_procedure(
-            username=current_user.username,
-            procedure=f"edit post {post_uid}",
-            request=request,
-        )
         flash("Access Denied!", category="error")
         return redirect(url_for("backstage.post_control"))
 
-    session["user_current_tab"] = "editing_post"
-    my_logger.log_for_backstage_tab(
-        username=current_user.username, tab="edit post", request=request
-    )
+    session["user_current_tab"] = "edit_post"
+    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="edit_post")
+
+
     ###################################################################
 
     # main actions
 
     ###################################################################
 
-    user = my_database.user_info.find({"username": current_user.username})
+    user = mongodb.user_info.find({"username": current_user.username})
     target_post = post_utils.get_full_post(post_uid)
     target_post["tags"] = ", ".join(target_post["tags"])
 
@@ -170,11 +158,9 @@ def edit_post_post(post_uid):
     ###################################################################
 
     update_post(post_uid, request)
-    my_logger.user.data_updated(
-        username=current_user.username, data_info=f"post {post_uid}", request=request
-    )
+    logger.debug(f"post {post_uid} is updated.")
     truncated_post_title = string_truncate(
-        my_database.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
     )
     flash(f'Your post "{truncated_post_title}" has been updated!', category="success")
 
@@ -198,11 +184,6 @@ def edit_featured():
 
     post_uid = request.args.get("uid")
     if session["user_current_tab"] != "posts":
-        my_logger.invalid_procedure(
-            username=current_user.username,
-            procedure=f"change featured status for post {post_uid}",
-            request=request,
-        )
         flash("Access Denied. ", category="error")
         return redirect(url_for("backstage.post_control"))
 
@@ -213,7 +194,7 @@ def edit_featured():
     ###################################################################
 
     truncated_post_title = string_truncate(
-        my_database.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
     )
 
     if request.args.get("featured") == "to_true":
@@ -230,14 +211,10 @@ def edit_featured():
             category="success",
         )
 
-    my_database.post_info.update_values(
+    mongodb.post_info.update_values(
         filter={"post_uid": post_uid}, update={"featured": updated_featured_status}
     )
-    my_logger.user.data_updated(
-        username=current_user.username,
-        data_info=f"featured status for post {post_uid} (now set to {updated_featured_status})",
-        request=request,
-    )
+    logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}")
 
     ###################################################################
 
@@ -259,11 +236,6 @@ def edit_archived():
 
     post_uid = request.args.get("uid")
     if session["user_current_tab"] not in ["posts", "archive"]:
-        my_logger.invalid_procedure(
-            username=current_user.username,
-            procedure=f"change archived status for post {post_uid}",
-            request=request,
-        )
         flash("Access Denied. ", category="error")
         return redirect(url_for("backstage.archive_control"))
 
@@ -274,7 +246,7 @@ def edit_archived():
     ###################################################################
 
     truncated_post_title = string_truncate(
-        my_database.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
     )
     if request.args.get("archived") == "to_true":
         updated_archived_status = True
@@ -286,14 +258,11 @@ def edit_archived():
             category="success",
         )
 
-    my_database.post_info.update_values(
+    mongodb.post_info.update_values(
         filter={"post_uid": post_uid}, update={"archived": updated_archived_status}
     )
-    my_logger.user.data_updated(
-        username=current_user.username,
-        data_info=f"archived status for post {post_uid} (now set to {updated_archived_status})",
-        request=request,
-    )
+    logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
+
 
     ###################################################################
 
@@ -318,12 +287,11 @@ def about_control_get():
     ###################################################################
 
     session["user_current_tab"] = "about"
-    my_logger.log_for_backstage_tab(
-        username=current_user.username, tab="about control", request=request
-    )
+    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="about")
+    
 
-    user_info = my_database.user_info.find_one({"username": current_user.username})
-    user_about = my_database.user_about.find_one({"username": current_user.username})
+    user_info = mongodb.user_info.find_one({"username": current_user.username})
+    user_about = mongodb.user_about.find_one({"username": current_user.username})
     user = user_info | user_about
 
     ###################################################################
@@ -344,8 +312,8 @@ def about_control_post():
 
     ###################################################################
 
-    user_info = my_database.user_info.find_one({"username": current_user.username})
-    user_about = my_database.user_about.find_one({"username": current_user.username})
+    user_info = mongodb.user_info.find_one({"username": current_user.username})
+    user_about = mongodb.user_about.find_one({"username": current_user.username})
     user = user_info | user_about
 
     form = request.form.to_dict()
@@ -354,17 +322,15 @@ def about_control_post():
         "short_bio": form["short_bio"],
     }
     updated_about = {"about": form["about"]}
-    my_database.user_info.update_values(
+    mongodb.user_info.update_values(
         filter={"username": user["username"]}, update=updated_info
     )
-    my_database.user_about.update_values(
+    mongodb.user_about.update_values(
         filter={"username": user["username"]}, update=updated_about
     )
     user.update(updated_info)
     user.update(updated_about)
-    my_logger.user.data_updated(
-        username=current_user.username, data_info="about", request=request
-    )
+    logger.debug(f"information for user {current_user.username} has been updated")
     flash("Information updated!", category="success")
 
     ###################################################################
@@ -386,9 +352,7 @@ def archive_control():
     ###################################################################
 
     session["user_current_tab"] = "archive"
-    my_logger.log_for_backstage_tab(
-        username=current_user.username, tab="archive control", request=request
-    )
+    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="archive")
 
     ###################################################################
 
@@ -396,17 +360,15 @@ def archive_control():
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": current_user.username})
+    user = mongodb.user_info.find_one({"username": current_user.username})
     posts = post_utils.find_all_archived_posts_info(current_user.username)
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
         post["views"] = format(post["views"], ",")
-        comment_count = my_database.comment.count_documents({"post_uid": post["post_uid"]})
+        comment_count = mongodb.comment.count_documents({"post_uid": post["post_uid"]})
         post["comments"] = format(comment_count, ",")
 
-    my_logger.log_for_pagination(
-        username=current_user.username, num_of_posts=len(posts), request=request
-    )
+    LoggerUtils.pagination(logger=logger, tab="archive", num_of_posts=len(posts))
 
     ###################################################################
 
@@ -429,11 +391,6 @@ def delete_post():
     post_uid = request.args.get("uid")
 
     if session["user_current_tab"] != "archive":
-        my_logger.invalid_procedure(
-            username=current_user.username,
-            procedure=f"deleting post {post_uid}",
-            request=request,
-        )
         flash("Access Denied. ", category="error")
         return redirect(url_for("backstage.archive_control"))
 
@@ -444,13 +401,11 @@ def delete_post():
     ###################################################################
 
     truncated_post_title = string_truncate(
-        my_database.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
     )
-    my_database.post_info.delete_one({"post_uid": post_uid})
-    my_database.post_content.delete_one({"post_uid": post_uid})
-    my_logger.user.data_deleted(
-        username=current_user.username, data_info=f"post {post_uid}", request=request
-    )
+    mongodb.post_info.delete_one({"post_uid": post_uid})
+    mongodb.post_content.delete_one({"post_uid": post_uid})
+    logger.debug(f"post {post_uid} has been deleted")
     flash(f'Your post "{truncated_post_title}" has been deleted!', category="success")
 
     ###################################################################
@@ -471,10 +426,9 @@ def social_links_control_get():
 
     ###################################################################
 
-    session["user_current_tab"] = "social_link"
-    my_logger.log_for_backstage_tab(
-        username=current_user.username, tab="social link control", request=request
-    )
+    session["user_current_tab"] = "social-links"
+    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="social-links")
+
 
     ###################################################################
 
@@ -482,8 +436,8 @@ def social_links_control_get():
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": current_user.username})
-    social_links = user["social_links"]
+    user = mongodb.user_info.find_one({"username": current_user.username})
+    social_links = user["social-links"]
 
     ###################################################################
 
@@ -503,19 +457,17 @@ def social_links_control_post():
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": current_user.username})
+    user = mongodb.user_info.find_one({"username": current_user.username})
     form = request.form.to_dict()
     form_values = list(form.values())
 
     updated_links = []
     for i in range(0, len(form_values), 2):
         updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
-    my_database.user_info.update_values(
+    mongodb.user_info.update_values(
         filter={"username": current_user.username}, update={"social_links": updated_links}
     )
-    my_logger.user.data_updated(
-        username=current_user.username, data_info="social links", request=request
-    )
+    logger.debug(f"social links for {current_user.username} has been updated.")
     flash("Social Links updated!", category="success")
 
     ###################################################################
@@ -537,9 +489,8 @@ def theme_control():
     ###################################################################
 
     session["user_current_tab"] = "theme"
-    my_logger.log_for_backstage_tab(
-        username=current_user.username, tab="theme", request=request
-    )
+    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="theme")
+
 
     ###################################################################
 
@@ -547,7 +498,7 @@ def theme_control():
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": current_user.username})
+    user = mongodb.user_info.find_one({"username": current_user.username})
 
     ###################################################################
 
@@ -568,9 +519,8 @@ def settings_control_get():
     ###################################################################
 
     session["user_current_tab"] = "settings"
-    my_logger.log_for_backstage_tab(
-        username=current_user.username, tab="settings", request=request
-    )
+    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="settings")
+
 
     ###################################################################
 
@@ -578,7 +528,7 @@ def settings_control_get():
 
     ###################################################################
 
-    user = my_database.user_info.find_one({"username": current_user.username})
+    user = mongodb.user_info.find_one({"username": current_user.username})
 
     ###################################################################
 
@@ -603,23 +553,21 @@ def settings_control_post():
     delete_account = request.form.get("delete-account")
 
     if general is not None:
-        banner_url = request.form.get("banner_url")
+        cover_url = request.form.get("cover_url")
         blogname = request.form.get("blogname")
         enable_change_log = switch_to_bool(request.form.get("enable_change_log"))
         enable_portfolio = switch_to_bool(request.form.get("enable_portfolio"))
 
-        my_database.user_info.update_values(
+        mongodb.user_info.update_values(
             filter={"username": current_user.username},
             update={
-                "banner_url": banner_url,
+                "cover_url": cover_url,
                 "blogname": blogname,
                 "change_log_enabled": enable_change_log,
                 "portfolio_enabled": enable_portfolio,
             },
         )
-        my_logger.user.data_updated(
-            username=current_user.username, data_info="general settings", request=request
-        )
+        logger.debug(f"general settings for {current_user.username} has been updated")
         flash("Update succeeded!", category="success")
 
     elif change_pw is not None:
@@ -627,56 +575,45 @@ def settings_control_post():
         encoded_current_pw_input = current_pw_input.encode("utf8")
         new_pw = request.form.get("new")
 
-        user_creds = my_database.user_login.find_one({"username": current_user.username})
-        user = my_database.user_info.find_one({"username": current_user.username})
+        user_creds = mongodb.user_login.find_one({"username": current_user.username})
+        user = mongodb.user_info.find_one({"username": current_user.username})
         encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
         # check pw
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
-            my_logger.invalid_procedure(
-                username=current_user.username,
-                procedure="update password (invalid old password)",
-                request=request,
-            )
+            logger.debug("invalid old password when changing password.")
             flash("Current password is invalid. Please try again.", category="error")
             return render_template("settings.html", user=user)
 
         # update new password
         hashed_new_pw = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
-        my_database.user_login.update_values(
+        mongodb.user_login.update_values(
             filter={"username": current_user.username}, update={"password": hashed_new_pw}
         )
-        my_logger.user.data_updated(
-            username=current_user.username, data_info="password", request=request
-        )
+        logger.debug(f"password for user {current_user.username} has been updated.")
         flash("Password update succeeded!", category="success")
 
     elif delete_account is not None:
         current_pw_input = request.form.get("delete-confirm-pw")
         encoded_current_pw_input = current_pw_input.encode("utf8")
         username = current_user.username
-        user = my_database.user_info.find_one({"username": username})
-        user_creds = my_database.user_login.find_one({"username": username})
+        user = mongodb.user_info.find_one({"username": username})
+        user_creds = mongodb.user_login.find_one({"username": username})
         encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
-            my_logger.invalid_procedure(
-                username=current_user.username,
-                procedure="delete account (invalid password)",
-                request=request,
-            )
             flash("Access denied, bacause password is invalid.", category="error")
             return render_template("settings.html", user=user)
 
         # deletion procedure
         logout_user()
-        my_logger.user.logout(username=username, request=request)
+        LoggerUtils.logout(logger=logger, request=request)
         delete_user(username)
         flash("Account deleted successfully!", category="success")
-        my_logger.user.user_deleted(username=username, request=request)
+        logger.debug(f"User {username} has been deleted.")
         return redirect(url_for("blog.register_get"))
 
-    user = my_database.user_info.find_one({"username": current_user.username})
+    user = mongodb.user_info.find_one({"username": current_user.username})
 
     ###################################################################
 
@@ -699,7 +636,7 @@ def logout():
     username = current_user.username
     logout_user()
     session.pop("user_current_tab", None)
-    my_logger.user.logout(username=username, request=request)
+    LoggerUtils.logout(logger=logger, request=request)
 
     ###################################################################
 

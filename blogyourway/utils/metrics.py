@@ -4,8 +4,8 @@ from urllib.parse import urlparse
 from flask import Request
 
 from blogyourway.config import ENV
-from blogyourway.services.log import return_client_ip
-from blogyourway.services.mongo import MyDatabase, my_database
+from blogyourway.services.logging import return_client_ip
+from blogyourway.services.mongo import Database, mongodb
 from blogyourway.utils.common import get_today
 
 

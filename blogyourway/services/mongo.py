@@ -17,7 +17,7 @@ class ExtendedCollection:
 
     def count_documents(self, filter: dict):
         return self._col.count_documents(filter)
-    
+
     def delete_one(self, filter: dict):
         self._col.delete_one(filter)
 
@@ -101,7 +101,7 @@ class ExtendedCursor(Cursor):
 ###################################################################
 
 
-class MyDatabase:
+class Database:
     def __init__(self, client: MongoClient) -> None:
         self._client = client
         users_db = client["users"]
@@ -115,7 +115,6 @@ class MyDatabase:
         self._user_views = ExtendedCollection(users_db["user-views"])
         self._post_info = ExtendedCollection(posts_db["post-info"])
         self._post_content = ExtendedCollection(posts_db["post-content"])
-        self._post_view_sources = ExtendedCollection(posts_db["post-view-sources"])
         self._comment = ExtendedCollection(comments_db["comment"])
         self._metrics_log = ExtendedCollection(metrics_db["metrics-log"])
 
@@ -148,17 +147,9 @@ class MyDatabase:
         return self._post_content
 
     @property
-    def post_view_sources(self):
-        return self._post_view_sources
-
-    @property
     def comment(self):
         return self._comment
 
-    @property
-    def metrics_log(self):
-        return self._metrics_log
-
 
 client = MongoClient(MONGO_URL, connect=False)
-my_database = MyDatabase(client=client)
+mongodb = Database(client=client)
