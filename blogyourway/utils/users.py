@@ -3,7 +3,7 @@ from flask import Request, flash, render_template, request
 from flask_login import UserMixin
 
 from blogyourway.config import ENV
-from blogyourway.services.logging import Logger, logger, LoggerUtils
+from blogyourway.services.logging import Logger, LoggerUtils, logger
 from blogyourway.services.mongo import Database, mongodb
 from blogyourway.utils.common import FormValidator, get_today
 
@@ -51,7 +51,11 @@ class NewUserSetup:
                     f"{field.capitalize()} is already used. Please try another one.",
                     category="error",
                 )
-                LoggerUtils.registration_failed(logger=self._logger, request=self._request, msg=f"{field} {self._regist_form[field]} already used")
+                LoggerUtils.registration_failed(
+                    logger=self._logger,
+                    request=self._request,
+                    msg=f"{field} {self._regist_form[field]} already used",
+                )
                 return True
         return False
 
@@ -111,7 +115,9 @@ class NewUserSetup:
             self._regist_form["username"], self._regist_form["email"], hashed_pw
         )
         new_user_info = self._create_user_info(
-            self._regist_form["username"], self._regist_form["email"], self._regist_form["blogname"]
+            self._regist_form["username"],
+            self._regist_form["email"],
+            self._regist_form["blogname"],
         )
         new_user_about = self._create_user_about(self._regist_form["username"])
         new_user_views = self._create_user_views(self._regist_form["username"])
@@ -156,9 +162,7 @@ class UserDeletionSetup:
     def _remove_all_related_comments(self, post_uids: list):
         for post_uid in post_uids:
             self._db_handler.comment.delete_many({"post_uid": post_uid})
-        self._logger.debug(
-            f"Deleted relevant comments from user {self._user_to_be_deleted}."
-        )
+        self._logger.debug(f"Deleted relevant comments from user {self._user_to_be_deleted}.")
 
     def _remove_related_metrics(self):
         pass
@@ -181,7 +185,5 @@ class UserDeletionSetup:
 
 
 def delete_user(username):
-    user_deletion = UserDeletionSetup(
-        username=username, db_handler=mongodb, logger=logger
-    )
+    user_deletion = UserDeletionSetup(username=username, db_handler=mongodb, logger=logger)
     user_deletion.start_deletion_process()

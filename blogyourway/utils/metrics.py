@@ -27,4 +27,3 @@ def _extract_post_uid(request: Request):
     url = request.environ["RAW_URI"]
     post_uid = url.split("/")[-1]
     return post_uid
-

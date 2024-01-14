@@ -2,7 +2,6 @@ from flask import request, session
 from flask_login import current_user, logout_user
 from flask_socketio import SocketIO
 
-
 socketio = SocketIO()
 
 

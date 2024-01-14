@@ -1,9 +1,10 @@
-from bcrypt import checkpw, gensalt, hashpw
 from datetime import datetime, timedelta
+
+from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
-from blogyourway.services.logging import logger, LoggerUtils
+from blogyourway.services.logging import LoggerUtils, logger
 from blogyourway.services.mongo import mongodb
 from blogyourway.utils.common import string_truncate, switch_to_bool
 from blogyourway.utils.posts import create_post, paging, post_utils, update_post
@@ -39,8 +40,6 @@ def overview():
     user = mongodb.user_info.find_one({"username": current_user.username})
     user["created_at"] = user["created_at"].strftime("%b %d, %Y")
 
-
-
     ###################################################################
 
     # return page content
@@ -53,7 +52,7 @@ def overview():
         traffic={},
         index_page_traffic={"/@test/loll": 3},
         total_pv=1,
-        total_uv=2
+        total_uv=2,
     )
 
 
@@ -68,7 +67,6 @@ def post_control():
 
     session["user_current_tab"] = "posts"
     LoggerUtils.backstage(logger=logger, username=current_user.username, tab="posts")
-
 
     ###################################################################
 
@@ -90,9 +88,7 @@ def post_control():
     POSTS_EACH_PAGE = 20
     pagination = paging.setup(current_user.username, current_page, POSTS_EACH_PAGE)
     posts = post_utils.find_posts_with_pagination(
-        username=current_user.username,
-        page_number=current_page,
-        posts_per_page=POSTS_EACH_PAGE,
+        username=current_user.username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
     )
     for post in posts:
         post["title"] = string_truncate(post["title"], 30)
@@ -127,7 +123,6 @@ def edit_post_get(post_uid):
 
     session["user_current_tab"] = "edit_post"
     LoggerUtils.backstage(logger=logger, username=current_user.username, tab="edit_post")
-
 
     ###################################################################
 
@@ -214,7 +209,9 @@ def edit_featured():
     mongodb.post_info.update_values(
         filter={"post_uid": post_uid}, update={"featured": updated_featured_status}
     )
-    logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}")
+    logger.debug(
+        f"featuring status for post {post_uid} is now set to {updated_featured_status}"
+    )
 
     ###################################################################
 
@@ -263,7 +260,6 @@ def edit_archived():
     )
     logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
 
-
     ###################################################################
 
     # return page contents
@@ -288,7 +284,6 @@ def about_control_get():
 
     session["user_current_tab"] = "about"
     LoggerUtils.backstage(logger=logger, username=current_user.username, tab="about")
-    
 
     user_info = mongodb.user_info.find_one({"username": current_user.username})
     user_about = mongodb.user_about.find_one({"username": current_user.username})
@@ -317,14 +312,9 @@ def about_control_post():
     user = user_info | user_about
 
     form = request.form.to_dict()
-    updated_info = {
-        "profile_img_url": form["profile_img_url"],
-        "short_bio": form["short_bio"],
-    }
+    updated_info = {"profile_img_url": form["profile_img_url"], "short_bio": form["short_bio"]}
     updated_about = {"about": form["about"]}
-    mongodb.user_info.update_values(
-        filter={"username": user["username"]}, update=updated_info
-    )
+    mongodb.user_info.update_values(filter={"username": user["username"]}, update=updated_info)
     mongodb.user_about.update_values(
         filter={"username": user["username"]}, update=updated_about
     )
@@ -429,7 +419,6 @@ def social_links_control_get():
     session["user_current_tab"] = "social-links"
     LoggerUtils.backstage(logger=logger, username=current_user.username, tab="social-links")
 
-
     ###################################################################
 
     # main actions
@@ -491,7 +480,6 @@ def theme_control():
     session["user_current_tab"] = "theme"
     LoggerUtils.backstage(logger=logger, username=current_user.username, tab="theme")
 
-
     ###################################################################
 
     # main actions
@@ -520,7 +508,6 @@ def settings_control_get():
 
     session["user_current_tab"] = "settings"
     LoggerUtils.backstage(logger=logger, username=current_user.username, tab="settings")
-
 
     ###################################################################
 

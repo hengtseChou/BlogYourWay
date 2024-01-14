@@ -2,21 +2,11 @@ from urllib.parse import unquote
 
 import bcrypt
 import readtime
-from flask import (
-    Blueprint,
-    abort,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
+from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_user
 from markdown import Markdown
 
-from blogyourway.config import ENV
-from blogyourway.services.logging import logger, LoggerUtils
+from blogyourway.services.logging import LoggerUtils, logger
 from blogyourway.services.mongo import mongodb
 from blogyourway.utils.comments import comment_utils, create_comment
 from blogyourway.utils.posts import (
@@ -60,9 +50,7 @@ def login_get():
 
     if current_user.is_authenticated:
         flash("You are already logged in.")
-        logger.debug(
-            f"Attempt to duplicate logging from user {current_user.username}."
-        )
+        logger.debug(f"Attempt to duplicate logging from user {current_user.username}.")
         return redirect(url_for("backstage.overview"))
 
     ###################################################################
@@ -106,7 +94,9 @@ def login_post():
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
         LoggerUtils.login_failed(
-            logger=logger, request=request, msg=f"invalid password with email {login_form['email']}"
+            logger=logger,
+            request=request,
+            msg=f"invalid password with email {login_form['email']}",
         )
         return render_template("login.html")
 
@@ -327,9 +317,7 @@ def post(username, post_uid):
 
     ###################################################################
 
-    return render_template(
-        "post.html", user=author_info, post=target_post, comments=comments
-    )
+    return render_template("post.html", user=author_info, post=target_post, comments=comments)
 
 
 @blog.route("/readcount-increment", methods=["GET"])
@@ -339,8 +327,6 @@ def readcount_increment():
     # logging / metrics
 
     ###################################################################
-
-
 
     ###################################################################
 
