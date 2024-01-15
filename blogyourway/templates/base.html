@@ -47,49 +47,29 @@
   </head>
   <body>
     <div class="toast-container bottom-0 end-0 p-3">
-      {% with messages = get_flashed_messages(with_categories=true) %} {% for
-      category, message in messages %}
-      <div
-        class="toast show"
-        role="alert"
-        aria-live="polite"
-        aria-atomic="true"
-        id="notification"
-      >
+      {% with messages = get_flashed_messages(with_categories=true) %} 
+      {% for category, message in messages %}
+      <div class="toast show" role="alert" aria-live="polite" aria-atomic="true" id="notification">
         {% if category == 'success' %}
         <div class="toast-header" style="background-color: #7fda91">
           <strong class="me-auto">Success!</strong>
-          <button
-            type="button"
-            class="btn-close me-2 m-auto"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         {% elif category == 'error' %}
         <div class="toast-header" style="background-color: #ff6c6c">
           <strong class="me-auto">Error!</strong>
-          <button
-            type="button"
-            class="btn-close me-2 m-auto"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         {% else %}
         <div class="toast-header" style="background-color: #75c4ff">
           <strong class="me-auto">Info</strong>
-          <button
-            type="button"
-            class="btn-close me-2 m-auto"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         {% endif %}
         <div class="toast-body">{{ message }}</div>
       </div>
-      {% endfor %} {% endwith %}
+      {% endfor %} 
+      {% endwith %}
     </div>
 
     {% block body %}{% endblock %}
@@ -106,6 +86,14 @@
     </script>
     <script>
       var socket = io();
+    </script>
+    <script>
+      function updateCurrentYear() {
+        var currentDate = new Date();
+        var currentYear = currentDate.getFullYear();
+        document.getElementById("currentYear").innerHTML = currentYear;
+      }
+      updateCurrentYear();
     </script>
     {% block script %}{% endblock %}
   </body>
