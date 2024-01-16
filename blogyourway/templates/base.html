@@ -34,11 +34,11 @@
     <link rel="stylesheet" href="/static/fontawesome-6.5.1/css/brands.min.css">
     <link rel="stylesheet" href="/static/fontawesome-6.5.1/css/solid.min.css">
     <!-- chart.js -->
-    <script src="/static/chart.js-4.3.3/chart.umd.min.js"></script>
+    <script src="/static/chart.js-4.4.1/chart.umd.min.js"></script>
     <!-- count.js -->
     <script src="/static/count.js/countUp.umd.js"></script>
     <!-- socket.io -->
-    <script src="/static/socketio-4.0.1/socket.io.js"></script>
+    <script src="/static/socketio-4.7.3/socket.io.min.js"></script>
     <!-- reCAPTCHA  -->
     <link rel="preconnect" href="https://www.google.com" />
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
@@ -46,7 +46,7 @@
     {% block head %}{% endblock %}
   </head>
   <body>
-    <div class="toast-container bottom-0 end-0 p-3">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
       {% with messages = get_flashed_messages(with_categories=true) %} 
       {% for category, message in messages %}
       <div class="toast show" role="alert" aria-live="polite" aria-atomic="true" id="notification">
