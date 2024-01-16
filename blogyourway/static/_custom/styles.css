@@ -138,15 +138,15 @@ img.profile-lg {
 }
 
 img.profile-md {
-	width: 3rem;
-	height: 3rem;
+	width: 3.1rem;
+	height: 3.1rem;
 	object-fit: cover;
 	border-radius:50%
 }
 
 img.profile-sm {
-	width: 2rem;
-	height: 2rem;
+	width: 2.5rem;
+	height: 2.5rem;
 	object-fit: cover;
 	border-radius: 50%;
 }
@@ -176,17 +176,15 @@ img.profile-sm {
 	color: #333;
 }
 
-.date-text {
+.grey-text {
 	color: rgb(100, 100, 100)
 }
 
 .badge-custom {
-	color: rgb(100, 100, 100);
 	background-color: rgb(150, 150, 150);
 }
 
 .badge-custom:hover {
-	color: white;
 	background-color: #f7966b;
 } 
 

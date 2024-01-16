@@ -84,17 +84,13 @@
     minHeight: "200px",
     spellChecker: false,
   });
-
-  document.addEventListener("DOMContentLoaded", function () {
-    if ("{{ user.about }}" != "") {
-      easyMDE.value("{{ user.about }}");
-    }
-    const form = document.getElementById("form");
+  var user_about = {{ user.about | tojson | safe}};
+  easyMDE.value(user_about);
+  const form = document.getElementById("form");
     form.addEventListener("keypress", function (event) {
       if (event.key === "Enter") {
         event.preventDefault();
       }
     });
-  });
 </script>
 {% endblock %}
