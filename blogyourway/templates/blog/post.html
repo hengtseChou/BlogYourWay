@@ -39,79 +39,74 @@
     color: white;
     border: 0px;
   }
+
   .panel-btn:hover {
     background-color: #6c757d;
     color: white;
   }
 
+  .cover {
+    display: flex;
+    flex-flow: column;
+    padding: 5px;
+    margin: auto;
+
+  }
+
+  .cover-caption {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font: italic smaller sans-serif;
+    padding: 3px;
+    text-align: center;
+  }
 </style>
 {% endblock %} 
 
-{% block body%} 
+{% block body %} 
 {% include 'navbar.html' %}
 <div id="reading-progress"><div id="reading-progress-fill"></div></div>
-<div
-  class="cover-container"
+<!-- <div   class="cover-container"
   style="background-image: url('{{ post.cover_url }}')"
-></div>
+></div> -->
+<div class="my-5 row"></div>
+<div class="my-3 row"></div>
 <!-- post starts -->
 <div class="container">
   <div class="row mt-4 mt-md-5">
     <div class="col-lg-8 col-md-10 col-12 mx-auto px-4">
-      <h1 class="text-center fw-bold">{{ post.title }}</h1>
-      <!-- info row from desktop -->
-      <div class="d-none d-lg-flex align-items-center justify-content-center mt-3 mb-4">
-        <a href="/@{{ post.author }}/about">
-          {% if user.profile_img_url|length == 0 %}
-          <img
-            src="/static/_img/default-profile.png"
-            alt="profile-img"
-            class="profile-xl me-2"
-          />
-          {% else %}
-          <img
-            src="{{ user.profile_img_url }}"
-            alt="profile-img"
-            class="profile-xl me-2"
-          />
-          {% endif %}
-        </a>
-        <a href="/@{{ post.author }}/about" class="author-link mx-2" >
-          <h4>{{ post.author }}</h4>
-        </a>
-        <div class="date-text"><h4>· {{ post.readtime }}</h4></div>
+      <h1 class="text-start fw-bold">{{ post.title }}</h1>
+      <h3 class="text-start grey-text mt-3">{{ post.subtitle }}</h3>
+      <!-- info row -->
+      <div class="d-inline-flex">
+        <div class="row mt-3">
+          <div class="col-1" style="width: 3rem;">
+            <a href="/@{{ post.author }}/about">
+              {% if user.profile_img_url|length == 0 %}
+              <img class="profile-md" src="/static/_img/default-profile.png" alt="profile-img"/>
+              {% else %}
+              <img class="profile-md" src="{{ user.profile_img_url }}" alt="profile-img"/>
+              {% endif %}
+            </a>
+          </div>
+          <div class="col mt-1 ms-2">
+            <div style="line-height: 125%;"><span class="grey-text">Updated At {{ post.last_updated }} · {{ post.readtime }}<br>By</span>
+              <a class="author-link ms-1" href="/@{{ post.author }}/about">{{ post.author }}</a>
+            </div>
+          </div>
+        </div>
       </div>
-      <!-- info row from mobile -->
-      <div class="d-flex d-lg-none align-items-center justify-content-center my-2">
-        <a href="/@{{ post.author }}/about">
-          {% if user.profile_img_url|length == 0 %}
-          <img
-            src="/static/_img/default-profile.png"
-            alt="profile-img"
-            class="profile-sm me-1"
-          />
-          {% else %}
-          <img
-            src="{{ user.profile_img_url }}"
-            alt="profile-img"
-            class="profile-sm me-1"
-          />
-          {% endif %}
-        </a>
-        <a href="/@{{ post.author }}/about" class="author-link mx-1 mt-2">
-          <h6>{{ post.author }}</h6>
-        </a>
-        <div class="date-text mt-2"><h6>· {{ post.readtime }}</h6></div>
-      </div>
-      <hr />
+      <!-- cover -->
+      <figure class="cover mt-3">
+        <img src="{{ post.cover_url }}" alt="">
+        <figcaption class="cover-caption">{{ post.title }}</figcaption>
+      </figure> 
+      <!-- content start -->
       <div class="mb-3 px-2">
-        <i class="date-text">- Last updated: {{ post.last_updated }}</i>
         {{ post.content | safe }}
       </div>
-      <div
-        class="d-flex align-items-center mb-4"
-        style="color: rgb(100, 100, 100); font-size: large"
-      >
+      <!-- tag start -->
+      <div class="d-flex align-items-center mb-4" style="color: rgb(100, 100, 100); font-size: large">
         <span><i class="fa-solid fa-tags"></i></span>
         {% for tag in post.tags %} 
         {% set tag_link = '/@'~ post.author ~ '/tags?tag=' ~ tag %}
@@ -132,23 +127,13 @@
         <div class="row">
           <div class="col-12 col-md-6 mb-3">
             <label for="comment-name" class="form-label">
-              Name <span style="color: red">*</span></label>
-            <input
-              type="text"
-              class="form-control"
-              id="comment-name"
-              name="name"
-              required
-            />
+              Name <span style="color: red">*</span>
+            </label>
+            <input type="text" class="form-control" id="comment-name" name="name" required/>
           </div>
           <div class="col-12 col-md-6 mb-3">
             <label for="comment-email" class="form-label">Email Address</label>
-            <input
-              type="email"
-              class="form-control"
-              id="comment-email"
-              name="email"
-            />
+            <input type="email" class="form-control" id="comment-email" name="email"/>
           </div>
         </div>
         {% endif %}
@@ -156,22 +141,11 @@
           <label for="comment-text" class="form-label">
             Comment <span style="color: red">*</span>
           </label>
-          <textarea
-            class="form-control"
-            id="comment-text"
-            rows="3"
-            name="comment"
-            required
-          ></textarea>
+          <textarea class="form-control" id="comment-text" rows="3" name="comment" required>
+          </textarea>
         </div>
         <div class="text-end mb-4">
-          <button
-            class="g-recaptcha btn panel-btn text-center"
-            data-sitekey="6LcxqWgnAAAAALNxCvk7tu1tVBikm_zKG54nCP3C"
-            data-callback="onSubmit"
-            style="width: 25%; min-width: 150px"
-            onclick="return validateForm()"
-          >
+          <button class="g-recaptcha btn panel-btn text-center" data-sitekey="6LcxqWgnAAAAALNxCvk7tu1tVBikm_zKG54nCP3C" data-callback="onSubmit" style="width: 25%; min-width: 150px" onclick="return validateForm()" >
             Submit
           </button>
         </div>
@@ -189,11 +163,7 @@
         <!-- registered user -->
         <div class="mb-4 d-flex flex-row">
           <a href="{{ comment['profile_link'] }}">
-            <img
-              src="{{ comment['profile_pic'] }}"
-              alt="profile-pic"
-              class="profile-lg ajax-profile-pic"
-            />
+            <img class="profile-lg ajax-profile-pic" src="{{ comment['profile_pic'] }}" alt="profile-pic" />
           </a>
           <div class="ms-3 mt-1">
             <div>
@@ -210,22 +180,19 @@
         {% else %}
         <!-- visitor -->
         <div class="mb-4 d-flex flex-row">
-          <img
-            src="{{ comment['profile_pic'] }}"
-            alt="profile-pic"
-            class="profile-lg"
-          />
+          <img class="profile-lg" src="{{ comment['profile_pic'] }}" alt="profile-pic"/>
           <div class="ms-3">
             <div>
-              <span class="fw-bold">{{ comment['name'] }}</span
-              ><span style="color: rgb(100, 100, 100)">
-                on {{ comment['created_at'] }}</span
-              >
+              <span class="fw-bold">{{ comment['name'] }}</span>
+              <span style="color: rgb(100, 100, 100)">
+                on {{ comment['created_at'] }}
+              </span>
             </div>
             <div class="mt-2">{{ comment['comment'] }}</div>
           </div>
         </div>
-        {% endif %} {% endfor %}
+        {% endif %} 
+        {% endfor %}
       </div>
       {% endif %}
     </div>
@@ -238,10 +205,10 @@
 {% block script %}
 <script>
   function validateForm() {   
-
     return true;
   }
-
+</script>
+<script>
   document
     .getElementById("comment-form")
     .addEventListener("keypress", function (event) {

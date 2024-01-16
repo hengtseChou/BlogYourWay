@@ -16,7 +16,7 @@
 <div class="container-fluid">
 	<div class="row">
 		<!-- post column -->
-		<div class=" col-md-8 col-12" style="min-height: calc(100vh - 330px);">
+		<div class="col-md-8 col-12" style="min-height: calc(100vh - 330px);">
 			<div class="row">
 				<div class="offset-lg-3 col-lg-8 offset-md-1 col-md-9 offset-1 col-10">
 					{% if posts|length != 0 %}
@@ -34,7 +34,7 @@
 								{% endif %}
 							</a>
 							<a href="about" class="author-link mx-2">{{ post.author }}</a>
-							<div class="date-text" style="font-size: large;"> on {{ post.created_at }}</div>
+							<div class="grey-text" style="font-size: large;"> on {{ post.created_at }}</div>
 						</div>
 						<div class="mb-3" style="font-size: large;">{{ post.subtitle }}</div>
 						<div class="d-flex align-items-center" style="color: rgb(100, 100, 100); font-size: large;">
