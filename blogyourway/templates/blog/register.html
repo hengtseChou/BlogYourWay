@@ -23,118 +23,120 @@
     margin-bottom: 20px;
   }
 </style>
-{% endblock %} {% block title %}Create an Account · Little Blog{% endblock %} {%
-block body %}
-<div class="row">
-  <form
-    method="post"
-    autocomplete="off"
-    class="col-10 offset-1 col-md-12 offset-md-0"
-  >
-    <div class="card text-white bg-dark shadow" id="step1">
-      <div class="card-body">
-        <h2 class="text-center mb-4">Register</h2>
-        <div class="input-group mb-4">
-          <span class="input-group-text"
-            ><i class="fa-solid fa-envelope"></i
-          ></span>
-          <input
-            type="email"
-            class="form-control"
-            placeholder="Email"
-            name="email"
-            id="email"
-          />
-        </div>
-        <div class="input-group mb-2">
-          <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-          <input
-            type="password"
-            class="form-control"
-            placeholder="Password"
-            name="password"
-            id="password"
-          />
-        </div>
-        <small style="color: #6c757d"
-          ><p>
-            Password must be 8 characters long, with upper and lower cases
-            letters.
-          </p></small
-        >
-        <button
-          type="button"
-          class="btn btn-primary w-100 rounded-pill"
-          style="background-color: gray; border: 0px"
-          onclick="validateStep1()"
-        >
-          Continue
-        </button>
-        <div class="text-center mt-4">
-          Already have an account? <a href="/login">Login</a>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="card hide text-white bg-dark shadow"
-      id="step2"
-      style="display: none"
+{% endblock %} {% block title %}Create an Account · BlogYourWay{% endblock %} 
+{% block body %}
+<div class="container-fluid">
+  <div class="row">
+    <form
+      method="post"
+      autocomplete="off"
+      class="col-10 offset-1 col-md-12 offset-md-0"
     >
-      <div class="card-body">
-        <h2 class="text-center mb-4">Almost Done...</h2>
-        <div class="input-group mb-1">
-          <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Username"
-            name="username"
-            id="username"
-          />
+      <div class="card text-white bg-dark shadow" id="step1">
+        <div class="card-body">
+          <h2 class="text-center mb-4">Register</h2>
+          <div class="input-group mb-4">
+            <span class="input-group-text"
+              ><i class="fa-solid fa-envelope"></i
+            ></span>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Email"
+              name="email"
+              id="email"
+            />
+          </div>
+          <div class="input-group mb-2">
+            <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              name="password"
+              id="password"
+            />
+          </div>
+          <small style="color: #6c757d"
+            ><p>
+              Password must be 8 characters long, with upper and lower cases
+              letters.
+            </p></small
+          >
+          <button
+            type="button"
+            class="btn btn-primary w-100 rounded-pill"
+            style="background-color: gray; border: 0px"
+            onclick="validateStep1()"
+          >
+            Continue
+          </button>
+          <div class="text-center mt-4">
+            Already have an account? <a href="/login">Login</a>
+          </div>
         </div>
-        <small class="mb-4" style="color: #6c757d"
-          ><p>Use only letters (lowercase), numbers, and "-".</p></small
-        >
-        <div class="input-group mb-1">
-          <span class="input-group-text"
-            ><i class="fa-solid fa-house"></i
-          ></span>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Blog's name"
-            name="blogname"
-            id="blogname"
-          />
-        </div>
-        <small class="mb-4" style="color: #6c757d"
-          ><p>20 characters maximum.</p></small
-        >
-        <div class="form-check mb-4">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            name="terms"
-            id="terms"
-            style="background-color: #343a40; border: 0px"
-          />
-          <label class="form-check-label" for="terms">
-            I understand this is a fully experimental project, there is no
-            guarantee of complete data preservation.
-          </label>
-        </div>
-        <button
-          type="submit"
-          class="btn btn-primary w-100 rounded-pill"
-          style="background-color: gray; border: 0px"
-          onclick="return validateStep2()"
-        >
-          Create
-        </button>
       </div>
-    </div>
-  </form>
+  
+      <div
+        class="card hide text-white bg-dark shadow"
+        id="step2"
+        style="display: none"
+      >
+        <div class="card-body">
+          <h2 class="text-center mb-4">Almost Done...</h2>
+          <div class="input-group mb-1">
+            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Username"
+              name="username"
+              id="username"
+            />
+          </div>
+          <small class="mb-4" style="color: #6c757d"
+            ><p>Use only letters (lowercase), numbers, and "-".</p></small
+          >
+          <div class="input-group mb-1">
+            <span class="input-group-text"
+              ><i class="fa-solid fa-house"></i
+            ></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Blog's name"
+              name="blogname"
+              id="blogname"
+            />
+          </div>
+          <small class="mb-4" style="color: #6c757d"
+            ><p>20 characters maximum.</p></small
+          >
+          <div class="form-check mb-4">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="terms"
+              id="terms"
+              style="background-color: #343a40; border: 0px"
+            />
+            <label class="form-check-label" for="terms">
+              I understand this is a fully experimental project, there is no
+              guarantee of complete data preservation.
+            </label>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary w-100 rounded-pill"
+            style="background-color: gray; border: 0px"
+            onclick="return validateStep2()"
+          >
+            Create
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 {% endblock %} {% block script %}

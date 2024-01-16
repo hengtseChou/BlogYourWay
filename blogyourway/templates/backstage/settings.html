@@ -57,12 +57,12 @@
         <input
           type="checkbox"
           class="form-check-input custom-control-input card-checkbox"
-          id="enable_change_log"
-          name="enable_change_log"
-          {% if user.change_log_enabled %}checked{% endif %}
+          id="changelog_enabled"
+          name="changelog_enabled"
+          {% if user.changelog_enabled %}checked{% endif %}
         />
         <label
-          for="enable_change_log"
+          for="changelog_enabled"
           class="form-check-label ms-2 custom-control-label"
           >Enable changelog for your blog</label
         >
@@ -71,12 +71,12 @@
         <input
           type="checkbox"
           class="form-check-input custom-control-input card-checkbox"
-          id="enable_gallery"
-          name="enable_gallery"
+          id="gallery_enabled"
+          name="gallery_enabled"
           {% if user.gallery_enabled %}checked{% endif%}
         />
         <label
-          for="enable_gallery"
+          for="gallery_enabled"
           class="form-check-label ms-2 custom-control-label"
           >Enable gallery for your blog</label
         >

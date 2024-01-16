@@ -14,9 +14,9 @@
           <a class="nav-link" href="/@{{ user.username}}/gallery">Gallery</a>
         </li>
         {% endif %} 
-        {% if user.change_log_enabled %}
+        {% if user.changelog_enabled %}
         <li class="nav-item me-auto ps-3">
-          <a class="nav-link" href="/@{{ user.username}}/change-log">Change Log</a>
+          <a class="nav-link" href="/@{{ user.username}}/changelog">ChangeLog</a>
         </li>
         {% endif %}
         <li class="nav-item me-auto ps-3">
@@ -33,7 +33,8 @@
         {% endif %}
       </ul>
       <ul class="navbar-nav social-icons">
-        {% for dict in user['social_links'] %} {% if dict['platform'] == 'medium' %}
+        {% for dict in user['social_links'] %} 
+        {% if dict['platform'] == 'medium' %}
         <li class="nav-item">
           <a class="nav-link me-lg-3" href="/@{{ user.username }}/social-links?idx={{ loop.index }}">
             <i class="fa-brands fa-medium"></i>

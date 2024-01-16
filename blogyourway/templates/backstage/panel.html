@@ -17,7 +17,7 @@
 </style>
 {% endblock %}
 
-{% block title %}Backstage · Little Blog{% endblock %}
+{% block title %}Backstage · BlogYourWay{% endblock %}
 
 {% block body %}
 <!-- desktop view -->
@@ -39,7 +39,7 @@
 					<span class="ms-2 me-3"><i class="fa-solid fa-palette"></i></span>Gallery
 				</a>
 				{% endif %}
-				{% if user.change_log_enabled %}
+				{% if user.changelog_enabled %}
 				<a class="btn w-100 px-2">
 					<span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Change Log
 				</a>
@@ -88,7 +88,7 @@
 							<span class="ms-2 me-3"><i class="fa-solid fa-palette"></i></span>Gallery
 						</a>
 						{% endif %}
-						{% if user.change_log_enabled %}
+						{% if user.changelog_enabled %}
 						<a class="btn w-100 px-2"id="mobile-nav-changelog">
 							<span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Change Log
 						</a>

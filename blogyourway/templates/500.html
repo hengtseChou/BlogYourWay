@@ -1,4 +1,5 @@
-{% extends 'base.html' %} {% block head %}
+{% extends 'base.html' %} 
+{% block head %}
 <style>
   body {
     background-color: #333;
@@ -44,8 +45,9 @@
     width: 33px;
   }
 </style>
-{% endblock %} {% block title %}500 Internal Server Error · Little Blog{%
-endblock %} {% block body%}
+{% endblock %} 
+{% block title %}500 Internal Server Error · BlogYourWay{% endblock %} 
+{% block body%}
 <div class="container">
   <div class="row">
     <div class="col-md-12">
@@ -64,7 +66,8 @@ endblock %} {% block body%}
     </div>
   </div>
 </div>
-{% endblock %} {% block script %}
+{% endblock %} 
+{% block script %}
 <script>
   $("body").mousemove(function (event) {
     var e = $(".eye");
