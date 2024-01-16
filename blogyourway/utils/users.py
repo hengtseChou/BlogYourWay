@@ -1,22 +1,57 @@
+import logging
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+from typing import List
+
 import bcrypt
-from flask import Request, flash, render_template, request
+from flask import Request, flash, render_template
 from flask_login import UserMixin
 
 from blogyourway.config import ENV
-from blogyourway.services.logging import Logger, LoggerUtils, logger
+from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
 from blogyourway.utils.common import FormValidator, get_today
 
 
-class User(UserMixin):
-    # user id is set as username
-    def __init__(self, user_data):
-        for key, value in user_data.items():
-            if key == "username":
-                self.id = value
-                self.username = value
-                continue
-            setattr(self, key, value)
+@dataclass
+class UserInfo(UserMixin):
+    username: str
+    email: str
+    blogname: str
+    cover_url: str = ""
+    profile_img_url: str = ""
+    short_bio: str = ""
+    social_links: List = field(default_factory=lambda: [])
+    changelog_enabled: bool = False
+    gallery_enabled: bool = False
+    created_at: datetime = field(default_factory=lambda: get_today(env=ENV))
+    total_views: int = 0
+
+    # override the get_id method from UserMixin
+    def get_id(self):
+        return self.username
+
+    def as_dict(self):
+        return {k: v for k, v in asdict(self).items()}
+
+
+@dataclass
+class UserCreds:
+    username: str
+    email: str
+    password: str
+
+    def as_dict(self):
+        return {k: v for k, v in asdict(self).items()}
+
+
+@dataclass
+class UserAbout:
+    username: str
+    about: str = ""
+
+    def as_dict(self):
+        return {k: v for k, v in asdict(self).items()}
 
 
 ###################################################################
@@ -46,45 +81,33 @@ class NewUserSetup:
 
     def _no_duplicates(self) -> bool:
         for field in ["email", "username", "blogname"]:
-            if self._db_handler.user_login.exists(field, self._regist_form[field]):
+            if self._db_handler.user_creds.exists(field, self._regist_form[field]):
                 flash(
                     f"{field.capitalize()} is already used. Please try another one.",
                     category="error",
                 )
-                LoggerUtils.registration_failed(
-                    logger=self._logger,
+                logger_utils.registration_failed(
                     request=self._request,
                     msg=f"{field} {self._regist_form[field]} already used",
                 )
                 return True
         return False
 
-    def _create_user_login(self, username: str, email: str, hashed_password: str) -> dict:
-        new_user_login = {"username": username, "email": email, "password": hashed_password}
-        return new_user_login
+    def _create_user_creds(self, username: str, email: str, hashed_password: str) -> dict:
+        new_user_creds = UserCreds(username=username, email=email, password=hashed_password)
+        return new_user_creds.as_dict()
 
     def _create_user_info(self, username: str, email: str, blogname: str) -> dict:
-        new_user_info = {
-            "username": username,
-            "email": email,
-            "blogname": blogname,
-            "cover_url": "",
-            "profile_img_url": "",
-            "short_bio": "",
-            "social_links": [],
-            "change_log_enabled": False,
-            "gallery_enabled": True,
-            "created_at": get_today(env=ENV),
-        }
-        return new_user_info
+        new_user_info = UserInfo(username=username, email=email, blogname=blogname)
+        return new_user_info.as_dict()
 
     def _create_user_about(self, username: str) -> dict:
-        new_user_about = {"username": username, "about": "", "about_views": 0}
-        return new_user_about
+        new_user_about = UserAbout(username=username)
+        return new_user_about.as_dict()
 
-    def _create_user_views(self, username: str) -> dict:
-        new_user_views = {"username": username, "unique_visitors": []}
-        return new_user_views
+    # def _create_user_views(self, username: str) -> dict:
+    #     new_user_views = {"username": username, "unique_visitors": []}
+    #     return new_user_views
 
     @staticmethod
     def _hash_password(password: str) -> str:
@@ -111,7 +134,7 @@ class NewUserSetup:
             return render_template("register.html")
 
         hashed_pw = self._hash_password(self._regist_form["password"])
-        new_user_login = self._create_user_login(
+        new_user_creds = self._create_user_creds(
             self._regist_form["username"], self._regist_form["email"], hashed_pw
         )
         new_user_info = self._create_user_info(
@@ -120,19 +143,12 @@ class NewUserSetup:
             self._regist_form["blogname"],
         )
         new_user_about = self._create_user_about(self._regist_form["username"])
-        new_user_views = self._create_user_views(self._regist_form["username"])
 
-        self._db_handler.user_login.insert_one(new_user_login)
+        self._db_handler.user_creds.insert_one(new_user_creds)
         self._db_handler.user_info.insert_one(new_user_info)
         self._db_handler.user_about.insert_one(new_user_about)
-        self._db_handler.user_views.insert_one(new_user_views)
 
         return self._regist_form["username"]
-
-
-def create_user(request: request) -> str:
-    user_registration = NewUserSetup(request, mongodb, logger)
-    return user_registration.create_user()
 
 
 ###################################################################
@@ -168,10 +184,9 @@ class UserDeletionSetup:
         pass
 
     def _remove_all_user_data(self):
-        self._db_handler.user_login.delete_one({"username": self._user_to_be_deleted})
+        self._db_handler.user_creds.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_info.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_about.delete_one({"username": self._user_to_be_deleted})
-        self._db_handler.user_views.delete_one({"username": self._user_to_be_deleted})
 
         self._logger.debug(f"Deleted user information for user {self._user_to_be_deleted}.")
 
@@ -184,6 +199,53 @@ class UserDeletionSetup:
         self._remove_all_user_data()
 
 
-def delete_user(username):
-    user_deletion = UserDeletionSetup(username=username, db_handler=mongodb, logger=logger)
-    user_deletion.start_deletion_process()
+###################################################################
+
+# user utils
+
+###################################################################
+
+
+class UserUtils:
+    def __init__(self, db_handler: Database, logger: logging.Logger) -> None:
+        self._db_handler = db_handler
+        self._logger = logger
+
+    def get_user_info(self, username: str) -> UserInfo:
+        user_info = self._db_handler.user_info.find_one({"username": username})
+        if user_info is None:
+            return None
+        if "_id" in user_info:
+            user_info.pop("_id")
+        user_info = UserInfo(**user_info)
+        return user_info
+
+    def get_user_creds(self, email: str) -> UserCreds:
+        user_creds = self._db_handler.user_creds.find_one({"email": email})
+        if user_creds is None:
+            return None
+        if "_id" in user_creds:
+            user_creds.pop("_id")
+        user_creds = UserCreds(**user_creds)
+        return user_creds
+
+    def delete_user(self, username):
+        user_deletion = UserDeletionSetup(
+            username=username, db_handler=self._db_handler, logger=self._logger
+        )
+        user_deletion.start_deletion_process()
+
+    def create_user(self, request: Request) -> str:
+        """_summary_
+
+        Args:
+            request (request): flask request object
+
+        Returns:
+            str: username
+        """
+        user_registration = NewUserSetup(request, self._db_handler, self._logger)
+        return user_registration.create_user()
+
+
+user_utils = UserUtils(db_handler=mongodb, logger=logger)

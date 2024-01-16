@@ -82,56 +82,44 @@ class Logger:
 
 
 class LoggerUtils:
-    @staticmethod
-    def page_visited(logger: logging.Logger, request: Request):
+    def __init__(self, logger: logging.Logger) -> None:
+        self._logger = logger
+
+    def page_visited(self, request: Request):
         client_ip = return_client_ip(request, ENV)
         page_url = request.environ.get("RAW_URI")
-        logger.debug(f"{client_ip} - {page_url} was visited.")
+        self._logger.debug(f"{client_ip} - {page_url} was visited.")
 
-    @staticmethod
-    def invalid_post_author(logger: logging.Logger, request: Request):
-        pass
-
-    @staticmethod
-    def login_failed(logger: logging.Logger, request: Request, msg: str):
+    def login_failed(self, request: Request, msg: str):
         msg = msg.strip().strip(".")
         client_ip = return_client_ip(request, ENV)
-        logger.debug(f"{client_ip} - Login failed. Msg: {msg}. ")
+        self._logger.debug(f"{client_ip} - Login failed. Msg: {msg}. ")
 
-    @staticmethod
-    def login_succeeded(logger: logging.Logger, request: Request):
-        login_form = request.form.to_dict()
-        username = login_form.get("username")
+    def login_succeeded(self, request: Request, username: str):
         client_ip = return_client_ip(request, ENV)
-        logger.info(f"{client_ip} - User {username} has logged in. ")
+        self._logger.info(f"{client_ip} - User {username} has logged in. ")
 
-    @staticmethod
-    def logout(logger: logging.Logger, request: Request):
-        login_form = request.form.to_dict()
-        username = login_form.get("username")
+    def logout(self, request: Request, username: str):
         client_ip = return_client_ip(request, ENV)
-        logger.info(f"{client_ip} - User {username} has logged out.")
+        self._logger.info(f"{client_ip} - User {username} has logged out.")
 
-    @staticmethod
-    def registration_failed(logger: logging.Logger, request: Request, msg: str):
+    def registration_failed(self, request: Request, msg: str):
         msg = msg.strip().strip(".")
         client_ip = return_client_ip(request, ENV)
-        logger.debug(f"{client_ip} - Registration failed. Msg: {msg}. ")
+        self._logger.debug(f"{client_ip} - Registration failed. Msg: {msg}. ")
 
-    @staticmethod
-    def registration_succeeded(logger: logging.Logger, request: Request):
+    def registration_succeeded(self, request: Request):
         regist_form = request.form.to_dict()
         username = regist_form.get("username")
         client_ip = return_client_ip(request, ENV)
-        logger.info(f"{client_ip} - New user {username} has been created. ")
+        self._logger.info(f"{client_ip} - New user {username} has been created. ")
 
-    @staticmethod
-    def backstage(logger: logging.Logger, username: str, tab: str):
-        logger.debug(f"User {username} switched to {tab} tab.")
+    def backstage(self, username: str, tab: str):
+        self._logger.debug(f"User {username} switched to {tab} tab.")
 
-    @staticmethod
-    def pagination(logger: logging.Logger, tab: str, num_of_posts: int):
-        logger.debug(f"Showing {num_of_posts} posts at {tab} tab.")
+    def pagination(self, tab: str, num_of_posts: int):
+        self._logger.debug(f"Showing {num_of_posts} posts at {tab} tab.")
 
 
 logger = Logger(env=ENV)
+logger_utils = LoggerUtils(logger)

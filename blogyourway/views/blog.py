@@ -6,7 +6,7 @@ from flask import Blueprint, abort, flash, jsonify, redirect, render_template, r
 from flask_login import current_user, login_user
 from markdown import Markdown
 
-from blogyourway.services.logging import LoggerUtils, logger
+from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
 from blogyourway.utils.comments import comment_utils, create_comment
 from blogyourway.utils.posts import (
@@ -16,7 +16,7 @@ from blogyourway.utils.posts import (
     paging,
     post_utils,
 )
-from blogyourway.utils.users import User, create_user
+from blogyourway.utils.users import UserInfo, user_utils
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
@@ -29,7 +29,7 @@ def landing_page():
 
     ###################################################################
 
-    LoggerUtils.page_visited(logger, request)
+    logger_utils.page_visited(request)
 
     ###################################################################
 
@@ -37,7 +37,7 @@ def landing_page():
 
     ###################################################################
 
-    return render_template("landing_page.html")
+    return render_template("landing-page.html")
 
 
 @blog.route("/login", methods=["GET"])
@@ -59,7 +59,7 @@ def login_get():
 
     ###################################################################
 
-    LoggerUtils.page_visited(logger, request)
+    logger_utils.page_visited(request)
 
     ###################################################################
 
@@ -79,24 +79,20 @@ def login_post():
     ###################################################################
 
     login_form = request.form.to_dict()
-    if not mongodb.user_login.exists("email", login_form["email"]):
+    if not mongodb.user_creds.exists("email", login_form["email"]):
         flash("Account not found. Please try again.", category="error")
-        LoggerUtils.login_failed(
-            logger=logger, request=request, msg=f"email {login_form['email']} not found"
-        )
+        logger_utils.login_failed(request=request, msg=f"email {login_form['email']} not found")
         return render_template("login.html")
 
     # check pw
-    user_creds = mongodb.user_login.find_one({"email": login_form["email"]})
+    user_creds = mongodb.user_creds.find_one({"email": login_form["email"]})
     encoded_input_pw = login_form["password"].encode("utf8")
     encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
-        LoggerUtils.login_failed(
-            logger=logger,
-            request=request,
-            msg=f"invalid password with email {login_form['email']}",
+        logger_utils.login_failed(
+            request=request, msg=f"invalid password with email {login_form['email']}"
         )
         return render_template("login.html")
 
@@ -106,9 +102,10 @@ def login_post():
 
     ###################################################################
 
-    user = User(user_creds)
-    login_user(user)
-    LoggerUtils.login_succeeded(logger=logger, request=request)
+    username = user_creds.get("username")
+    user_info = user_utils.get_user_info(username)
+    login_user(user_info)
+    logger_utils.login_succeeded(request=request, username=username)
     flash("Login Succeeded.", category="success")
 
     ###################################################################
@@ -117,7 +114,7 @@ def login_post():
 
     ###################################################################
 
-    return redirect(url_for("backstage.backstage_root"))
+    return redirect(url_for("blog.home", username=username))
 
 
 @blog.route("/register", methods=["GET"])
@@ -128,7 +125,7 @@ def register_get():
 
     ###################################################################
 
-    LoggerUtils.page_visited(logger, request)
+    logger_utils.page_visited(request)
 
     ###################################################################
 
@@ -147,8 +144,8 @@ def register_post():
 
     ###################################################################
 
-    username = create_user(request=request)
-    LoggerUtils.registration_succeeded(logger=logger, request=request)
+    user_utils.create_user(request=request)
+    logger_utils.registration_succeeded(request=request)
     flash("Registration succeeded.", category="success")
 
     ###################################################################
@@ -180,8 +177,6 @@ def home(username):
 
     user = mongodb.user_info.find_one({"username": username})
     featured_posts = post_utils.find_featured_posts_info(username)
-    for post in featured_posts:
-        post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
 
     ###################################################################
 
@@ -189,7 +184,7 @@ def home(username):
 
     ###################################################################
 
-    LoggerUtils.page_visited(logger, request)
+    logger_utils.page_visited(request)
 
     ###################################################################
 
@@ -245,7 +240,7 @@ def tag(username):
 
     ###################################################################
 
-    LoggerUtils.page_visited(logger, request)
+    logger_utils.page_visited(request)
 
     ###################################################################
 
@@ -288,7 +283,7 @@ def post(username, post_uid):
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
     target_post["content"] = md.convert(target_post["content"])
     target_post["content"] = html_to_blogpost(target_post["content"])
-    target_post["last_updated"] = target_post["last_updated"].strftime("%Y-%m-%d")
+    target_post["last_updated"] = target_post["last_updated"].strftime("%d %b %Y")
     target_post["readtime"] = str(readtime.of_html(target_post["content"]))
 
     # add comments
@@ -309,7 +304,7 @@ def post(username, post_uid):
 
     ###################################################################
 
-    LoggerUtils.page_visited(logger, request)
+    logger_utils.page_visited(request)
 
     ###################################################################
 
@@ -368,12 +363,7 @@ def about(username):
 
     ###################################################################
 
-    LoggerUtils.page_visited(logger, request)
-    mongodb.user_about.make_increments(
-        filter={"username": username},
-        increments={"about_views": 1},
-        # upsert=True
-    )
+    logger_utils.page_visited(request)
 
     ###################################################################
 
@@ -425,7 +415,7 @@ def blog_page(username):
 
     ###################################################################
 
-    LoggerUtils.page_visited(logger, request)
+    logger_utils.page_visited(request)
 
     ###################################################################
 
@@ -459,7 +449,7 @@ def social_link_endpoint(username):
 
     ###################################################################
 
-    logger.debug(f"redirect to social link {target_url}")
+    logger.debug(f"redirect to social-link[{link_idx}]: {target_url}")
 
     ###################################################################
 

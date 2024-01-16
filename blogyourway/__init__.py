@@ -13,7 +13,7 @@ from blogyourway.services.logging import logger, return_client_ip
 from blogyourway.services.mongo import mongodb
 from blogyourway.services.redis import redis
 from blogyourway.services.socketio import socketio
-from blogyourway.utils.users import User
+from blogyourway.utils.users import UserInfo, user_utils
 
 from .views import backstage_bp, blog_bp
 
@@ -63,12 +63,11 @@ def create_app() -> Flask:
     logger.debug("Login manager initialized.")
 
     @login_manager.user_loader
-    def user_loader(username: str) -> User:
+    def user_loader(username: str) -> UserInfo:
         """register user loader for current_user to access"""
-        user_creds = mongodb.user_login.find_one({"username": username})
-        user = User(user_creds)
+        user_info = user_utils.get_user_info(username)
         # return none if the ID is not valid
-        return user
+        return user_info
 
     # Register the custom error page
     @app.errorhandler(404)

@@ -291,7 +291,7 @@ class TestUIDGenerator:
 ###################################################################
 
 
-@patch("application.utils.common.datetime")
+@patch("blogyourway.utils.common.datetime")
 def test_get_today_as_in_develop(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
@@ -299,7 +299,7 @@ def test_get_today_as_in_develop(mock_datetime):
     assert today == datetime(2023, 9, 22, 12, 0, 0)
 
 
-@patch("application.utils.common.datetime")
+@patch("blogyourway.utils.common.datetime")
 def test_get_today_as_in_prod(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)
@@ -307,7 +307,7 @@ def test_get_today_as_in_prod(mock_datetime):
     assert today == datetime(2023, 9, 22, 20, 0, 0)
 
 
-@patch("application.utils.common.datetime")
+@patch("blogyourway.utils.common.datetime")
 def test_get_today_random_env_argument(mock_datetime):
 
     mock_datetime.now.return_value = datetime(2023, 9, 22, 12, 0, 0)

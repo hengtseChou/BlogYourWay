@@ -325,6 +325,8 @@ class PostUtils:
             .limit(10)
             .as_list()
         )
+        for post in result:
+            post["created_at"] = post["created_at"].strftime("%d %b, %Y")
         return result
 
     def find_all_posts_info(self, username: str):

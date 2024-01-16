@@ -109,10 +109,9 @@ class Database:
         comments_db = client["comments"]
         metrics_db = client["metrics"]
 
-        self._user_login = ExtendedCollection(users_db["user-login"])
+        self._user_creds = ExtendedCollection(users_db["user-creds"])
         self._user_info = ExtendedCollection(users_db["user-info"])
         self._user_about = ExtendedCollection(users_db["user-about"])
-        self._user_views = ExtendedCollection(users_db["user-views"])
         self._post_info = ExtendedCollection(posts_db["post-info"])
         self._post_content = ExtendedCollection(posts_db["post-content"])
         self._comment = ExtendedCollection(comments_db["comment"])
@@ -123,8 +122,8 @@ class Database:
         return self._client
 
     @property
-    def user_login(self):
-        return self._user_login
+    def user_creds(self):
+        return self._user_creds
 
     @property
     def user_info(self):
@@ -133,10 +132,6 @@ class Database:
     @property
     def user_about(self):
         return self._user_about
-
-    @property
-    def user_views(self):
-        return self._user_views
 
     @property
     def post_info(self):

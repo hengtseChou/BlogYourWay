@@ -1,11 +1,11 @@
 from mongomock import MongoClient
-from blogyourway.services.mongo import MyDatabase, ExtendedCollection, ExtendedCursor
+from blogyourway.services.mongo import Database, ExtendedCollection, ExtendedCursor
 
 mock_client = MongoClient()
 
 
 class TestMyDatabase:
-    test_db = MyDatabase(mock_client)
+    test_db = Database(mock_client)
 
     def test_user_login_type(self):
         assert isinstance(self.test_db.user_login, ExtendedCollection)

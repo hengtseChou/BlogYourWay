@@ -1,14 +1,12 @@
-from datetime import datetime, timedelta
-
 from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
-from blogyourway.services.logging import LoggerUtils, logger
+from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
 from blogyourway.utils.common import string_truncate, switch_to_bool
 from blogyourway.utils.posts import create_post, paging, post_utils, update_post
-from blogyourway.utils.users import delete_user
+from blogyourway.utils.users import user_utils
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 
@@ -28,8 +26,7 @@ def overview():
 
     ###################################################################
 
-    session["user_current_tab"] = "overview"
-    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="overview")
+    logger_utils.backstage(username=current_user.username, tab="overview")
 
     ###################################################################
 
@@ -66,7 +63,7 @@ def post_control():
     ###################################################################
 
     session["user_current_tab"] = "posts"
-    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="posts")
+    logger_utils.backstage(logger=logger, username=current_user.username, tab="posts")
 
     ###################################################################
 
@@ -97,7 +94,7 @@ def post_control():
         comment_count = mongodb.comment.count_documents({"post_uid": post["post_uid"]})
         post["comments"] = format(comment_count, ",")
 
-    LoggerUtils.pagination(logger=logger, tab="posts", num_of_posts=len(posts))
+    logger_utils.pagination(tab="posts", num_of_posts=len(posts))
 
     ###################################################################
 
@@ -108,7 +105,7 @@ def post_control():
     return render_template("posts.html", user=user, posts=posts, pagination=pagination)
 
 
-@backstage.route("/posts/edit/<post_uid>", methods=["GET"])
+@backstage.route("/edit/posts/<post_uid>", methods=["GET"])
 @login_required
 def edit_post_get(post_uid):
     ###################################################################
@@ -117,12 +114,7 @@ def edit_post_get(post_uid):
 
     ###################################################################
 
-    if session["user_current_tab"] != "posts":
-        flash("Access Denied!", category="error")
-        return redirect(url_for("backstage.post_control"))
-
-    session["user_current_tab"] = "edit_post"
-    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="edit_post")
+    logger_utils.backstage(username=current_user.username, tab="edit_post")
 
     ###################################################################
 
@@ -140,10 +132,10 @@ def edit_post_get(post_uid):
 
     ###################################################################
 
-    return render_template("edit_blogpost.html", post=target_post, user=user)
+    return render_template("edit-post.html", post=target_post, user=user)
 
 
-@backstage.route("/posts/edit/<post_uid>", methods=["POST"])
+@backstage.route("/edit/posts/<post_uid>", methods=["POST"])
 @login_required
 def edit_post_post(post_uid):
     ###################################################################
@@ -177,17 +169,13 @@ def edit_featured():
 
     ###################################################################
 
-    post_uid = request.args.get("uid")
-    if session["user_current_tab"] != "posts":
-        flash("Access Denied. ", category="error")
-        return redirect(url_for("backstage.post_control"))
-
     ###################################################################
 
     # main actions
 
     ###################################################################
 
+    post_uid = request.args.get("uid")
     truncated_post_title = string_truncate(
         mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
     )
@@ -231,17 +219,13 @@ def edit_archived():
 
     ###################################################################
 
-    post_uid = request.args.get("uid")
-    if session["user_current_tab"] not in ["posts", "archive"]:
-        flash("Access Denied. ", category="error")
-        return redirect(url_for("backstage.archive_control"))
-
     ###################################################################
 
     # main actions
 
     ###################################################################
 
+    post_uid = request.args.get("uid")
     truncated_post_title = string_truncate(
         mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
     )
@@ -282,8 +266,13 @@ def about_control_get():
 
     ###################################################################
 
-    session["user_current_tab"] = "about"
-    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="about")
+    logger_utils.backstage(username=current_user.username, tab="about")
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
 
     user_info = mongodb.user_info.find_one({"username": current_user.username})
     user_about = mongodb.user_about.find_one({"username": current_user.username})
@@ -295,7 +284,7 @@ def about_control_get():
 
     ###################################################################
 
-    return render_template("edit_about.html", user=user)
+    return render_template("edit-about.html", user=user)
 
 
 @backstage.route("/about", methods=["POST"])
@@ -329,7 +318,7 @@ def about_control_post():
 
     ###################################################################
 
-    return render_template("edit_about.html", user=user)
+    return render_template("edit-about.html", user=user)
 
 
 @backstage.route("/archive", methods=["GET"])
@@ -342,7 +331,7 @@ def archive_control():
     ###################################################################
 
     session["user_current_tab"] = "archive"
-    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="archive")
+    logger_utils.backstage(username=current_user.username, tab="archive")
 
     ###################################################################
 
@@ -358,7 +347,7 @@ def archive_control():
         comment_count = mongodb.comment.count_documents({"post_uid": post["post_uid"]})
         post["comments"] = format(comment_count, ",")
 
-    LoggerUtils.pagination(logger=logger, tab="archive", num_of_posts=len(posts))
+    logger_utils.pagination(tab="archive", num_of_posts=len(posts))
 
     ###################################################################
 
@@ -379,10 +368,6 @@ def delete_post():
     ###################################################################
 
     post_uid = request.args.get("uid")
-
-    if session["user_current_tab"] != "archive":
-        flash("Access Denied. ", category="error")
-        return redirect(url_for("backstage.archive_control"))
 
     ###################################################################
 
@@ -416,8 +401,7 @@ def social_links_control_get():
 
     ###################################################################
 
-    session["user_current_tab"] = "social-links"
-    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="social-links")
+    logger_utils.backstage(username=current_user.username, tab="social-links")
 
     ###################################################################
 
@@ -426,7 +410,7 @@ def social_links_control_get():
     ###################################################################
 
     user = mongodb.user_info.find_one({"username": current_user.username})
-    social_links = user["social-links"]
+    social_links = user["social_links"]
 
     ###################################################################
 
@@ -434,7 +418,7 @@ def social_links_control_get():
 
     ###################################################################
 
-    return render_template("social_links.html", social_links=social_links, user=user)
+    return render_template("social-links.html", social_links=social_links, user=user)
 
 
 @backstage.route("/social-links", methods=["POST"])
@@ -465,7 +449,7 @@ def social_links_control_post():
 
     ###################################################################
 
-    return render_template("social_links.html", social_links=updated_links, user=user)
+    return render_template("social-links.html", social_links=updated_links, user=user)
 
 
 @backstage.route("/theme", methods=["GET", "POST"])
@@ -477,8 +461,7 @@ def theme_control():
 
     ###################################################################
 
-    session["user_current_tab"] = "theme"
-    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="theme")
+    logger_utils.backstage(username=current_user.username, tab="theme")
 
     ###################################################################
 
@@ -506,8 +489,7 @@ def settings_control_get():
 
     ###################################################################
 
-    session["user_current_tab"] = "settings"
-    LoggerUtils.backstage(logger=logger, username=current_user.username, tab="settings")
+    logger_utils.backstage(username=current_user.username, tab="settings")
 
     ###################################################################
 
@@ -542,16 +524,16 @@ def settings_control_post():
     if general is not None:
         cover_url = request.form.get("cover_url")
         blogname = request.form.get("blogname")
-        enable_change_log = switch_to_bool(request.form.get("enable_change_log"))
-        enable_portfolio = switch_to_bool(request.form.get("enable_portfolio"))
+        enable_changelog = switch_to_bool(request.form.get("changelog_enabled"))
+        enable_portfolio = switch_to_bool(request.form.get("gallery_enabled"))
 
         mongodb.user_info.update_values(
             filter={"username": current_user.username},
             update={
                 "cover_url": cover_url,
                 "blogname": blogname,
-                "change_log_enabled": enable_change_log,
-                "portfolio_enabled": enable_portfolio,
+                "changelog_enabled": enable_changelog,
+                "gallery_enabled": enable_portfolio,
             },
         )
         logger.debug(f"general settings for {current_user.username} has been updated")
@@ -562,7 +544,7 @@ def settings_control_post():
         encoded_current_pw_input = current_pw_input.encode("utf8")
         new_pw = request.form.get("new")
 
-        user_creds = mongodb.user_login.find_one({"username": current_user.username})
+        user_creds = mongodb.user_creds.find_one({"username": current_user.username})
         user = mongodb.user_info.find_one({"username": current_user.username})
         encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
@@ -574,7 +556,7 @@ def settings_control_post():
 
         # update new password
         hashed_new_pw = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
-        mongodb.user_login.update_values(
+        mongodb.user_creds.update_values(
             filter={"username": current_user.username}, update={"password": hashed_new_pw}
         )
         logger.debug(f"password for user {current_user.username} has been updated.")
@@ -585,7 +567,7 @@ def settings_control_post():
         encoded_current_pw_input = current_pw_input.encode("utf8")
         username = current_user.username
         user = mongodb.user_info.find_one({"username": username})
-        user_creds = mongodb.user_login.find_one({"username": username})
+        user_creds = mongodb.user_creds.find_one({"username": username})
         encoded_valid_user_pw = user_creds["password"].encode("utf8")
 
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
@@ -594,8 +576,8 @@ def settings_control_post():
 
         # deletion procedure
         logout_user()
-        LoggerUtils.logout(logger=logger, request=request)
-        delete_user(username)
+        logger_utils.logout(request=request)
+        user_utils.delete_user(username)
         flash("Account deleted successfully!", category="success")
         logger.debug(f"User {username} has been deleted.")
         return redirect(url_for("blog.register_get"))
@@ -621,9 +603,9 @@ def logout():
     ###################################################################
 
     username = current_user.username
+    print(current_user.email)
     logout_user()
-    session.pop("user_current_tab", None)
-    LoggerUtils.logout(logger=logger, request=request)
+    logger_utils.logout(request=request, username=username)
 
     ###################################################################
 
