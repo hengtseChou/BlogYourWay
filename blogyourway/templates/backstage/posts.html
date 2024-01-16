@@ -127,10 +127,7 @@
           <div class="">
             <a href="" style="color: black">{{ post['title'] }}</a>
           </div>
-          <p
-            style="font-size: small; font-style: italic"
-            class="date-text mb-2"
-          >
+          <p class="grey-text mb-2" style="font-size: small; font-style: italic">
             Created at {{ post['created_at'] }}
           </p>
           <div>
@@ -156,13 +153,12 @@
         </div>
         <div class="col-2">
           <div class="text-end dropdown">
-            <a
+            <button
               class="btn dropdown-toggle"
-              href="#"
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"
-            ></a>
+            ></button>
             <ul class="dropdown-menu">
               <li>
                 <a class="dropdown-item" href="posts/edit/{{ post.post_uid }}"

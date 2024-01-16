@@ -89,9 +89,13 @@
     </script>
     <script>
       function updateCurrentYear() {
-        var currentDate = new Date();
-        var currentYear = currentDate.getFullYear();
-        document.getElementById("currentYear").innerHTML = currentYear;
+        var currentYearElement = document.getElementById("currentYear");
+        if (currentYearElement) {
+            // The element exists, proceed with updating the content
+            var currentDate = new Date();
+            var currentYear = currentDate.getFullYear();
+            currentYearElement.innerHTML = currentYear;
+        }
       }
       updateCurrentYear();
     </script>
