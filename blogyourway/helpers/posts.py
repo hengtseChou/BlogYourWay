@@ -1,5 +1,5 @@
 from math import ceil
-from dataclasses import field
+from dataclasses import field, dataclass
 from typing import List
 from datetime import datetime
 
@@ -10,7 +10,7 @@ from flask_login import current_user
 
 from blogyourway.config import ENV
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.utils.common import FormValidator, UIDGenerator, get_today, MyDataClass
+from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today, MyDataClass
 
 ###################################################################
 
@@ -18,7 +18,7 @@ from blogyourway.utils.common import FormValidator, UIDGenerator, get_today, MyD
 
 ###################################################################
 
-
+@dataclass
 class PostInfo(MyDataClass):
     post_uid: str
     title: str
@@ -33,7 +33,7 @@ class PostInfo(MyDataClass):
     views: int = 0
     reads: int = 0
 
-
+@dataclass
 class PostContent(MyDataClass):
     post_uid: str
     author: str
@@ -71,6 +71,14 @@ class NewPostSetup:
         )
         return new_post_content.as_dict()
 
+    def _increment_tags_for_user(self, new_post_info: dict) -> None:
+        username = new_post_info.get("author")
+        tags = new_post_info.get("tags")
+        tags_increments = {f"tags.{tag}": 1 for tag in tags}
+        self._db_handler.user_info.make_increments(
+            filter={"username": username}, increments=tags_increments, upsert=True
+        )
+
     def create_post(self, author_name: str, request: Request) -> str:
         validator = FormValidator()
         if not self._form_validatd(request=request, validator=validator):
@@ -81,6 +89,7 @@ class NewPostSetup:
 
         self._db_handler.post_info.insert_one(new_post_info)
         self._db_handler.post_content.insert_one(new_post_content)
+        self._increment_tags_for_user(new_post_info)
 
         return self._post_uid
 

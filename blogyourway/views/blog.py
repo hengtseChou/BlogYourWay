@@ -8,15 +8,16 @@ from markdown import Markdown
 
 from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
-from blogyourway.utils.comments import comment_utils, create_comment
-from blogyourway.utils.posts import (
+from blogyourway.helpers.comments import comment_utils, create_comment
+from blogyourway.helpers.posts import (
     all_tags,
     html_to_about,
     html_to_blogpost,
     paging,
     post_utils,
 )
-from blogyourway.utils.users import UserInfo, user_utils
+from blogyourway.helpers.users import UserInfo, user_utils
+from blogyourway.helpers.common import sort_dict
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
@@ -397,7 +398,7 @@ def blog_page(username):
     POSTS_EACH_PAGE = 10
 
     # create a tag dict
-    tags_dict = all_tags.from_user(username)
+    tags_dict = sort_dict(user["tags"])
 
     # set up pagination
     pagination = paging.setup(username, current_page, POSTS_EACH_PAGE)

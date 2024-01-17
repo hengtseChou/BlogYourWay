@@ -5,11 +5,11 @@ import requests
 from flask import Request
 from flask_login import current_user
 
-from dataclasses import field
+from dataclasses import field, dataclass
 from datetime import datetime
 from blogyourway.config import ENV, RECAPTCHA_SECRET
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.utils.common import FormValidator, UIDGenerator, get_today, MyDataClass
+from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today, MyDataClass
 
 ###################################################################
 
@@ -17,7 +17,7 @@ from blogyourway.utils.common import FormValidator, UIDGenerator, get_today, MyD
 
 ###################################################################
 
-
+@dataclass
 class Comment(MyDataClass):
     name: str
     email: str
@@ -32,8 +32,7 @@ class Comment(MyDataClass):
         self.profile_link = f"/@{self.name}/about"
         self.profile_img_url = f"/@{self.name}/get-profile-img"
 
-
-
+@dataclass
 class AnonymousComment(MyDataClass):
     name: str
     email: str

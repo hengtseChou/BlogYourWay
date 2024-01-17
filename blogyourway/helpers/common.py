@@ -153,7 +153,7 @@ class UIDGenerator:
             
 @dataclass
 class MyDataClass:
-    """Implemented additional method of converting into a dict.
+    """Dataclass with additional method of converting itself into a dict.
     """
     def as_dict(self):
         return {k: v for k, v in asdict(self).items()}
@@ -199,3 +199,10 @@ def string_truncate(text: str, max_len: int) -> str:
     if len(text) <= max_len:
         return text
     return f"{text[:max_len]}..."
+
+def sort_dict(_dict: dict) -> dict:
+    sorted_dict_key = sorted(_dict, key=_dict.get, reverse=True)
+    sorted_dict = {}
+    for key in sorted_dict_key:
+        sorted_dict[key] = _dict[key]
+    return sorted_dict

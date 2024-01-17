@@ -1,5 +1,5 @@
 import logging
-from dataclasses import  field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import List, Dict
 
@@ -10,9 +10,9 @@ from flask_login import UserMixin
 from blogyourway.config import ENV
 from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.utils.common import FormValidator, get_today, MyDataClass
+from blogyourway.helpers.common import FormValidator, get_today, MyDataClass
 
-
+@dataclass
 class UserInfo(UserMixin, MyDataClass):
     username: str
     email: str
@@ -32,14 +32,14 @@ class UserInfo(UserMixin, MyDataClass):
         return self.username
 
 
-
+@dataclass
 class UserCreds(MyDataClass):
     username: str
     email: str
     password: str
 
 
-
+@dataclass
 class UserAbout(MyDataClass):
     username: str
     about: str = ""

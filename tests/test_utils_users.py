@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 import pytest
 from flask_login import login_user, current_user
 from blogyourway import create_app
-from blogyourway.utils.users import User, NewUserSetup
+from blogyourway.helpers.users import User, NewUserSetup
 
 ###################################################################
 

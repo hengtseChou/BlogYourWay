@@ -13,7 +13,7 @@ from blogyourway.services.logging import logger, return_client_ip
 from blogyourway.services.mongo import mongodb
 from blogyourway.services.redis import redis
 from blogyourway.services.socketio import socketio
-from blogyourway.utils.users import UserInfo, user_utils
+from blogyourway.helpers.users import UserInfo, user_utils
 
 from .views import backstage_bp, blog_bp
 
