@@ -10,13 +10,12 @@ from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
 from blogyourway.helpers.comments import comment_utils, create_comment
 from blogyourway.helpers.posts import (
-    all_tags,
     html_to_about,
     html_to_blogpost,
     paging,
     post_utils,
 )
-from blogyourway.helpers.users import UserInfo, user_utils
+from blogyourway.helpers.users import user_utils
 from blogyourway.helpers.common import sort_dict
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
@@ -215,8 +214,8 @@ def tag(username):
 
     # abort for unknown tag
     tag = unquote(tag_url_encoded)
-    tags_found = all_tags.from_user(username)
-    if tag not in tags_found.keys():
+    user_info = user_utils.get_user_info(username)
+    if tag not in user_info.tags.keys():
         logger.debug(f"invalid tag {tag}")
         abort(404)
 
@@ -226,7 +225,6 @@ def tag(username):
 
     ###################################################################
 
-    user = mongodb.user_info.find_one({"username": username})
     posts = post_utils.find_all_posts_info(username)
 
     posts_with_desired_tag = []
@@ -249,7 +247,7 @@ def tag(username):
 
     ###################################################################
 
-    return render_template("tag.html", user=user, posts=posts_with_desired_tag, tag=tag)
+    return render_template("tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag)
 
 
 @blog.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
@@ -387,20 +385,16 @@ def blog_page(username):
         logger.debug(f"invalid username {username}")
         abort(404)
 
+
     ###################################################################
 
     # main actions
 
     ###################################################################
-
-    user = mongodb.user_info.find_one({"username": username})
-    current_page = request.args.get("page", default=1, type=int)
-    POSTS_EACH_PAGE = 10
-
-    # create a tag dict
-    tags_dict = sort_dict(user["tags"])
-
+    
     # set up pagination
+    current_page = request.args.get("page", default=1, type=int)
+    POSTS_EACH_PAGE = 5
     pagination = paging.setup(username, current_page, POSTS_EACH_PAGE)
 
     # skip and limit posts with given page
@@ -409,6 +403,10 @@ def blog_page(username):
     )
     for post in posts:
         post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
+
+    # user info
+    user_info = user_utils.get_user_info(username)
+    tags = sort_dict(user_info.tags)
 
     ###################################################################
 
@@ -425,7 +423,7 @@ def blog_page(username):
     ###################################################################
 
     return render_template(
-        "blog.html", user=user, posts=posts, tags=tags_dict, pagination=pagination
+        "blog.html", user=user_info, posts=posts, tags=tags, pagination=pagination
     )
 
 

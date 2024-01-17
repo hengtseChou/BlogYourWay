@@ -12,6 +12,7 @@ from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
 from blogyourway.helpers.common import FormValidator, get_today, MyDataClass
 
+
 @dataclass
 class UserInfo(UserMixin, MyDataClass):
     username: str
@@ -20,12 +21,16 @@ class UserInfo(UserMixin, MyDataClass):
     cover_url: str = ""
     profile_img_url: str = ""
     short_bio: str = ""
+    created_at: datetime = None
     social_links: List[str] = field(default_factory=list)
     changelog_enabled: bool = False
     gallery_enabled: bool = False
-    created_at: datetime = field(default=get_today(env=ENV))
     total_views: int = 0
     tags: Dict[str, int] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if self.created_at is None:
+            self.created_at = get_today(env=ENV)
 
     # override the get_id method from UserMixin
     def get_id(self):
@@ -43,7 +48,6 @@ class UserCreds(MyDataClass):
 class UserAbout(MyDataClass):
     username: str
     about: str = ""
-
 
 
 ###################################################################
@@ -168,7 +172,6 @@ class UserDeletionSetup:
             self._db_handler.comment.delete_many({"post_uid": post_uid})
         self._logger.debug(f"Deleted relevant comments from user {self._user_to_be_deleted}.")
 
-
     def _remove_all_user_data(self):
         self._db_handler.user_creds.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_info.delete_one({"username": self._user_to_be_deleted})
@@ -231,10 +234,11 @@ class UserUtils:
         """
         user_registration = NewUserSetup(request, self._db_handler, self._logger)
         return user_registration.create_user()
-    
-    def total_view_increment(self, username: str) -> None:
 
-        self._db_handler.user_info.make_increments(filter={"username": username}, increments={"total_views": 1})
+    def total_view_increment(self, username: str) -> None:
+        self._db_handler.user_info.make_increments(
+            filter={"username": username}, increments={"total_views": 1}
+        )
 
 
 user_utils = UserUtils(db_handler=mongodb, logger=logger)

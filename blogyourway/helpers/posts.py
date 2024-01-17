@@ -18,6 +18,7 @@ from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today, M
 
 ###################################################################
 
+
 @dataclass
 class PostInfo(MyDataClass):
     post_uid: str
@@ -26,12 +27,17 @@ class PostInfo(MyDataClass):
     author: str
     tags: List[str]
     cover_url: str
-    created_at: datetime = field(default=get_today(env=ENV))
-    last_updated: datetime = field(default=get_today(env=ENV))
+    created_at: datetime = field(init=False)
+    last_updated: datetime = field(init=False)
     archived: bool = False
     featured: bool = False
     views: int = 0
     reads: int = 0
+
+    def __post_init__(self):
+        self.created_at = get_today(env=ENV)
+        self.last_updated = get_today(env=ENV)
+
 
 @dataclass
 class PostContent(MyDataClass):
@@ -111,26 +117,55 @@ def create_post(request):
 ###################################################################
 
 
+@dataclass
+class UpdatedPostInfo(MyDataClass):
+    title: str
+    subtitle: str
+    tags: List[str]
+    cover_url: str
+    last_updated: datetime = field(init=False)
+
+    def __post_init__(self):
+        self.last_updated = get_today(env=ENV)
+
+
+@dataclass
+class UpdatedPostContent(MyDataClass):
+    content: str
+
+
 class PostUpdateSetup:
-    def __init__(self, db_handler=Database) -> None:
+    def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
     def _form_validatd(self, request: Request, validator: FormValidator):
         return True
 
+    def _update_tags_for_user(self, post_uid: str, new_tags: dict) -> None:
+        post_info = self._db_handler.post_info.find_one({"post_uid": post_uid})
+        author = post_info.get("author")
+        old_tags = post_info.get("tags")
+        tags_reduction = {f"tags.{tag}": -1 for tag in old_tags}
+        self._db_handler.user_info.make_increments(
+            filter={"username": author}, increments=tags_reduction
+        )
+        tags_increment = {f"tags.{tag}": 1 for tag in new_tags}
+        self._db_handler.user_info.make_increments(
+            filter={"username": author}, increments=tags_increment, upsert=True
+        )
+
     def _updated_post_info(self, request: Request) -> dict:
-        updated_post_info = {
-            "title": request.form.get("title"),
-            "subtitle": request.form.get("subtitle"),
-            "tags": process_tags(request.form.get("tags")),
-            "cover_url": request.form.get("cover_url"),
-            "last_updated": get_today(env=ENV),
-        }
-        return updated_post_info
+        updated_post_info = UpdatedPostInfo(
+            title=request.form.get("title"),
+            subtitle=request.form.get("subtitle"),
+            tags=process_tags(request.form.get("tags")),
+            cover_url=request.form.get("cover_url"),
+        )
+        return updated_post_info.as_dict()
 
     def _updated_post_content(self, request: Request) -> dict:
-        updated_post_content = {"content": request.form.get("content")}
-        return updated_post_content
+        updated_post_content = UpdatedPostContent(content=request.form.get("content"))
+        return updated_post_content.as_dict()
 
     def update_post(self, post_uid: str, request: Request):
         validator = FormValidator()
@@ -140,6 +175,7 @@ class PostUpdateSetup:
         updated_post_info = self._updated_post_info(request=request)
         updated_post_content = self._updated_post_content(request=request)
 
+        self._update_tags_for_user(post_uid, updated_post_info.get("tags"))
         self._db_handler.post_info.update_values(
             filter={"post_uid": post_uid}, update=updated_post_info
         )
@@ -231,38 +267,6 @@ def html_to_about(html):
 
 ###################################################################
 
-# counting tags in posts
-
-###################################################################
-
-
-class AllTags:
-    def __init__(self, db_handler: Database) -> None:
-        self._db_handler = db_handler
-
-    def from_user(self, username):
-        result = self._db_handler.post_info.find({"author": username, "archived": False})
-        tags_dict = {}
-        for post in result:
-            post_tags = post["tags"]
-            for tag in post_tags:
-                if tag not in tags_dict:
-                    tags_dict[tag] = 1
-                else:
-                    tags_dict[tag] += 1
-
-        sorted_tags_key = sorted(tags_dict, key=tags_dict.get, reverse=True)
-        sorted_tags = {}
-        for key in sorted_tags_key:
-            sorted_tags[key] = tags_dict[key]
-
-        return sorted_tags
-
-
-all_tags = AllTags(db_handler=mongodb)
-
-###################################################################
-
 # blogpost pagination
 
 ###################################################################
@@ -291,15 +295,17 @@ class Paging:
         else:
             max_page = ceil(num_not_archieved / posts_per_page)
 
-        if current_page > max_page:
+        if current_page > max_page or current_page < 1:
             # not a legal page number
             abort(404)
 
         if current_page * posts_per_page < num_not_archieved:
-            self._allow_previous_page = True
+            self._allow_next_page = True
 
         if current_page > 1:
-            self._allow_next_page = True
+            self._allow_previous_page = True
+
+        return self
 
     @property
     def is_previous_page_allowed(self):

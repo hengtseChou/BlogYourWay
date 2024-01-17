@@ -7,7 +7,7 @@
     <button
       class="btn panel-btn ms-auto me-3"
       data-bs-toggle="modal"
-      data-bs-target="#myModal"
+      data-bs-target="#newPostModal"
     >
       + New Post
     </button>
@@ -88,16 +88,16 @@
   <div class="container">
     <div class="row">
       <div class="col-6 text-start">
-        {% if pagination.is_previous_page_allowed %} {% set previous_page =
-        pagination.current_page - 1 %}
+        {% if pagination.is_previous_page_allowed %} 
+        {% set previous_page = pagination.current_page - 1 %}
         <a href="posts?page={{ previous_page }}" class="btn"
           ><span class="mx-1">⬅️</span> Newer Posts
         </a>
         {% endif %}
       </div>
       <div class="col-6 text-end">
-        {% if pagination.is_next_page_allowed %} {% set next_page =
-        pagination.current_page + 1 %}
+        {% if pagination.is_next_page_allowed %} 
+        {% set next_page = pagination.current_page + 1 %}
         <a href="posts?page={{ next_page }}" class="btn">
           Older Posts <span class="mx-1">➡️</span></a
         >
@@ -113,7 +113,7 @@
     <button
       class="btn panel-btn ms-auto me-3"
       data-bs-toggle="modal"
-      data-bs-target="#myModal"
+      data-bs-target="#newPostModal"
     >
       + New Post
     </button>
@@ -199,19 +199,19 @@
   <!-- pagination -->
   <div class="row">
     <div class="col-6 text-start">
-      {% if pagination.is_previous_page_allowed %} {% set previous_page =
-      pagination.current_page - 1 %}
-      <a href="posts?page={{ previous_page }}" class="btn"
-        ><span class="mx-1">⬅️</span> Newer Posts
+      {% if pagination.is_previous_page_allowed %} 
+      {% set previous_page = pagination.current_page - 1 %}
+      <a href="posts?page={{ previous_page }}" class="btn">
+        <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Newer Posts
       </a>
       {% endif %}
     </div>
     <div class="col-6 text-end">
-      {% if pagination.is_next_page_allowed %} {% set next_page =
-      pagination.current_page + 1 %}
+      {% if pagination.is_next_page_allowed %} 
+      {% set next_page = pagination.current_page + 1 %}
       <a href="posts?page={{ next_page }}" class="btn">
-        Older Posts <span class="mx-1">➡️</span></a
-      >
+        Older Posts <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
+      </a>
       {% endif %}
     </div>
   </div>
@@ -219,7 +219,7 @@
 <!-- Modal -->
 <div
   class="modal fade"
-  id="myModal"
+  id="newPostModal"
   data-bs-backdrop="static"
   data-bs-keyboard="false"
   tabindex="-1"
@@ -229,7 +229,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="myModalLabel">Write About Something...</h5>
+        <h5 class="modal-title">Write About Something...</h5>
         <button
           type="button"
           class="btn-close"
@@ -241,8 +241,8 @@
         <div class="modal-body">
           <div class="mb-4">
             <label for="title" class="form-label ms-2 label-text">
-              · Title</label
-            >
+              · Title
+            </label>
             <input
               type="text"
               class="form-control border-underline"
@@ -252,8 +252,8 @@
           </div>
           <div class="mb-4">
             <label for="subtitle" class="form-label ms-2 label-text">
-              · Subtitle</label
-            >
+              · Subtitle
+            </label>
             <input
               type="text"
               class="form-control border-underline"
@@ -273,8 +273,8 @@
           </div>
           <div class="mb-4">
             <label for="cover" class="form-label ms-2 label-text">
-              · Cover image</label
-            >
+              · Cover image
+            </label>
             <input
               type="text"
               class="form-control border-underline"
