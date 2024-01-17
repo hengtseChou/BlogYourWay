@@ -5,6 +5,8 @@ import random
 import re
 import string
 from datetime import datetime, timedelta
+from dataclasses import asdict, dataclass, field
+
 
 from blogyourway.services.mongo import Database
 
@@ -148,6 +150,13 @@ class UIDGenerator:
 # some other utility functions
 
 ###################################################################
+            
+@dataclass
+class MyDataClass:
+    """Implemented additional method of converting into a dict.
+    """
+    def as_dict(self):
+        return {k: v for k, v in asdict(self).items()}
 
 
 def get_today(env) -> datetime:

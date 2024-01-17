@@ -1,4 +1,8 @@
 from math import ceil
+from dataclasses import field
+from typing import List
+from datetime import datetime
+
 
 from bs4 import BeautifulSoup
 from flask import Request, abort
@@ -6,7 +10,7 @@ from flask_login import current_user
 
 from blogyourway.config import ENV
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.utils.common import FormValidator, UIDGenerator, get_today
+from blogyourway.utils.common import FormValidator, UIDGenerator, get_today, MyDataClass
 
 ###################################################################
 
@@ -15,7 +19,28 @@ from blogyourway.utils.common import FormValidator, UIDGenerator, get_today
 ###################################################################
 
 
-def process_tags(tag_string: str):
+class PostInfo(MyDataClass):
+    post_uid: str
+    title: str
+    subtitle: str
+    author: str
+    tags: List[str]
+    cover_url: str
+    created_at: datetime = field(default=get_today(env=ENV))
+    last_updated: datetime = field(default=get_today(env=ENV))
+    archived: bool = False
+    featured: bool = False
+    views: int = 0
+    reads: int = 0
+
+
+class PostContent(MyDataClass):
+    post_uid: str
+    author: str
+    content: str
+
+
+def process_tags(tag_string: str) -> list:
     if tag_string == "":
         return []
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
@@ -30,37 +55,21 @@ class NewPostSetup:
         return True
 
     def _create_post_info(self, request: Request, author_name: str) -> dict:
-        new_post_info = {
-            "post_uid": self._post_uid,
-            "title": request.form.get("title"),
-            "subtitle": request.form.get("subtitle"),
-            "author": author_name,
-            "tags": process_tags(request.form.get("tags")),
-            "cover_url": request.form.get("cover_url"),
-            "created_at": get_today(env=ENV),
-            "last_updated": get_today(env=ENV),
-            "archived": False,
-            "featured": False,
-            "views": 0,
-            "reads": 0,
-        }
-        return new_post_info
+        new_post_info = PostInfo(
+            post_uid=self._post_uid,
+            title=request.form.get("title"),
+            subtitle=request.form.get("subtitle"),
+            author=author_name,
+            tags=process_tags(request.form.get("tags")),
+            cover_url=request.form.get("cover_url"),
+        )
+        return new_post_info.as_dict()
 
     def _create_post_content(self, request: Request, author_name: str) -> dict:
-        new_post_content = {
-            "post_uid": self._post_uid,
-            "author": author_name,
-            "content": request.form.get("content"),
-        }
-        return new_post_content
-
-    def _create_post_view_sources(self, author_name: str) -> dict:
-        new_post_view_sources = {
-            "post_uid": self._post_uid,
-            "author": author_name,
-            "sources": {},
-        }
-        return new_post_view_sources
+        new_post_content = PostContent(
+            post_uid=self._post_uid, author=author_name, content=request.form.get("content")
+        )
+        return new_post_content.as_dict()
 
     def create_post(self, author_name: str, request: Request) -> str:
         validator = FormValidator()

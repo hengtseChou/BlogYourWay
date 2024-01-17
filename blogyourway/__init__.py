@@ -99,13 +99,13 @@ def create_app() -> Flask:
     logger.debug("Flask-socketio initialized.")
 
     # session
-    # session = Session()
-    # app.config["SESSION_TYPE"] = "redis"
-    # app.config["SESSION_PERMANENT"] = False
-    # app.config["SESSION_USE_SIGNER"] = True
-    # app.config["SESSION_REDIS"] = redis
-    # session.init_app(app)
-    # logger.debug("Flask-session initialized.")
+    session = Session()
+    app.config["SESSION_TYPE"] = "redis"
+    app.config["SESSION_PERMANENT"] = False
+    app.config["SESSION_USE_SIGNER"] = True
+    app.config["SESSION_REDIS"] = redis
+    session.init_app(app)
+    logger.debug("Flask-session initialized.")
 
     # check connection
     try:

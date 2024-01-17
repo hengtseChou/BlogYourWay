@@ -20,7 +20,7 @@
     width: 100%;
     height: 5px;
     z-index: 1000;
-    top: 68px;
+    top: 56px;
     left: 0;
   }
 
@@ -141,8 +141,7 @@
           <label for="comment-text" class="form-label">
             Comment <span style="color: red">*</span>
           </label>
-          <textarea class="form-control" id="comment-text" rows="3" name="comment" required>
-          </textarea>
+          <textarea class="form-control" id="comment-text"  rows="3" name="comment"></textarea>
         </div>
         <div class="text-end mb-4">
           <button class="g-recaptcha btn panel-btn text-center" data-sitekey="6LcxqWgnAAAAALNxCvk7tu1tVBikm_zKG54nCP3C" data-callback="onSubmit" style="width: 25%; min-width: 150px" onclick="return validateForm()" >
@@ -163,7 +162,7 @@
         <!-- registered user -->
         <div class="mb-4 d-flex flex-row">
           <a href="{{ comment['profile_link'] }}">
-            <img class="profile-lg ajax-profile-pic" src="{{ comment['profile_pic'] }}" alt="profile-pic" />
+            <img class="profile-lg ajax-profile-pic" src="{{ comment['profile_img_url'] }}" alt="profile-img" />
           </a>
           <div class="ms-3 mt-1">
             <div>
@@ -180,7 +179,7 @@
         {% else %}
         <!-- visitor -->
         <div class="mb-4 d-flex flex-row">
-          <img class="profile-lg" src="{{ comment['profile_pic'] }}" alt="profile-pic"/>
+          <img class="profile-lg" src="{{ comment['profile_img_url'] }}" alt="profile-img"/>
           <div class="ms-3">
             <div>
               <span class="fw-bold">{{ comment['name'] }}</span>

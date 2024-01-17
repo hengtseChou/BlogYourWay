@@ -63,7 +63,7 @@ def post_control():
     ###################################################################
 
     session["user_current_tab"] = "posts"
-    logger_utils.backstage(logger=logger, username=current_user.username, tab="posts")
+    logger_utils.backstage(username=current_user.username, tab="posts")
 
     ###################################################################
 

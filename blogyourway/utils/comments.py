@@ -5,15 +5,49 @@ import requests
 from flask import Request
 from flask_login import current_user
 
+from dataclasses import field
+from datetime import datetime
 from blogyourway.config import ENV, RECAPTCHA_SECRET
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.utils.common import FormValidator, UIDGenerator, get_today
+from blogyourway.utils.common import FormValidator, UIDGenerator, get_today, MyDataClass
 
 ###################################################################
 
 # new comment setup
 
 ###################################################################
+
+
+class Comment(MyDataClass):
+    name: str
+    email: str
+    profile_link: str = field(init=False)
+    profile_img_url: str = field(init=False)
+    post_uid: str
+    comment_uid: str
+    comment: str
+    created_at: datetime = field(default=get_today(env=ENV))
+
+    def __post_init__(self):
+        self.profile_link = f"/@{self.name}/about"
+        self.profile_img_url = f"/@{self.name}/get-profile-img"
+
+
+
+class AnonymousComment(MyDataClass):
+    name: str
+    email: str
+    profile_link: str = field(default="", init=False)
+    post_uid: str
+    comment_uid: str
+    comment: str
+    profile_img_url: str = "/static/_img/visitor.png"
+    created_at: datetime = field(default=get_today(env=ENV))
+
+    def __post_init__(self):
+        if self.email != "":
+            self.profile_link = f"mailto:{self.email}"
+
 
 
 class NewCommentSetup:
@@ -50,45 +84,6 @@ class NewCommentSetup:
             return True
         return False
 
-    def _is_authenticated_commenter(self, user):
-        if user.is_authenticated:
-            return True
-        return False
-
-    def _create_authenticated_comment(
-        self, request: Request, commenter_name: str, post_uid: str
-    ) -> str:
-        commenter = self._db_handler.user_info.find_one({"username": commenter_name})
-        new_comment = {
-            "name": commenter["username"],
-            "email": commenter["email"],
-            "profile_link": f'/{commenter["username"]}/about',
-            "profile_pic": f'/@{commenter["username"]}/get-profile-pic',
-            "post_uid": post_uid,
-            "comment_uid": self._comment_uid,
-            "comment": request.form.get("comment"),
-            "created_at": get_today(env=ENV),
-        }
-
-        return new_comment
-
-    def _create_anonymous_comment(self, request: Request, post_uid: str) -> str:
-        new_comment = {
-            "name": f'{request.form.get("name")} (Visitor)',
-            "email": request.form.get("email"),
-            "profile_link": "",
-            "profile_pic": "/static/img/visitor.png",
-            "post_uid": post_uid,
-            "comment_uid": self._comment_uid,
-            "comment": request.form.get("comment"),
-            "created_at": get_today(env=ENV),
-        }
-
-        if new_comment["email"]:
-            new_comment["profile_link"] = f'mailto:{new_comment["email"]}'
-
-        return new_comment
-
     def create_comment(self, post_uid: str, request: Request):
         validator = FormValidator()
         if not self._form_validated(request, validator):
@@ -96,13 +91,24 @@ class NewCommentSetup:
         if not self._recaptcha_verified(request):
             return
 
-        if self._is_authenticated_commenter(current_user):
-            new_comment = self._create_authenticated_comment(
-                request=request, commenter_name=current_user.username, post_uid=post_uid
+        if current_user.is_authenticated:
+            new_comment = Comment(
+                name=current_user.username,
+                email=current_user.email,
+                post_uid=post_uid,
+                comment_uid=self._comment_uid,
+                comment=request.form.get("comment"),
             )
         else:
-            new_comment = self._create_anonymous_comment(request, post_uid)
+            new_comment = AnonymousComment(
+                name=f'{request.form.get("name")} (Visitor)',
+                email=request.form.get("email"),
+                post_uid=post_uid,
+                comment_uid=self._comment_uid,
+                comment=request.form.get("comment"),
+            )
 
+        new_comment = new_comment.as_dict()
         self._db_handler.comment.insert_one(new_comment)
 
 

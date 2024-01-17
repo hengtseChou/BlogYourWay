@@ -460,14 +460,14 @@ def social_link_endpoint(username):
     return redirect(target_url)
 
 
-@blog.route("/@<username>/get-profile-pic", methods=["GET"])
-def profile_pic_endpoint(username):
+@blog.route("/@<username>/get-profile-img", methods=["GET"])
+def profile_img_endpoint(username):
     user = mongodb.user_info.find_one({"username": username})
 
     if user["profile_img_url"]:
         profile_img_url = user["profile_img_url"]
     else:
-        profile_img_url = "/static/img/default-profile.png"
+        profile_img_url = "/static/_img/default-profile.png"
 
     return jsonify({"imageUrl": profile_img_url})
 

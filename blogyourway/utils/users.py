@@ -1,7 +1,7 @@
 import logging
-from dataclasses import asdict, dataclass, field
+from dataclasses import  field
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 
 import bcrypt
 from flask import Request, flash, render_template
@@ -10,48 +10,40 @@ from flask_login import UserMixin
 from blogyourway.config import ENV
 from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.utils.common import FormValidator, get_today
+from blogyourway.utils.common import FormValidator, get_today, MyDataClass
 
 
-@dataclass
-class UserInfo(UserMixin):
+class UserInfo(UserMixin, MyDataClass):
     username: str
     email: str
     blogname: str
     cover_url: str = ""
     profile_img_url: str = ""
     short_bio: str = ""
-    social_links: List = field(default_factory=lambda: [])
+    social_links: List[str] = field(default_factory=list)
     changelog_enabled: bool = False
     gallery_enabled: bool = False
-    created_at: datetime = field(default_factory=lambda: get_today(env=ENV))
+    created_at: datetime = field(default=get_today(env=ENV))
     total_views: int = 0
+    tags: Dict[str, int] = field(default_factory=dict)
 
     # override the get_id method from UserMixin
     def get_id(self):
         return self.username
 
-    def as_dict(self):
-        return {k: v for k, v in asdict(self).items()}
 
 
-@dataclass
-class UserCreds:
+class UserCreds(MyDataClass):
     username: str
     email: str
     password: str
 
-    def as_dict(self):
-        return {k: v for k, v in asdict(self).items()}
 
 
-@dataclass
-class UserAbout:
+class UserAbout(MyDataClass):
     username: str
     about: str = ""
 
-    def as_dict(self):
-        return {k: v for k, v in asdict(self).items()}
 
 
 ###################################################################
@@ -104,10 +96,6 @@ class NewUserSetup:
     def _create_user_about(self, username: str) -> dict:
         new_user_about = UserAbout(username=username)
         return new_user_about.as_dict()
-
-    # def _create_user_views(self, username: str) -> dict:
-    #     new_user_views = {"username": username, "unique_visitors": []}
-    #     return new_user_views
 
     @staticmethod
     def _hash_password(password: str) -> str:
@@ -180,8 +168,6 @@ class UserDeletionSetup:
             self._db_handler.comment.delete_many({"post_uid": post_uid})
         self._logger.debug(f"Deleted relevant comments from user {self._user_to_be_deleted}.")
 
-    def _remove_related_metrics(self):
-        pass
 
     def _remove_all_user_data(self):
         self._db_handler.user_creds.delete_one({"username": self._user_to_be_deleted})
@@ -195,7 +181,6 @@ class UserDeletionSetup:
         self._remove_all_posts()
         self._remove_all_related_comments(target_posts_uid)
         # this place should includes removing metrics data for the user
-        self._remove_related_metrics()
         self._remove_all_user_data()
 
 
@@ -246,6 +231,10 @@ class UserUtils:
         """
         user_registration = NewUserSetup(request, self._db_handler, self._logger)
         return user_registration.create_user()
+    
+    def total_view_increment(self, username: str) -> None:
+
+        self._db_handler.user_info.make_increments(filter={"username": username}, increments={"total_views": 1})
 
 
 user_utils = UserUtils(db_handler=mongodb, logger=logger)
