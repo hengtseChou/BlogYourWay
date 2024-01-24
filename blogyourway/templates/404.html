@@ -1,6 +1,6 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% block head %}
-<style>
+  <style>
   body {
     background-color: #333;
     color: #fff;
@@ -20,20 +20,19 @@
   .hover-pointer:hover {
     cursor: pointer;
   }
-</style>
-{% endblock %} 
-{% block title %} 404 Not Found · BlogYourWay{% endblock %} 
-{% block body%}
-
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>404 Not Found!</h1>
-      <p class="mt-4">Oops! The page you are looking for could not be found.</p>
-      <p onclick="window.history.go(-1); return false;" class="hover-pointer">
-        <u>👉 Go to the previous page</u>
-      </p>
+  </style>
+{% endblock %}
+{% block title %}404 Not Found · BlogYourWay{% endblock %}
+{% block body %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>404 Not Found!</h1>
+        <p class="mt-4">Oops! The page you are looking for could not be found.</p>
+        <p onclick="window.history.go(-1); return false;" class="hover-pointer">
+          <u>👉 Go to the previous page</u>
+        </p>
+      </div>
     </div>
   </div>
-</div>
 {% endblock %}

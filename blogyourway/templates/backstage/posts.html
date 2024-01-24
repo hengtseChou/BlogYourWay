@@ -1,398 +1,327 @@
-{% extends 'panel.html' %} 
+{% extends 'panel.html' %}
 {% block panel %}
-<!-- desktop view -->
-<div class="d-none d-md-block">
-  <div class="d-flex align-items-center" style="height: 53px; margin-top: 20px">
-    <h1 class="ms-2">Posts</h1>
-    <button
-      class="btn panel-btn ms-auto me-3"
-      data-bs-toggle="modal"
-      data-bs-target="#newPostModal"
-    >
-      + New Post
-    </button>
-  </div>
-  <hr />
-  <p class="ms-2">
-    Featured posts will be on your home page, sorted by time order.
-  </p>
-  <div class="col-11">
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th style="width: 40%">Title</th>
-            <th style="width: 16%">Created At</th>
-            <th style="width: 10%" class="text-center">Views</th>
-            <th style="width: 10%" class="text-center">Comments</th>
-            <th style="width: 8%" class="text-center">Edit</th>
-            <th style="width: 8%" class="text-center">Feature</th>
-            <th style="width: 8%" class="text-center">Archive</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for post in posts %}
-          <tr>
-            <td class="align-middle">
-              <a
-                href="stats/posts/{{ post.post_uid }}"
-                class="me-1"
-                style="color: black"
-                >{{ post['title'] }}</a
-              >
-              {% if post['featured'] %}
-              <span class="badge rounded-pill bg-success">Featured</span>
-              {% endif %}
-            </td>
-            <td>{{ post['created_at'] }}</td>
-            <td class="text-center">{{ post['views'] }}</td>
-            <td class="text-center">{{ post['comments'] }}</td>
-            <td class="text-center">
-              <a
-                href="edit/posts/{{ post.post_uid }}"
-                style="color: black; font-size: 18px"
-                ><i class="fa-regular fa-pen-to-square"></i
-              ></a>
-            </td>
-            {% if post['featured'] %}
-            <td class="text-center">
-              <a
-                href="edit-featured?featured=to_false&uid={{ post.post_uid }}"
-                style="color: black; font-size: 18px"
-                ><i class="fa-regular fa-square-minus"></i
-              ></a>
-            </td>
-            {% else %}
-            <td class="text-center">
-              <a
-                href="edit-featured?featured=to_true&uid={{ post.post_uid }}"
-                style="color: black; font-size: 18px"
-                ><i class="fa-regular fa-square-plus"></i
-              ></a>
-            </td>
-            {% endif %}
-            <td class="text-center">
-              <a
-                href="edit-archived?archived=to_true&uid={{ post.post_uid }}"
-                style="color: black; font-size: 18px"
-                ><i class="fa-solid fa-box-archive"></i
-              ></a>
-            </td>
-            <td></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <!-- desktop view -->
+  <div class="d-none d-md-block">
+    <div class="d-flex align-items-center"
+         style="height: 53px;
+                margin-top: 20px">
+      <h1 class="ms-2">Posts</h1>
+      <button class="btn panel-btn ms-auto me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#newPostModal">+ New Post</button>
+    </div>
+    <hr />
+    <p class="ms-2">Featured posts will be on your home page, sorted by time order.</p>
+    <div class="col-11">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width: 40%">Title</th>
+              <th style="width: 16%">Created At</th>
+              <th style="width: 10%" class="text-center">Views</th>
+              <th style="width: 10%" class="text-center">Comments</th>
+              <th style="width: 8%" class="text-center">Edit</th>
+              <th style="width: 8%" class="text-center">Feature</th>
+              <th style="width: 8%" class="text-center">Archive</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in posts %}
+              <tr>
+                <td class="align-middle">
+                  <a href="stats/posts/{{ post.post_uid }}"
+                     class="me-1"
+                     style="color: black">{{ post['title'] }}</a>
+                  {% if post['featured'] %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
+                </td>
+                <td>{{ post['created_at'] }}</td>
+                <td class="text-center">{{ post['views'] }}</td>
+                <td class="text-center">{{ post['comments'] }}</td>
+                <td class="text-center">
+                  <a href="edit/posts/{{ post.post_uid }}"
+                     style="color: black;
+                            font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
+                </td>
+                {% if post['featured'] %}
+                  <td class="text-center">
+                    <a href="edit-featured?featured=to_false&uid={{ post.post_uid }}"
+                       style="color: black;
+                              font-size: 18px"><i class="fa-regular fa-square-minus"></i></a>
+                  </td>
+                {% else %}
+                  <td class="text-center">
+                    <a href="edit-featured?featured=to_true&uid={{ post.post_uid }}"
+                       style="color: black;
+                              font-size: 18px"><i class="fa-regular fa-square-plus"></i></a>
+                  </td>
+                {% endif %}
+                <td class="text-center">
+                  <a href="edit-archived?archived=to_true&uid={{ post.post_uid }}"
+                     style="color: black;
+                            font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
+                </td>
+                <td></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-6 text-start">
+          {% if pagination.is_previous_page_allowed %}
+            {% set previous_page = pagination.current_page - 1 %}
+            <a href="posts?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts
+            </a>
+          {% endif %}
+        </div>
+        <div class="col-6 text-end">
+          {% if pagination.is_next_page_allowed %}
+            {% set next_page = pagination.current_page + 1 %}
+            <a href="posts?page={{ next_page }}" class="btn">
+            Older Posts <span class="mx-1">➡️</span></a>
+          {% endif %}
+        </div>
+      </div>
     </div>
   </div>
-  <div class="container">
+  <!-- mobile view -->
+  <div class="d-block d-md-none mt-2">
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="ms-2 mt-3">Posts</h2>
+      <button class="btn panel-btn ms-auto me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#newPostModal">+ New Post</button>
+    </div>
+    <hr />
+    {% for post in posts %}
+      <div class="card rounded-0 py-2 overflow-visible my-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-10">
+              <div class="">
+                <a href="" style="color: black">{{ post['title'] }}</a>
+              </div>
+              <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ post['created_at'] }}</p>
+              <div>
+                {% if post['featured'] %}
+                  <button class="btn btn-sm btn-success rounded-4 me-2"
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
+                          data-bs-title="Featured posts will be on your home page">Featured</button>
+                {% endif %}
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['views']
+                }}</span>
+                <span><i class="fa-regular fa-comment me-2"></i>{{ post['comments']
+                }}</span>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="text-end dropdown">
+                <button class="btn dropdown-toggle"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"></button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="edit/posts/{{ post.post_uid }}">Edit</a>
+                  </li>
+                  {% if post['featured'] %}
+                    <li>
+                      <a class="dropdown-item"
+                         href="edit-featured?featured=to_false&uid={{ post.post_uid }}">Remove from featured</a>
+                    </li>
+                  {% else %}
+                    <li>
+                      <a class="dropdown-item"
+                         href="edit-featured?featured=to_true&uid={{ post.post_uid }}">Add to featured</a>
+                    </li>
+                  {% endif %}
+                  <li>
+                    <a class="dropdown-item"
+                       href="edit-archived?archived=to_true&uid={{ post.post_uid }}">Move to archive</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    <!-- pagination -->
     <div class="row">
       <div class="col-6 text-start">
-        {% if pagination.is_previous_page_allowed %} 
-        {% set previous_page = pagination.current_page - 1 %}
-        <a href="posts?page={{ previous_page }}" class="btn"
-          ><span class="mx-1">⬅️</span> Newer Posts
-        </a>
+        {% if pagination.is_previous_page_allowed %}
+          {% set previous_page = pagination.current_page - 1 %}
+          <a href="posts?page={{ previous_page }}" class="btn">
+            <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Newer Posts
+          </a>
         {% endif %}
       </div>
       <div class="col-6 text-end">
-        {% if pagination.is_next_page_allowed %} 
-        {% set next_page = pagination.current_page + 1 %}
-        <a href="posts?page={{ next_page }}" class="btn">
-          Older Posts <span class="mx-1">➡️</span></a
-        >
+        {% if pagination.is_next_page_allowed %}
+          {% set next_page = pagination.current_page + 1 %}
+          <a href="posts?page={{ next_page }}" class="btn">
+            Older Posts <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
+          </a>
         {% endif %}
       </div>
     </div>
   </div>
-</div>
-<!-- mobile view -->
-<div class="d-block d-md-none mt-2">
-  <div class="d-flex align-items-center mb-3">
-    <h2 class="ms-2 mt-3">Posts</h2>
-    <button
-      class="btn panel-btn ms-auto me-3"
-      data-bs-toggle="modal"
-      data-bs-target="#newPostModal"
-    >
-      + New Post
-    </button>
-  </div>
-  <hr />
-  {% for post in posts %}
-  <div class="card rounded-0 py-2 overflow-visible my-3">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-10">
-          <div class="">
-            <a href="" style="color: black">{{ post['title'] }}</a>
-          </div>
-          <p class="grey-text mb-2" style="font-size: small; font-style: italic">
-            Created at {{ post['created_at'] }}
-          </p>
-          <div>
-            {% if post['featured'] %}
-            <button
-              class="btn btn-sm btn-success rounded-4 me-2"
-              data-bs-toggle="tooltip"
-              data-bs-placement="top"
-              data-bs-title="Featured posts will be on your home page"
-            >
-              Featured
-            </button>
-            {% endif %}
-            <span class="me-2"
-              ><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['views']
-              }}</span
-            >
-            <span
-              ><i class="fa-regular fa-comment me-2"></i>{{ post['comments']
-              }}</span
-            >
-          </div>
+  <!-- Modal -->
+  <div class="modal fade"
+       id="newPostModal"
+       data-bs-backdrop="static"
+       data-bs-keyboard="false"
+       tabindex="-1"
+       aria-labelledby="myModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Write About Something...</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
         </div>
-        <div class="col-2">
-          <div class="text-end dropdown">
-            <button
-              class="btn dropdown-toggle"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            ></button>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" href="edit/posts/{{ post.post_uid }}"
-                  >Edit</a
-                >
-              </li>
-              {% if post['featured'] %}
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="edit-featured?featured=to_false&uid={{ post.post_uid }}"
-                  >Remove from featured</a
-                >
-              </li>
-              {% else %}
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="edit-featured?featured=to_true&uid={{ post.post_uid }}"
-                  >Add to featured</a
-                >
-              </li>
-              {% endif %}
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="edit-archived?archived=to_true&uid={{  post.post_uid }}"
-                  >Move to archive</a
-                >
-              </li>
-            </ul>
+        <form method="post" autocomplete="off" id="form">
+          <div class="modal-body">
+            <div class="mb-4">
+              <label for="title" class="form-label ms-2 label-text">· Title</label>
+              <input type="text"
+                     class="form-control border-underline"
+                     id="title"
+                     name="title" />
+            </div>
+            <div class="mb-4">
+              <label for="subtitle" class="form-label ms-2 label-text">· Subtitle</label>
+              <input type="text"
+                     class="form-control border-underline"
+                     id="subtitle"
+                     name="subtitle" />
+            </div>
+            <div class="mb-4">
+              <label for="tags" class="form-label ms-2 label-text">· Tags</label>
+              <input type="text"
+                     class="form-control border-underline"
+                     id="tags"
+                     name="tags"
+                     placeholder="Separate your tags with ','" />
+            </div>
+            <div class="mb-4">
+              <label for="cover" class="form-label ms-2 label-text">· Cover image</label>
+              <input type="text"
+                     class="form-control border-underline"
+                     id="cover"
+                     name="cover_url"
+                     placeholder="Insert image url" />
+            </div>
+            <div class="mb-4">
+              <textarea id="editor"
+                        name="content"
+                        style="white-space: pre-line"
+                        placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+            </div>
           </div>
-        </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            <button type="submit"
+                    class="btn panel-btn"
+                    onclick="return validateNewPost()">Submit</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-  {% endfor %}
-  <!-- pagination -->
-  <div class="row">
-    <div class="col-6 text-start">
-      {% if pagination.is_previous_page_allowed %} 
-      {% set previous_page = pagination.current_page - 1 %}
-      <a href="posts?page={{ previous_page }}" class="btn">
-        <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Newer Posts
-      </a>
-      {% endif %}
-    </div>
-    <div class="col-6 text-end">
-      {% if pagination.is_next_page_allowed %} 
-      {% set next_page = pagination.current_page + 1 %}
-      <a href="posts?page={{ next_page }}" class="btn">
-        Older Posts <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
-      </a>
-      {% endif %}
-    </div>
-  </div>
-</div>
-<!-- Modal -->
-<div
-  class="modal fade"
-  id="newPostModal"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  tabindex="-1"
-  aria-labelledby="myModalLabel"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Write About Something...</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <form method="post" autocomplete="off" id="form">
-        <div class="modal-body">
-          <div class="mb-4">
-            <label for="title" class="form-label ms-2 label-text">
-              · Title
-            </label>
-            <input
-              type="text"
-              class="form-control border-underline"
-              id="title"
-              name="title"
-            />
-          </div>
-          <div class="mb-4">
-            <label for="subtitle" class="form-label ms-2 label-text">
-              · Subtitle
-            </label>
-            <input
-              type="text"
-              class="form-control border-underline"
-              id="subtitle"
-              name="subtitle"
-            />
-          </div>
-          <div class="mb-4">
-            <label for="tags" class="form-label ms-2 label-text"> · Tags</label>
-            <input
-              type="text"
-              class="form-control border-underline"
-              id="tags"
-              name="tags"
-              placeholder="Separate your tags with ','"
-            />
-          </div>
-          <div class="mb-4">
-            <label for="cover" class="form-label ms-2 label-text">
-              · Cover image
-            </label>
-            <input
-              type="text"
-              class="form-control border-underline"
-              id="cover"
-              name="cover_url"
-              placeholder="Insert image url"
-            />
-          </div>
-          <div class="mb-4">
-            <textarea
-              id="editor"
-              name="content"
-              style="white-space: pre-line"
-              placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."
-            ></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-            Close
-          </button>
-          <button
-            type="submit"
-            class="btn panel-btn"
-            onclick="return validateNewPost()"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-{% endblock %} {% block script %}
-<script>
-  const mobile_nav_btn = document.getElementById("mobile-nav-posts");
-  mobile_nav_btn.style.color = "white";
+{% endblock %}
+{% block script %}
+  <script>
+    const mobile_nav_btn = document.getElementById("mobile-nav-posts");
+    mobile_nav_btn.style.color = "white";
 
-  const tooltipTriggerList = document.querySelectorAll(
-    '[data-bs-toggle="tooltip"]',
-  );
-  const tooltipList = [...tooltipTriggerList].map(
-    (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
-  );
+    const tooltipTriggerList = document.querySelectorAll(
+      '[data-bs-toggle="tooltip"]',
+    );
+    const tooltipList = [...tooltipTriggerList].map(
+      (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
+    );
 
-  const easyMDE = new EasyMDE({
-    element: document.getElementById("editor"),
-    autofocus: true,
-    toolbar: [
-      "bold",
-      "italic",
-      "heading",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "code",
-      "quote",
-      "unordered-list",
-      "ordered-list",
-      "horizontal-rule",
-      "|",
-      "link",
-      "image",
-      "|",
-      "preview",
-      "guide",
-    ],
-    minHeight: "200px",
-    spellChecker: false,
-  });
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("form");
-    form.addEventListener("keypress", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-      }
+    const easyMDE = new EasyMDE({
+      element: document.getElementById("editor"),
+      autofocus: true,
+      toolbar: [
+        "bold",
+        "italic",
+        "heading",
+        "|",
+        "undo",
+        "redo",
+        "|",
+        "code",
+        "quote",
+        "unordered-list",
+        "ordered-list",
+        "horizontal-rule",
+        "|",
+        "link",
+        "image",
+        "|",
+        "preview",
+        "guide",
+      ],
+      minHeight: "200px",
+      spellChecker: false,
     });
-  });
 
-  function validateNewPost() {
-    var title = document.getElementById("title").value;
-    if (title.trim() === "") {
-      alert("You must enter the title for the post.");
-      return false;
-    }
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("form");
+      form.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+        }
+      });
+    });
 
-    var subtitle = document.getElementById("subtitle").value;
-    if (subtitle.trim() === "") {
-      alert("Add a short description for this post as a subtitle.");
-      return false;
-    }
+    function validateNewPost() {
+      var title = document.getElementById("title").value;
+      if (title.trim() === "") {
+        alert("You must enter the title for the post.");
+        return false;
+      }
 
-    var tags = document.getElementById("tags").value;
-    if (tags.trim() === "") {
-      alert("You must add one tag to the post at least.");
-      return false;
-    }
-    const tagRegex =
-      /^[\u4e00-\u9fa5a-zA-Z\s]+(,\s*[\u4e00-\u9fa5a-zA-Z\s]+)*$/;
-    if (!tagRegex.test(tags)) {
-      alert("You must separate tags with a comma (',').");
-      return false;
-    }
+      var subtitle = document.getElementById("subtitle").value;
+      if (subtitle.trim() === "") {
+        alert("Add a short description for this post as a subtitle.");
+        return false;
+      }
 
-    var cover = document.getElementById("cover").value;
-    if (cover.trim() === "") {
-      alert("You must add a cover image for the post.");
-      return false;
-    }
+      var tags = document.getElementById("tags").value;
+      if (tags.trim() === "") {
+        alert("You must add one tag to the post at least.");
+        return false;
+      }
+      const tagRegex =
+        /^[\u4e00-\u9fa5a-zA-Z\s]+(,\s*[\u4e00-\u9fa5a-zA-Z\s]+)*$/;
+      if (!tagRegex.test(tags)) {
+        alert("You must separate tags with a comma (',').");
+        return false;
+      }
 
-    if (easyMDE.value().trim() === "") {
-      alert("You did not write anything for your post!");
-      return false;
-    }
+      var cover = document.getElementById("cover").value;
+      if (cover.trim() === "") {
+        alert("You must add a cover image for the post.");
+        return false;
+      }
 
-    return true;
-  }
-</script>
+      if (easyMDE.value().trim() === "") {
+        alert("You did not write anything for your post!");
+        return false;
+      }
+
+      return true;
+    }
+  </script>
 {% endblock %}

@@ -1,139 +1,114 @@
-{% extends 'panel.html' %} {% block panel %}
-<div style="height: 53px; margin-top: 20px">
-  <h1 class="ms-2">Social Links</h1>
-</div>
-<hr />
-<div class="row">
-  <div class="col-12 col-lg-9">
-    <p class="ms-2">Modify social links on your navbar, as you wish.</p>
-    <form method="post" autocomplete="off">
-      <div id="inputContainer" class="mb-4">
-        {% for count in range(social_links|length) %} 
-        {% set platform = social_links[count]['platform'] %} 
-        {% set url = social_links[count]['url'] %}
-        <div class="input-group mb-2">
-          <span class="input-group-text">Link {{ count + 1 }}</span>
-          <input
-            type="text"
-            class="form-control"
-            name="url-{{ count + 1 }}"
-            placeholder="Url goes here"
-            value="{{ url }}"
-          />
-          <select class="form-select" name="platform-{{ count + 1 }}">
-            <option value="facebook" {% if platform=="facebook" %} selected {% endif %}>
-              Facebook
-            </option>
-            <option value="instagram" {% if platform=="instagram" %} selected {% endif %}>
-              Instagram
-            </option>
-            <option value="twitter" {% if platform=="twitter" %} selected {% endif %}>
-              Twitter
-            </option>
-            <option value="medium" {% if platform=="medium" %} selected {% endif %}>
-              Medium
-            </option>
-            <option value="linkedin" {% if platform=="linkedin" %} selected {% endif %}>
-              Linkedin
-            </option>
-            <option value="github" {% if platform=="github" %} selected {% endif %}>
-              Github
-            </option>
-          </select>
-          <button class="btn panel-btn btn-remove" aria-label="Close">
-            Remove
-          </button>
-        </div>
-        {% endfor %}
-      </div>
-      <div class="d-flex flex-row mb-4">
-        <button
-          id="addButton"
-          class="btn panel-btn me-2 text-center"
-          style="width: 10%; min-width: 90px"
-        >
-          Add
-        </button>
-        <button
-          type="submit"
-          class="btn panel-btn me-2 text-center"
-          style="width: 20%; min-width: 180px"
-        >
-          Submit Changes
-        </button>
-      </div>
-    </form>
+{% extends 'panel.html' %}
+{% block panel %}
+  <div style="height: 53px; margin-top: 20px">
+    <h1 class="ms-2">Social Links</h1>
   </div>
-</div>
+  <hr />
+  <div class="row">
+    <div class="col-12 col-lg-9">
+      <p class="ms-2">Modify social links on your navbar, as you wish.</p>
+      <form method="post" autocomplete="off">
+        <div id="inputContainer" class="mb-4">
+          {% for count in range(social_links|length) %}
+            {% set platform = social_links[count]['platform'] %}
+            {% set url = social_links[count]['url'] %}
+            <div class="input-group mb-2">
+              <span class="input-group-text">Link {{ count + 1 }}</span>
+              <input type="text"
+                     class="form-control"
+                     name="url-{{ count + 1 }}"
+                     placeholder="Url goes here"
+                     value="{{ url }}" />
+              <select class="form-select" name="platform-{{ count + 1 }}">
+                <option value="facebook" {% if platform=="facebook" %}selected{% endif %}>Facebook</option>
+                <option value="instagram" {% if platform=="instagram" %}selected{% endif %}>Instagram</option>
+                <option value="twitter" {% if platform=="twitter" %}selected{% endif %}>Twitter</option>
+                <option value="medium" {% if platform=="medium" %}selected{% endif %}>Medium</option>
+                <option value="linkedin" {% if platform=="linkedin" %}selected{% endif %}>Linkedin</option>
+                <option value="github" {% if platform=="github" %}selected{% endif %}>Github</option>
+              </select>
+              <button class="btn panel-btn btn-remove" aria-label="Close">Remove</button>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="d-flex flex-row mb-4">
+          <button id="addButton"
+                  class="btn panel-btn me-2 text-center"
+                  style="width: 10%;
+                         min-width: 90px">Add</button>
+          <button type="submit"
+                  class="btn panel-btn me-2 text-center"
+                  style="width: 20%;
+                         min-width: 180px">Submit Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    const mobile_nav_btn = document.getElementById("mobile-nav-social-links");
+    mobile_nav_btn.style.color = "white";
 
-{% endblock %} {% block script %}
-<script>
-  const mobile_nav_btn = document.getElementById("mobile-nav-social-links");
-  mobile_nav_btn.style.color = "white";
+    $(document).ready(function () {
+      var maxInputs = 5; // Maximum input fields allowed
+      var inputWrapper = $("#inputContainer"); // Input field container
+      var addButton = $("#addButton"); // Add button ID
 
-  $(document).ready(function () {
-    var maxInputs = 5; // Maximum input fields allowed
-    var inputWrapper = $("#inputContainer"); // Input field container
-    var addButton = $("#addButton"); // Add button ID
+      var count = 1; // Initial input field count
+      $(addButton).click(function (e) {
+        e.preventDefault();
+        if (count < maxInputs) {
+          // Check the maximum allowed input fields
+          count++;
+          addInputField(count);
+        }
+      });
 
-    var count = 1; // Initial input field count
-    $(addButton).click(function (e) {
-      e.preventDefault();
-      if (count < maxInputs) {
-        // Check the maximum allowed input fields
-        count++;
-        addInputField(count);
+      // Event delegation for dynamically added "Close" buttons
+      $(inputWrapper).on("click", ".btn-remove", function (e) {
+        e.preventDefault();
+        $(this).closest(".input-group").remove();
+        count--; // Decrement the input field count
+        updateOrderNumbers();
+      });
+
+      function addInputField(orderNumber) {
+        var newInput =
+          '<div class="input-group mb-2">' +
+          '<span class="input-group-text">Link ' +
+          orderNumber +
+          "</span>" +
+          '<input type="text" class="form-control" name="url-' + orderNumber + '" placeholder="Url goes here">' +
+          '<select class="form-select" name="platform-' + orderNumber + '">' +
+          '<option value="facebook">Facebook</option>' +
+          '<option value="instagram">Instagram</option>' +
+          '<option value="twitter">Twitter</option>' +
+          '<option value="medium">Medium</option>' +
+          '<option value="linkedin">Linkedin</option>' +
+          '<option value="github">Github</option>' +
+          "</select>" +
+          '<button class="btn panel-btn btn-remove" aria-label="Close">Remove</button>' +
+          "</div>";
+        $(inputWrapper).append(newInput);
+        updateOrderNumbers();
+      }
+
+      function updateOrderNumbers() {
+        var inputGroups = $(".input-group");
+        inputGroups.each(function (index) {
+          var orderNumber = index + 1;
+          $(this)
+            .find(".input-group-text")
+            .text("Link " + orderNumber);
+          $(this)
+            .find("input")
+            .attr("name", "url-" + orderNumber);
+          $(this)
+            .find("select")
+            .attr("name", "platform-" + orderNumber);
+        });
       }
     });
-
-    // Event delegation for dynamically added "Close" buttons
-    $(inputWrapper).on("click", ".btn-remove", function (e) {
-      e.preventDefault();
-      $(this).closest(".input-group").remove();
-      count--; // Decrement the input field count
-      updateOrderNumbers();
-    });
-
-    function addInputField(orderNumber) {
-      var newInput =
-        '<div class="input-group mb-2">' +
-        '<span class="input-group-text">Link ' +
-        orderNumber +
-        "</span>" +
-        '<input type="text" class="form-control" name="url-' +
-        orderNumber +
-        '" placeholder="Url goes here">' +
-        '<select class="form-select" name="platform-' +
-        orderNumber +
-        '">' +
-        '<option value="facebook">Facebook</option>' +
-        '<option value="instagram">Instagram</option>' +
-        '<option value="twitter">Twitter</option>' +
-        '<option value="medium">Medium</option>' +
-        '<option value="linkedin">Linkedin</option>' +
-        '<option value="github">Github</option>' +
-        "</select>" +
-        '<button class="btn panel-btn btn-remove" aria-label="Close">Remove</button>' +
-        "</div>";
-      $(inputWrapper).append(newInput);
-      updateOrderNumbers();
-    }
-
-    function updateOrderNumbers() {
-      var inputGroups = $(".input-group");
-      inputGroups.each(function (index) {
-        var orderNumber = index + 1;
-        $(this)
-          .find(".input-group-text")
-          .text("Link " + orderNumber);
-        $(this)
-          .find("input")
-          .attr("name", "url-" + orderNumber);
-        $(this)
-          .find("select")
-          .attr("name", "platform-" + orderNumber);
-      });
-    }
-  });
-</script>
+  </script>
 {% endblock %}

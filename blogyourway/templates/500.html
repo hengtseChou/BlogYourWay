@@ -1,6 +1,6 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% block head %}
-<style>
+  <style>
   body {
     background-color: #333;
     color: #fff;
@@ -44,41 +44,41 @@
     right: 33px;
     width: 33px;
   }
-</style>
-{% endblock %} 
-{% block title %}500 Internal Server Error · BlogYourWay{% endblock %} 
-{% block body%}
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <div>
-        <span class="error-num">5</span>
-        <div class="eye"></div>
-        <div class="eye"></div>
-        <p class="sub-text">
-          Something went wrong. We're <i>looking</i> to see what
-          happened.
-        </p>
-        <p onclick="window.history.go(-1); return false;" class="hover-pointer">
-          <u>👉 Go to the previous page</u>
-        </p>
+  </style>
+{% endblock %}
+{% block title %}500 Internal Server Error · BlogYourWay{% endblock %}
+{% block body %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div>
+          <span class="error-num">5</span>
+          <div class="eye"></div>
+          <div class="eye"></div>
+          <p class="sub-text">
+            Something went wrong. We're <i>looking</i> to see what
+            happened.
+          </p>
+          <p onclick="window.history.go(-1); return false;" class="hover-pointer">
+            <u>👉 Go to the previous page</u>
+          </p>
+        </div>
       </div>
     </div>
   </div>
-</div>
-{% endblock %} 
+{% endblock %}
 {% block script %}
-<script>
-  $("body").mousemove(function (event) {
-    var e = $(".eye");
-    var x = e.offset().left + e.width() / 2;
-    var y = e.offset().top + e.height() / 2;
-    var rad = Math.atan2(event.pageX - x, event.pageY - y);
-    var rot = rad * (180 / Math.PI) * -1 + 180;
-    e.css({
-      "-webkit-transform": "rotate(" + rot + "deg)",
-      transform: "rotate(" + rot + "deg)",
+  <script>
+    $("body").mousemove(function (event) {
+      var e = $(".eye");
+      var x = e.offset().left + e.width() / 2;
+      var y = e.offset().top + e.height() / 2;
+      var rad = Math.atan2(event.pageX - x, event.pageY - y);
+      var rot = rad * (180 / Math.PI) * -1 + 180;
+      e.css({
+        "-webkit-transform": "rotate(" + rot + "deg)",
+        transform: "rotate(" + rot + "deg)",
+      });
     });
-  });
-</script>
+  </script>
 {% endblock %}

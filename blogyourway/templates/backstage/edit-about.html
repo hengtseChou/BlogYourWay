@@ -1,96 +1,83 @@
-{% extends 'panel.html' %} {% block panel %}
-<div style="height: 53px; margin-top: 20px">
-  <h1 class="ms-2">About</h1>
-</div>
-<hr />
-<form method="post" autocomplete="off" id="form" class="row">
-  <div class="col-12 col-md-9">
-    <div class="mb-4">
-      <label for="title" class="form-label ms-2 label-text">
-        · Add/update profile image</label
-      >
-      <input
-        type="text"
-        class="form-control border-underline"
-        id="profile_img_url"
-        name="profile_img_url"
-        value="{{ user.profile_img_url }}"
-        placeholder="Insert image url"
-      />
-    </div>
-    <div class="mb-4">
-      <label for="short_bio" class="form-label ms-2 label-text">
-        · Short bio</label
-      >
-      <input
-        type="text"
-        class="form-control border-underline"
-        id="short_bio"
-        name="short_bio"
-        placeholder="Bio on your home page"
-        value="{{ user.short_bio }}"
-      />
-    </div>
-    <div class="mb-4">
-      <label for="editor" class="mb-3 ms-2 label-text">
-        · Edit your About page</label
-      >
-      <textarea
-        id="editor"
-        name="about"
-        style="white-space: pre-line"
-        placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."
-      ></textarea>
-    </div>
-    <div class="text-end mb-5">
-      <button
-        type="submit"
-        class="btn panel-btn text-center"
-        style="width: 20%; min-width: 150px"
-      >
-        Save Changes
-      </button>
-    </div>
+{% extends 'panel.html' %}
+{% block panel %}
+  <div style="height: 53px; margin-top: 20px">
+    <h1 class="ms-2">About</h1>
   </div>
-</form>
-{% endblock %} {% block script %}
-<script>
-  const mobile_nav_btn = document.getElementById("mobile-nav-about");
-  mobile_nav_btn.style.color = "white";
+  <hr />
+  <form method="post" autocomplete="off" id="form" class="row">
+    <div class="col-12 col-md-9">
+      <div class="mb-4">
+        <label for="title" class="form-label ms-2 label-text">· Add/update profile image</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="profile_img_url"
+               name="profile_img_url"
+               value="{{ user.profile_img_url }}"
+               placeholder="Insert image url" />
+      </div>
+      <div class="mb-4">
+        <label for="short_bio" class="form-label ms-2 label-text">· Short bio</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="short_bio"
+               name="short_bio"
+               placeholder="Bio on your home page"
+               value="{{ user.short_bio }}" />
+      </div>
+      <div class="mb-4">
+        <label for="editor" class="mb-3 ms-2 label-text">· Edit your About page</label>
+        <textarea id="editor"
+                  name="about"
+                  style="white-space: pre-line"
+                  placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+      </div>
+      <div class="text-end mb-5">
+        <button type="submit"
+                class="btn panel-btn text-center"
+                style="width: 20%;
+                       min-width: 150px">Save Changes</button>
+      </div>
+    </div>
+  </form>
+{% endblock %}
+{% block script %}
+  <script>
+    const mobile_nav_btn = document.getElementById("mobile-nav-about");
+    mobile_nav_btn.style.color = "white";
 
-  const easyMDE = new EasyMDE({
-    element: document.getElementById("editor"),
-    autofocus: true,
-    toolbar: [
-      "bold",
-      "italic",
-      "heading",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "code",
-      "quote",
-      "unordered-list",
-      "ordered-list",
-      "horizontal-rule",
-      "|",
-      "link",
-      "image",
-      "|",
-      "preview",
-      "guide",
-    ],
-    minHeight: "200px",
-    spellChecker: false,
-  });
-  var user_about = {{ user.about | tojson | safe}};
-  easyMDE.value(user_about);
-  const form = document.getElementById("form");
-    form.addEventListener("keypress", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-      }
+    const easyMDE = new EasyMDE({
+      element: document.getElementById("editor"),
+      autofocus: true,
+      toolbar: [
+        "bold",
+        "italic",
+        "heading",
+        "|",
+        "undo",
+        "redo",
+        "|",
+        "code",
+        "quote",
+        "unordered-list",
+        "ordered-list",
+        "horizontal-rule",
+        "|",
+        "link",
+        "image",
+        "|",
+        "preview",
+        "guide",
+      ],
+      minHeight: "200px",
+      spellChecker: false,
     });
-</script>
+    var user_about = {{ user.about | tojson | safe }};
+    easyMDE.value(user_about);
+    const form = document.getElementById("form");
+      form.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+        }
+      });
+  </script>
 {% endblock %}

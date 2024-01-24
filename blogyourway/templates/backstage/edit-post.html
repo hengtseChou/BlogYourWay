@@ -1,154 +1,136 @@
-{% extends 'panel.html' %} 
+{% extends 'panel.html' %}
 {% block panel %}
-<div style="height: 53px; margin-top: 20px">
-  <h1 class="ms-2">Edit</h1>
-</div>
-<hr />
-<form method="post" autocomplete="off" id="form" class="row">
-  <div class="col-12 col-md-9">
-    <div class="mb-4">
-      <label for="title" class="form-label ms-2 label-text"> · Title</label>
-      <input
-        type="text"
-        class="form-control border-underline"
-        id="title"
-        name="title"
-        value="{{ post.title }}"
-      />
-    </div>
-    <div class="mb-4">
-      <label for="subtitle" class="form-label ms-2 label-text">
-        · Subtitle
-      </label>
-      <input
-        type="text"
-        class="form-control border-underline"
-        id="subtitle"
-        name="subtitle"
-        value="{{ post.subtitle }}"
-      />
-    </div>
-    <div class="mb-4">
-      <label for="tags" class="form-label ms-2 label-text"> · Tags</label>
-      <input
-        type="text"
-        class="form-control border-underline"
-        id="tags"
-        name="tags"
-        placeholder="Separate your tags with ','"
-        value="{{ post.tags }}"
-      />
-    </div>
-    <div class="mb-4">
-      <label for="cover" class="form-label ms-2 label-text">
-        · Cover image
-      </label>
-      <input
-        type="text"
-        class="form-control border-underline"
-        id="cover"
-        name="cover_url"
-        placeholder="Insert image url here."
-        value="{{ post.cover_url }}"
-      />
-    </div>
-    <div class="mb-4">
-      <textarea
-        id="editor"
-        name="content"
-        style="white-space: pre-line"
-        placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."
-      ></textarea>
-    </div>
-    <div class="text-end mb-5">
-      <a
-        href="/backstage/posts"
-        class="btn btn-light text-center"
-        style="width: 20%; min-width: 100px"
-        >Cancel</a
-      >
-      <button
-        type="submit"
-        class="btn panel-btn text-center"
-        style="width: 20%; min-width: 100px"
-        onclick="return validateUpdate()"
-      >
-        Save Changes
-      </button>
-    </div>
+  <div style="height: 53px; margin-top: 20px">
+    <h1 class="ms-2">Edit</h1>
   </div>
-</form>
-{% endblock %} {% block script %}
-<script>
-  const mobile_nav_btn = document.getElementById("mobile-nav-posts");
-  mobile_nav_btn.style.color = "white";
-</script>
-<script>
-  const easyMDE = new EasyMDE({
-    element: document.getElementById("editor"),
-    autofocus: true,
-    toolbar: [
-      "bold",
-      "italic",
-      "heading",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "code",
-      "quote",
-      "unordered-list",
-      "ordered-list",
-      "horizontal-rule",
-      "|",
-      "link",
-      "image",
-      "|",
-      "preview",
-      "guide",
-    ],
-    minHeight: "200px",
-    spellChecker: false,
-  });
-  easyMDE.value({{ post['content'] | tojson | safe }});
-</script>
-<script>
-  function validateUpdate() {
-    var title = document.getElementById("title").value;
-    if (title.trim() === "") {
-      alert("You must enter the title for the post.");
-      return false;
-    }
+  <hr />
+  <form method="post" autocomplete="off" id="form" class="row">
+    <div class="col-12 col-md-9">
+      <div class="mb-4">
+        <label for="title" class="form-label ms-2 label-text">· Title</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="title"
+               name="title"
+               value="{{ post.title }}" />
+      </div>
+      <div class="mb-4">
+        <label for="subtitle" class="form-label ms-2 label-text">· Subtitle</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="subtitle"
+               name="subtitle"
+               value="{{ post.subtitle }}" />
+      </div>
+      <div class="mb-4">
+        <label for="tags" class="form-label ms-2 label-text">· Tags</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="tags"
+               name="tags"
+               placeholder="Separate your tags with ','"
+               value="{{ post.tags }}" />
+      </div>
+      <div class="mb-4">
+        <label for="cover" class="form-label ms-2 label-text">· Cover image</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="cover"
+               name="cover_url"
+               placeholder="Insert image url here."
+               value="{{ post.cover_url }}" />
+      </div>
+      <div class="mb-4">
+        <textarea id="editor"
+                  name="content"
+                  style="white-space: pre-line"
+                  placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+      </div>
+      <div class="text-end mb-5">
+        <a href="/backstage/posts"
+           class="btn btn-light text-center"
+           style="width: 20%;
+                  min-width: 100px">Cancel</a>
+        <button type="submit"
+                class="btn panel-btn text-center"
+                style="width: 20%;
+                       min-width: 100px"
+                onclick="return validateUpdate()">Save Changes</button>
+      </div>
+    </div>
+  </form>
+{% endblock %}
+{% block script %}
+  <script>
+    const mobile_nav_btn = document.getElementById("mobile-nav-posts");
+    mobile_nav_btn.style.color = "white";
+  </script>
+  <script>
+    const easyMDE = new EasyMDE({
+      element: document.getElementById("editor"),
+      autofocus: true,
+      toolbar: [
+        "bold",
+        "italic",
+        "heading",
+        "|",
+        "undo",
+        "redo",
+        "|",
+        "code",
+        "quote",
+        "unordered-list",
+        "ordered-list",
+        "horizontal-rule",
+        "|",
+        "link",
+        "image",
+        "|",
+        "preview",
+        "guide",
+      ],
+      minHeight: "200px",
+      spellChecker: false,
+    });
+    easyMDE.value({{ post['content'] | tojson | safe }});
+  </script>
+  <script>
+    function validateUpdate() {
+      var title = document.getElementById("title").value;
+      if (title.trim() === "") {
+        alert("You must enter the title for the post.");
+        return false;
+      }
 
-    var subtitle = document.getElementById("subtitle").value;
-    if (subtitle.trim() === "") {
-      alert("Add a short description for this post as a subtitle.");
-      return false;
-    }
+      var subtitle = document.getElementById("subtitle").value;
+      if (subtitle.trim() === "") {
+        alert("Add a short description for this post as a subtitle.");
+        return false;
+      }
 
-    var tags = document.getElementById("tags").value;
-    if (tags.trim() === "") {
-      alert("You must add one tag to the post at least.");
-      return false;
-    }
-    const tagRegex = /^[\u4e00-\u9fa5a-zA-Z\s\-_.]+(,\s*[\u4e00-\u9fa5a-zA-Z\s\-_.]+)*$/;
-    if (!tagRegex.test(tags)) {
-      alert("You must separate tags with a comma (',').");
-      return false;
-    }
+      var tags = document.getElementById("tags").value;
+      if (tags.trim() === "") {
+        alert("You must add one tag to the post at least.");
+        return false;
+      }
+      const tagRegex = /^[\u4e00-\u9fa5a-zA-Z\s\-_.]+(,\s*[\u4e00-\u9fa5a-zA-Z\s\-_.]+)*$/;
+      if (!tagRegex.test(tags)) {
+        alert("You must separate tags with a comma (',').");
+        return false;
+      }
 
-    var cover = document.getElementById("cover").value;
-    if (cover.trim() === "") {
-      alert("You must add a cover image for the post.");
-      return false;
-    }
+      var cover = document.getElementById("cover").value;
+      if (cover.trim() === "") {
+        alert("You must add a cover image for the post.");
+        return false;
+      }
 
-    if (easyMDE.value().trim() === "") {
-      alert("You did not write anything!");
-      return false;
-    }
+      if (easyMDE.value().trim() === "") {
+        alert("You did not write anything!");
+        return false;
+      }
 
-    return true;
-  }
-</script>
+      return true;
+    }
+  </script>
 {% endblock %}

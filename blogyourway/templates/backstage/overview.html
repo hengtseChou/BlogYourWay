@@ -1,117 +1,113 @@
-{% extends 'panel.html' %} {% block panel %}
-<!-- desktop view -->
-<div class="d-none d-md-block">
-  <div style="height: 53px; margin-top: 20px">
-    <h1 class="ms-2">Welcome back, {{ user.username }}!</h1>
-  </div>
-  <hr />
-  <div class="row">
-    <div class="col-12 col-lg-9">
-      <h3 class="py-1" style="border-left: 0.7rem solid #f7966b">
-        &nbsp;&nbsp;Overall Analytics
-      </h3>
-      <small>{{ user.created_at }} - Now</small>
-      <div class="row mt-2 mb-4">
-        <div class="col-5 col-lg-4">
-          <div class="border rounded-0 px-3 pt-4 pb-2">
-            <h3 id="total-pv">0</h3>
-            <p>Total page views</p>
+{% extends 'panel.html' %}
+{% block panel %}
+  <!-- desktop view -->
+  <div class="d-none d-md-block">
+    <div style="height: 53px; margin-top: 20px">
+      <h1 class="ms-2">Welcome back, {{ user.username }}!</h1>
+    </div>
+    <hr />
+    <div class="row">
+      <div class="col-12 col-lg-9">
+        <h3 class="py-1" style="border-left: 0.7rem solid #f7966b">&nbsp;&nbsp;Overall Analytics</h3>
+        <small>{{ user.created_at }} - Now</small>
+        <div class="row mt-2 mb-4">
+          <div class="col-5 col-lg-4">
+            <div class="border rounded-0 px-3 pt-4 pb-2">
+              <h3 id="total-pv">0</h3>
+              <p>Total page views</p>
+            </div>
+          </div>
+          <div class="col-5 col-lg-4">
+            <div class="border rounded-0 px-3 pt-4 pb-2">
+              <h3 id="total-uv">0</h3>
+              <p>Total unique visitors</p>
+            </div>
           </div>
         </div>
-        <div class="col-5 col-lg-4">
-          <div class="border rounded-0 px-3 pt-4 pb-2">
-            <h3 id="total-uv">0</h3>
-            <p>Total unique visitors</p>
+        <h3 class="py-1" style="border-left: 0.7rem solid #f7966b">&nbsp;&nbsp;Monthly Analytics</h3>
+        <div class="row mt-4">
+          <div class="col-5 col-lg-4">
+            <div class="border rounded-0 px-3 pt-4 pb-2">
+              <p>Index page traffic</p>
+              <table class="table table-responsive">
+                <thead>
+                  <th>page</th>
+                  <th>views</th>
+                </thead>
+                <tbody>
+                  {% for page, views in index_page_traffic.items() %}
+                    <tr>
+                      <td>{{ page }}</td>
+                      <td>{{ views }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      </div>
-      <h3 class="py-1" style="border-left: 0.7rem solid #f7966b">
-        &nbsp;&nbsp;Monthly Analytics
-      </h3>
-      <div class="row mt-4">
-        <div class="col-5 col-lg-4">
-          <div class="border rounded-0 px-3 pt-4 pb-2">
-            <p>Index page traffic</p>
-            <table class="table table-responsive">
-              <thead>
-                <th>page</th>
-                <th>views</th>
-              </thead>
-              <tbody>
-                {% for page, views in index_page_traffic.items() %}
-                <tr>
-                  <td>{{ page }}</td>
-                  <td>{{ views }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="col-7 col-lg-8">
-          <div class="border rounded-0 p-3" style="min-height: 300px">
-            <!-- Create a canvas element where the line chart will be rendered -->
-            <canvas id="chart"></canvas>
+          <div class="col-7 col-lg-8">
+            <div class="border rounded-0 p-3" style="min-height: 300px">
+              <!-- Create a canvas element where the line chart will be rendered -->
+              <canvas id="chart"></canvas>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<!-- mobile view -->
-<div class="d-block d-md-none">
-  <h2 class="ms-2">Welcome back, {{ user.username }}!</h2>
-</div>
-
-{% endblock %} {% block script %}
-<script>
-  // Access the data passed from Flask
-  const traffic = JSON.parse("{{ traffic | tojson }}");
-  const lineChart = new Chart(document.getElementById("chart"), {
-    type: "line",
-    data: {
-      labels: traffic.labels,
-      datasets: [
-        {
-          label: "daily unique visitors",
-          data: traffic.data,
-          fill: false,
-          backgroundColor: "#f5ae8e",
-          borderColor: "#e4622f",
-          borderWidth: 1,
-          lineTension: 0.15, // Adjust the value to control the curvature (0.1 to 1)
+  <!-- mobile view -->
+  <div class="d-block d-md-none">
+    <h2 class="ms-2">Welcome back, {{ user.username }}!</h2>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    // Access the data passed from Flask
+    const traffic = JSON.parse("{{ traffic | tojson }}");
+    const lineChart = new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: traffic.labels,
+        datasets: [
+          {
+            label: "daily unique visitors",
+            data: traffic.data,
+            fill: false,
+            backgroundColor: "#f5ae8e",
+            borderColor: "#e4622f",
+            borderWidth: 1,
+            lineTension: 0.15, // Adjust the value to control the curvature (0.1 to 1)
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            display: true,
+            ticks: {
+              autoSkip: true,
+              maxTicksLimit: 5, // Show only 5 date labels
+            },
+          },
         },
-      ],
-    },
-    options: {
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          display: true,
-          ticks: {
-            autoSkip: true,
-            maxTicksLimit: 5, // Show only 5 date labels
+        plugins: {
+          legend: {
+            display: false,
+          },
+          title: {
+            display: true,
+            text: "Monthly traffic",
           },
         },
       },
-      plugins: {
-        legend: {
-          display: false,
-        },
-        title: {
-          display: true,
-          text: "Monthly traffic",
-        },
-      },
-    },
-  });
-</script>
+    });
+  </script>
+  <script>
+    const total_pv = new countUp.CountUp("total-pv", Number("{{ total_pv }}"));
+    const total_uv = new countUp.CountUp("total-uv", Number("{{ total_uv }}"));
 
-<script>
-  const total_pv = new countUp.CountUp("total-pv", Number("{{ total_pv }}"));
-  const total_uv = new countUp.CountUp("total-uv", Number("{{ total_uv }}"));
-
-  total_pv.start();
-  total_uv.start();
-</script>
+    total_pv.start();
+    total_uv.start();
+  </script>
 {% endblock %}

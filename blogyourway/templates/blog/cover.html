@@ -1,11 +1,7 @@
 {% if user.cover_url|length != 0 %}
-<div
-  class="cover-container"
-  style="background-image: url('{{ user.cover_url }}');"
-></div>
+  <div class="cover-container"
+       style="background-image: url('{{ user.cover_url }}')"></div>
 {% else %}
-<div
-  class="cover-container"
-  style="background-image: url(&quot;/static/_img/default-cover.jpg&quot;)"
-></div>
+  <div class="cover-container"
+       style="background-image: url(&quot;/static/_img/default-cover.jpg&quot;)"></div>
 {% endif %}

@@ -33,6 +33,7 @@ mongomock = "^4.1.2"
 isort = "^5.12.0"
 ruff = "^0.0.292"
 flask-debugtoolbar = "^0.13.1"
+djlint = "^1.34.1"
 
 [tool.coverage.run]
 omit = [

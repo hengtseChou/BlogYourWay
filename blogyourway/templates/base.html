@@ -1,36 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>{% block title %}{% endblock %}</title>
+    <title>
+      {% block title %}{% endblock %}
+    </title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="img-src 'self' data: *;"
-    />
+    <meta http-equiv="Content-Security-Policy"
+          content="img-src 'self' data: *;" />
     <meta name="language" content="en" />
     {% block meta_tags %}{% endblock %}
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Ubuntu|Noto+Sans+TC&display=swap"
-    />
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Ubuntu|Noto+Sans+TC&display=swap" />
     <!-- styles -->
-    <link  rel="stylesheet" href="/static/_custom/styles.css" />
+    <link rel="stylesheet" href="/static/_custom/styles.css" />
     <!-- icon -->
     <link rel="icon" href="/static/_img/favicon.ico" type="image/x-icon" />
     <!-- bootstrap -->
     <link rel="stylesheet" href="/static/bootstrap-5.3.2/bootstrap.min.css" />
-    <script src="/static/bootstrap-5.3.2/bootstrap.bundle.min.js"></script>    
+    <script src="/static/bootstrap-5.3.2/bootstrap.bundle.min.js"></script>
     <!-- easy markdown editor -->
     <link rel="stylesheet" href="/static/easymde-2.18.0/easymde.min.css" />
     <script src="/static/easymde-2.18.0/easymde.min.js"></script>
     <!-- highlight.js -->
-    <link rel="stylesheet" href="/static/highlight.js-11.7.0/highlight.min.css"/>
+    <link rel="stylesheet" href="/static/highlight.js-11.7.0/highlight.min.css" />
     <script src="/static/highlight.js-11.7.0/highlight.min.js"></script>
     <!-- jquery -->
     <script src="/static/jqery-3.7.0/jquery-3.7.0.min.js"></script>
     <!-- font awesome -->
-    <link rel="stylesheet" href="/static/fontawesome-6.5.1/css/fontawesome.min.css">
+    <link rel="stylesheet"
+          href="/static/fontawesome-6.5.1/css/fontawesome.min.css">
     <link rel="stylesheet" href="/static/fontawesome-6.5.1/css/brands.min.css">
     <link rel="stylesheet" href="/static/fontawesome-6.5.1/css/solid.min.css">
     <!-- chart.js -->
@@ -42,40 +41,49 @@
     <!-- reCAPTCHA  -->
     <link rel="preconnect" href="https://www.google.com" />
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
-    
     {% block head %}{% endblock %}
   </head>
   <body>
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      {% with messages = get_flashed_messages(with_categories=true) %} 
-      {% for category, message in messages %}
-      <div class="toast show" role="alert" aria-live="polite" aria-atomic="true" id="notification">
-        {% if category == 'success' %}
-        <div class="toast-header" style="background-color: #7fda91">
-          <strong class="me-auto">Success!</strong>
-          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        {% elif category == 'error' %}
-        <div class="toast-header" style="background-color: #ff6c6c">
-          <strong class="me-auto">Error!</strong>
-          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        {% else %}
-        <div class="toast-header" style="background-color: #75c4ff">
-          <strong class="me-auto">Info</strong>
-          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        {% endif %}
-        <div class="toast-body">{{ message }}</div>
-      </div>
-      {% endfor %} 
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="toast show"
+               role="alert"
+               aria-live="polite"
+               aria-atomic="true"
+               id="notification">
+            {% if category == 'success' %}
+              <div class="toast-header" style="background-color: #7fda91">
+                <strong class="me-auto">Success!</strong>
+                <button type="button"
+                        class="btn-close me-2 m-auto"
+                        data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+              </div>
+            {% elif category == 'error' %}
+              <div class="toast-header" style="background-color: #ff6c6c">
+                <strong class="me-auto">Error!</strong>
+                <button type="button"
+                        class="btn-close me-2 m-auto"
+                        data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+              </div>
+            {% else %}
+              <div class="toast-header" style="background-color: #75c4ff">
+                <strong class="me-auto">Info</strong>
+                <button type="button"
+                        class="btn-close me-2 m-auto"
+                        data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+              </div>
+            {% endif %}
+            <div class="toast-body">{{ message }}</div>
+          </div>
+        {% endfor %}
       {% endwith %}
     </div>
-
     {% block body %}{% endblock %}
-    <script>
-      hljs.highlightAll();
-    </script>
+    <script>hljs.highlightAll();</script>
     <script>
       // flash messages
       $(document).ready(function () {
@@ -84,9 +92,7 @@
         }, 3000); // <-- time in milliseconds
       });
     </script>
-    <script>
-      var socket = io();
-    </script>
+    <script>var socket = io();</script>
     <script>
       function updateCurrentYear() {
         var currentDate = new Date();
@@ -102,6 +108,7 @@
       }
       updateCurrentYear();
     </script>
-    {% block script %}{% endblock %}
+    {% block script %}
+    {% endblock %}
   </body>
 </html>
