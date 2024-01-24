@@ -61,6 +61,17 @@ skip-magic-trailing-comma = 1
 [tool.ruff]
 line-length = 92
 
+[tool.djlint]
+format_js=true
+format_css=true
+indent=2
+
+[tool.djlint.js]
+indent_size=2
+
+[tool.djlint.css]
+indent_size=2
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -83,27 +83,31 @@
       {% endwith %}
     </div>
     {% block body %}{% endblock %}
-    <script>hljs.highlightAll();</script>
+    <script>
+      hljs.highlightAll();
+    </script>
     <script>
       // flash messages
-      $(document).ready(function () {
-        setTimeout(function () {
+      $(document).ready(function() {
+        setTimeout(function() {
           $("#notification").fadeOut("fast");
         }, 3000); // <-- time in milliseconds
       });
     </script>
-    <script>var socket = io();</script>
+    <script>
+      var socket = io();
+    </script>
     <script>
       function updateCurrentYear() {
         var currentDate = new Date();
         var currentYear = currentDate.getFullYear();
         var yearTag = document.getElementById("yearTag");
         if (yearTag) {
-            yearTag.innerHTML = currentYear;
+          yearTag.innerHTML = currentYear;
         }
         var yearTagMobile = document.getElementById("yearTagMobile");
         if (yearTagMobile) {
-            yearTagMobile.innerHTML = currentYear;
+          yearTagMobile.innerHTML = currentYear;
         }
       }
       updateCurrentYear();

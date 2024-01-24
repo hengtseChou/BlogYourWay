@@ -68,17 +68,15 @@
       type: "line",
       data: {
         labels: traffic.labels,
-        datasets: [
-          {
-            label: "daily unique visitors",
-            data: traffic.data,
-            fill: false,
-            backgroundColor: "#f5ae8e",
-            borderColor: "#e4622f",
-            borderWidth: 1,
-            lineTension: 0.15, // Adjust the value to control the curvature (0.1 to 1)
-          },
-        ],
+        datasets: [{
+          label: "daily unique visitors",
+          data: traffic.data,
+          fill: false,
+          backgroundColor: "#f5ae8e",
+          borderColor: "#e4622f",
+          borderWidth: 1,
+          lineTension: 0.15, // Adjust the value to control the curvature (0.1 to 1)
+        }, ],
       },
       options: {
         maintainAspectRatio: false,

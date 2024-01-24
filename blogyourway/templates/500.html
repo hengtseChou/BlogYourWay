@@ -1,49 +1,56 @@
 {% extends 'base.html' %}
 {% block head %}
   <style>
-  body {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding-top: 23vh;
+    body {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding-top: 23vh;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  h1 {
-    font-size: 6rem;
-  }
-  p {
-    font-size: 1.5rem;
-  }
-  a {
-    color: #fff;
-  }
-  .hover-pointer:hover {
-    cursor: pointer;
-  }
-  .error-num {
-    font-size: 8em;
-  }
-  .eye {
-    background: #fff;
-    border-radius: 50%;
-    display: inline-block;
-    height: 100px;
-    position: relative;
-    width: 100px;
-  }
-  .eye::after {
-    background: #000;
-    border-radius: 50%;
-    bottom: 56.1px;
-    content: "";
-    height: 33px;
-    position: absolute;
-    right: 33px;
-    width: 33px;
-  }
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 6rem;
+    }
+
+    p {
+      font-size: 1.5rem;
+    }
+
+    a {
+      color: #fff;
+    }
+
+    .hover-pointer:hover {
+      cursor: pointer;
+    }
+
+    .error-num {
+      font-size: 8em;
+    }
+
+    .eye {
+      background: #fff;
+      border-radius: 50%;
+      display: inline-block;
+      height: 100px;
+      position: relative;
+      width: 100px;
+    }
+
+    .eye::after {
+      background: #000;
+      border-radius: 50%;
+      bottom: 56.1px;
+      content: "";
+      height: 33px;
+      position: absolute;
+      right: 33px;
+      width: 33px;
+    }
   </style>
 {% endblock %}
 {% block title %}500 Internal Server Error · BlogYourWay{% endblock %}
@@ -69,7 +76,7 @@
 {% endblock %}
 {% block script %}
   <script>
-    $("body").mousemove(function (event) {
+    $("body").mousemove(function(event) {
       var e = $(".eye");
       var x = e.offset().left + e.width() / 2;
       var y = e.offset().top + e.height() / 2;

@@ -50,13 +50,13 @@
     const mobile_nav_btn = document.getElementById("mobile-nav-social-links");
     mobile_nav_btn.style.color = "white";
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       var maxInputs = 5; // Maximum input fields allowed
       var inputWrapper = $("#inputContainer"); // Input field container
       var addButton = $("#addButton"); // Add button ID
 
       var count = 1; // Initial input field count
-      $(addButton).click(function (e) {
+      $(addButton).click(function(e) {
         e.preventDefault();
         if (count < maxInputs) {
           // Check the maximum allowed input fields
@@ -66,7 +66,7 @@
       });
 
       // Event delegation for dynamically added "Close" buttons
-      $(inputWrapper).on("click", ".btn-remove", function (e) {
+      $(inputWrapper).on("click", ".btn-remove", function(e) {
         e.preventDefault();
         $(this).closest(".input-group").remove();
         count--; // Decrement the input field count
@@ -96,7 +96,7 @@
 
       function updateOrderNumbers() {
         var inputGroups = $(".input-group");
-        inputGroups.each(function (index) {
+        inputGroups.each(function(index) {
           var orderNumber = index + 1;
           $(this)
             .find(".input-group-text")

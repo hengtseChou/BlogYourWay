@@ -7,56 +7,56 @@
 {% block head %}
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script>
-  function onSubmit(token) {
-    document.getElementById("comment-form").submit();
-  }
+    function onSubmit(token) {
+      document.getElementById("comment-form").submit();
+    }
   </script>
   <style>
-  #reading-progress {
-    position: fixed;
-    width: 100%;
-    height: 5px;
-    z-index: 1000;
-    top: 56px;
-    left: 0;
-  }
+    #reading-progress {
+      position: fixed;
+      width: 100%;
+      height: 5px;
+      z-index: 1000;
+      top: 56px;
+      left: 0;
+    }
 
-  #reading-progress-fill {
-    height: 5px;
-    width: 0;
-    -webkit-transition: width 100ms ease;
-    -o-transition: width 100ms ease;
-    transition: width 100ms ease;
-    background-color: #f7966b;
-  }
+    #reading-progress-fill {
+      height: 5px;
+      width: 0;
+      -webkit-transition: width 100ms ease;
+      -o-transition: width 100ms ease;
+      transition: width 100ms ease;
+      background-color: #f7966b;
+    }
 
-  .panel-btn {
-    text-align: left;
-    background-color: #333;
-    color: white;
-    border: 0px;
-  }
+    .panel-btn {
+      text-align: left;
+      background-color: #333;
+      color: white;
+      border: 0px;
+    }
 
-  .panel-btn:hover {
-    background-color: #6c757d;
-    color: white;
-  }
+    .panel-btn:hover {
+      background-color: #6c757d;
+      color: white;
+    }
 
-  .cover {
-    display: flex;
-    flex-flow: column;
-    padding: 5px;
-    margin: auto;
+    .cover {
+      display: flex;
+      flex-flow: column;
+      padding: 5px;
+      margin: auto;
 
-  }
+    }
 
-  .cover-caption {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    font: italic smaller sans-serif;
-    padding: 3px;
-    text-align: center;
-  }
+    .cover-caption {
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      font: italic smaller sans-serif;
+      padding: 3px;
+      text-align: center;
+    }
   </style>
 {% endblock %}
 {% block body %}
@@ -207,14 +207,14 @@
 {% endblock %}
 {% block script %}
   <script>
-    function validateForm() {   
+    function validateForm() {
       return true;
     }
   </script>
   <script>
     document
       .getElementById("comment-form")
-      .addEventListener("keypress", function (event) {
+      .addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
         }
@@ -223,7 +223,7 @@
   <script>
     // reading progress js
     const readingProgress = document.querySelector("#reading-progress-fill");
-    document.addEventListener("scroll", function (e) {
+    document.addEventListener("scroll", function(e) {
       let w =
         ((document.body.scrollTop || document.documentElement.scrollTop) /
           (document.documentElement.scrollHeight -
@@ -233,14 +233,14 @@
     });
   </script>
   <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
       // Function to make an AJAX request to fetch a replacement image
       function fetchReplacementImage(imgElement) {
         var originalSrc = $(imgElement).attr("src"); // Get the initial src
         $.ajax({
           url: originalSrc, // Use the initial src as the URL
           method: "GET", // Use GET or any other appropriate method
-          success: function (data) {
+          success: function(data) {
             // Assuming the data received is a JSON object with an 'imageUrl' property
             if (data.imageUrl) {
               // Update the src attribute of the image element with the fetched replacement URL
@@ -249,14 +249,14 @@
               console.log("Image URL not found in the response.");
             }
           },
-          error: function () {
+          error: function() {
             console.log("Error fetching replacement image.");
           },
         });
       }
 
       // Loop through each image element with the "loop" class and fetch/replace the image
-      $(".ajax-profile-pic").each(function () {
+      $(".ajax-profile-pic").each(function() {
         fetchReplacementImage(this);
       });
     });

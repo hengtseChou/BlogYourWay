@@ -1,20 +1,22 @@
 {% extends 'panel.html' %}
 {% block head %}
   <style>
-  .form-check-input:checked {
-    background-color: #333 !important;
-    border-color: #333;
-  }
-  .panel-btn {
-		text-align: left;
-		background-color: #333;
-		color: white;
-		border: 0px;
-	}
-	.panel-btn:hover {
-		background-color: #6c757d;
-		color: white;
-	}
+    .form-check-input:checked {
+      background-color: #333 !important;
+      border-color: #333;
+    }
+
+    .panel-btn {
+      text-align: left;
+      background-color: #333;
+      color: white;
+      border: 0px;
+    }
+
+    .panel-btn:hover {
+      background-color: #6c757d;
+      color: white;
+    }
   </style>
 {% endblock %}
 {% block panel %}
@@ -199,7 +201,7 @@
 
     document
       .getElementById("general_form")
-      .addEventListener("keypress", function (event) {
+      .addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
         }
@@ -207,7 +209,7 @@
 
     document
       .getElementById("changepw_form")
-      .addEventListener("keypress", function (event) {
+      .addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
         }

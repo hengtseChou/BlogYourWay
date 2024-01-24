@@ -1,28 +1,28 @@
 {% extends 'base.html' %}
 {% block head %}
   <style>
-  body {
-    background-color: #343a40;
-  }
+    body {
+      background-color: #343a40;
+    }
 
-  .card {
-    margin-top: calc(100vh * 0.25);
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 30px;
-    border-radius: 20px;
-    transition: opacity 0.7s ease-in-out;
-  }
+    .card {
+      margin-top: calc(100vh * 0.25);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 30px;
+      border-radius: 20px;
+      transition: opacity 0.7s ease-in-out;
+    }
 
-  .card.hide {
-    opacity: 0;
-    pointer-events: none;
-  }
+    .card.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-  .form-group {
-    margin-bottom: 20px;
-  }
+    .form-group {
+      margin-bottom: 20px;
+    }
   </style>
 {% endblock %}
 {% block title %}Create an Account · BlogYourWay{% endblock %}
@@ -149,7 +149,7 @@
       document.getElementById("step1").style.display = "none";
 
       document.getElementById("step2").style.display = "block";
-      setTimeout(function () {
+      setTimeout(function() {
         document.getElementById("step2").classList.remove("hide");
       }, 100);
     }
@@ -188,7 +188,7 @@
 
     document
       .getElementById("step1")
-      .addEventListener("keypress", function (event) {
+      .addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
         }

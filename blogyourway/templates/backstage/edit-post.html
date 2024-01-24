@@ -92,7 +92,11 @@
       minHeight: "200px",
       spellChecker: false,
     });
-    easyMDE.value({{ post['content'] | tojson | safe }});
+    easyMDE.value({
+      {
+        post['content'] | tojson | safe
+      }
+    });
   </script>
   <script>
     function validateUpdate() {
