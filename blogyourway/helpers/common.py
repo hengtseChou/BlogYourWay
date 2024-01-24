@@ -4,9 +4,8 @@ This module collects the common utulity functions from the application.
 import random
 import re
 import string
-from datetime import datetime, timedelta
 from dataclasses import asdict, dataclass, field
-
+from datetime import datetime, timedelta
 
 from blogyourway.services.mongo import Database
 
@@ -150,11 +149,12 @@ class UIDGenerator:
 # some other utility functions
 
 ###################################################################
-            
+
+
 @dataclass
 class MyDataClass:
-    """Dataclass with additional method of converting itself into a dict.
-    """
+    """Dataclass with additional method of converting itself into a dict."""
+
     def as_dict(self):
         return {k: v for k, v in asdict(self).items()}
 
@@ -199,6 +199,7 @@ def string_truncate(text: str, max_len: int) -> str:
     if len(text) <= max_len:
         return text
     return f"{text[:max_len]}..."
+
 
 def sort_dict(_dict: dict) -> dict:
     sorted_dict_key = sorted(_dict, key=_dict.get, reverse=True)

@@ -1,16 +1,15 @@
-from math import ceil
-from dataclasses import field, dataclass
-from typing import List
+from dataclasses import dataclass, field
 from datetime import datetime
-
+from math import ceil
+from typing import List
 
 from bs4 import BeautifulSoup
 from flask import Request, abort
 from flask_login import current_user
 
 from blogyourway.config import ENV
+from blogyourway.helpers.common import FormValidator, MyDataClass, UIDGenerator, get_today
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today, MyDataClass
 
 ###################################################################
 

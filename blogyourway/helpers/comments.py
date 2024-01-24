@@ -1,21 +1,23 @@
 """
 This module includes a create comment function, and a comment utility class.
 """
+from dataclasses import dataclass, field
+from datetime import datetime
+
 import requests
 from flask import Request
 from flask_login import current_user
 
-from dataclasses import field, dataclass
-from datetime import datetime
 from blogyourway.config import ENV, RECAPTCHA_SECRET
+from blogyourway.helpers.common import FormValidator, MyDataClass, UIDGenerator, get_today
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today, MyDataClass
 
 ###################################################################
 
 # new comment setup
 
 ###################################################################
+
 
 @dataclass
 class Comment(MyDataClass):
@@ -32,6 +34,7 @@ class Comment(MyDataClass):
         self.profile_link = f"/@{self.name}/about"
         self.profile_img_url = f"/@{self.name}/get-profile-img"
 
+
 @dataclass
 class AnonymousComment(MyDataClass):
     name: str
@@ -46,7 +49,6 @@ class AnonymousComment(MyDataClass):
     def __post_init__(self):
         if self.email != "":
             self.profile_link = f"mailto:{self.email}"
-
 
 
 class NewCommentSetup:

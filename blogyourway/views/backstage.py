@@ -2,11 +2,11 @@ from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
-from blogyourway.services.logging import logger, logger_utils
-from blogyourway.services.mongo import mongodb
 from blogyourway.helpers.common import string_truncate, switch_to_bool
 from blogyourway.helpers.posts import create_post, paging, post_utils, update_post
 from blogyourway.helpers.users import user_utils
+from blogyourway.services.logging import logger, logger_utils
+from blogyourway.services.mongo import mongodb
 
 backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
 

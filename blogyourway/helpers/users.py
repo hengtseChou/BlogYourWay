@@ -1,16 +1,16 @@
 import logging
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 import bcrypt
 from flask import Request, flash, render_template
 from flask_login import UserMixin
 
 from blogyourway.config import ENV
+from blogyourway.helpers.common import FormValidator, MyDataClass, get_today
 from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.helpers.common import FormValidator, get_today, MyDataClass
 
 
 @dataclass

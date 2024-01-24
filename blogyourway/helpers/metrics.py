@@ -4,9 +4,9 @@ from urllib.parse import urlparse
 from flask import Request
 
 from blogyourway.config import ENV
+from blogyourway.helpers.common import get_today
 from blogyourway.services.logging import return_client_ip
 from blogyourway.services.mongo import Database, mongodb
-from blogyourway.helpers.common import get_today
 
 
 def _get_referrer(request: Request) -> str:

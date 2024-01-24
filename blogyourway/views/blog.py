@@ -6,17 +6,12 @@ from flask import Blueprint, abort, flash, jsonify, redirect, render_template, r
 from flask_login import current_user, login_user
 from markdown import Markdown
 
+from blogyourway.helpers.comments import comment_utils, create_comment
+from blogyourway.helpers.common import sort_dict
+from blogyourway.helpers.posts import html_to_about, html_to_blogpost, paging, post_utils
+from blogyourway.helpers.users import user_utils
 from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
-from blogyourway.helpers.comments import comment_utils, create_comment
-from blogyourway.helpers.posts import (
-    html_to_about,
-    html_to_blogpost,
-    paging,
-    post_utils,
-)
-from blogyourway.helpers.users import user_utils
-from blogyourway.helpers.common import sort_dict
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
@@ -385,13 +380,12 @@ def blog_page(username):
         logger.debug(f"invalid username {username}")
         abort(404)
 
-
     ###################################################################
 
     # main actions
 
     ###################################################################
-    
+
     # set up pagination
     current_page = request.args.get("page", default=1, type=int)
     POSTS_EACH_PAGE = 5

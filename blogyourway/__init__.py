@@ -8,12 +8,12 @@ from flask_session import Session
 from pymongo.errors import ServerSelectionTimeoutError
 
 from blogyourway.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
+from blogyourway.helpers.users import UserInfo, user_utils
 from blogyourway.services.cache import cache
 from blogyourway.services.logging import logger, return_client_ip
 from blogyourway.services.mongo import mongodb
 from blogyourway.services.redis import redis
 from blogyourway.services.socketio import socketio
-from blogyourway.helpers.users import UserInfo, user_utils
 
 from .views import backstage_bp, blog_bp
 
