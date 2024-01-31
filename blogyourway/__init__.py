@@ -13,6 +13,7 @@ from blogyourway.services.cache import cache
 from blogyourway.services.logging import logger, return_client_ip
 from blogyourway.services.mongo import mongodb
 from blogyourway.services.redis import redis
+from blogyourway.services.sitemapper import sitemapper
 from blogyourway.services.socketio import socketio
 
 from .views import backstage_bp, blog_bp
@@ -99,13 +100,17 @@ def create_app() -> Flask:
     logger.debug("Flask-socketio initialized.")
 
     # session
-    session = Session()
-    app.config["SESSION_TYPE"] = "redis"
-    app.config["SESSION_PERMANENT"] = False
-    app.config["SESSION_USE_SIGNER"] = True
-    app.config["SESSION_REDIS"] = redis
-    session.init_app(app)
-    logger.debug("Flask-session initialized.")
+    # session = Session()
+    # app.config["SESSION_TYPE"] = "redis"
+    # app.config["SESSION_PERMANENT"] = False
+    # app.config["SESSION_USE_SIGNER"] = True
+    # app.config["SESSION_REDIS"] = redis
+    # session.init_app(app)
+    # logger.debug("Flask-session initialized.")
+
+    # sitemapper
+    sitemapper.init_app(app)
+    logger.debug("Flask-sitemapper initialized.")
 
     # check connection
     try:

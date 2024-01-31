@@ -9,6 +9,7 @@ from flask_login import UserMixin
 
 from blogyourway.config import ENV
 from blogyourway.helpers.common import FormValidator, MyDataClass, get_today
+from blogyourway.services.cache import cache
 from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
 
@@ -198,6 +199,11 @@ class UserUtils:
     def __init__(self, db_handler: Database, logger: logging.Logger) -> None:
         self._db_handler = db_handler
         self._logger = logger
+
+    def get_all_username(self) -> list:
+        all_user_info = self._db_handler.user_info.find({})
+        all_username = [user_info["username"] for user_info in all_user_info]
+        return all_username
 
     def get_user_info(self, username: str) -> UserInfo:
         user_info = self._db_handler.user_info.find_one({"username": username})

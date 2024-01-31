@@ -10,12 +10,15 @@ from blogyourway.helpers.comments import comment_utils, create_comment
 from blogyourway.helpers.common import sort_dict
 from blogyourway.helpers.posts import html_to_about, html_to_blogpost, paging, post_utils
 from blogyourway.helpers.users import user_utils
-from blogyourway.services.logging import logger, logger_utils
-from blogyourway.services.mongo import mongodb
+
+# from blogyourway.services.logging import logger, logger_utils
+# from blogyourway.services.mongo import mongodb
+from blogyourway.services import logger, logger_utils, mongodb, sitemapper
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
 
 
+@sitemapper.include(priority=1)
 @blog.route("/", methods=["GET"])
 def landing_page():
     ###################################################################
@@ -35,6 +38,7 @@ def landing_page():
     return render_template("landing-page.html")
 
 
+@sitemapper.include()
 @blog.route("/login", methods=["GET"])
 def login_get():
     ###################################################################
@@ -112,6 +116,7 @@ def login_post():
     return redirect(url_for("blog.home", username=username))
 
 
+@sitemapper.include()
 @blog.route("/register", methods=["GET"])
 def register_get():
     ###################################################################
@@ -152,6 +157,7 @@ def register_post():
     return redirect(url_for("blog.login_get"))
 
 
+@sitemapper.include(url_variables={"username": user_utils.get_all_username()})
 @blog.route("/@<username>", methods=["GET"])
 def home(username):
     ###################################################################
@@ -190,6 +196,7 @@ def home(username):
     return render_template("home.html", user=user, posts=featured_posts)
 
 
+@sitemapper.include(url_variables={"username": user_utils.get_all_username()})
 @blog.route("/@<username>/tags", methods=["GET"])
 def tag(username):
     ###################################################################
@@ -245,6 +252,12 @@ def tag(username):
     return render_template("tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag)
 
 
+@sitemapper.include(
+    url_variables={
+        "username": post_utils.get_all_author(),
+        "post_uid": post_utils.get_all_post_uid(),
+    }
+)
 @blog.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
 def post(username, post_uid):
     ###################################################################
@@ -326,6 +339,7 @@ def readcount_increment():
     return "OK"
 
 
+@sitemapper.include(url_variables={"username": user_utils.get_all_username()})
 @blog.route("/@<username>/about", methods=["GET"])
 def about(username):
     ###################################################################
@@ -368,6 +382,7 @@ def about(username):
     return render_template("about.html", user=user, about=about)
 
 
+@sitemapper.include(url_variables={"username": user_utils.get_all_username()})
 @blog.route("/@<username>/blog", methods=["GET"])
 def blog_page(username):
     ###################################################################
@@ -468,3 +483,8 @@ def profile_img_endpoint(username):
 @blog.route("/error", methods=["GET"])
 def error_simulator():
     raise Exception("this is a simulation error.")
+
+
+@blog.route("/sitemap.xml")
+def sitemap():
+    return sitemapper.generate()

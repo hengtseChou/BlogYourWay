@@ -482,6 +482,21 @@ cachelib = "*"
 flask = ">=2.2"
 
 [[package]]
+name = "flask-sitemapper"
+version = "1.7.0"
+description = "Flask extension for generating XML sitemaps"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "flask_sitemapper-1.7.0-py3-none-any.whl", hash = "sha256:289d2d75cf958dbae49cb4b06957d898d0edec3f405ae5c6160cb6985bad4a56"},
+    {file = "flask_sitemapper-1.7.0.tar.gz", hash = "sha256:0dc0bb4ccff30adc2474c14eb7b395822f02812d3541325e9f62b61b13389614"},
+]
+
+[package.dependencies]
+flask = ">=2.2.2"
+jinja2 = ">=3.1.2,<4.0.0"
+
+[[package]]
 name = "flask-socketio"
 version = "5.3.6"
 description = "Socket.IO integration for Flask applications"
@@ -1514,4 +1529,4 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10.12,<4"
-content-hash = "6c9ce6573c32c57cb1c55f6eba5dd92ed77fd129651cc82c55f07fc45dbc3e11"
+content-hash = "fbca4c833d077201ad0376592e8f570ef5d28b6b25ff98698d31d8b9bf27dc19"

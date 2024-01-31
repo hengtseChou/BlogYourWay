@@ -9,6 +9,7 @@ from flask_login import current_user
 
 from blogyourway.config import ENV
 from blogyourway.helpers.common import FormValidator, MyDataClass, UIDGenerator, get_today
+from blogyourway.services.cache import cache
 from blogyourway.services.mongo import Database, mongodb
 
 ###################################################################
@@ -338,6 +339,21 @@ paging = Paging(db_handler=mongodb)
 class PostUtils:
     def __init__(self, db_handler: Database):
         self._db_handler = db_handler
+
+    def get_all_post_uid(self) -> list:
+        all_post_info = self._db_handler.post_info.find({})
+        all_post_uid = [post_info["post_uid"] for post_info in all_post_info]
+        return all_post_uid
+
+    def get_all_author(self) -> list:
+        all_post_info = self._db_handler.post_info.find({})
+        all_author = [post_info["author"] for post_info in all_post_info]
+        return all_author
+
+    def get_all_last_update(self) -> list:
+        all_post_info = self._db_handler.post_info.find({})
+        all_last_updated = [post_info["last_updated"] for post_info in all_post_info]
+        return all_last_updated
 
     def find_featured_posts_info(self, username: str):
         result = (
