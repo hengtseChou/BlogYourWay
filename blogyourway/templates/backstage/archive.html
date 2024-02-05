@@ -7,8 +7,10 @@
     </div>
     <hr />
     <!-- description -->
+    
     <p class="ms-2">Posts and works archived will not be seen in your website.</p>
     <!-- description ends -->
+    {% if posts | length > 0 %}
     <div class="col-11">
       <table class="table">
         <caption class="ms-2">
@@ -47,6 +49,7 @@
         </tbody>
       </table>
     </div>
+    {% endif %}
   </div>
   <!-- mobile view -->
   <div class="d-block d-md-none">

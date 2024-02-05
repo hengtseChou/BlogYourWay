@@ -11,7 +11,10 @@
               data-bs-target="#newPostModal">+ New Post</button>
     </div>
     <hr />
-    <p class="ms-2">Featured posts will be on your home page, sorted by time order.</p>
+    <!-- <p class="ms-2">Featured posts will be on your home page, sorted by time order.</p> -->
+    {% if posts | length == 0 %}
+    <p class="ms-2">You don't have any post yet. Make a post now, by clicking the button on the top-right.</p>
+    {% else %}
     <div class="col-11">
       <div class="table-responsive">
         <table class="table">
@@ -68,6 +71,7 @@
         </table>
       </div>
     </div>
+    {% endif %}
     <div class="container">
       <div class="row">
         <div class="col-6 text-start">
