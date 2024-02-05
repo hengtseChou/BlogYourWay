@@ -412,6 +412,17 @@ class PostUtils:
         target_post["content"] = target_post_content
 
         return target_post
+    
+    def read_increment(self, post_uid: str) -> None:
+        self._db_handler.post_info.make_increments(
+            filter={"post_uid": post_uid},
+            increments={"reads": 1}
+        )
+    def view_increment(self, post_uid: str) -> None:
+        self._db_handler.post_info.make_increments(
+            filter={"post_uid": post_uid},
+            increments={"views": 1}
+        )    
 
 
 post_utils = PostUtils(db_handler=mongodb)

@@ -312,6 +312,7 @@ def post(username, post_uid):
     ###################################################################
 
     logger_utils.page_visited(request)
+    post_utils.view_increment(post_uid)
 
     ###################################################################
 
@@ -326,9 +327,13 @@ def post(username, post_uid):
 def readcount_increment():
     ###################################################################
 
-    # logging / metrics
+    # main actions
 
     ###################################################################
+    
+    
+    post_uid = request.args.get("post_uid", type=str)
+    post_utils.read_increment(post_uid)
 
     ###################################################################
 

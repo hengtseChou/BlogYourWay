@@ -233,31 +233,38 @@
     });
   </script>
   <script>
-    $(document).ready(function() {
+    document.addEventListener("DOMContentLoaded", function() {
       // Function to make an AJAX request to fetch a replacement image
       function fetchReplacementImage(imgElement) {
-        var originalSrc = $(imgElement).attr("src"); // Get the initial src
-        $.ajax({
-          url: originalSrc, // Use the initial src as the URL
-          method: "GET", // Use GET or any other appropriate method
-          success: function(data) {
-            // Assuming the data received is a JSON object with an 'imageUrl' property
-            if (data.imageUrl) {
-              // Update the src attribute of the image element with the fetched replacement URL
-              $(imgElement).attr("src", data.imageUrl);
+        var originalSrc = imgElement.getAttribute("src"); // Get the initial src
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", originalSrc, true);
+
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              // Assuming the data received is a JSON object with an 'imageUrl' property
+              var responseData = JSON.parse(xhr.responseText);
+              if (responseData.imageUrl) {
+                // Update the src attribute of the image element with the fetched replacement URL
+                imgElement.setAttribute("src", responseData.imageUrl);
+              } else {
+                console.log("Image URL not found in the response.");
+              }
             } else {
-              console.log("Image URL not found in the response.");
+              console.log("Error fetching replacement image. Status code: " + xhr.status);
             }
-          },
-          error: function() {
-            console.log("Error fetching replacement image.");
-          },
-        });
+          }
+        };
+
+        xhr.send();
       }
 
-      // Loop through each image element with the "loop" class and fetch/replace the image
-      $(".ajax-profile-pic").each(function() {
-        fetchReplacementImage(this);
+      // Loop through each image element with the "ajax-profile-pic" class and fetch/replace the image
+      var profilePics = document.querySelectorAll(".ajax-profile-pic");
+      profilePics.forEach(function(imgElement) {
+        fetchReplacementImage(imgElement);
       });
     });
   </script>

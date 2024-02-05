@@ -46,7 +46,7 @@ def overview():
     return render_template(
         "overview.html",
         user=user,
-        traffic={},
+        traffic={"labels": ["2024-01-01", "2024-01-02"], "data": [2, 1]},
         index_page_traffic={"/@test/loll": 3},
         total_pv=1,
         total_uv=2,

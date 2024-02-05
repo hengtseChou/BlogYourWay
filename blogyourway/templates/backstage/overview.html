@@ -28,7 +28,7 @@
         <div class="row mt-4">
           <div class="col-5 col-lg-4">
             <div class="border rounded-0 px-3 pt-4 pb-2">
-              <p>Index page traffic</p>
+              <p>Page traffics</p>
               <table class="table table-responsive">
                 <thead>
                   <th>page</th>
@@ -63,13 +63,12 @@
 {% block script %}
   <script>
     // Access the data passed from Flask
-    const traffic = JSON.parse("{{ traffic | tojson }}");
+    var traffic = {{ traffic | tojson | safe }};
     const lineChart = new Chart(document.getElementById("chart"), {
       type: "line",
       data: {
         labels: traffic.labels,
         datasets: [{
-          label: "daily unique visitors",
           data: traffic.data,
           fill: false,
           backgroundColor: "#f5ae8e",
@@ -95,7 +94,7 @@
           },
           title: {
             display: true,
-            text: "Monthly traffic",
+            text: "Total views",
           },
         },
       },

@@ -6,11 +6,12 @@
       <h1 class="ms-2">Archives</h1>
     </div>
     <hr />
-    <!-- description -->
-    
+    <!-- description -->    
     <p class="ms-2">Posts and works archived will not be seen in your website.</p>
     <!-- description ends -->
-    {% if posts | length > 0 %}
+    {% if posts | length == 0 %}
+    <p class="ms-2">You don't have any archive right now.</p>
+    {% else %}
     <div class="col-11">
       <table class="table">
         <caption class="ms-2">

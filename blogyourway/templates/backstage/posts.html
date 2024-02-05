@@ -33,9 +33,11 @@
             {% for post in posts %}
               <tr>
                 <td class="align-middle">
-                  <a href="stats/posts/{{ post.post_uid }}"
+                  <!-- leave post stat for future -->
+                  <!-- <a href="stats/posts/{{ post.post_uid }}"
                      class="me-1"
-                     style="color: black">{{ post['title'] }}</a>
+                     style="color: black">{{ post['title'] }}</a> -->
+                     {{ post["title"] }}
                   {% if post['featured'] %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
                 </td>
                 <td>{{ post['created_at'] }}</td>
