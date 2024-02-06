@@ -2,7 +2,6 @@
 Configure little-blog application in create_app() with a factory pattern.
 """
 from flask import Flask, render_template, request
-from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from flask_session import Session
 from pymongo.errors import ServerSelectionTimeoutError
@@ -51,6 +50,7 @@ def create_app() -> Flask:
     # debug mode
     if ENV == "develop":
         app.config["DEBUG"] = True
+        from flask_debugtoolbar import DebugToolbarExtension
         toolbar = DebugToolbarExtension()
         toolbar.init_app(app)
         app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
