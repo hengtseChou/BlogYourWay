@@ -95,9 +95,9 @@ def create_app() -> Flask:
     cache.init_app(app, config=cache_config)
     logger.debug("Flask-caching initialized.")
 
-    # socketio
-    socketio.init_app(app, manage_session=False)
-    logger.debug("Flask-socketio initialized.")
+    # # socketio
+    # socketio.init_app(app, manage_session=False)
+    # logger.debug("Flask-socketio initialized.")
 
     # session
     # session = Session()
