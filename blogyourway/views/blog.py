@@ -490,6 +490,10 @@ def error_simulator():
     raise Exception("this is a simulation error.")
 
 
-@blog.route("/sitemap.xml")
+@blog.route("/sitemap.xml", methods=["GET"])
 def sitemap():
     return sitemapper.generate()
+
+@blog.route("/robots.txt", methods=["GET"])
+def robotstxt():
+    return open("robots.txt", "r")

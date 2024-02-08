@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /logout
+Disallow: /backstage/
+Disallow: /error
+
+Sitemap: https://www.blogyourway.xyz/sitemap.xml
