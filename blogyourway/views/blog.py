@@ -330,8 +330,7 @@ def readcount_increment():
     # main actions
 
     ###################################################################
-    
-    
+
     post_uid = request.args.get("post_uid", type=str)
     post_utils.read_increment(post_uid)
 
@@ -480,7 +479,7 @@ def profile_img_endpoint(username):
     if user["profile_img_url"]:
         profile_img_url = user["profile_img_url"]
     else:
-        profile_img_url = "/static/_img/default-profile.png"
+        profile_img_url = "/static/img/default-profile.png"
 
     return jsonify({"imageUrl": profile_img_url})
 
@@ -493,6 +492,7 @@ def error_simulator():
 @blog.route("/sitemap.xml", methods=["GET"])
 def sitemap():
     return sitemapper.generate()
+
 
 @blog.route("/robots.txt", methods=["GET"])
 def robotstxt():

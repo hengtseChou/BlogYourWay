@@ -109,7 +109,10 @@ def create_app() -> Flask:
     # logger.debug("Flask-session initialized.")
 
     # sitemapper
-    sitemapper.init_app(app)
+    sitemapper.init_app(app)    
+    app.config['SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS'] = True
+    app.config['SITEMAP_URL_SCHEME'] = 'https'
+    app.config['SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS'] = True
     logger.debug("Flask-sitemapper initialized.")
 
     # check connection

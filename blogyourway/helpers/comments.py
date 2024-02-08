@@ -43,7 +43,7 @@ class AnonymousComment(MyDataClass):
     post_uid: str
     comment_uid: str
     comment: str
-    profile_img_url: str = "/static/_img/visitor.png"
+    profile_img_url: str = "/static/img/visitor.png"
     created_at: datetime = field(default=get_today(env=ENV))
 
     def __post_init__(self):
