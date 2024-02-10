@@ -1,0 +1,99 @@
+<script>
+  function loadLocalStylesheet(href) {
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
+  }
+
+  function loadLocalScript(src) {
+    var script = document.createElement('script');
+    script.src = src;
+    document.head.appendChild(script);
+  }
+</script>
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Ubuntu|Noto+Sans+TC&display=swap" />
+<link rel="stylesheet" href="/static/css/styles.css" />
+<link rel="icon" href="/static/img/favicon.ico" type="image/x-icon" />
+<!-- bootstrap -->
+<!-- ver. 5.3.2 -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      onerror="loadLocalStylesheet('/static/fallbacks/bootstrap/bootstrap.min.css')" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.min.js"
+        integrity="sha512-WW8/jxkELe2CAiE4LvQfwm1rajOS8PHasCCx+knHG0gBHt8EXxS6T6tJRTGuDQVnluuAvMxWF4j8SNFDKceLFg=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+        onerror="loadLocalSCript('/static/fallbacks/bootstrap/bootstrap.min.js')"
+        async></script>
+<!-- font awesome -->
+<!-- ver. 6.5.1 -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/fontawesome.min.css"
+      integrity="sha512-d0olNN35C6VLiulAobxYHZiXJmq+vl+BGIgAxQtD5+kqudro/xNMvv2yIHAciGHpExsIbKX3iLg+0B6d0k4+ZA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      onerror="loadLocalStylesheet('/static/fallbacks/font-awesome/css/fontawesome.min.css')" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/brands.min.css"
+      integrity="sha512-8RxmFOVaKQe/xtg6lbscU9DU0IRhURWEuiI0tXevv+lXbAHfkpamD4VKFQRto9WgfOJDwOZ74c/s9Yesv3VvIQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      onerror="loadLocalStylesheet('/static/fallbacks/font-awesome/css/brand.min.css')" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/solid.min.css"
+      integrity="sha512-pZlKGs7nEqF4zoG0egeK167l6yovsuL8ap30d07kA5AJUq+WysFlQ02DLXAmN3n0+H3JVz5ni8SJZnrOaYXWBA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      onerror="loadLocalStylesheet('/static/fallbacks/font-awesome/css/solid.min.css')" />
+<!-- easy markdown editor -->
+<!-- ver. 2.18.0 -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css"
+      onerror="loadLocalStylesheet('static/fallbacks/easymde/easymde.min.css')">
+<script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
+        onerror="loadLocalScript('/static/fallbacks/easymde.min.js')"
+        async></script>
+<!-- highlight.js -->
+<!-- ver. 11.7.0 -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
+      integrity="sha512-hasIneQUHlh06VNBe7f6ZcHmeRTLIaQWFd43YriJ0UND19bvYRauxthDg8E4eVNPm9bRUhr5JGeqH7FRFXQu5g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      onerror="loadLocalStylesheet('static/fallbacks/highlight.js/default.min.css')" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"
+        integrity="sha512-bgHRAiTjGrzHzLyKOnpFvaEpGzJet3z4tZnXGjpsCcqOnAH6VGUx9frc5bcIhKTVLEiCO6vEhNAgx5jtLUYrfA=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+        onerror="loadLocalScript('/static/fallbacks/highlight.js/highlight.min.js')"
+        async></script>
+<!-- chart.js -->
+<!-- ver. 4.4.1 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
+        integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+        onerror="loadLocalScript('/static/fallbacks/chart.js/chart.umd.min.js')"
+        async></script>
+<!-- countUp.js -->
+<!-- ver. 2.8.0 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.8.0/countUp.umd.min.js"
+        integrity="sha512-kUIpdMjMlkYUVQgR3wVXJtmuwoD+G69Zt9JBa2rPH4C/+VPlAsQWKcqCv0SpJ8AnezBjfuM2JDjnc58Ee8Filw=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+        onerror="loadLocalScript('static/fallbacks/countUp.js/countUp.umd.min.js')"
+        async></script>
+<!-- jquery  -->
+<!-- ver. 3.7.1 -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="loadLocalScript('/static/jquery/jquery.min.js')"></script> -->
+<!-- socket.io -->
+<!-- ver. 4.7.4 -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js" integrity="sha512-skuhu6jj+sQnhLq1Txsack8VfnIrX8wL+MTFilYlFFT/NuLJm7eya7zOROs39Jy5cjASMEWqxLzijRVmKhsqWQ==" crossorigin="anonymous" referrerpolicy="no-referrer" onerror="loadLocalScript('static/fallbacks/socket.io/socket.io.min.js')"></script> -->
+<!-- reCAPTCHA  -->
+<link rel="preconnect" href="https://www.google.com" />
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin />
