@@ -2,5 +2,6 @@ User-agent: *
 Disallow: /logout
 Disallow: /backstage/
 Disallow: /error
+Disallow: /sitemap.xml
 
 Sitemap: https://www.blogyourway.xyz/sitemap.xml
