@@ -9,7 +9,6 @@ from flask_login import current_user
 
 from blogyourway.config import ENV
 from blogyourway.helpers.common import FormValidator, MyDataClass, UIDGenerator, get_today
-from blogyourway.services.cache import cache
 from blogyourway.services.mongo import Database, mongodb
 
 ###################################################################
@@ -104,9 +103,7 @@ def create_post(request):
     uid_generator = UIDGenerator(db_handler=mongodb)
 
     new_post_setup = NewPostSetup(post_uid_generator=uid_generator, db_handler=mongodb)
-    new_post_uid = new_post_setup.create_post(
-        author_name=current_user.username, request=request
-    )
+    new_post_uid = new_post_setup.create_post(author_name=current_user.username, request=request)
     return new_post_uid
 
 
@@ -208,9 +205,7 @@ class HTMLFormatter:
 
     def add_padding(self):
         # add padding for all first level tags, except figure and img
-        tags = self.__soup.find_all(
-            lambda tag: tag.name not in ["figure", "img"], recursive=False
-        )
+        tags = self.__soup.find_all(lambda tag: tag.name not in ["figure", "img"], recursive=False)
         for tag in tags:
             current_style = tag.get("style", "")
             new_style = f"{current_style} padding-top: 10px; padding-bottom: 10px; "
@@ -406,23 +401,22 @@ class PostUtils:
 
     def get_full_post(self, post_uid: str):
         target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
-        target_post_content = self._db_handler.post_content.find_one(
-            {"post_uid": post_uid}
-        ).get("content")
+        target_post_content = self._db_handler.post_content.find_one({"post_uid": post_uid}).get(
+            "content"
+        )
         target_post["content"] = target_post_content
 
         return target_post
-    
+
     def read_increment(self, post_uid: str) -> None:
         self._db_handler.post_info.make_increments(
-            filter={"post_uid": post_uid},
-            increments={"reads": 1}
+            filter={"post_uid": post_uid}, increments={"reads": 1}
         )
+
     def view_increment(self, post_uid: str) -> None:
         self._db_handler.post_info.make_increments(
-            filter={"post_uid": post_uid},
-            increments={"views": 1}
-        )    
+            filter={"post_uid": post_uid}, increments={"views": 1}
+        )
 
 
 post_utils = PostUtils(db_handler=mongodb)

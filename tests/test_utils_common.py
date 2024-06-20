@@ -1,6 +1,8 @@
-from unittest.mock import patch, MagicMock
-import pytest
 from datetime import datetime
+from unittest.mock import MagicMock, patch
+
+import pytest
+
 from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today
 
 ###################################################################

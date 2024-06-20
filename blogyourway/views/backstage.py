@@ -197,9 +197,7 @@ def edit_featured():
     mongodb.post_info.update_values(
         filter={"post_uid": post_uid}, update={"featured": updated_featured_status}
     )
-    logger.debug(
-        f"featuring status for post {post_uid} is now set to {updated_featured_status}"
-    )
+    logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}")
 
     ###################################################################
 
@@ -304,9 +302,7 @@ def about_control_post():
     updated_info = {"profile_img_url": form["profile_img_url"], "short_bio": form["short_bio"]}
     updated_about = {"about": form["about"]}
     mongodb.user_info.update_values(filter={"username": user["username"]}, update=updated_info)
-    mongodb.user_about.update_values(
-        filter={"username": user["username"]}, update=updated_about
-    )
+    mongodb.user_about.update_values(filter={"username": user["username"]}, update=updated_about)
     user.update(updated_info)
     user.update(updated_about)
     logger.debug(f"information for user {current_user.username} has been updated")

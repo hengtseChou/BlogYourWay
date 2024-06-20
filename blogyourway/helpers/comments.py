@@ -1,6 +1,7 @@
 """
 This module includes a create comment function, and a comment utility class.
 """
+
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -140,9 +141,7 @@ class CommentUtils:
 
     def find_comments_by_post_uid(self, post_uid: str):
         result = (
-            self._db_handler.comment.find({"post_uid": post_uid})
-            .sort("created_at", 1)
-            .as_list()
+            self._db_handler.comment.find({"post_uid": post_uid}).sort("created_at", 1).as_list()
         )
         return result
 

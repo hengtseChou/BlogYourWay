@@ -1,31 +1,18 @@
 """
 Configure little-blog application in create_app() with a factory pattern.
 """
+
 from flask import Flask, render_template, request
 from flask_login import LoginManager
-from flask_session import Session
 from pymongo.errors import ServerSelectionTimeoutError
 
-from blogyourway.config import APP_SECRET, ENV, REDIS_HOST, REDIS_PORT, REDIS_PW
+from blogyourway.config import APP_SECRET, ENV
 from blogyourway.helpers.users import UserInfo, user_utils
-from blogyourway.services.cache import cache
 from blogyourway.services.logging import logger, return_client_ip
 from blogyourway.services.mongo import mongodb
-from blogyourway.services.redis import redis
 from blogyourway.services.sitemapper import sitemapper
-from blogyourway.services.socketio import socketio
 
 from .views import backstage_bp, blog_bp
-
-if ENV == "develop":
-    cache_config = {"CACHE_TYPE": "SimpleCache", "CACHE_DEFAULT_TIMEOUT": 300}
-elif ENV == "prod":
-    cache_config = {
-        "CACHE_TYPE": "RedisCache",
-        "CACHE_REDIS_HOST": REDIS_HOST,
-        "CACHE_REDIS_PORT": REDIS_PORT,
-        "CACHE_REDIS_PASSWORD": REDIS_PW,
-    }
 
 
 def create_app() -> Flask:
@@ -48,9 +35,10 @@ def create_app() -> Flask:
     app.secret_key = APP_SECRET
 
     # debug mode
-    if ENV == "develop":
+    if ENV == "debug":
         app.config["DEBUG"] = True
         from flask_debugtoolbar import DebugToolbarExtension
+
         toolbar = DebugToolbarExtension()
         toolbar.init_app(app)
         app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
@@ -91,28 +79,11 @@ def create_app() -> Flask:
     app.register_blueprint(backstage_bp, url_prefix="/backstage/")
     logger.debug("Blueprints registered.")
 
-    # cache
-    cache.init_app(app, config=cache_config)
-    logger.debug("Flask-caching initialized.")
-
-    # # socketio
-    # socketio.init_app(app, manage_session=False)
-    # logger.debug("Flask-socketio initialized.")
-
-    # session
-    # session = Session()
-    # app.config["SESSION_TYPE"] = "redis"
-    # app.config["SESSION_PERMANENT"] = False
-    # app.config["SESSION_USE_SIGNER"] = True
-    # app.config["SESSION_REDIS"] = redis
-    # session.init_app(app)
-    # logger.debug("Flask-session initialized.")
-
     # sitemapper
-    sitemapper.init_app(app)    
-    app.config['SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS'] = True
-    app.config['SITEMAP_URL_SCHEME'] = 'https'
-    app.config['SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS'] = True
+    sitemapper.init_app(app)
+    app.config["SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS"] = True
+    app.config["SITEMAP_URL_SCHEME"] = "https"
+    app.config["SITEMAP_INCLUDE_RULES_WITHOUT_PARAMS"] = True
     logger.debug("Flask-sitemapper initialized.")
 
     # check connection
@@ -122,13 +93,6 @@ def create_app() -> Flask:
     except ServerSelectionTimeoutError as error:
         logger.error(error)
         exit("MongoDB is NOT connected. App initializaion failed.")
-
-    try:
-        redis.ping()
-        logger.debug("Redis connected.")
-    except Exception as error:
-        logger.error(error)
-        exit("Redis is NOT connected. App initializaion failed.")
 
     logger.info("App initialization completed.")
 

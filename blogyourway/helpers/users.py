@@ -9,7 +9,6 @@ from flask_login import UserMixin
 
 from blogyourway.config import ENV
 from blogyourway.helpers.common import FormValidator, MyDataClass, get_today
-from blogyourway.services.cache import cache
 from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
 

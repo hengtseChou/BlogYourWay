@@ -1,6 +1,7 @@
 """
 This module collects the common utulity functions from the application.
 """
+
 import random
 import re
 import string
@@ -160,7 +161,7 @@ class MyDataClass:
 
 
 def get_today(env) -> datetime:
-    if env == "develop":
+    if env == "debug":
         today = datetime.now()
     elif env == "prod":
         today = datetime.now() + timedelta(hours=8)

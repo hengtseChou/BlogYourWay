@@ -1,0 +1,9 @@
+#!/bin/bash
+cd "$(git rev-parse --show-toplevel)"
+source .debug/bin/activate
+echo "[pre-commit]: running isort..."
+isort blogyourway/ app.py -q
+echo "[pre-commit]: running black..."
+black blogyourway/ app.py -q -l 100
+echo "[pre-commit]: done"
+echo ""

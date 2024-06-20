@@ -10,9 +10,6 @@ from blogyourway.helpers.comments import comment_utils, create_comment
 from blogyourway.helpers.common import sort_dict
 from blogyourway.helpers.posts import html_to_about, html_to_blogpost, paging, post_utils
 from blogyourway.helpers.users import user_utils
-
-# from blogyourway.services.logging import logger, logger_utils
-# from blogyourway.services.mongo import mongodb
 from blogyourway.services import logger, logger_utils, mongodb, sitemapper
 
 blog = Blueprint("blog", __name__, template_folder="../templates/blog/")

@@ -2,12 +2,9 @@
 *.env
 *.pyc
 *.log
-.coverage
-test_post.md
+requirements_debug.txt
 # folder
 __pycache__/
 .venv/
 .ruff_cache/
 .pytest_cache/
-coverage_report/
-.vscode/

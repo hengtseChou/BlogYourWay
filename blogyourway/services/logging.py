@@ -6,7 +6,7 @@ from blogyourway.config import ENV
 
 
 def return_client_ip(request: Request, env: str):
-    if env == "develop":
+    if env == "debug":
         return request.remote_addr
     elif env == "prod":
         return request.headers.get("X-Forwarded-For")
@@ -65,7 +65,7 @@ class Logger:
 
         if env == "prod":
             self._logger = _setup_prod_logger()
-        elif env == "develop":
+        elif env == "debug":
             self._logger = _setup_debug_logger()
 
     def debug(self, msg):
