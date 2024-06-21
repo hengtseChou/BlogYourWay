@@ -15,6 +15,8 @@ fi
 if git diff --cached --name-only | grep -q '\.html$'; then
     reformat=true
     file_name=$(git diff --cached --name-only | grep '\.html$')
+    echo "[pre-commit]: running prettier..."
+    prettier $file_name -w
     echo "[pre-commit]: running djlint..."
     djlint $file_name --reformat --indent 2
     git add $file_name

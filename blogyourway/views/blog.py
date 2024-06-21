@@ -141,17 +141,18 @@ def register_post():
 
     ###################################################################
 
-    user_utils.create_user(request=request)
-    logger_utils.registration_succeeded(request=request)
-    flash("Registration succeeded.", category="success")
+    if user_utils.create_user(request=request) == "succeeded":
+        flash("Registration succeeded.", category="success")
+        return redirect(url_for("blog.login_get"))
+
+    else:
+        return render_template("register.html")
 
     ###################################################################
 
     # return page content
 
     ###################################################################
-
-    return redirect(url_for("blog.login_get"))
 
 
 @sitemapper.include(url_variables={"username": user_utils.get_all_username()})
@@ -437,40 +438,8 @@ def blog_page(username):
     )
 
 
-@blog.route("@<username>/social-links", methods=["GET"])
-def social_link_endpoint(username):
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    user = mongodb.user_info.find_one({"username": username})
-    social_links = user["social_links"]
-    link_idx = request.args.get("idx", type=int)
-    target_url = social_links[link_idx - 1]["url"]
-    if not target_url.startswith("https://"):
-        target_url = "https://" + target_url
-
-    ###################################################################
-
-    # logging / metrics
-
-    ###################################################################
-
-    logger.debug(f"redirect to social-link[{link_idx}]: {target_url}")
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return redirect(target_url)
-
-
 @blog.route("/@<username>/get-profile-img", methods=["GET"])
-def profile_img_endpoint(username):
+def get_profile_img(username):
     user = mongodb.user_info.find_one({"username": username})
 
     if user["profile_img_url"]:
@@ -479,6 +448,24 @@ def profile_img_endpoint(username):
         profile_img_url = "/static/img/default-profile.png"
 
     return jsonify({"imageUrl": profile_img_url})
+
+
+@blog.route("/is-unique-email", methods=["GET"])
+def is_unique_email():
+    email = request.args.get("email", type=str)
+    duplicated = mongodb.user_info.exists(key="email", value=email)
+    if duplicated:
+        return jsonify(False)
+    return jsonify(True)
+
+
+@blog.route("/is-unique-username", methods=["GET"])
+def is_unique_username():
+    username = request.args.get("username", type=str)
+    duplicated = mongodb.user_info.exists(key="username", value=username)
+    if duplicated:
+        return jsonify(False)
+    return jsonify(True)
 
 
 @blog.route("/error", methods=["GET"])

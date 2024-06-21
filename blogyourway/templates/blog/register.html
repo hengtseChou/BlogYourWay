@@ -1,214 +1,303 @@
 {% extends 'base.html' %}
 {% block head %}
   <style>
-    body {
-      background-color: #f5f5f5;
-    }
+  body {
+    background-color: #f5f5f5;
+  }
 
-    .branding {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .branding img {
-      max-height: 36px; /* Adjust based on your logo size */
-      margin-right: 10px;
-    }
-    
-    .card {
-      background-color: #f5f5f5;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      padding: 30px;
-      border-radius: 20px;
-      transition: opacity 0.7s ease-in-out;
-    }
+  .branding {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .branding img {
+    max-height: 36px; /* Adjust based on your logo size */
+    margin-right: 10px;
+  }
 
-    .card.hide {
-      opacity: 0;
-      pointer-events: none;
-    }
+  .card {
+    background-color: #f5f5f5;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 30px;
+    border-radius: 20px;
+    transition: opacity 0.7s ease-in-out;
+  }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
+  .card.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
   </style>
 {% endblock %}
 {% block title %}Create an Account · BlogYourWay{% endblock %}
-{% block body %}
-  <div class="container-fluid" style="margin-top: calc(100vh * 0.2);">
-    <div class="row">
-      <form method="post" autocomplete="off" class="col-10 col-md-12 mx-auto">
-        <div class="card bg-white shadow" id="step1">
-          <div class="card-body">
-            <div class="container mb-4">
-              <div class="row justify-content-center">
-                <div class="me-auto col-auto branding">
-                  <img src="/static/img/logo.png" alt="Logo">
-                  <h3 class="fw-bold pt-2">BlogYourWay</h3>
-                </div>
+{%
+block body %}
+<div class="container-fluid" style="margin-top: calc(100vh * 0.2)">
+  <div class="row">
+    <form method="post" autocomplete="off" class="col-10 col-md-12 mx-auto">
+      <div class="card bg-white shadow" id="step1">
+        <div class="card-body">
+          <div class="container mb-4">
+            <div class="row justify-content-center">
+              <div class="me-auto col-auto branding">
+                <img src="/static/img/logo.png" alt="Logo" />
+                <h3 class="fw-bold pt-2">BlogYourWay</h3>
               </div>
             </div>
-            <h5 class="text-center my-4">Register</h5>
-            <div class="input-group mb-4">
-              <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-              <input type="email"
-                     class="form-control"
-                     placeholder="Email"
-                     name="email"
-                     id="email" />
-            </div>
-            <div class="input-group mb-2">
-              <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-              <input type="password"
-                     class="form-control"
-                     placeholder="Password"
-                     name="password"
-                     id="password" />
-            </div>
-            <small style="color: #6c757d">
-              <p>
-                Password must be 8 characters long, with upper and lower cases
-                letters.
-              </p>
-            </small>
-            <button type="button"
-                    class="btn btn-primary w-100 rounded-pill"
-                    style="background-color: #e4622f;
-                           border: 0px"
-                    onclick="validateStep1()">Continue</button>
-            <div class="text-center mt-4">
-              Already have an account? <a href="/login">Login</a>
-            </div>
+          </div>
+          <h5 class="text-center my-4">Register</h5>
+          <div class="input-group mb-4">
+            <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+            <input type="email"
+                   class="form-control"
+                   placeholder="Email"
+                   name="email"
+                   id="email" />
+          </div>
+          <div class="input-group mb-2">
+            <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+            <input type="password"
+                   class="form-control"
+                   placeholder="Password"
+                   name="password"
+                   id="password" />
+          </div>
+          <small style="color: #6c757d">
+            <p>
+              Password must be 8 characters long, with upper and lower cases
+              letters.
+            </p>
+          </small>
+          <button type="button"
+                  class="btn btn-primary w-100 rounded-pill"
+                  style="background-color: #e4622f;
+                         border: 0px"
+                  onclick="validateStep1()">Continue</button>
+          <div class="text-center mt-4">
+            Already have an account? <a href="/login">Login</a>
           </div>
         </div>
-        <div class="card hide bg-white shadow" id="step2" style="display: none">
-          <div class="card-body">
-            <div class="container mb-4">
-              <div class="row justify-content-center">
-                <div class="me-auto col-auto branding">
-                  <img src="/static/img/logo.png" alt="Logo">
-                  <h3 class="fw-bold pt-2">BlogYourWay</h3>
-                </div>
+      </div>
+      <div class="card hide bg-white shadow" id="step2" style="display: none">
+        <div class="card-body">
+          <div class="container mb-4">
+            <div class="row justify-content-center">
+              <div class="me-auto col-auto branding">
+                <img src="/static/img/logo.png" alt="Logo" />
+                <h3 class="fw-bold pt-2">BlogYourWay</h3>
               </div>
             </div>
-            <h5 class="text-center my-4">Almost Done...</h5>
-            <div class="input-group mb-1">
-              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-              <input type="text"
-                     class="form-control"
-                     placeholder="Username"
-                     name="username"
-                     id="username" />
-            </div>
-            <small class="mb-4" style="color: #6c757d">
-              <p>Use only letters (lowercase), numbers, and "-".</p>
-            </small>
-            <div class="input-group mb-1">
-              <span class="input-group-text"><i class="fa-solid fa-house"></i></span>
-              <input type="text"
-                     class="form-control"
-                     placeholder="Blog's name"
-                     name="blogname"
-                     id="blogname" />
-            </div>
-            <small class="mb-4" style="color: #6c757d">
-              <p>20 characters maximum.</p>
-            </small>
-            <div class="form-check mb-4">
-              <input class="form-check-input" type="checkbox" name="terms" id="terms" />
-              <label class="form-check-label" for="terms">
-                I understand this is a fully experimental project, there is no
-                guarantee of complete data preservation.
-              </label>
-            </div>
-            <button type="submit"
-                    class="btn btn-primary w-100 rounded-pill"
-                    style="background-color: #e4622f;
-                           border: 0px"
-                    onclick="return validateStep2()">Create</button>
           </div>
+          <h5 class="text-center my-4">Almost Done...</h5>
+          <div class="input-group mb-1">
+            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Username"
+                   name="username"
+                   id="username" />
+          </div>
+          <small class="mb-4" style="color: #6c757d">
+            <p>Use only letters (lowercase), numbers, and "-".</p>
+          </small>
+          <div class="input-group mb-1">
+            <span class="input-group-text"><i class="fa-solid fa-house"></i></span>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Blog's name"
+                   name="blogname"
+                   id="blogname" />
+          </div>
+          <small class="mb-4" style="color: #6c757d">
+            <p>20 characters maximum.</p>
+          </small>
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" name="terms" id="terms" />
+            <label class="form-check-label" for="terms">
+              I understand this is a fully experimental project, there is no
+              guarantee of complete data preservation.
+            </label>
+          </div>
+          <button type="submit"
+                  class="btn btn-primary w-100 rounded-pill"
+                  style="background-color: #e4622f;
+                         border: 0px">Create</button>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
+</div>
 {% endblock %}
 {% block script %}
   <script>
-    function validateStep1() {
-      // Perform input validation for Step 1
-      var email = document.getElementById("email").value;
-      var password = document.getElementById("password").value;
+  function isUniqueEmail(email) {
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/is-unique-email`; // Replace with your actual endpoint URL
+    const params = new URLSearchParams({ email: email });
 
-      // both fields not empty
-      if (email.trim() === "" || password.trim() === "") {
-        alert("Enter email and password to continue.");
-        return false;
-      }
-
-      var emailRegex = /^\S+@\S+\.\S+$/;
-      if (!emailRegex.test(email)) {
-        alert("Enter a valid email address.");
-        return false;
-      }
-
-      var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-      if (!passwordRegex.test(password)) {
-        alert(
-          "Password must be 8 characters long and contain both uppercase and lowercase letters.",
-        );
-        return false;
-      }
-
-      // // Hide Step 1, show Step 2
-      document.getElementById("step1").classList.add("hide");
-      document.getElementById("step1").style.display = "none";
-
-      document.getElementById("step2").style.display = "block";
-      setTimeout(function() {
-        document.getElementById("step2").classList.remove("hide");
-      }, 100);
-    }
-
-    function validateStep2() {
-      // Perform input validation for Step 2
-      var username = document.getElementById("username").value;
-      var blogname = document.getElementById("blogname").value;
-      var termsChecked = document.getElementById("terms").checked;
-
-      if (username.trim() === "" || blogname.trim() === "") {
-        alert("Enter username and blog name to continue.");
-        return false;
-      }
-
-      if (username[0] === "-" || username[username.length - 1] === "-") {
-        alert("Username cannot begins or ends with a hyphen.");
-        return false;
-      }
-
-      var usernameRegex = /^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/;
-      if (!usernameRegex.test(username)) {
-        alert(
-          'Invalid username. Please use only letters (lowercase), numbers, and "-".',
-        );
-        return false;
-      }
-
-      if (!termsChecked) {
-        alert("You must read the terms to continue.");
-        return false;
-      }
-
-      return true;
-    }
-
-    document
-      .getElementById("step1")
-      .addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-          event.preventDefault();
+    return fetch(`${url}?${params}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return response.json();
+      })
+      .then((result) => {
+        if (typeof result === "boolean") {
+          return result;
+        } else {
+          throw new Error("Unexpected response format");
+        }
+      })
+      .catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+        return false; // Default to false in case of an error
       });
+  }
+
+  function isUniqueUsername(username) {
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/is-unique-username`; // Replace with your actual endpoint URL
+    const params = new URLSearchParams({ username: username });
+
+    return fetch(`${url}?${params}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((result) => {
+        if (typeof result === "boolean") {
+          return result;
+        } else {
+          throw new Error("Unexpected response format");
+        }
+      })
+      .catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+        return false; // Default to false in case of an error
+      });
+  }
+
+  function validateStep1() {
+    // Perform input validation for Step 1
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+
+    // both fields not empty
+    if (email.trim() === "" || password.trim() === "") {
+      alert("Enter email and password to continue.");
+      return false;
+    }
+
+    var emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      alert("Enter a valid email address.");
+      return false;
+    }
+
+    var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      alert(
+        "Password must be 8 characters long and contain both uppercase and lowercase letters.",
+      );
+      return false;
+    }
+
+    isUniqueEmail(email).then((isUnique) => {
+      if (isUnique) {
+        // Hide Step 1, show Step 2
+        document.getElementById("step1").classList.add("hide");
+        document.getElementById("step1").style.display = "none";
+
+        document.getElementById("step2").style.display = "block";
+        setTimeout(function () {
+          document.getElementById("step2").classList.remove("hide");
+        }, 100);
+      } else {
+        alert("This email is already registered. Please try another one.");
+        return false;
+      }
+    });
+  }
+
+  function validateStep2() {
+    // Perform input validation for Step 2
+    var username = document.getElementById("username").value;
+    var blogname = document.getElementById("blogname").value;
+    var termsChecked = document.getElementById("terms").checked;
+
+    if (username.trim() === "" || blogname.trim() === "") {
+      alert("Enter username and blog name to continue.");
+      return false;
+    }
+
+    if (username[0] === "-" || username[username.length - 1] === "-") {
+      alert("Username cannot begins or ends with a hyphen.");
+      return false;
+    }
+
+    var usernameRegex = /^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/;
+    if (!usernameRegex.test(username)) {
+      alert(
+        'Invalid username. Please use only letters (lowercase), numbers, and "-".',
+      );
+      return false;
+    }
+
+    if (!termsChecked) {
+      alert("You must read the terms to continue.");
+      return false;
+    }
+
+    return isUniqueUsername(username)
+      .then((isUnique) => {
+        if (isUnique) {
+          // Hide Step 1, show Step 2
+          return true;
+        } else {
+          alert("This username is already taken.");
+          return false;
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking username uniqueness:", error);
+        return false;
+      });
+  }
+  // Update the form submission logic to use the validateStep2 function
+  document.querySelector("form").addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent default form submission
+    validateStep2().then((isValid) => {
+      if (isValid) {
+        this.submit(); // Proceed with form submission if validation passes
+      }
+    });
+  });
+
+  document
+    .getElementById("step1")
+    .addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+      }
+    });
   </script>
 {% endblock %}

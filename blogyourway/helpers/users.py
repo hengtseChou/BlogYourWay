@@ -75,8 +75,8 @@ class NewUserSetup:
         return True
 
     def _no_duplicates(self) -> bool:
-        for field in ["email", "username", "blogname"]:
-            if self._db_handler.user_creds.exists(field, self._regist_form[field]):
+        for field in ["email", "username"]:
+            if self._db_handler.user_info.exists(field, self._regist_form[field]):
                 flash(
                     f"{field.capitalize()} is already used. Please try another one.",
                     category="error",
@@ -115,14 +115,14 @@ class NewUserSetup:
         hashed_pw = hashed_pw.decode("utf-8")
         return hashed_pw
 
-    def create_user(self):
+    def create_user(self) -> str:
         validator = FormValidator()
 
         if not self._form_validated(validator=validator):
-            return render_template("register.html")
+            return "failed"
 
         if self._no_duplicates():
-            return render_template("register.html")
+            return "failed"
 
         hashed_pw = self._hash_password(self._regist_form["password"])
         new_user_creds = self._create_user_creds(
@@ -139,7 +139,9 @@ class NewUserSetup:
         self._db_handler.user_info.insert_one(new_user_info)
         self._db_handler.user_about.insert_one(new_user_about)
 
-        return self._regist_form["username"]
+        logger_utils.registration_succeeded(request=self._request)
+
+        return "succeeded"
 
 
 ###################################################################
