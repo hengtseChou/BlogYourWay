@@ -47,7 +47,6 @@
       flex-flow: column;
       padding: 5px;
       margin: auto;
-
     }
 
     .cover-caption {
@@ -88,7 +87,7 @@
             </div>
             <div class="col mt-1 ms-2">
               <div style="line-height: 125%;">
-                <span class="grey-text">Updated At {{ post.last_updated }} · {{ post.readtime }}
+                <span class="grey-text">Updated at {{ post.last_updated }}&nbsp;&nbsp;·&nbsp;&nbsp;{{ post.readtime }}
                   <br>
                 By</span>
                 <a class="author-link ms-1" href="/@{{ post.author }}/about">{{ post.author }}</a>
@@ -97,8 +96,8 @@
           </div>
         </div>
         <!-- cover -->
-        <figure class="cover mt-3">
-          <img src="{{ post.cover_url }}" alt="">
+        <figure class="figure cover mt-3">
+          <img src="{{ post.cover_url }}" class="figure-img img-fluid rounded" alt="">
           <!-- <figcaption class="cover-caption">{{ post.title }}</figcaption> -->
         </figure>
         <!-- content start -->

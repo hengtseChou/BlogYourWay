@@ -2,25 +2,26 @@
 {% block title %}{{ user['blogname'] }} · BlogYourWay{% endblock %}
 {% block meta_tags %}
   <meta name="description"
-        content="Hi, welcome to my blog '{{ user['blogname'] }}'!">
+        content="Visit '{{ user['blogname'] }}' on BlogYourWay.">
 {% endblock %}
 {% block body %}
   {% include 'navbar.html' %}
   {% include 'cover.html' %}
   <div class="container-fluid">
     <div class="row">
-      <!-- post column -->
-      <div class="col-md-8 col-12" style="min-height: calc(100vh - 330px);">
+      <div class="offset-lg-2 col-lg-8 col-12"
+           style="min-height: calc(100vh - 330px)">
         <div class="row">
-          <div class="offset-lg-3 col-lg-8 offset-md-1 col-md-9 offset-1 col-10">
+          <!-- post-column -->
+          <div class="col-lg-8 col-11 mx-auto">
             {% if posts|length != 0 %}
-              <h5 class="text-start pt-4 pt-md-5 fw-bold"
+              <h5 class="text-start mt-4 ms-2 fw-bold"
                   style="color: rgb(100, 100, 100)">Featured Posts</h5>
               {% for post in posts %}
                 {% set post_link = '/@' ~ post.author ~'/posts/' ~ post.post_uid %}
-                <div class="mt-4 mb-5">
+                <div class="mt-4 mb-5 ms-2">
                   <a href="{{ post_link }}" class="header-link">
-                    <h1 class="fw-bold">{{ post.title }}</h1>
+                    <h3 class="fw-bold">{{ post.title }}</h3>
                   </a>
                   <div class="d-flex align-items-center my-3">
                     <a href="about">
@@ -48,52 +49,58 @@
                     {% endfor %}
                   </div>
                 </div>
-                {% if loop.index != posts|length %}<hr>{% endif %}
+                {% if loop.index != posts|length %}
+                  <hr>
+                {% else %}
+                  <div style="height: 50px;"></div>
+                {% endif %}
               {% endfor %}
             {% else %}
               <h5 class="text-start py-5 fw-bold" style="color: rgb(100, 100, 100);">No featured posts yet!</h5>
             {% endif %}
           </div>
-        </div>
-      </div>
-      <!-- bio column -->
-      <div class="d-none d-md-block col-md-4 border-start">
-        <div class="d-flex justify-content-center" style="margin-top: 6rem;">
-          {% if user.profile_img_url|length == 0 %}
-            <img src="/static/img/default-profile.png"
-                 alt="profile-img"
-                 class="profile-xxl img-thumbnail">
-          {% else %}
-            <img src="{{ user.profile_img_url }}"
-                 alt="profile-img"
-                 class="profile-xxl img-thumbnail">
-          {% endif %}
-        </div>
-        <div class="text-center mt-4">
-          <h3>{{ user.blogname }}</h3>
-        </div>
-        <div class="container">
-          <div class="row">
-            <div class="col-4 mx-auto">
-              <hr>
-            </div>
-          </div>
-          <div class="row mb-5">
-            <div class="col-8 mx-auto text-center">
-              {% if user.short_bio|length == 0 %}
-                <p>Edit your short bio in the 'About' tab at the backstage.</p>
+          <!-- bio column -->
+          <div class="d-none d-lg-block col-lg-4">
+            <div class="d-flex justify-content-center" style="margin-top: 6rem;">
+              {% if user.profile_img_url|length == 0 %}
+                <img src="/static/img/default-profile.png"
+                     alt="profile-img"
+                     class="profile-xxl img-thumbnail">
               {% else %}
-                <p>{{ user.short_bio }}</p>
+                <img src="{{ user.profile_img_url }}"
+                     alt="profile-img"
+                     class="profile-xxl img-thumbnail">
               {% endif %}
             </div>
+            <div class="text-center mt-4">
+              <h3>{{ user.blogname }}</h3>
+            </div>
+            <div class="container">
+              <div class="row">
+                <div class="col-4 mx-auto">
+                  <hr>
+                </div>
+              </div>
+              <div class="row mb-5">
+                <div class="col-8 mx-auto text-center">
+                  {% if user.short_bio|length == 0 %}
+                    <p>Edit your short bio in the 'About' tab at the backstage.</p>
+                  {% else %}
+                    <p>{{ user.short_bio }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="border text-center py-4" style="background-color: #f5f5f5;">
-        {% set blog_link = '/@'~ user.username ~ '/blog' %}
-        <a href="{{ blog_link }}" class="btn">View more posts</a href="blog">
+        <div class="border border-1 text-center py-2 my-3"
+             style="background-color: #f5f5f5">
+          {% set blog_link = '/@'~ user.username ~ '/blog' %}
+          <a href="{{ blog_link }}" class="btn">View more posts</a href="blog">
+          </div>
         </div>
       </div>
     </div>
-    {% include 'footer.html' %}
-  {% endblock %}
+  </div>
+  {% include 'footer.html' %}
+{% endblock %}
