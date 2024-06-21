@@ -19,6 +19,13 @@ if git diff --cached --name-only | grep -q '\.html$'; then
     djlint $file_name --reformat --indent 2
     git add $file_name
 fi
+if git diff --cached --name-only | grep -q '\.css$'; then
+    reformat=true
+    file_name=$(git diff --cached --name-only | grep '\.css$')
+    echo "[pre-commit]: running prettier..."
+    prettier $file_name -w
+    git add $file_name
+fi
 if [ $reformat == "true" ]; then
     echo "[pre-commit]: done"
     echo ""
