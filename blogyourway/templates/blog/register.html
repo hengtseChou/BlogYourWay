@@ -2,11 +2,21 @@
 {% block head %}
   <style>
     body {
-      background-color: #343a40;
+      background-color: #f5f5f5;
     }
 
+    .branding {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .branding img {
+      max-height: 36px; /* Adjust based on your logo size */
+      margin-right: 10px;
+    }
+    
     .card {
-      margin-top: calc(100vh * 0.25);
+      background-color: #f5f5f5;
       max-width: 400px;
       margin-left: auto;
       margin-right: auto;
@@ -27,14 +37,20 @@
 {% endblock %}
 {% block title %}Create an Account · BlogYourWay{% endblock %}
 {% block body %}
-  <div class="container-fluid">
+  <div class="container-fluid" style="margin-top: calc(100vh * 0.2);">
     <div class="row">
-      <form method="post"
-            autocomplete="off"
-            class="col-10 offset-1 col-md-12 offset-md-0">
-        <div class="card text-white bg-dark shadow" id="step1">
+      <form method="post" autocomplete="off" class="col-10 col-md-12 mx-auto">
+        <div class="card bg-white shadow" id="step1">
           <div class="card-body">
-            <h2 class="text-center mb-4">Register</h2>
+            <div class="container mb-4">
+              <div class="row justify-content-center">
+                <div class="me-auto col-auto branding">
+                  <img src="/static/img/logo.png" alt="Logo">
+                  <h3 class="fw-bold pt-2">BlogYourWay</h3>
+                </div>
+              </div>
+            </div>
+            <h5 class="text-center my-4">Register</h5>
             <div class="input-group mb-4">
               <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
               <input type="email"
@@ -59,7 +75,7 @@
             </small>
             <button type="button"
                     class="btn btn-primary w-100 rounded-pill"
-                    style="background-color: gray;
+                    style="background-color: #e4622f;
                            border: 0px"
                     onclick="validateStep1()">Continue</button>
             <div class="text-center mt-4">
@@ -67,11 +83,17 @@
             </div>
           </div>
         </div>
-        <div class="card hide text-white bg-dark shadow"
-             id="step2"
-             style="display: none">
+        <div class="card hide bg-white shadow" id="step2" style="display: none">
           <div class="card-body">
-            <h2 class="text-center mb-4">Almost Done...</h2>
+            <div class="container mb-4">
+              <div class="row justify-content-center">
+                <div class="me-auto col-auto branding">
+                  <img src="/static/img/logo.png" alt="Logo">
+                  <h3 class="fw-bold pt-2">BlogYourWay</h3>
+                </div>
+              </div>
+            </div>
+            <h5 class="text-center my-4">Almost Done...</h5>
             <div class="input-group mb-1">
               <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
               <input type="text"
@@ -95,12 +117,7 @@
               <p>20 characters maximum.</p>
             </small>
             <div class="form-check mb-4">
-              <input class="form-check-input"
-                     type="checkbox"
-                     name="terms"
-                     id="terms"
-                     style="background-color: #343a40;
-                            border: 0px" />
+              <input class="form-check-input" type="checkbox" name="terms" id="terms" />
               <label class="form-check-label" for="terms">
                 I understand this is a fully experimental project, there is no
                 guarantee of complete data preservation.
@@ -108,7 +125,7 @@
             </div>
             <button type="submit"
                     class="btn btn-primary w-100 rounded-pill"
-                    style="background-color: gray;
+                    style="background-color: #e4622f;
                            border: 0px"
                     onclick="return validateStep2()">Create</button>
           </div>
