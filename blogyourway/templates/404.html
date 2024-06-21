@@ -1,25 +1,6 @@
 {% extends 'base.html' %}
 {% block head %}
   <style>
-    body {
-      background-color: #333;
-      color: #fff;
-      text-align: center;
-      padding-top: 23vh;
-    }
-
-    h1 {
-      font-size: 6rem;
-    }
-
-    p {
-      font-size: 1.5rem;
-    }
-
-    a {
-      color: #fff;
-    }
-
     .hover-pointer:hover {
       cursor: pointer;
     }
@@ -27,12 +8,28 @@
 {% endblock %}
 {% block title %}404 Not Found · BlogYourWay{% endblock %}
 {% block body %}
+  <div class="container pt-4">
+    <div class="row align-items-center">
+      <div class="offset-1 col-auto">
+        <img src="/static/img/logo.png" alt="Logo" width="36" height="36">
+      </div>
+      <div class="col-auto">
+        <a href="/" style="text-decoration:none; color: black;">
+          <h3 class="fw-bold pt-2">BlogYourWay</h3>
+        </a>
+      </div>
+    </div>
+  </div>
   <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <h1>404 Not Found!</h1>
-        <p class="mt-4">Oops! The page you are looking for could not be found.</p>
-        <p onclick="window.history.go(-1); return false;" class="hover-pointer">
+    <div class="row" style="padding-top: 10%">
+      <div class="col-md-6 text-center">
+        <img class="img-fluid" src="/static/img/404.jpg" alt="" />
+      </div>
+      <div class="col-11 col-md-5 mx-auto">
+        <h1 class="display-4 fw-bold" style="padding-top: 30%">404 Not Found!</h1>
+        <p class="mt-4 fs-5">Oops! The page you are looking for could not be found.</p>
+        <p onclick="window.history.go(-1); return false;"
+           class="fs-5 hover-pointer">
           <u>👉 Go to the previous page</u>
         </p>
       </div>
