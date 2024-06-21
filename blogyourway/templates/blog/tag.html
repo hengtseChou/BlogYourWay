@@ -8,7 +8,7 @@
       <div class="col-md-8 col-11 mx-auto px-4">
         <h1 class="fw-bold text-center py-5"># {{ tag }}</h1>
         <hr />
-        <h5 class="px-2 pt-3 fw-bold" style="color: rgb(100, 100, 100)">Found {{ posts|length }} posts</h5>
+        <h5 class="px-2 pt-3 fw-bold" style="color: #646464">Found {{ posts|length }} posts</h5>
         {% for post in posts %}
           {% set post_link = 'posts/' ~ post.post_uid %}
           <div class="my-5 px-2">
@@ -32,7 +32,7 @@
             </div>
             <div class="mb-3" style="font-size: large">{{ post.subtitle }}</div>
             <div class="d-flex align-items-center"
-                 style="color: rgb(100, 100, 100);
+                 style="color: #646464;
                         font-size: large">
               <span><i class="fa-solid fa-tags"></i></span>
               {% for tag in post.tags %}

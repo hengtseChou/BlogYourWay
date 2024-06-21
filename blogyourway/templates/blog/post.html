@@ -106,7 +106,7 @@
         <div class="mb-3 px-2">{{ post.content | safe }}</div>
         <!-- tag start -->
         <div class="d-flex align-items-center mb-4"
-             style="color: rgb(100, 100, 100);
+             style="color: #646464;
                     font-size: large">
           <span><i class="fa-solid fa-tags"></i></span>
           {% for tag in post.tags %}
@@ -163,7 +163,7 @@
           <p class="mb-5">Not comments yet!</p>
         {% else %}
           <div class="mb-5">
-            <h5 class="text-start my-4 fw-bold" style="color: rgb(100, 100, 100)">{{ comments|length }} comments</h5>
+            <h5 class="text-start my-4 fw-bold" style="color: #646464">{{ comments|length }} comments</h5>
             {% for comment in comments %}
               {% if comment['profile_link']| length != 0 %}
                 <!-- registered user -->
@@ -178,7 +178,7 @@
                       <a href="{{ comment['profile_link'] }}" style="color: black">
                         <span class="fw-bold">{{ comment['name'] }}</span>
                       </a>
-                      <span style="color: rgb(100, 100, 100)">on {{ comment['created_at'] }}</span>
+                      <span style="color: #646464">on {{ comment['created_at'] }}</span>
                     </div>
                     <div class="mt-2">{{ comment['comment'] }}</div>
                   </div>
@@ -192,7 +192,7 @@
                   <div class="ms-3">
                     <div>
                       <span class="fw-bold">{{ comment['name'] }}</span>
-                      <span style="color: rgb(100, 100, 100)">on {{ comment['created_at'] }}</span>
+                      <span style="color: #646464">on {{ comment['created_at'] }}</span>
                     </div>
                     <div class="mt-2">{{ comment['comment'] }}</div>
                   </div>

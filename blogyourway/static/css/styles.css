@@ -76,7 +76,7 @@ footer p {
   margin-bottom: 10px;
   text-align: left;
   background-color: #333;
-  color: rgb(140, 140, 140);
+  color: #8c8c8c;
   border: 0px;
 }
 
@@ -151,11 +151,11 @@ img.profile-sm {
 }
 
 .grey-text {
-  color: rgb(100, 100, 100);
+  color: #646464;
 }
 
 .badge-custom {
-  background-color: rgb(150, 150, 150);
+  background-color: #969696;
 }
 
 .badge-custom:hover {
@@ -191,7 +191,7 @@ blockquote p {
 
 .label-text {
   font-style: italic;
-  color: rgb(120, 120, 120);
+  color: #787878;
 }
 
 

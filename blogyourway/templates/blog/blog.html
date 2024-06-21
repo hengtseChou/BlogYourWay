@@ -34,7 +34,7 @@
                   </div>
                   <div class="mb-3" style="font-size: large">{{ post.subtitle }}</div>
                   <div class="d-flex align-items-center"
-                       style="color: rgb(100, 100, 100);
+                       style="color: #646464;
                               font-size: large">
                     <span><i class="fa-solid fa-tags"></i></span>
                     {% for tag in post.tags %}
@@ -48,13 +48,13 @@
                 {% if loop.index != posts|length %}<hr />{% endif %}
               {% endfor %}
             {% else %}
-              <h5 class="text-start mt-4 fw-bold" style="color: rgb(100, 100, 100)">No post published yet!</h5>
+              <h5 class="text-start mt-4 fw-bold" style="color: #646464">No post published yet!</h5>
             {% endif %}
           </div>
           <!-- tag column -->
           <div class="d-none d-lg-block col-lg-4">
             <div class="text-start pt-5 ps-3">
-              <h5 class="fw-bold mb-3" style="color: rgb(100, 100, 100)">Topics in this blog</h5>
+              <h5 class="fw-bold mb-3" style="color: #646464">Topics in this blog</h5>
               {% for tag, count in tags.items() %}
                 {% set tag_link = 'tags?tag=' ~ tag %}
                 <a href="{{ tag_link }}"  style="text-decoration:none">
