@@ -69,14 +69,14 @@ footer p {
   border: 0px;
 }
 .sidebar .btn:hover {
-  background-color: #6c757d;
+  background-color: #787878;
 }
 
 .mobile-nav .btn {
   margin-bottom: 10px;
   text-align: left;
   background-color: #333;
-  color: #8c8c8c;
+  color: #787878;
   border: 0px;
 }
 
@@ -151,11 +151,11 @@ img.profile-sm {
 }
 
 .grey-text {
-  color: #646464;
+  color: #787878;
 }
 
 .badge-custom {
-  background-color: #969696;
+  background-color: #787878;
 }
 
 .badge-custom:hover {
@@ -194,9 +194,8 @@ blockquote p {
   color: #787878;
 }
 
-
 .nav-item.dropdown .dropdown-item:active {
-  background-color: #f7966b !important;
+  background-color: #e4622f !important;
 }
 
 /* deal with screen size */
