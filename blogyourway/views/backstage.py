@@ -41,8 +41,9 @@ def post_control():
     if request.method == "POST":
         # logging for this is inside the create post function
         post_uid = create_post(request)
-        logger.debug(f"post {post_uid} has been created.")
-        flash("New post published successfully!", category="success")
+        if post_uid is not None:
+            logger.debug(f"post {post_uid} has been created.")
+            flash("New post published successfully!", category="success")
 
     # query through posts
     # 20 posts for each page

@@ -84,10 +84,10 @@ class NewPostSetup:
             filter={"username": username}, increments=tags_increments, upsert=True
         )
 
-    def create_post(self, author_name: str, request: Request) -> str:
+    def create_post(self, author_name: str, request: Request) -> str | None:
         validator = FormValidator()
         if not self._form_validatd(request=request, validator=validator):
-            return "Unvalidated"
+            return None
         # validated
         new_post_info = self._create_post_info(author_name=author_name, request=request)
         new_post_content = self._create_post_content(author_name=author_name, request=request)
