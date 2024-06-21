@@ -287,7 +287,7 @@ def post(username, post_uid):
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
     target_post["content"] = md.convert(target_post["content"])
     target_post["content"] = html_to_blogpost(target_post["content"])
-    target_post["last_updated"] = target_post["last_updated"].strftime("%d %b %Y")
+    target_post["last_updated"] = target_post["last_updated"].strftime("%B %d, %Y")
     target_post["readtime"] = str(readtime.of_html(target_post["content"]))
 
     # add comments

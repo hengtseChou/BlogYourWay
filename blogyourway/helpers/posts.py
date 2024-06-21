@@ -360,7 +360,7 @@ class PostUtils:
             .as_list()
         )
         for post in result:
-            post["created_at"] = post["created_at"].strftime("%d %b, %Y")
+            post["created_at"] = post["created_at"].strftime("%B %d, %Y")
         return result
 
     def find_all_posts_info(self, username: str):
