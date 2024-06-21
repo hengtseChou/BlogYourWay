@@ -5,7 +5,7 @@
     <div class="d-flex align-items-center"
          style="height: 53px;
                 margin-top: 20px">
-      <h1 class="ms-2">Posts</h1>
+      <h2 class="ms-2">Posts</h2>
       <button class="btn panel-btn ms-auto me-3"
               data-bs-toggle="modal"
               data-bs-target="#newPostModal">+ New Post</button>
@@ -13,66 +13,64 @@
     <hr />
     <!-- <p class="ms-2">Featured posts will be on your home page, sorted by time order.</p> -->
     {% if posts | length == 0 %}
-    <p class="ms-2">You don't have any post yet. Make a post now, by clicking the button on the top-right.</p>
+      <p class="ms-2">You don't have any post yet. Make a post now, by clicking the button on the top-right.</p>
     {% else %}
-    <div class="col-11">
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th style="width: 40%">Title</th>
-              <th style="width: 16%">Created At</th>
-              <th style="width: 10%" class="text-center">Views</th>
-              <th style="width: 10%" class="text-center">Comments</th>
-              <th style="width: 8%" class="text-center">Edit</th>
-              <th style="width: 8%" class="text-center">Feature</th>
-              <th style="width: 8%" class="text-center">Archive</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for post in posts %}
+      <div class="col-11">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
               <tr>
-                <td class="align-middle">
-                  <!-- leave post stat for future -->
-                  <!-- <a href="stats/posts/{{ post.post_uid }}"
-                     class="me-1"
-                     style="color: black">{{ post['title'] }}</a> -->
-                     {{ post["title"] }}
-                  {% if post['featured'] %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
-                </td>
-                <td>{{ post['created_at'] }}</td>
-                <td class="text-center">{{ post['views'] }}</td>
-                <td class="text-center">{{ post['comments'] }}</td>
-                <td class="text-center">
-                  <a href="edit/posts/{{ post.post_uid }}"
-                     style="color: black;
-                            font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
-                </td>
-                {% if post['featured'] %}
-                  <td class="text-center">
-                    <a href="edit-featured?featured=to_false&uid={{ post.post_uid }}"
-                       style="color: black;
-                              font-size: 18px"><i class="fa-regular fa-square-minus"></i></a>
-                  </td>
-                {% else %}
-                  <td class="text-center">
-                    <a href="edit-featured?featured=to_true&uid={{ post.post_uid }}"
-                       style="color: black;
-                              font-size: 18px"><i class="fa-regular fa-square-plus"></i></a>
-                  </td>
-                {% endif %}
-                <td class="text-center">
-                  <a href="edit-archived?archived=to_true&uid={{ post.post_uid }}"
-                     style="color: black;
-                            font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
-                </td>
-                <td></td>
+                <th style="width: 40%">Title</th>
+                <th style="width: 16%">Created At</th>
+                <th style="width: 10%" class="text-center">Views</th>
+                <th style="width: 10%" class="text-center">Comments</th>
+                <th style="width: 8%" class="text-center">Edit</th>
+                <th style="width: 8%" class="text-center">Feature</th>
+                <th style="width: 8%" class="text-center">Archive</th>
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {% for post in posts %}
+                <tr>
+                  <td class="align-middle">
+                    <!-- leave post stat for future -->
+                    <!-- <a href="stats/posts/{{ post.post_uid }}" class="me-1" style="color: black">{{ post['title'] }}</a> -->
+                    {{ post["title"] }}
+                    {% if post['featured'] %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
+                  </td>
+                  <td>{{ post['created_at'] }}</td>
+                  <td class="text-center">{{ post['views'] }}</td>
+                  <td class="text-center">{{ post['comments'] }}</td>
+                  <td class="text-center">
+                    <a href="edit/posts/{{ post.post_uid }}"
+                       style="color: black;
+                              font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
+                  </td>
+                  {% if post['featured'] %}
+                    <td class="text-center">
+                      <a href="edit-featured?featured=to_false&uid={{ post.post_uid }}"
+                         style="color: black;
+                                font-size: 18px"><i class="fa-regular fa-square-minus"></i></a>
+                    </td>
+                  {% else %}
+                    <td class="text-center">
+                      <a href="edit-featured?featured=to_true&uid={{ post.post_uid }}"
+                         style="color: black;
+                                font-size: 18px"><i class="fa-regular fa-square-plus"></i></a>
+                    </td>
+                  {% endif %}
+                  <td class="text-center">
+                    <a href="edit-archived?archived=to_true&uid={{ post.post_uid }}"
+                       style="color: black;
+                              font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
+                  </td>
+                  <td></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
     {% endif %}
     <div class="container">
       <div class="row">

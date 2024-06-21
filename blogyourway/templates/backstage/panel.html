@@ -26,11 +26,7 @@
         <div class="sidebar">
           <div class="d-flex align-items-center" style="height: 50px;">
             <img src="/static/img/logo.png" alt="logo" width="36" height="36">
-            <h5 class="ms-3 mt-2">
-              <a href="/backstage/overview"
-                 style="text-decoration: none;
-                        color: white">BlogYourWay</a>
-            </h5>
+            <h5 class="ms-3 mt-2">BlogYourWay</h5>
           </div>
           <hr>
           <a class="btn w-100 px-2" href="/@{{ user.username }}">
@@ -100,7 +96,9 @@
                       aria-label="Close"></button>
             </div>
             <div class="offcanvas-body mobile-nav">
-              <a class="btn w-100 px-2" href="/@{{ user.username }}" id="mobile-nav-home">
+              <a class="btn w-100 px-2"
+                 href="/@{{ user.username }}"
+                 id="mobile-nav-home">
                 <span class="ms-2 me-3"><i class="fa-solid fa-house"></i></span>Home
               </a>
               <a class="btn w-100 px-2" href="/backstage/posts" id="mobile-nav-posts">
@@ -119,9 +117,7 @@
               <a class="btn w-100 px-2" href="/backstage/about" id="mobile-nav-about">
                 <span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About
               </a>
-              <!-- <a class="btn w-100 px-2"
-                 href="/backstage/social-links"
-                 id="mobile-nav-social-links">
+              <!-- <a class="btn w-100 px-2" href="/backstage/social-links" id="mobile-nav-social-links">
                 <span class="ms-2 me-3"><i class="fa-solid fa-link"></i></span>Social Links
               </a> -->
               <a class="btn w-100 px-2" href="/backstage/theme" id="mobile-nav-theme">
