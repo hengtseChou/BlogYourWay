@@ -1,9 +1,13 @@
 #!/bin/bash
 cd "$(git rev-parse --show-toplevel)"
-source .debug/bin/activate
-echo "[pre-commit]: running isort..."
-isort blogyourway/ app.py -q
-echo "[pre-commit]: running black..."
-black blogyourway/ app.py -q -l 100
-echo "[pre-commit]: done"
-echo ""
+if git diff --cached --name-only | grep -q '\.py$'; then
+    source .debug/bin/activate
+    file_name=$(git diff --cached --name-only | grep '\.py$')
+    echo "[pre-commit]: running isort..."
+    isort $file_name
+    echo "[pre-commit]: running black..."
+    black $file_name -l 100
+    echo "[pre-commit]: done"
+    echo ""
+    git add $file_name
+fi
