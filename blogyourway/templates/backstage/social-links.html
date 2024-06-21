@@ -50,65 +50,79 @@
     const mobile_nav_btn = document.getElementById("mobile-nav-social-links");
     mobile_nav_btn.style.color = "white";
 
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
       var maxInputs = 5; // Maximum input fields allowed
-      var inputWrapper = $("#inputContainer"); // Input field container
-      var addButton = $("#addButton"); // Add button ID
+      var inputWrapper = document.querySelector("#inputContainer"); // Input field container
+      var addButton = document.querySelector("#addButton"); // Add button ID
 
       var count = 1; // Initial input field count
-      $(addButton).click(function(e) {
+
+      addButton.addEventListener('click', function(e) {
         e.preventDefault();
         if (count < maxInputs) {
-          // Check the maximum allowed input fields
           count++;
           addInputField(count);
         }
       });
 
-      // Event delegation for dynamically added "Close" buttons
-      $(inputWrapper).on("click", ".btn-remove", function(e) {
-        e.preventDefault();
-        $(this).closest(".input-group").remove();
-        count--; // Decrement the input field count
-        updateOrderNumbers();
+      inputWrapper.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-remove')) {
+          e.preventDefault();
+          e.target.closest('.input-group').remove();
+          count--;
+          updateOrderNumbers();
+        }
       });
 
       function addInputField(orderNumber) {
-        var newInput =
-          '<div class="input-group mb-2">' +
-          '<span class="input-group-text">Link ' +
-          orderNumber +
-          "</span>" +
-          '<input type="text" class="form-control" name="url-' + orderNumber + '" placeholder="Url goes here">' +
-          '<select class="form-select" name="platform-' + orderNumber + '">' +
-          '<option value="facebook">Facebook</option>' +
-          '<option value="instagram">Instagram</option>' +
-          '<option value="twitter">Twitter</option>' +
-          '<option value="medium">Medium</option>' +
-          '<option value="linkedin">Linkedin</option>' +
-          '<option value="github">Github</option>' +
-          "</select>" +
-          '<button class="btn panel-btn btn-remove" aria-label="Close">Remove</button>' +
-          "</div>";
-        $(inputWrapper).append(newInput);
+        var div = document.createElement('div');
+        div.className = 'input-group mb-2';
+
+        var span = document.createElement('span');
+        span.className = 'input-group-text';
+        span.textContent = 'Link ' + orderNumber;
+
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'form-control';
+        input.name = 'url-' + orderNumber;
+        input.placeholder = 'Url goes here';
+
+        var select = document.createElement('select');
+        select.className = 'form-select';
+        select.name = 'platform-' + orderNumber;
+        ['facebook', 'instagram', 'twitter', 'medium', 'linkedin', 'github'].forEach(function(platform) {
+          var option = document.createElement('option');
+          option.value = platform;
+          option.textContent = platform.charAt(0).toUpperCase() + platform.slice(1);
+          select.appendChild(option);
+        });
+
+        var button = document.createElement('button');
+        button.className = 'btn panel-btn btn-remove';
+        button.setAttribute('aria-label', 'Close');
+        button.textContent = 'Remove';
+
+        div.appendChild(span);
+        div.appendChild(input);
+        div.appendChild(select);
+        div.appendChild(button);
+
+        inputWrapper.appendChild(div);
+
         updateOrderNumbers();
       }
 
       function updateOrderNumbers() {
-        var inputGroups = $(".input-group");
-        inputGroups.each(function(index) {
+        var inputGroups = document.querySelectorAll('.input-group');
+        inputGroups.forEach(function(group, index) {
           var orderNumber = index + 1;
-          $(this)
-            .find(".input-group-text")
-            .text("Link " + orderNumber);
-          $(this)
-            .find("input")
-            .attr("name", "url-" + orderNumber);
-          $(this)
-            .find("select")
-            .attr("name", "platform-" + orderNumber);
+          group.querySelector('.input-group-text').textContent = 'Link ' + orderNumber;
+          group.querySelector('input').name = 'url-' + orderNumber;
+          group.querySelector('select').name = 'platform-' + orderNumber;
         });
       }
     });
+
   </script>
 {% endblock %}
