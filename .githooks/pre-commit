@@ -1,13 +1,25 @@
 #!/bin/bash
 cd "$(git rev-parse --show-toplevel)"
+source .debug/bin/activate
+reformat=false
+
 if git diff --cached --name-only | grep -q '\.py$'; then
-    source .debug/bin/activate
+    $reformat=true
     file_name=$(git diff --cached --name-only | grep '\.py$')
     echo "[pre-commit]: running isort..."
     isort $file_name
     echo "[pre-commit]: running black..."
     black $file_name -l 100
+    git add $file_name
+fi
+if git diff --cached --name-only | grep -q '\.html$'; then
+    $reformat=true
+    file_name=$(git diff --cached --name-only | grep '\.html$')
+    echo "[pre-commit]: running djlint..."
+    djlint $file_name --reformat --indent 2
+    git add $file_name
+fi
+if [ $reformat == "true" ]; then
     echo "[pre-commit]: done"
     echo ""
-    git add $file_name
 fi
