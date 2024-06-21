@@ -53,7 +53,7 @@
     .cover-caption {
       background-color: rgba(0, 0, 0, 0.6);
       color: #fff;
-      font: italic smaller sans-serif;
+      font: italic smaller "Ubuntu", sans-serif;
       padding: 3px;
       text-align: center;
     }
@@ -99,7 +99,7 @@
         <!-- cover -->
         <figure class="cover mt-3">
           <img src="{{ post.cover_url }}" alt="">
-          <figcaption class="cover-caption">{{ post.title }}</figcaption>
+          <!-- <figcaption class="cover-caption">{{ post.title }}</figcaption> -->
         </figure>
         <!-- content start -->
         <div class="mb-3 px-2">{{ post.content | safe }}</div>
