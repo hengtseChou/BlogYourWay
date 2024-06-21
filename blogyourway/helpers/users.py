@@ -22,7 +22,6 @@ class UserInfo(UserMixin, MyDataClass):
     profile_img_url: str = ""
     short_bio: str = ""
     created_at: datetime = None
-    social_links: List[str] = field(default_factory=list)
     changelog_enabled: bool = False
     gallery_enabled: bool = False
     total_views: int = 0

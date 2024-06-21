@@ -33,6 +33,9 @@
             </h5>
           </div>
           <hr>
+          <a class="btn w-100 px-2" href="/@{{ user.username }}">
+            <span class="ms-2 me-3"><i class="fa-solid fa-house"></i></span>Home
+          </a>
           <a class="btn w-100 px-2" href="/backstage/posts">
             <span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts
           </a>
@@ -49,9 +52,9 @@
           <a class="btn w-100 px-2" href="/backstage/about">
             <span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About
           </a>
-          <a class="btn w-100 px-2" href="/backstage/social-links">
+          <!-- <a class="btn w-100 px-2" href="/backstage/social-links">
             <span class="ms-2 me-3"><i class="fa-solid fa-link"></i></span>Social Links
-          </a>
+          </a> -->
           <a class="btn w-100 px-2" href="/backstage/theme">
             <span class="ms-2 me-3"><i class="fa-solid fa-paint-roller"></i></span>Blog Theme
           </a>
@@ -97,6 +100,9 @@
                       aria-label="Close"></button>
             </div>
             <div class="offcanvas-body mobile-nav">
+              <a class="btn w-100 px-2" href="/@{{ user.username }}" id="mobile-nav-home">
+                <span class="ms-2 me-3"><i class="fa-solid fa-house"></i></span>Home
+              </a>
               <a class="btn w-100 px-2" href="/backstage/posts" id="mobile-nav-posts">
                 <span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts
               </a>
@@ -113,11 +119,11 @@
               <a class="btn w-100 px-2" href="/backstage/about" id="mobile-nav-about">
                 <span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About
               </a>
-              <a class="btn w-100 px-2"
+              <!-- <a class="btn w-100 px-2"
                  href="/backstage/social-links"
                  id="mobile-nav-social-links">
                 <span class="ms-2 me-3"><i class="fa-solid fa-link"></i></span>Social Links
-              </a>
+              </a> -->
               <a class="btn w-100 px-2" href="/backstage/theme" id="mobile-nav-theme">
                 <span class="ms-2 me-3"><i class="fa-solid fa-paint-roller"></i></span>Blog Theme
               </a>

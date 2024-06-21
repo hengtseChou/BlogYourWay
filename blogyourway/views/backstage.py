@@ -14,43 +14,7 @@ backstage = Blueprint("backstage", __name__, template_folder="../templates/backs
 @backstage.route("/", methods=["GET"])
 @login_required
 def backstage_root():
-    return redirect(url_for("backstage.overview"))
-
-
-@backstage.route("/overview", methods=["GET"])
-@login_required
-def overview():
-    ###################################################################
-
-    # status control / early returns
-
-    ###################################################################
-
-    logger_utils.backstage(username=current_user.username, tab="overview")
-
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    user = mongodb.user_info.find_one({"username": current_user.username})
-    user["created_at"] = user["created_at"].strftime("%b %d, %Y")
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template(
-        "overview.html",
-        user=user,
-        traffic={"labels": ["2024-01-01", "2024-01-02"], "data": [2, 1]},
-        index_page_traffic={"/@test/loll": 3},
-        total_pv=1,
-        total_uv=2,
-    )
+    return redirect(url_for("backstage.post_control"))
 
 
 @backstage.route("/posts", methods=["GET", "POST"])
@@ -388,66 +352,6 @@ def delete_post():
     return redirect(url_for("backstage.archive_control"))
 
 
-@backstage.route("/social-links", methods=["GET"])
-@login_required
-def social_links_control_get():
-    ###################################################################
-
-    # status control / early returns
-
-    ###################################################################
-
-    logger_utils.backstage(username=current_user.username, tab="social-links")
-
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    user = mongodb.user_info.find_one({"username": current_user.username})
-    social_links = user["social_links"]
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("social-links.html", social_links=social_links, user=user)
-
-
-@backstage.route("/social-links", methods=["POST"])
-@login_required
-def social_links_control_post():
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    user = mongodb.user_info.find_one({"username": current_user.username})
-    form = request.form.to_dict()
-    form_values = list(form.values())
-
-    updated_links = []
-    for i in range(0, len(form_values), 2):
-        updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
-    mongodb.user_info.update_values(
-        filter={"username": current_user.username}, update={"social_links": updated_links}
-    )
-    logger.debug(f"social links for {current_user.username} has been updated.")
-    flash("Social Links updated!", category="success")
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("social-links.html", social_links=updated_links, user=user)
-
-
 @backstage.route("/theme", methods=["GET", "POST"])
 @login_required
 def theme_control():
@@ -572,7 +476,7 @@ def settings_control_post():
 
         # deletion procedure
         logout_user()
-        logger_utils.logout(request=request)
+        logger_utils.logout(request=request, username=username)
         user_utils.delete_user(username)
         flash("Account deleted successfully!", category="success")
         logger.debug(f"User {username} has been deleted.")
