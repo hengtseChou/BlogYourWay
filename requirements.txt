@@ -15,6 +15,7 @@ itsdangerous==2.2.0
 Jinja2==3.1.4
 lxml==5.2.2
 Markdown==3.6
+markdown-captions==2.1.2
 markdown2==2.4.13
 MarkupSafe==2.1.5
 packaging==24.1
