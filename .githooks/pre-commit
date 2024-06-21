@@ -4,7 +4,7 @@ source .debug/bin/activate
 reformat=false
 
 if git diff --cached --name-only | grep -q '\.py$'; then
-    $reformat=true
+    reformat=true
     file_name=$(git diff --cached --name-only | grep '\.py$')
     echo "[pre-commit]: running isort..."
     isort $file_name
@@ -13,7 +13,7 @@ if git diff --cached --name-only | grep -q '\.py$'; then
     git add $file_name
 fi
 if git diff --cached --name-only | grep -q '\.html$'; then
-    $reformat=true
+    reformat=true
     file_name=$(git diff --cached --name-only | grep '\.html$')
     echo "[pre-commit]: running djlint..."
     djlint $file_name --reformat --indent 2
