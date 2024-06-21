@@ -141,9 +141,12 @@ def register_post():
 
     ###################################################################
 
-    if user_utils.create_user(request=request) == "succeeded":
+    new_user = user_utils.create_user(request=request)
+    if new_user is not None:
         flash("Registration succeeded.", category="success")
-        return redirect(url_for("blog.login_get"))
+        user_info = user_utils.get_user_info(new_user)
+        login_user(user_info)
+        return redirect(url_for("blog.home", username=new_user))
 
     else:
         return render_template("register.html")

@@ -115,14 +115,14 @@ class NewUserSetup:
         hashed_pw = hashed_pw.decode("utf-8")
         return hashed_pw
 
-    def create_user(self) -> str:
+    def create_user(self) -> str | None:
         validator = FormValidator()
 
         if not self._form_validated(validator=validator):
-            return "failed"
+            return None
 
         if self._no_duplicates():
-            return "failed"
+            return None
 
         hashed_pw = self._hash_password(self._regist_form["password"])
         new_user_creds = self._create_user_creds(
@@ -141,7 +141,7 @@ class NewUserSetup:
 
         logger_utils.registration_succeeded(request=self._request)
 
-        return "succeeded"
+        return new_user_info.get("username")
 
 
 ###################################################################
