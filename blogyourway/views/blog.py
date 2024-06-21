@@ -75,20 +75,20 @@ def login_post():
     ###################################################################
 
     login_form = request.form.to_dict()
-    if not mongodb.user_creds.exists("email", login_form["email"]):
+    if not mongodb.user_creds.exists("email", login_form.get("email")):
         flash("Account not found. Please try again.", category="error")
-        logger_utils.login_failed(request=request, msg=f"email {login_form['email']} not found")
+        logger_utils.login_failed(request=request, msg=f"email {login_form.get('email')} not found")
         return render_template("login.html")
 
     # check pw
-    user_creds = mongodb.user_creds.find_one({"email": login_form["email"]})
-    encoded_input_pw = login_form["password"].encode("utf8")
-    encoded_valid_user_pw = user_creds["password"].encode("utf8")
+    user_creds = mongodb.user_creds.find_one({"email": login_form.get("email")})
+    encoded_input_pw = login_form.get("password").encode("utf8")
+    encoded_valid_user_pw = user_creds.get("password").encode("utf8")
 
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
         logger_utils.login_failed(
-            request=request, msg=f"invalid password with email {login_form['email']}"
+            request=request, msg=f"invalid password with email {login_form.get('email')}"
         )
         return render_template("login.html")
 
@@ -232,8 +232,8 @@ def tag(username):
 
     posts_with_desired_tag = []
     for post in posts:
-        if tag in post["tags"]:
-            post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
+        if tag in post.get("tags"):
+            post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
             posts_with_desired_tag.append(post)
 
     ###################################################################
@@ -274,7 +274,7 @@ def post(username, post_uid):
         logger.debug(f"invalid post uid {post_uid}")
         abort(404)
 
-    author = mongodb.post_info.find_one({"post_uid": post_uid})["author"]
+    author = mongodb.post_info.find_one({"post_uid": post_uid}).get("author")
     if username != author:
         logger.debug(f"User {username} does not own post {post_uid}.")
         abort(404)
@@ -289,10 +289,10 @@ def post(username, post_uid):
     target_post = post_utils.get_full_post(post_uid)
 
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
-    target_post["content"] = md.convert(target_post["content"])
-    target_post["content"] = html_to_blogpost(target_post["content"])
+    target_post["content"] = md.convert(target_post.get("content"))
+    target_post["content"] = html_to_blogpost(target_post.get("content"))
     target_post["last_updated"] = target_post["last_updated"].strftime("%B %d, %Y")
-    target_post["readtime"] = str(readtime.of_html(target_post["content"]))
+    target_post["readtime"] = str(readtime.of_html(target_post.get("content")))
 
     # add comments
     # this section should be placed before finding comments to show on the postu'1 min read'
@@ -304,7 +304,7 @@ def post(username, post_uid):
     # oldest to newest comment
     comments = comment_utils.find_comments_by_post_uid(post_uid)
     for comment in comments:
-        comment["created_at"] = comment["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+        comment["created_at"] = comment.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
 
     ###################################################################
 
@@ -416,7 +416,7 @@ def blog_page(username):
         username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
     )
     for post in posts:
-        post["created_at"] = post["created_at"].strftime("%Y-%m-%d")
+        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
 
     # user info
     user_info = user_utils.get_user_info(username)
@@ -445,7 +445,7 @@ def blog_page(username):
 def get_profile_img(username):
     user = mongodb.user_info.find_one({"username": username})
 
-    if user["profile_img_url"]:
+    if user.get("profile_img_url"):
         profile_img_url = user["profile_img_url"]
     else:
         profile_img_url = "/static/img/default-profile.png"

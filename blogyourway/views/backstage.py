@@ -53,10 +53,10 @@ def post_control():
         username=current_user.username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
     )
     for post in posts:
-        post["title"] = string_truncate(post["title"], 30)
-        post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
-        post["views"] = format(post["views"], ",")
-        comment_count = mongodb.comment.count_documents({"post_uid": post["post_uid"]})
+        post["title"] = string_truncate(post.get("title"), 30)
+        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
+        post["views"] = format(post.get("views"), ",")
+        comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
         post["comments"] = format(comment_count, ",")
 
     logger_utils.pagination(tab="posts", num_of_posts=len(posts))
@@ -89,7 +89,7 @@ def edit_post_get(post_uid):
 
     user = mongodb.user_info.find({"username": current_user.username})
     target_post = post_utils.get_full_post(post_uid)
-    target_post["tags"] = ", ".join(target_post["tags"])
+    target_post["tags"] = ", ".join(target_post.get("tags"))
 
     ###################################################################
 
@@ -264,10 +264,12 @@ def about_control_post():
     user = user_info | user_about
 
     form = request.form.to_dict()
-    updated_info = {"profile_img_url": form["profile_img_url"], "short_bio": form["short_bio"]}
-    updated_about = {"about": form["about"]}
-    mongodb.user_info.update_values(filter={"username": user["username"]}, update=updated_info)
-    mongodb.user_about.update_values(filter={"username": user["username"]}, update=updated_about)
+    updated_info = {"profile_img_url": form.get("profile_img_url"), "short_bio": form["short_bio"]}
+    updated_about = {"about": form.get("about")}
+    mongodb.user_info.update_values(filter={"username": user.get("username")}, update=updated_info)
+    mongodb.user_about.update_values(
+        filter={"username": user.get("username")}, update=updated_about
+    )
     user.update(updated_info)
     user.update(updated_about)
     logger.debug(f"information for user {current_user.username} has been updated")
@@ -303,9 +305,9 @@ def archive_control():
     user = mongodb.user_info.find_one({"username": current_user.username})
     posts = post_utils.find_all_archived_posts_info(current_user.username)
     for post in posts:
-        post["created_at"] = post["created_at"].strftime("%Y-%m-%d %H:%M:%S")
-        post["views"] = format(post["views"], ",")
-        comment_count = mongodb.comment.count_documents({"post_uid": post["post_uid"]})
+        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
+        post["views"] = format(post.get("views"), ",")
+        comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
         post["comments"] = format(comment_count, ",")
 
     logger_utils.pagination(tab="archive", num_of_posts=len(posts))
@@ -447,7 +449,7 @@ def settings_control_post():
 
         user_creds = mongodb.user_creds.find_one({"username": current_user.username})
         user = mongodb.user_info.find_one({"username": current_user.username})
-        encoded_valid_user_pw = user_creds["password"].encode("utf8")
+        encoded_valid_user_pw = user_creds.get("password").encode("utf8")
 
         # check pw
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
@@ -469,7 +471,7 @@ def settings_control_post():
         username = current_user.username
         user = mongodb.user_info.find_one({"username": username})
         user_creds = mongodb.user_creds.find_one({"username": username})
-        encoded_valid_user_pw = user_creds["password"].encode("utf8")
+        encoded_valid_user_pw = user_creds.get("password").encode("utf8")
 
         if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
             flash("Access denied, bacause password is invalid.", category="error")

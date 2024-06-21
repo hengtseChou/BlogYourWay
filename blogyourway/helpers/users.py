@@ -64,19 +64,19 @@ class NewUserSetup:
         self._logger = logger
 
     def _form_validated(self, validator: FormValidator) -> bool:
-        if not validator.validate_email(self._regist_form["email"]):
+        if not validator.validate_email(self._regist_form.get("email")):
             return False
-        if not validator.validate_password(self._regist_form["password"]):
+        if not validator.validate_password(self._regist_form.get("password")):
             return False
-        if not validator.validate_username(self._regist_form["username"]):
+        if not validator.validate_username(self._regist_form.get("username")):
             return False
-        if not validator.validate_blogname(self._regist_form["blogname"]):
+        if not validator.validate_blogname(self._regist_form.get("blogname")):
             return False
         return True
 
     def _no_duplicates(self) -> bool:
         for field in ["email", "username"]:
-            if self._db_handler.user_info.exists(field, self._regist_form[field]):
+            if self._db_handler.user_info.exists(field, self._regist_form.get(field)):
                 flash(
                     f"{field.capitalize()} is already used. Please try another one.",
                     category="error",
@@ -124,16 +124,16 @@ class NewUserSetup:
         if self._no_duplicates():
             return None
 
-        hashed_pw = self._hash_password(self._regist_form["password"])
+        hashed_pw = self._hash_password(self._regist_form.get("password"))
         new_user_creds = self._create_user_creds(
-            self._regist_form["username"], self._regist_form["email"], hashed_pw
+            self._regist_form.get("username"), self._regist_form.get("email"), hashed_pw
         )
         new_user_info = self._create_user_info(
-            self._regist_form["username"],
-            self._regist_form["email"],
-            self._regist_form["blogname"],
+            self._regist_form.get("username"),
+            self._regist_form.get("email"),
+            self._regist_form.get("blogname"),
         )
-        new_user_about = self._create_user_about(self._regist_form["username"])
+        new_user_about = self._create_user_about(self._regist_form.get("username"))
 
         self._db_handler.user_creds.insert_one(new_user_creds)
         self._db_handler.user_info.insert_one(new_user_info)
@@ -159,7 +159,7 @@ class UserDeletionSetup:
 
     def _get_posts_uid_by_user(self) -> list:
         target_posts = self._db_handler.post_info.find({"author": self._user_to_be_deleted})
-        target_posts_uid = [post["post_uid"] for post in target_posts]
+        target_posts_uid = [post.get("post_uid") for post in target_posts]
 
         return target_posts_uid
 
@@ -202,7 +202,7 @@ class UserUtils:
 
     def get_all_username(self) -> list:
         all_user_info = self._db_handler.user_info.find({})
-        all_username = [user_info["username"] for user_info in all_user_info]
+        all_username = [user_info.get("username") for user_info in all_user_info]
         return all_username
 
     def get_user_info(self, username: str) -> UserInfo:
