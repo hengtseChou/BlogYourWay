@@ -30,15 +30,15 @@
       background-color: #f7966b;
     }
 
-    .panel-btn {
+    .submit-btn {
       text-align: left;
-      background-color: #333;
+      background-color: black;
       color: white;
       border: 0px;
     }
 
-    .panel-btn:hover {
-      background-color: #6c757d;
+    .submit-btn:hover {
+      background-color: rgb(150, 150, 150);
       color: white;
     }
 
@@ -97,7 +97,9 @@
         </div>
         <!-- cover -->
         <figure class="figure cover mt-3">
-          <img src="{{ post.cover_url }}" class="figure-img img-fluid rounded" alt="">
+          <img src="{{ post.cover_url }}"
+               class="figure-img img-fluid rounded"
+               alt="">
           <!-- <figcaption class="cover-caption">{{ post.title }}</figcaption> -->
         </figure>
         <!-- content start -->
@@ -147,7 +149,7 @@
             <textarea class="form-control" id="comment-text"  rows="3" name="comment"></textarea>
           </div>
           <div class="text-end mb-4">
-            <button class="g-recaptcha btn panel-btn text-center"
+            <button class="g-recaptcha btn submit-btn text-center"
                     data-sitekey="6LcU_PwpAAAAADka8qfa2xZIUIh49bp0j6EqeWUf"
                     data-callback="onSubmit"
                     style="width: 25%;

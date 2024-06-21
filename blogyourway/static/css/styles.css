@@ -41,6 +41,10 @@ footer p {
 
 /* navbar.html */
 
+.navbar-brand-ms {
+  margin-left: 2.5rem;
+}
+
 .sidebar {
   position: fixed;
   top: 0;
@@ -190,12 +194,17 @@ blockquote p {
   color: rgb(120, 120, 120);
 }
 
+
+.nav-item.dropdown .dropdown-item:active {
+  background-color: #f7966b !important;
+}
+
 /* deal with screen size */
 /* medium width */
 
 @media (max-width: 768px) {
-  .navbar-custom .social-icons {
-    display: none;
+  .navbar-brand-ms {
+    margin-left: 0.4rem;
   }
 
   .main-panel {

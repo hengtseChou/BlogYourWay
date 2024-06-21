@@ -9,9 +9,8 @@
   {% include 'cover.html' %}
   <div class="container-fluid">
     <div class="row">
-      <div class="offset-lg-2 col-lg-8 col-12"
-           style="min-height: calc(100vh - 330px)">
-        <div class="row">
+      <div class="offset-lg-2 col-lg-8 col-12">
+        <div class="row" style="min-height: calc(100vh - 330px)">
           <!-- post-column -->
           <div class="col-lg-8 col-11 mx-auto">
             {% if posts|length != 0 %}
@@ -101,6 +100,5 @@
         </div>
       </div>
     </div>
-  </div>
-  {% include 'footer.html' %}
-{% endblock %}
+    {% include 'footer.html' %}
+  {% endblock %}
