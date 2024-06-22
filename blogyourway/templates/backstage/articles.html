@@ -14,10 +14,7 @@
     <hr />
     <!-- <p class="ms-2">Featured articles will be on your home page, sorted by time order.</p> -->
     {% if articles | length == 0 %}
-      <p class="ms-2">
-        You don't have any article yet. Make a article now, by clicking the button
-        on the top-right.
-      </p>
+      <p class="ms-2">Click the button on the top-right to create your first article!</p>
     {% else %}
       <div class="col-11">
         <div class="table-responsive">
@@ -47,7 +44,7 @@
                   <td class="text-center">{{ article['views'] }}</td>
                   <td class="text-center">{{ article['comments'] }}</td>
                   <td class="text-center">
-                    <a href="edit/articles/{{ article.article_uid }}"
+                    <a href="edit/article/{{ article.article_uid }}"
                        style="color: black;
                               font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
                   </td>
@@ -132,7 +129,7 @@
                         aria-expanded="false"></button>
                 <ul class="dropdown-menu">
                   <li>
-                    <a class="dropdown-item" href="edit/articles/{{ article.article_uid }}">Edit</a>
+                    <a class="dropdown-item" href="edit/article/{{ article.article_uid }}">Edit</a>
                   </li>
                   {% if article['featured'] %}
                     <li>

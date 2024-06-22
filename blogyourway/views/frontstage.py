@@ -423,6 +423,7 @@ def blog(username):
     # user info
     user_info = user_utils.get_user_info(username)
     tags = sort_dict(user_info.tags)
+    tags = {tag: count for tag, count in tags.items() if count > 0}
 
     ###################################################################
 

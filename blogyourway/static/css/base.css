@@ -109,33 +109,39 @@ img.profile-sm {
 
 /* backstage input form */
 
-input[type="text"]::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-  color: #787878; 
-  opacity: 1; 
+input[type="text"]::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #787878;
+  opacity: 1;
 }
 
-input[type="text"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
+input[type="text"]:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
   color: #787878;
 }
 
-input[type="text"]::-ms-input-placeholder { /* Microsoft Edge */
+input[type="text"]::-ms-input-placeholder {
+  /* Microsoft Edge */
   color: #787878;
 }
 
-textarea::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-  color: #787878; 
-  opacity: 1; 
+textarea::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #787878;
+  opacity: 1;
 }
 
-textarea:-ms-input-placeholder { /* Internet Explorer 10-11 */
+textarea:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
   color: #787878;
 }
 
-textarea::-ms-input-placeholder { /* Microsoft Edge */
+textarea::-ms-input-placeholder {
+  /* Microsoft Edge */
   color: #787878;
 }
 
 .backstage-form-label {
   font-style: italic;
-  color: #787878;
+  color: black;
 }

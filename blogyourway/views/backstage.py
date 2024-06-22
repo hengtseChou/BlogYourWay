@@ -14,12 +14,12 @@ backstage = Blueprint("backstage", __name__, template_folder="../templates/backs
 @backstage.route("/", methods=["GET"])
 @login_required
 def backstage_root():
-    return redirect(url_for("backstage.post_control"))
+    return redirect(url_for("backstage.articles_panel"))
 
 
 @backstage.route("/articles", methods=["GET", "POST"])
 @login_required
-def post_control():
+def articles_panel():
     ###################################################################
 
     # status control / early returns
@@ -72,9 +72,9 @@ def post_control():
     return render_template("articles.html", user=user, articles=articles, pagination=pagination)
 
 
-@backstage.route("/edit/articles/<article_uid>", methods=["GET"])
+@backstage.route("/edit/article/<article_uid>", methods=["GET"])
 @login_required
-def edit_post_get(article_uid):
+def edit_article_get(article_uid):
     ###################################################################
 
     # status control / early returns
@@ -102,9 +102,9 @@ def edit_post_get(article_uid):
     return render_template("edit-article.html", article=target_article, user=user)
 
 
-@backstage.route("/edit/articles/<article_uid>", methods=["POST"])
+@backstage.route("/edit/article/<article_uid>", methods=["POST"])
 @login_required
-def edit_post_post(article_uid):
+def edit_article_post(article_uid):
     ###################################################################
 
     # main actions
@@ -124,7 +124,7 @@ def edit_post_post(article_uid):
 
     ###################################################################
 
-    return redirect(url_for("backstage.post_control"))
+    return redirect(url_for("backstage.articles_panel"))
 
 
 @backstage.route("/edit-featured", methods=["GET"])
@@ -174,7 +174,7 @@ def edit_featured():
 
     ###################################################################
 
-    return redirect(url_for("backstage.post_control"))
+    return redirect(url_for("backstage.articles_panel"))
 
 
 @backstage.route("/edit-archived", methods=["GET"])
@@ -193,14 +193,19 @@ def edit_archived():
     ###################################################################
 
     article_uid = request.args.get("uid")
-    title_truncated = string_truncate(
-        mongodb.article_info.find_one({"article_uid": article_uid}).get("title"), max_len=20
-    )
+    article_info = mongodb.article_info.find_one({"article_uid": article_uid})
+
+    author = article_info.get("author")
+    tags = article_info.get("tags")
+    title_truncated = string_truncate(article_info.get("title"), max_len=20)
+
     if request.args.get("archived") == "to_true":
         updated_archived_status = True
+        tags_increment = {f"tags.{tag}": -1 for tag in tags}
         flash(f'Your article "{title_truncated}" is now archived!', category="success")
     else:
         updated_archived_status = False
+        tags_increment = {f"tags.{tag}": 1 for tag in tags}
         flash(
             f'Your article "{title_truncated}" is now restored from the archive!',
             category="success",
@@ -208,6 +213,9 @@ def edit_archived():
 
     mongodb.article_info.update_values(
         filter={"article_uid": article_uid}, update={"archived": updated_archived_status}
+    )
+    mongodb.user_info.make_increments(
+        filter={"username": author}, increments=tags_increment, upsert=True
     )
     logger.debug(
         f"archive status for article {article_uid} is now set to {updated_archived_status}"
@@ -220,15 +228,15 @@ def edit_archived():
     ###################################################################
 
     if session["user_current_tab"] == "articles":
-        return redirect(url_for("backstage.post_control"))
+        return redirect(url_for("backstage.articles_panel"))
 
     elif session["user_current_tab"] == "archive":
-        return redirect(url_for("backstage.archive_control"))
+        return redirect(url_for("backstage.archive_panel"))
 
 
 @backstage.route("/about", methods=["GET"])
 @login_required
-def about_control_get():
+def edit_about_get():
     ###################################################################
 
     # status control / early returns
@@ -258,7 +266,7 @@ def about_control_get():
 
 @backstage.route("/about", methods=["POST"])
 @login_required
-def about_control_post():
+def edit_about_post():
     ###################################################################
 
     # main actions
@@ -292,7 +300,7 @@ def about_control_post():
 
 @backstage.route("/archive", methods=["GET"])
 @login_required
-def archive_control():
+def archive_panel():
     ###################################################################
 
     # status control / early returns
@@ -329,7 +337,7 @@ def archive_control():
 
 @backstage.route("/delete/article", methods=["GET"])
 @login_required
-def delete_post():
+def delete_article():
     ###################################################################
 
     # status control / early returns
@@ -351,6 +359,8 @@ def delete_post():
     mongodb.article_content.delete_one({"article_uid": article_uid})
     logger.debug(f"article {article_uid} has been deleted")
     flash(f'Your article "{title_truncated}" has been deleted!', category="success")
+    # article must be archived before deletion
+    # so no need to increment over tags here
 
     ###################################################################
 
@@ -358,12 +368,12 @@ def delete_post():
 
     ###################################################################
 
-    return redirect(url_for("backstage.archive_control"))
+    return redirect(url_for("backstage.archive_panel"))
 
 
 @backstage.route("/theme", methods=["GET", "POST"])
 @login_required
-def theme_control():
+def theme_panel():
     ###################################################################
 
     # status control / early returns
@@ -391,7 +401,7 @@ def theme_control():
 
 @backstage.route("/settings", methods=["GET"])
 @login_required
-def settings_control_get():
+def settings_get():
     ###################################################################
 
     # status control / early returns
@@ -419,7 +429,7 @@ def settings_control_get():
 
 @backstage.route("/settings", methods=["POST"])
 @login_required
-def settings_control_post():
+def settings_post():
     ###################################################################
 
     # main actions
