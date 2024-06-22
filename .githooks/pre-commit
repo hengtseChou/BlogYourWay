@@ -14,7 +14,6 @@ handle_python_files() {
 # Function to handle HTML files
 handle_html_files() {
     echo "[pre-commit]: formatting $1..."
-    prettier "$1" -w --log-level silent
     djlint "$1" --reformat --indent 2 --quiet
     git add "$1"
 }
