@@ -103,13 +103,11 @@
           <hr />
           <!-- delete -->
           <div class="text-end mt-4 mb-5">
-            <button class="btn"
+            <button class="btn delete-btn"
                     data-bs-toggle="modal"
                     data-bs-target="#delete"
                     style="width: 20%;
-                           min-width: 150px;
-                           background-color: #911d21;
-                           color: white">Delete Account</button>
+                           min-width: 150px">Delete Account</button>
           </div>
         </div>
       </div>
@@ -117,12 +115,12 @@
       <div class="modal fade"
            id="delete"
            tabindex="-1"
-           aria-labelledby="myModalLabel"
+           aria-labelledby="deleteAccountConfirmationModal"
            aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="myModalLabel">Delete Account</h5>
+              <h5 class="modal-title" id="deleteAccountConfirmationModal">Delete Account</h5>
               <button type="button"
                       class="btn-close"
                       data-bs-dismiss="modal"

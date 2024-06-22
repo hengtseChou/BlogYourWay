@@ -46,7 +46,6 @@
 }
 
 .cancel-btn {
-  text-align: left;
   background-color: #ffffff;
   color: black;
   border: 1.5px solid #333;
@@ -55,6 +54,12 @@
 .cancel-btn:hover {
   background-color: #f5f5f5;
   color: black;
+  border: 1.5px solid #333;
+}
+
+.delete-btn {
+  background-color: #911d21;
+  color: white;
 }
 
 .main-panel {

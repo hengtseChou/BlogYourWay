@@ -42,9 +42,13 @@
                             font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
                 </td>
                 <td class="text-center">
-                  <a href="/backstage/delete/article?&uid={{ article.article_uid }}"
+                  <a href="#"
                      style="color: black;
-                            font-size: 18px"><i class="fa-solid fa-trash-can"></i></a>
+                            font-size: 18px"
+                     class="delete-article-btn"
+                     data-article-uid="{{ article.article_uid }}"
+                     data-bs-toggle="modal"
+                     data-bs-target="#deleteConfirmationModal"><i class="fa-solid fa-trash-can"></i></a>
                 </td>
               </tr>
             {% endfor %}
@@ -91,8 +95,11 @@
                        href="/backstage/edit-archived?archived=to_false&uid={{ article.article_uid }}">Restore</a>
                   </li>
                   <li>
-                    <a class="dropdown-item"
-                       href="/backstage/delete/article?&uid={{ article.article_uid }}">Delete</a>
+                    <a class="dropdown-item delete-article-btn"
+                       href="#"
+                       data-article-uid="{{ article.article_uid }}"
+                       data-bs-toggle="modal"
+                       data-bs-target="#deleteConfirmationModal">Delete</a>
                   </li>
                 </ul>
               </div>
@@ -101,6 +108,29 @@
         </div>
       </div>
     {% endfor %}
+  </div>
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade"
+       id="deleteConfirmationModal"
+       tabindex="-1"
+       aria-labelledby="deleteConfirmationModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">Are you sure you want to delete this article?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
+          <a href="#" id="deleteArticleBtn" class="btn delete-btn">Delete</a>
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock %}
 {% block script %}<script src="/static/js/backstage/archive.js"></script>{% endblock %}
