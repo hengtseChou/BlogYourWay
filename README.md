@@ -20,7 +20,7 @@ It is built with Flask and Bootstrap 5, along with some useful javascript librar
 ### Now
 
 - [ ] Gallery for work showcase.
-- [ ] Personal changelog.
+- [ ] Personal [changelog](https://brianlovin.com/writing/make-a-personal-changelog).
 - [ ] Table of Content for posts.
 
 ### Later
