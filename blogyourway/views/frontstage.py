@@ -6,9 +6,9 @@ from flask import Blueprint, abort, flash, jsonify, redirect, render_template, r
 from flask_login import current_user, login_user
 from markdown import Markdown
 
+from blogyourway.helpers.articles import article_utils, html_to_about, html_to_article, paging
 from blogyourway.helpers.comments import comment_utils, create_comment
 from blogyourway.helpers.common import sort_dict
-from blogyourway.helpers.posts import article_utils, html_to_about, html_to_article, paging
 from blogyourway.helpers.users import user_utils
 from blogyourway.services import logger, logger_utils, mongodb, sitemapper
 
@@ -47,7 +47,7 @@ def login_get():
     if current_user.is_authenticated:
         flash("You are already logged in.")
         logger.debug(f"Attempt to duplicate logging from user {current_user.username}.")
-        return redirect(url_for("blog.home", username=current_user.username))
+        return redirect(url_for("frontstage.home", username=current_user.username))
 
     ###################################################################
 
@@ -110,7 +110,7 @@ def login_post():
 
     ###################################################################
 
-    return redirect(url_for("blog.home", username=username))
+    return redirect(url_for("frontstage.home", username=username))
 
 
 @sitemapper.include()
@@ -146,7 +146,7 @@ def register_post():
         flash("Registration succeeded.", category="success")
         user_info = user_utils.get_user_info(new_user)
         login_user(user_info)
-        return redirect(url_for("blog.home", username=new_user))
+        return redirect(url_for("frontstage.home", username=new_user))
 
     else:
         return render_template("register.html")
@@ -321,7 +321,9 @@ def article(username, article_uid):
 
     ###################################################################
 
-    return render_template("post.html", user=author_info, article=target_article, comments=comments)
+    return render_template(
+        "article.html", user=author_info, article=target_article, comments=comments
+    )
 
 
 @frontstage.route("/readcount-increment", methods=["GET"])

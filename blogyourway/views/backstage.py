@@ -2,8 +2,8 @@ from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
+from blogyourway.helpers.articles import article_utils, create_article, paging, update_post
 from blogyourway.helpers.common import string_truncate, switch_to_bool
-from blogyourway.helpers.posts import article_utils, create_article, paging, update_post
 from blogyourway.helpers.users import user_utils
 from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
@@ -69,7 +69,7 @@ def post_control():
 
     ###################################################################
 
-    return render_template("posts.html", user=user, articles=articles, pagination=pagination)
+    return render_template("articles.html", user=user, articles=articles, pagination=pagination)
 
 
 @backstage.route("/edit/articles/<article_uid>", methods=["GET"])
@@ -99,10 +99,10 @@ def edit_post_get(article_uid):
 
     ###################################################################
 
-    return render_template("edit-post.html", article=target_article, user=user)
+    return render_template("edit-article.html", article=target_article, user=user)
 
 
-@backstage.route("/edit/posts/<article_uid>", methods=["POST"])
+@backstage.route("/edit/articles/<article_uid>", methods=["POST"])
 @login_required
 def edit_post_post(article_uid):
     ###################################################################
@@ -349,8 +349,8 @@ def delete_post():
     )
     mongodb.article_info.delete_one({"article_uid": article_uid})
     mongodb.article_content.delete_one({"article_uid": article_uid})
-    logger.debug(f"post {article_uid} has been deleted")
-    flash(f'Your post "{title_truncated}" has been deleted!', category="success")
+    logger.debug(f"article {article_uid} has been deleted")
+    flash(f'Your article "{title_truncated}" has been deleted!', category="success")
 
     ###################################################################
 
@@ -512,7 +512,6 @@ def logout():
     ###################################################################
 
     username = current_user.username
-    print(current_user.email)
     logout_user()
     logger_utils.logout(request=request, username=username)
 
@@ -522,4 +521,4 @@ def logout():
 
     ###################################################################
 
-    return redirect(url_for("blog.home", username=username))
+    return redirect(url_for("frontstage.home", username=username))
