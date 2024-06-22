@@ -453,22 +453,14 @@ def get_profile_img(username):
     return jsonify({"imageUrl": profile_img_url})
 
 
-@blog.route("/is-unique-email", methods=["GET"])
-def is_unique_email():
-    email = request.args.get("email", type=str)
-    duplicated = mongodb.user_info.exists(key="email", value=email)
-    if duplicated:
-        return jsonify(False)
-    return jsonify(True)
-
-
-@blog.route("/is-unique-username", methods=["GET"])
-def is_unique_username():
-    username = request.args.get("username", type=str)
-    duplicated = mongodb.user_info.exists(key="username", value=username)
-    if duplicated:
-        return jsonify(False)
-    return jsonify(True)
+@blog.route("/is-unique", methods=["GET"])
+def is_unique():
+    email = request.args.get("email", default=None, type=str)
+    username = request.args.get("username", default=None, type=str)
+    if email is not None:
+        return jsonify(not mongodb.user_info.exists(key="email", value=email))
+    elif username is not None:
+        return jsonify(not mongodb.user_info.exists(key="username", value=username))
 
 
 @blog.route("/error", methods=["GET"])
