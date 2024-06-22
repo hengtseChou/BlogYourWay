@@ -1,8 +1,5 @@
 {% extends 'panel.html' %}
-{% block head %}
-  <link rel="stylesheet" href="/static/css/panel.css">
-  <link rel="stylesheet" href="/static/css/articles.css">
-{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/panel.css" />{% endblock %}
 {% block panel %}
   <!-- desktop view -->
   <div class="d-none d-md-block">
@@ -42,7 +39,8 @@
                   <td class="align-middle">
                     <!-- leave article stat for future -->
                     <!-- <a href="stats/articles/{{ article.article_uid }}" class="me-1" style="color: black">{{ article['title'] }}</a> -->
-                    {{ article["title"] }}
+                    <a href="/@{{ article.author }}/articles/{{ article.article_uid }}"
+                       style="color: black">{{ article['title'] }}</a>
                     {% if article['featured'] %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
                   </td>
                   <td>{{ article['created_at'] }}</td>
@@ -112,9 +110,8 @@
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              <div class="">
-                <a href="" style="color: black">{{ article['title'] }}</a>
-              </div>
+              <a href="/@{{ article.author }}/articles/{{ article.article_uid }}"
+                 style="color: black">{{ article['title'] }}</a>
               <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ article['created_at'] }}</p>
               <div>
                 {% if article['featured'] %}
@@ -123,10 +120,8 @@
                           data-bs-placement="top"
                           data-bs-title="Featured articles will be on your home page">Featured</button>
                 {% endif %}
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{
-                article['views'] }}</span>
-                <span><i class="fa-regular fa-comment me-2"></i>{{ article['comments']
-                }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ article['views'] }}</span>
+                <span><i class="fa-regular fa-comment me-2"></i>{{ article['comments'] }}</span>
               </div>
             </div>
             <div class="col-2">
@@ -240,9 +235,11 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn modal-close-btn" data-bs-dismiss="modal">Close</button>
+            <button type="button"
+                    class="btn cancel-btn text-center me-2"
+                    data-bs-dismiss="modal">Cancel</button>
             <button type="submit"
-                    class="btn panel-btn"
+                    class="btn panel-btn text-center"
                     onclick="return validateNewPost()">Submit</button>
           </div>
         </form>
@@ -251,5 +248,5 @@
   </div>
 {% endblock %}
 {% block script %}
-<script src="/static/js/backstage/articles.js"></script>
+  <script src="/static/js/backstage/articles.js"></script>
 {% endblock %}

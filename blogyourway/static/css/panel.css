@@ -45,6 +45,18 @@
   color: white;
 }
 
+.cancel-btn {
+  text-align: left;
+  background-color: #ffffff;
+  color: black;
+  border: 1.5px solid #333;
+}
+
+.cancel-btn:hover {
+  background-color: #f5f5f5;
+  color: black;
+}
+
 .main-panel {
   position: relative;
   margin-top: 0;
