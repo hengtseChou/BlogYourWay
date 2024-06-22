@@ -160,7 +160,7 @@ class MyDataClass:
         return {k: v for k, v in asdict(self).items()}
 
 
-def get_today(env) -> datetime:
+def get_today(env: str) -> datetime:
     if env == "debug":
         today = datetime.now()
     elif env == "prod":

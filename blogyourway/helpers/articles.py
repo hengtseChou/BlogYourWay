@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from math import ceil
-from typing import List
+from typing import Dict, List
 
 from bs4 import BeautifulSoup
 from flask import Request, abort
@@ -45,7 +45,7 @@ class ArticleContent(MyDataClass):
     content: str
 
 
-def process_tags(tag_string: str) -> list:
+def process_tags(tag_string: str) -> List[str]:
     if tag_string == "":
         return []
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
@@ -56,10 +56,10 @@ class NewArticleSetup:
         self._article_uid = article_uid_generator.generate_article_uid()
         self._db_handler = db_handler
 
-    def _form_validatd(self, request: Request, validator: FormValidator):
+    def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
         return True
 
-    def _create_article_info(self, request: Request, author_name: str) -> dict:
+    def _create_article_info(self, request: Request, author_name: str) -> Dict:
         new_article_info = ArticleInfo(
             article_uid=self._article_uid,
             title=request.form.get("title"),
@@ -70,13 +70,13 @@ class NewArticleSetup:
         )
         return new_article_info.as_dict()
 
-    def _create_article_content(self, request: Request, author_name: str) -> dict:
+    def _create_article_content(self, request: Request, author_name: str) -> Dict:
         new_article_content = ArticleContent(
             article_uid=self._article_uid, author=author_name, content=request.form.get("content")
         )
         return new_article_content.as_dict()
 
-    def _increment_tags_for_user(self, new_article_info: dict) -> None:
+    def _increment_tags_for_user(self, new_article_info: Dict) -> None:
         username = new_article_info.get("author")
         tags = new_article_info.get("tags")
         tags_increments = {f"tags.{tag}": 1 for tag in tags}
@@ -99,7 +99,7 @@ class NewArticleSetup:
         return self._article_uid
 
 
-def create_article(request):
+def create_article(request: Request) -> str:
     uid_generator = UIDGenerator(db_handler=mongodb)
 
     new_article_setup = NewArticleSetup(article_uid_generator=uid_generator, db_handler=mongodb)
@@ -137,10 +137,10 @@ class ArticleUpdateSetup:
     def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
-    def _form_validatd(self, request: Request, validator: FormValidator):
+    def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
         return True
 
-    def _update_tags_for_user(self, article_uid: str, new_tags: dict) -> None:
+    def _update_tags_for_user(self, article_uid: str, new_tags: Dict) -> None:
         article_info = self._db_handler.article_info.find_one({"article_uid": article_uid})
         author = article_info.get("author")
         old_tags = article_info.get("tags")
@@ -153,7 +153,7 @@ class ArticleUpdateSetup:
             filter={"username": author}, increments=tags_increment, upsert=True
         )
 
-    def _updated_article_info(self, request: Request) -> dict:
+    def _updated_article_info(self, request: Request) -> Dict:
         updated_article_info = UpdatedArticleInfo(
             title=request.form.get("title"),
             subtitle=request.form.get("subtitle"),
@@ -162,11 +162,11 @@ class ArticleUpdateSetup:
         )
         return updated_article_info.as_dict()
 
-    def _updated_article_content(self, request: Request) -> dict:
+    def _updated_article_content(self, request: Request) -> Dict:
         updated_article_content = UpdatedArticleContent(content=request.form.get("content"))
         return updated_article_content.as_dict()
 
-    def update_article(self, article_uid: str, request: Request):
+    def update_article(self, article_uid: str, request: Request) -> None:
         validator = FormValidator()
         if not self._form_validatd(request=request, validator=validator):
             return
@@ -183,7 +183,7 @@ class ArticleUpdateSetup:
         )
 
 
-def update_post(article_uid: str, request: Request):
+def update_post(article_uid: str, request: Request) -> None:
     post_update_setup = ArticleUpdateSetup(db_handler=mongodb)
     post_update_setup.update_article(article_uid=article_uid, request=request)
 
@@ -248,14 +248,14 @@ class HTMLFormatter:
         return str(self.__soup)
 
 
-def html_to_article(html):
+def html_to_article(html: str) -> str:
     formatter = HTMLFormatter(html)
     article = formatter.add_padding().change_heading_font().modify_figure().to_string()
 
     return article
 
 
-def html_to_about(html):
+def html_to_about(html: str) -> str:
     formatter = HTMLFormatter(html)
     about = formatter.add_padding().modify_figure(max_width="50%").to_string()
 
@@ -337,22 +337,22 @@ class ArticleUtils:
     def __init__(self, db_handler: Database):
         self._db_handler = db_handler
 
-    def get_all_article_uid(self) -> list:
+    def get_all_article_uid(self) -> List[str]:
         all_article_info = self._db_handler.article_info.find({})
         all_article_uid = [article_info.get("article_uid") for article_info in all_article_info]
         return all_article_uid
 
-    def get_all_author(self) -> list:
+    def get_all_author(self) -> List[str]:
         all_article_info = self._db_handler.article_info.find({})
         all_author = [article_info.get("author") for article_info in all_article_info]
         return all_author
 
-    def get_all_last_update(self) -> list:
+    def get_all_last_update(self) -> List[str]:
         all_article_info = self._db_handler.article_info.find({})
         all_last_updated = [article_info.get("last_updated") for article_info in all_article_info]
         return all_last_updated
 
-    def find_featured_articles_info(self, username: str):
+    def find_featured_articles_info(self, username: str) -> List[Dict]:
         result = (
             self._db_handler.article_info.find(
                 {"author": username, "featured": True, "archived": False}
@@ -365,7 +365,7 @@ class ArticleUtils:
             post["created_at"] = post.get("created_at").strftime("%B %d, %Y")
         return result
 
-    def find_all_articles_info(self, username: str):
+    def find_all_articles_info(self, username: str) -> List[Dict]:
         result = (
             self._db_handler.article_info.find({"author": username, "archived": False})
             .sort("created_at", -1)
@@ -373,7 +373,7 @@ class ArticleUtils:
         )
         return result
 
-    def find_all_archived_articles_info(self, username: str):
+    def find_all_archived_articles_info(self, username: str) -> List[Dict]:
         result = (
             self._db_handler.article_info.find({"author": username, "archived": True})
             .sort("created_at", -1)
@@ -383,7 +383,7 @@ class ArticleUtils:
 
     def find_articles_with_pagination(
         self, username: str, page_number: int, articles_per_page: int
-    ):
+    ) -> List[Dict]:
         if page_number == 1:
             result = (
                 self._db_handler.article_info.find({"author": username, "archived": False})
@@ -403,7 +403,7 @@ class ArticleUtils:
 
         return result
 
-    def get_full_article(self, article_uid: str):
+    def get_full_article(self, article_uid: str) -> Dict:
         target_article = self._db_handler.article_info.find_one({"article_uid": article_uid})
         target_article_content = self._db_handler.article_content.find_one(
             {"article_uid": article_uid}

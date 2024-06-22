@@ -4,6 +4,7 @@ This module includes a create comment function, and a comment utility class.
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Dict, List
 
 import requests
 from flask import Request
@@ -73,10 +74,10 @@ class NewCommentSetup:
         self._db_handler = db_handler
         self._comment_uid = comment_uid_generator.generate_comment_uid()
 
-    def _form_validated(self, request: Request, validator: FormValidator):
+    def _form_validated(self, request: Request, validator: FormValidator) -> bool:
         return True
 
-    def _recaptcha_verified(self, request: Request):
+    def _recaptcha_verified(self, request: Request) -> bool:
         token = request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
         resp = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
@@ -86,7 +87,7 @@ class NewCommentSetup:
             return True
         return False
 
-    def create_comment(self, article_uid: str, request: Request):
+    def create_comment(self, article_uid: str, request: Request) -> None:
         validator = FormValidator()
         if not self._form_validated(request, validator):
             return
@@ -114,7 +115,7 @@ class NewCommentSetup:
         self._db_handler.comment.insert_one(new_comment)
 
 
-def create_comment(article_uid: str, request: Request):
+def create_comment(article_uid: str, request: Request) -> None:
     """initialize a new comment setup instance, process the request and upload new comment.
 
     Args:
@@ -136,10 +137,10 @@ def create_comment(article_uid: str, request: Request):
 
 
 class CommentUtils:
-    def __init__(self, db_handler: Database):
+    def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
-    def find_comments_by_article_uid(self, article_uid: str):
+    def find_comments_by_article_uid(self, article_uid: str) -> List[Dict]:
         result = (
             self._db_handler.comment.find({"article_uid": article_uid})
             .sort("created_at", 1)

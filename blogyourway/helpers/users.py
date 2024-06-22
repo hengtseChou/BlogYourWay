@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 
 import bcrypt
 from flask import Request, flash
@@ -57,7 +57,7 @@ class UserAbout(MyDataClass):
 
 
 class NewUserSetup:
-    def __init__(self, request: Request, db_handler: Database, logger: Logger):
+    def __init__(self, request: Request, db_handler: Database, logger: Logger) -> None:
         self._regist_form = request.form.to_dict()
         self._request = request
         self._db_handler = db_handler
@@ -88,15 +88,15 @@ class NewUserSetup:
                 return True
         return False
 
-    def _create_user_creds(self, username: str, email: str, hashed_password: str) -> dict:
+    def _create_user_creds(self, username: str, email: str, hashed_password: str) -> Dict:
         new_user_creds = UserCreds(username=username, email=email, password=hashed_password)
         return new_user_creds.as_dict()
 
-    def _create_user_info(self, username: str, email: str, blogname: str) -> dict:
+    def _create_user_info(self, username: str, email: str, blogname: str) -> Dict:
         new_user_info = UserInfo(username=username, email=email, blogname=blogname)
         return new_user_info.as_dict()
 
-    def _create_user_about(self, username: str) -> dict:
+    def _create_user_about(self, username: str) -> Dict:
         new_user_about = UserAbout(username=username)
         return new_user_about.as_dict()
 
@@ -157,33 +157,33 @@ class UserDeletionSetup:
         self._db_handler = db_handler
         self._logger = logger
 
-    def _get_posts_uid_by_user(self) -> list:
-        target_posts = self._db_handler.article_info.find({"author": self._user_to_be_deleted})
-        target_posts_uid = [post.get("article_uid") for post in target_posts]
+    def _get_articles_uid_by_user(self) -> List[str]:
+        articles = self._db_handler.article_info.find({"author": self._user_to_be_deleted})
+        articles_uid = [article.get("article_uid") for article in articles]
 
-        return target_posts_uid
+        return articles_uid
 
-    def _remove_all_posts(self):
+    def _remove_all_posts(self) -> None:
         self._db_handler.article_info.delete_many({"author": self._user_to_be_deleted})
         self._db_handler.article_content.delete_many({"author": self._user_to_be_deleted})
-        self._logger.debug(f"Deleted all posts written by user {self._user_to_be_deleted}.")
+        self._logger.debug(f"Deleted all articles written by user {self._user_to_be_deleted}.")
 
-    def _remove_all_related_comments(self, article_uids: list):
+    def _remove_all_related_comments(self, article_uids: list) -> None:
         for article_uid in article_uids:
             self._db_handler.comment.delete_many({"article_uid": article_uid})
-        self._logger.debug(f"Deleted relevant comments from user {self._user_to_be_deleted}.")
+        self._logger.debug(f"Deleted comments under articles by user {self._user_to_be_deleted}.")
 
-    def _remove_all_user_data(self):
+    def _remove_all_user_data(self) -> None:
         self._db_handler.user_creds.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_info.delete_one({"username": self._user_to_be_deleted})
         self._db_handler.user_about.delete_one({"username": self._user_to_be_deleted})
 
         self._logger.debug(f"Deleted user information for user {self._user_to_be_deleted}.")
 
-    def start_deletion_process(self):
-        target_posts_uid = self._get_posts_uid_by_user()
+    def start_deletion_process(self) -> None:
+        articles_uid = self._get_articles_uid_by_user()
         self._remove_all_posts()
-        self._remove_all_related_comments(target_posts_uid)
+        self._remove_all_related_comments(articles_uid)
         # this place should includes removing metrics data for the user
         self._remove_all_user_data()
 
@@ -200,7 +200,7 @@ class UserUtils:
         self._db_handler = db_handler
         self._logger = logger
 
-    def get_all_username(self) -> list:
+    def get_all_username(self) -> List[str]:
         all_user_info = self._db_handler.user_info.find({})
         all_username = [user_info.get("username") for user_info in all_user_info]
         return all_username
@@ -223,7 +223,7 @@ class UserUtils:
         user_creds = UserCreds(**user_creds)
         return user_creds
 
-    def delete_user(self, username):
+    def delete_user(self, username: str) -> None:
         user_deletion = UserDeletionSetup(
             username=username, db_handler=self._db_handler, logger=self._logger
         )
