@@ -12,11 +12,11 @@ from blogyourway.helpers.posts import article_utils, html_to_about, html_to_arti
 from blogyourway.helpers.users import user_utils
 from blogyourway.services import logger, logger_utils, mongodb, sitemapper
 
-blog = Blueprint("blog", __name__, template_folder="../templates/blog/")
+frontstage = Blueprint("frontstage", __name__, template_folder="../templates/frontstage/")
 
 
 @sitemapper.include(priority=1)
-@blog.route("/", methods=["GET"])
+@frontstage.route("/", methods=["GET"])
 def landing_page():
     ###################################################################
 
@@ -36,7 +36,7 @@ def landing_page():
 
 
 @sitemapper.include()
-@blog.route("/login", methods=["GET"])
+@frontstage.route("/login", methods=["GET"])
 def login_get():
     ###################################################################
 
@@ -66,7 +66,7 @@ def login_get():
     return render_template("login.html")
 
 
-@blog.route("/login", methods=["POST"])
+@frontstage.route("/login", methods=["POST"])
 def login_post():
     ###################################################################
 
@@ -114,7 +114,7 @@ def login_post():
 
 
 @sitemapper.include()
-@blog.route("/register", methods=["GET"])
+@frontstage.route("/register", methods=["GET"])
 def register_get():
     ###################################################################
 
@@ -133,7 +133,7 @@ def register_get():
     return render_template("register.html")
 
 
-@blog.route("/register", methods=["POST"])
+@frontstage.route("/register", methods=["POST"])
 def register_post():
     ###################################################################
 
@@ -159,7 +159,7 @@ def register_post():
 
 
 @sitemapper.include(url_variables={"username": user_utils.get_all_username()})
-@blog.route("/@<username>", methods=["GET"])
+@frontstage.route("/@<username>", methods=["GET"])
 def home(username):
     ###################################################################
 
@@ -198,7 +198,7 @@ def home(username):
 
 
 @sitemapper.include(url_variables={"username": user_utils.get_all_username()})
-@blog.route("/@<username>/tags", methods=["GET"])
+@frontstage.route("/@<username>/tags", methods=["GET"])
 def tag(username):
     ###################################################################
 
@@ -259,8 +259,8 @@ def tag(username):
         "article_uid": article_utils.get_all_article_uid(),
     }
 )
-@blog.route("/@<username>/articles/<article_uid>", methods=["GET", "POST"])
-def post(username, article_uid):
+@frontstage.route("/@<username>/articles/<article_uid>", methods=["GET", "POST"])
+def article(username, article_uid):
     ###################################################################
 
     # early return for invalid inputs
@@ -324,7 +324,7 @@ def post(username, article_uid):
     return render_template("post.html", user=author_info, article=target_article, comments=comments)
 
 
-@blog.route("/readcount-increment", methods=["GET"])
+@frontstage.route("/readcount-increment", methods=["GET"])
 def readcount_increment():
     ###################################################################
 
@@ -345,7 +345,7 @@ def readcount_increment():
 
 
 @sitemapper.include(url_variables={"username": user_utils.get_all_username()})
-@blog.route("/@<username>/about", methods=["GET"])
+@frontstage.route("/@<username>/about", methods=["GET"])
 def about(username):
     ###################################################################
 
@@ -388,8 +388,8 @@ def about(username):
 
 
 @sitemapper.include(url_variables={"username": user_utils.get_all_username()})
-@blog.route("/@<username>/blog", methods=["GET"])
-def blog_page(username):
+@frontstage.route("/@<username>/blog", methods=["GET"])
+def blog(username):
     ###################################################################
 
     # early returns
@@ -441,7 +441,7 @@ def blog_page(username):
     )
 
 
-@blog.route("/@<username>/get-profile-img", methods=["GET"])
+@frontstage.route("/@<username>/get-profile-img", methods=["GET"])
 def get_profile_img(username):
     user = mongodb.user_info.find_one({"username": username})
 
@@ -453,7 +453,7 @@ def get_profile_img(username):
     return jsonify({"imageUrl": profile_img_url})
 
 
-@blog.route("/is-unique", methods=["GET"])
+@frontstage.route("/is-unique", methods=["GET"])
 def is_unique():
     email = request.args.get("email", default=None, type=str)
     username = request.args.get("username", default=None, type=str)
@@ -463,16 +463,16 @@ def is_unique():
         return jsonify(not mongodb.user_info.exists(key="username", value=username))
 
 
-@blog.route("/error", methods=["GET"])
+@frontstage.route("/error", methods=["GET"])
 def error_simulator():
     raise Exception("this is a simulation error.")
 
 
-@blog.route("/sitemap.xml", methods=["GET"])
+@frontstage.route("/sitemap.xml", methods=["GET"])
 def sitemap():
     return sitemapper.generate()
 
 
-@blog.route("/robots.txt", methods=["GET"])
+@frontstage.route("/robots.txt", methods=["GET"])
 def robotstxt():
     return open("robots.txt", "r")

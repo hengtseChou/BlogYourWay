@@ -12,7 +12,7 @@ from blogyourway.services.logging import logger, return_client_ip
 from blogyourway.services.mongo import mongodb
 from blogyourway.services.sitemapper import sitemapper
 
-from .views import backstage_bp, blog_bp
+from .views import backstage_bp, frontstage_bp
 
 
 def create_app() -> Flask:
@@ -75,7 +75,7 @@ def create_app() -> Flask:
     logger.debug("Error handlers registered.")
 
     # blueprints
-    app.register_blueprint(blog_bp, url_prefix="/")
+    app.register_blueprint(frontstage_bp, url_prefix="/")
     app.register_blueprint(backstage_bp, url_prefix="/backstage/")
     logger.debug("Blueprints registered.")
 
