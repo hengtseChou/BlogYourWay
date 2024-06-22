@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ENV = os.getenv("ENV")
+ENV = os.getenv("ENV")  # debug or prod
 APP_SECRET = os.getenv("APP_SECRET")
 MONGO_URL = os.getenv("MONGO_URL")
 RECAPTCHA_SECRET = os.getenv("RECAPTCHA_SECRET")
