@@ -11,84 +11,52 @@
     <meta name="language" content="en" />
     {% block meta_tags %}{% endblock %}
     {% include "third-parties.html" %}
-    {% block head %}{% endblock %}
-  </head>
-  <body>
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-          <div class="toast show"
-               role="alert"
-               aria-live="polite"
-               aria-atomic="true"
-               id="notification">
-            {% if category == 'success' %}
-              <div class="toast-header" style="background-color: #7fda91">
-                <strong class="me-auto">Success!</strong>
-                <button type="button"
-                        class="btn-close me-2 m-auto"
-                        data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-              </div>
-            {% elif category == 'error' %}
-              <div class="toast-header" style="background-color: #ff6c6c">
-                <strong class="me-auto">Error!</strong>
-                <button type="button"
-                        class="btn-close me-2 m-auto"
-                        data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-              </div>
-            {% else %}
-              <div class="toast-header" style="background-color: #75c4ff">
-                <strong class="me-auto">Info</strong>
-                <button type="button"
-                        class="btn-close me-2 m-auto"
-                        data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-              </div>
-            {% endif %}
-            <div class="toast-body">{{ message }}</div>
-          </div>
-        {% endfor %}
-      {% endwith %}
-    </div>
-    {% block body %}{% endblock %}
-    <script>
-      // highlight js
-      hljs.highlightAll();
-
-      // socket io
-      // var socket = io();
-      
-      // notification (toast) from flask
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-          var notification = document.getElementById('notification');
-          if (notification) {
-            notification.style.opacity = '0';
-            setTimeout(function() {
-              notification.style.display = 'none';
-            }, 300);
-          }
-        }, 3000);
-      });
-
-      // update year tag in the footer
-      function updateCurrentYear() {
-        var currentDate = new Date();
-        var currentYear = currentDate.getFullYear();
-        var yearTag = document.getElementById("yearTag");
-        if (yearTag) {
-          yearTag.innerHTML = currentYear;
-        }
-        var yearTagMobile = document.getElementById("yearTagMobile");
-        if (yearTagMobile) {
-          yearTagMobile.innerHTML = currentYear;
-        }
-      }
-      updateCurrentYear();
-    </script>
-    {% block script %}
-    {% endblock %}
-  </body>
+    {%
+    block head %}
+  {% endblock %}
+</head>
+<body>
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for
+        category, message in messages %}
+        <div class="toast show"
+             role="alert"
+             aria-live="polite"
+             aria-atomic="true"
+             id="notification">
+          {% if category == 'success' %}
+            <div class="toast-header" style="background-color: #7fda91">
+              <strong class="me-auto">Success!</strong>
+              <button type="button"
+                      class="btn-close me-2 m-auto"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"></button>
+            </div>
+          {% elif category == 'error' %}
+            <div class="toast-header" style="background-color: #ff6c6c">
+              <strong class="me-auto">Error!</strong>
+              <button type="button"
+                      class="btn-close me-2 m-auto"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"></button>
+            </div>
+          {% else %}
+            <div class="toast-header" style="background-color: #75c4ff">
+              <strong class="me-auto">Info</strong>
+              <button type="button"
+                      class="btn-close me-2 m-auto"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"></button>
+            </div>
+          {% endif %}
+          <div class="toast-body">{{ message }}</div>
+        </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+  {% block body %}{% endblock %}
+  <script src="/static/js/base.js"></script>
+  {% block script %}{% endblock %}
+</body>
 </html>

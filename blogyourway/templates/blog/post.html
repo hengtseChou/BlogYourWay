@@ -1,43 +1,46 @@
 {% extends 'base.html' %}
 {% block title %}{{ post.title }}{% endblock %}
-{% block meta_tags %}
-  <meta name="description" content="{{ post['subtitle'] }}" />
-  <meta property="og:image" content="{{ post['cover_url'] }}" />
+{%
+block meta_tags %}
+<meta name="description" content="{{ post['subtitle'] }}" />
+<meta property="og:image" content="{{ post['cover_url'] }}" />
 {% endblock %}
 {% block head %}
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script>
-    function onSubmit(token) {
-      document.getElementById("comment-form").submit();
-    }
+  function onSubmit(token) {
+    document.getElementById("comment-form").submit();
+  }
   </script>
   <style>
-    .submit-btn {
-      text-align: left;
-      background-color: black;
-      color: white;
-      border: 0px;
-    }
+  .submit-btn {
+    text-align: left;
+    background-color: black;
+    color: white;
+    border: 0px;
+  }
 
-    .submit-btn:hover {
-      background-color: rgb(150, 150, 150);
-      color: white;
-    }
+  .submit-btn:hover {
+    background-color: rgb(150, 150, 150);
+    color: white;
+  }
 
-    .cover {
-      display: flex;
-      flex-flow: column;
-      padding: 5px;
-      margin: auto;
-    }
+  .cover {
+    display: flex;
+    flex-flow: column;
+    padding: 5px;
+    margin: auto;
+  }
 
-    .cover-caption {
-      background-color: rgba(0, 0, 0, 0.6);
-      color: #fff;
-      font: italic smaller "Ubuntu", sans-serif;
-      padding: 3px;
-      text-align: center;
-    }
+  .cover-caption {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font:
+      italic smaller "Ubuntu",
+      sans-serif;
+    padding: 3px;
+    text-align: center;
+  }
   </style>
 {% endblock %}
 {% block body %}
@@ -53,7 +56,7 @@
         <!-- info row -->
         <div class="d-inline-flex">
           <div class="row mt-3">
-            <div class="col-1" style="width: 3rem;">
+            <div class="col-1" style="width: 3rem">
               <a href="/@{{ post.author }}/about">
                 {% if user.profile_img_url|length == 0 %}
                   <img class="profile-md"
@@ -65,9 +68,10 @@
               </a>
             </div>
             <div class="col mt-1 ms-2">
-              <div style="line-height: 125%;">
-                <span class="grey-text">Updated at {{ post.last_updated }}&nbsp;&nbsp;·&nbsp;&nbsp;{{ post.readtime }}
-                  <br>
+              <div style="line-height: 125%">
+                <span class="grey-text">Updated at {{ post.last_updated }}&nbsp;&nbsp;·&nbsp;&nbsp;{{
+                  post.readtime }}
+                  <br />
                 By</span>
                 <a class="author-link ms-1" href="/@{{ post.author }}/about">{{ post.author }}</a>
               </div>
@@ -78,7 +82,7 @@
         <figure class="figure cover mt-3">
           <img src="{{ post.cover_url }}"
                class="figure-img img-fluid rounded"
-               alt="">
+               alt="" />
           <!-- <figcaption class="cover-caption">{{ post.title }}</figcaption> -->
         </figure>
         <!-- content start -->
@@ -89,7 +93,8 @@
                     font-size: large">
           <span><i class="fa-solid fa-tags"></i></span>
           {% for tag in post.tags %}
-            {% set tag_link = '/@'~ post.author ~ '/tags?tag=' ~ tag %}
+            {% set tag_link = '/@'~ post.author ~
+                        '/tags?tag=' ~ tag %}
             <a href="{{ tag_link }}">
               <span class="badge badge-custom ms-2">{{ tag }}</span>
             </a>
@@ -125,7 +130,7 @@
             <label for="comment-text" class="form-label">
               Comment <span style="color: red">*</span>
             </label>
-            <textarea class="form-control" id="comment-text"  rows="3" name="comment"></textarea>
+            <textarea class="form-control" id="comment-text" rows="3" name="comment"></textarea>
           </div>
           <div class="text-end mb-4">
             <button class="g-recaptcha btn submit-btn text-center"
@@ -144,7 +149,8 @@
           <div class="mb-5">
             <h5 class="text-start my-4 fw-bold" style="color: #646464">{{ comments|length }} comments</h5>
             {% for comment in comments %}
-              {% if comment['profile_link']| length != 0 %}
+              {% if comment['profile_link']| length != 0
+                %}
                 <!-- registered user -->
                 <div class="mb-4 d-flex flex-row">
                   <a href="{{ comment['profile_link'] }}">
@@ -185,78 +191,4 @@
   </div>
   {% include 'footer.html' %}
 {% endblock %}
-{% block script %}
-  <script>
-    function validateForm() {
-      return true;
-    }
-  </script>
-  <script>
-    document
-      .getElementById("comment-form")
-      .addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-          event.preventDefault();
-        }
-      });
-  </script>
-  <script>
-    // reading progress js
-    const readingProgress = document.querySelector("#reading-progress-fill");
-    document.addEventListener("scroll", function(e) {
-      let w =
-        ((document.body.scrollTop || document.documentElement.scrollTop) /
-          (document.documentElement.scrollHeight -
-            document.documentElement.clientHeight)) *
-        100;
-      readingProgress.style.setProperty("width", w + "%");
-    });
-  </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Function to make an AJAX request to fetch a replacement image
-      function fetchReplacementImage(imgElement) {
-        var originalSrc = imgElement.getAttribute("src"); // Get the initial src
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", originalSrc, true);
-
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-              // Assuming the data received is a JSON object with an 'imageUrl' property
-              var responseData = JSON.parse(xhr.responseText);
-              if (responseData.imageUrl) {
-                // Update the src attribute of the image element with the fetched replacement URL
-                imgElement.setAttribute("src", responseData.imageUrl);
-              } else {
-                console.log("Image URL not found in the response.");
-              }
-            } else {
-              console.log("Error fetching replacement image. Status code: " + xhr.status);
-            }
-          }
-        };
-
-        xhr.send();
-      }
-
-      // Loop through each image element with the "ajax-profile-pic" class and fetch/replace the image
-      var profilePics = document.querySelectorAll(".ajax-profile-pic");
-      profilePics.forEach(function(imgElement) {
-        fetchReplacementImage(imgElement);
-      });
-    });
-  </script>
-  <script>
-    // Function to send an AJAX request to /readcount-increment
-    function sendReadCountRequest() {
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", "/readcount-increment?post_uid={{ post.post_uid }}", true);
-      xhr.send();
-    }
-
-    // Set a timer to call sendReadCountRequest after 30 seconds
-    var timer = setTimeout(sendReadCountRequest, 30000);
-  </script>
-{% endblock %}
+{% block script %}<script src="/static/js/article.js"></script>{% endblock %}
