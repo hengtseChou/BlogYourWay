@@ -44,7 +44,7 @@
                       {% for tag in article.tags %}
                         {% set tag_link = 'tags?tag=' ~ tag %}
                         <a href="{{ tag_link }}">
-                          <span class="badge badge-custom ms-2">{{ tag }}</span>
+                          <span class="badge tag ms-2">{{ tag }}</span>
                         </a>
                       {% endfor %}
                     </div>
@@ -63,7 +63,7 @@
                   {% set tag_link = 'tags?tag=' ~
                                     tag %}
                   <a href="{{ tag_link }}" style="text-decoration: none">
-                    <span class="badge badge-custom me-2 my-1" style="font-size: small">
+                    <span class="badge tag me-2 my-1" style="font-size: small">
                       {{ tag }}
                       <span class="badge ms-2" style="background-color: #535353">{{ count }}</span>
                     </span>

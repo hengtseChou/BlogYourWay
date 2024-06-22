@@ -1,4 +1,5 @@
 {% extends 'panel.html' %}
+{% block head %}<link rel="stylesheet" href="/static/css/panel.css" />{% endblock %}
 {% block panel %}
   <div style="height: 43px; margin-top: 30px">
     <h2 class="ms-2">Blog Theme</h2>
@@ -6,9 +7,4 @@
   <hr />
   <p class="ms-2">Themes for BlogYourWay is under develop for now.</p>
 {% endblock %}
-{% block script %}
-  <script>
-    const mobile_nav_btn = document.getElementById("mobile-nav-theme");
-    mobile_nav_btn.style.color = "white";
-  </script>
-{% endblock %}
+{% block script %}<script src="/static/js/backatage/theme.js"></script>{% endblock %}

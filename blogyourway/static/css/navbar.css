@@ -1,0 +1,13 @@
+.navbar-brand-ms {
+  margin-left: 2.5rem;
+}
+
+.nav-item.dropdown .dropdown-item:active {
+  background-color: #e4622f !important;
+}
+
+@media (max-width: 768px) {
+  .navbar-brand-ms {
+    margin-left: 0.4rem;
+  }
+}

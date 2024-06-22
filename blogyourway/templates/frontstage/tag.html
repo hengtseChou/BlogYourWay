@@ -42,7 +42,7 @@
                 {% for tag in article.tags %}
                   {% set tag_link = 'tags?tag=' ~ tag %}
                   <a href="{{ tag_link }}">
-                    <span class="badge badge-custom ms-2">{{ tag }}</span>
+                    <span class="badge tag ms-2">{{ tag }}</span>
                   </a>
                 {% endfor %}
               </div>

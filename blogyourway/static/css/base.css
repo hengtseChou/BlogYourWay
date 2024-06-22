@@ -1,0 +1,141 @@
+body {
+  font-family: "Ubuntu", "Noto Sans TC", sans-serif;
+}
+
+.toast {
+  opacity: 1 !important;
+  border-radius: 10px;
+}
+
+.toast-header {
+  border-radius: 9px 9px 0px 0px;
+  font-size: 16px;
+}
+
+.toast-body {
+  font-size: 16px;
+}
+
+.cover-container {
+  width: 100%;
+  height: calc(100vw / 3);
+  min-height: 250px;
+  margin-top: -10px;
+  background-size: cover; /* This will maintain the aspect ratio and crop the image */
+  background-position: center; /* This will center the image within the container */
+}
+
+footer {
+  background-color: #090909;
+  color: lightgray;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+footer p {
+  margin: 0;
+}
+
+/* profile img */
+
+img.profile-xxl {
+  width: 12rem;
+  height: 12rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+img.profile-xl {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+img.profile-lg {
+  width: 3.7rem;
+  height: 3.7rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+img.profile-md {
+  width: 3.1rem;
+  height: 3.1rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+img.profile-sm {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.header-link {
+  text-decoration: none;
+  color: #333;
+}
+
+.header-link:hover {
+  text-decoration: underline;
+  color: #f7966b;
+}
+
+.author-link {
+  text-decoration: none;
+  color: #333;
+  font-size: large;
+}
+
+/* Add underline on hover */
+.author-link:hover {
+  text-decoration: underline;
+  color: #333;
+}
+
+.grey-text {
+  color: #787878;
+}
+
+.tag {
+  background-color: #787878;
+}
+
+.tag:hover {
+  background-color: #f7966b;
+}
+
+/* backstage input form */
+
+input[type="text"]::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #787878; 
+  opacity: 1; 
+}
+
+input[type="text"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #787878;
+}
+
+input[type="text"]::-ms-input-placeholder { /* Microsoft Edge */
+  color: #787878;
+}
+
+textarea::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #787878; 
+  opacity: 1; 
+}
+
+textarea:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #787878;
+}
+
+textarea::-ms-input-placeholder { /* Microsoft Edge */
+  color: #787878;
+}
+
+.backstage-form-label {
+  font-style: italic;
+  color: #787878;
+}

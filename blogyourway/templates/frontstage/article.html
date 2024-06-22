@@ -12,36 +12,7 @@ block meta_tags %}
     document.getElementById("comment-form").submit();
   }
   </script>
-  <style>
-  .submit-btn {
-    text-align: left;
-    background-color: black;
-    color: white;
-    border: 0px;
-  }
-
-  .submit-btn:hover {
-    background-color: rgb(150, 150, 150);
-    color: white;
-  }
-
-  .cover {
-    display: flex;
-    flex-flow: column;
-    padding: 5px;
-    margin: auto;
-  }
-
-  .cover-caption {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    font:
-      italic smaller "Ubuntu",
-      sans-serif;
-    padding: 3px;
-    text-align: center;
-  }
-  </style>
+  <link rel="stylesheet" href="/static/css/article.css">
 {% endblock %}
 {% block body %}
   {% include 'navbar.html' %}
@@ -96,7 +67,7 @@ block meta_tags %}
             {% set tag_link = '/@'~ article.author ~
                         '/tags?tag=' ~ tag %}
             <a href="{{ tag_link }}">
-              <span class="badge badge-custom ms-2">{{ tag }}</span>
+              <span class="badge tag ms-2">{{ tag }}</span>
             </a>
           {% endfor %}
         </div>
@@ -191,4 +162,4 @@ block meta_tags %}
   </div>
   {% include 'footer.html' %}
 {% endblock %}
-{% block script %}<script src="/static/js/article.js"></script>{% endblock %}
+{% block script %}<script src="/static/js/frontstage/article.js"></script>{% endblock %}

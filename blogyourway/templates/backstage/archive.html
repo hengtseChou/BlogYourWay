@@ -1,4 +1,5 @@
 {% extends 'panel.html' %}
+{% block head %}<link rel="stylesheet" href="/static/css/panel.css" />{% endblock %}
 {% block panel %}
   <!-- desktop view -->
   <div class="d-none d-md-block">
@@ -106,9 +107,4 @@
     {% endfor %}
   </div>
 {% endblock %}
-{% block script %}
-  <script>
-  const mobile_nav_btn = document.getElementById("mobile-nav-archive");
-  mobile_nav_btn.style.color = "white";
-  </script>
-{% endblock %}
+{% block script %}<script src="/static/js/backstage/archive.js"></script>{% endblock %}
