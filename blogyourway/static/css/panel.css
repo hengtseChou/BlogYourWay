@@ -43,6 +43,7 @@
 .panel-btn:hover {
   background-color: #787878;
   color: white;
+  border: 1.5px solid #787878;
 }
 
 .cancel-btn {
@@ -60,6 +61,13 @@
 .delete-btn {
   background-color: #911d21;
   color: white;
+  border: 1.5px solid #911d21;
+}
+
+.delete-btn:hover {
+  background-color: #c52f3e;
+  color: white;
+  border: 1.5px solid #c52f3e;
 }
 
 .main-panel {
