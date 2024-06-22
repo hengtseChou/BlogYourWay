@@ -1,57 +1,33 @@
 # BlogYourWay
 
-This is a hobby project, for building a independent blogging engine to accommodate my preferences. Back-end is built with <ins><i>Flask</i></ins>, along with several extenstions; Front-end is mainly develop through <ins><i>Bootstrap 5</i></ins> and some useful javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor), which is adpoted as the content editor in this project.
+This is a hobby project, for building a independent blogging engine to **host articles, project showcases at the same place**.
 
-This project uses <ins><i>poetry</i></ins> for managing dependencies, <ins><i>pytest</i></ins> and <ins><i>pytest-cov</i></ins> for testing, <ins><i>black</i></ins> and <ins><i>isort</i></ins> for formatting, and <ins><i>ruff</i></ins> for linting.
-
-## Requirements for deployment
-
-You will need: 
-
-1. A web hosting service.
-
-2. A MongoDB machine (on cloud).
-
-3. A redis machine (on cloud).
-
-Remember to add a `.env` file for enviroment variables (check `application/config.py` to see what fields are needed).
+It is built with Flask and Bootstrap 5, along with some useful javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor).
 
 ## Features
 
 ### Done
 
-- [x] Posts CRUD (with markdown formation).
-- [x] Support tags for posts.
-- [x] Readtime and reading progress bar on each post.
-- [x] Good looking comment section (with google reCAPCHA).
-- [x] Good looking code block in posts (with highliht.js).
-- [x] Customized and click-through trackable social links. 
+- [x] Articles formatted with markdown.
+- [x] Support tags for articles.
+- [x] Comment section (with google reCAPCHA).
 - [x] Personalized blog cover and profile picture.
 - [x] Personalized user autobiography.
-- [x] Good looking website and backstage.
+- [x] Minimal design for front stage and back stage.
 - [x] RWD support.
-- [x] Well defined event logging. 
+- [x] Well defined event logging.
 
 ### Now
 
-- [ ] Gallery CRUD.
-- [ ] Personal changelog CRUD.
+- [ ] Gallery for work showcase.
+- [ ] Personal changelog.
 - [ ] Table of Content for posts.
-  
-### Next 
-
-- [ ] Integrated user traffic dashboard.
-- [ ] Post traffic/read ratio dashboard for post control.
-- [ ] automatic logout due to inactive.
 
 ### Later
 
+- [ ] Article traffic/read ratio statistics.
+- [ ] Automatic logout due to inactive, or jwt session auth.
 - [ ] Support tags for both posts and portfolios.
-- [ ] Track time spent on pages with sockerio.
-- [ ] Modal box images in posts.
+- [ ] Content polishing with ChatGPT api.
 - [ ] Serves images in the database.
-- [ ] Admin dashboard for checking logging/view overall traffic.
-
-## Issue board
-
-[Little-blog notion issue board](https://hengtse.notion.site/Little-Blog-119b66fdef244c1ab3041aeb5bda473b?pvs=4)
+- [ ] Google OAuth for easier access.
