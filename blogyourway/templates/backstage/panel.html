@@ -15,8 +15,8 @@
           <a class="btn w-100 px-2" href="/@{{ user.username }}">
             <span class="ms-2 me-3"><i class="fa-solid fa-house"></i></span>Home
           </a>
-          <a class="btn w-100 px-2" href="/backstage/posts">
-            <span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts
+          <a class="btn w-100 px-2" href="/backstage/articles">
+            <span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Articles
           </a>
           {% if user.gallery_enabled %}
             <a class="btn w-100 px-2">
@@ -84,8 +84,10 @@
                  id="mobile-nav-home">
                 <span class="ms-2 me-3"><i class="fa-solid fa-house"></i></span>Home
               </a>
-              <a class="btn w-100 px-2" href="/backstage/posts" id="mobile-nav-posts">
-                <span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Posts
+              <a class="btn w-100 px-2"
+                 href="/backstage/articles"
+                 id="mobile-nav-articles">
+                <span class="ms-2 me-3"><i class="fa-solid fa-pen-to-square"></i></span>Articles
               </a>
               {% if user.gallery_enabled %}
                 <a class="btn w-100 px-2"id="mobile-nav-gallery">

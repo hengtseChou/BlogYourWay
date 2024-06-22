@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}{{ post.title }}{% endblock %}
+{% block title %}{{ article.title }}{% endblock %}
 {%
 block meta_tags %}
-<meta name="description" content="{{ post['subtitle'] }}" />
-<meta property="og:image" content="{{ post['cover_url'] }}" />
+<meta name="description" content="{{ article['subtitle'] }}" />
+<meta property="og:image" content="{{ article['cover_url'] }}" />
 {% endblock %}
 {% block head %}
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -47,17 +47,17 @@ block meta_tags %}
   {% include 'navbar.html' %}
   <div class="my-5 row"></div>
   <div class="my-3 row"></div>
-  <!-- post starts -->
+  <!-- article starts -->
   <div class="container">
     <div class="row mt-4 mt-md-5">
       <div class="col-lg-8 col-md-10 col-12 mx-auto px-4">
-        <h1 class="text-start fw-bold">{{ post.title }}</h1>
-        <h3 class="text-start grey-text mt-3">{{ post.subtitle }}</h3>
+        <h1 class="text-start fw-bold">{{ article.title }}</h1>
+        <h3 class="text-start grey-text mt-3">{{ article.subtitle }}</h3>
         <!-- info row -->
         <div class="d-inline-flex">
           <div class="row mt-3">
             <div class="col-1" style="width: 3rem">
-              <a href="/@{{ post.author }}/about">
+              <a href="/@{{ article.author }}/about">
                 {% if user.profile_img_url|length == 0 %}
                   <img class="profile-md"
                        src="/static/img/default-profile.png"
@@ -69,31 +69,31 @@ block meta_tags %}
             </div>
             <div class="col mt-1 ms-2">
               <div style="line-height: 125%">
-                <span class="grey-text">Updated at {{ post.last_updated }}&nbsp;&nbsp;·&nbsp;&nbsp;{{
-                  post.readtime }}
+                <span class="grey-text">Updated at {{ article.last_updated
+                  }}&nbsp;&nbsp;·&nbsp;&nbsp;{{ article.readtime }}
                   <br />
                 By</span>
-                <a class="author-link ms-1" href="/@{{ post.author }}/about">{{ post.author }}</a>
+                <a class="author-link ms-1" href="/@{{ article.author }}/about">{{ article.author }}</a>
               </div>
             </div>
           </div>
         </div>
         <!-- cover -->
         <figure class="figure cover mt-3">
-          <img src="{{ post.cover_url }}"
+          <img src="{{ article.cover_url }}"
                class="figure-img img-fluid rounded"
                alt="" />
-          <!-- <figcaption class="cover-caption">{{ post.title }}</figcaption> -->
+          <!-- <figcaption class="cover-caption">{{ article.title }}</figcaption> -->
         </figure>
         <!-- content start -->
-        <div class="mb-3 px-2">{{ post.content | safe }}</div>
+        <div class="mb-3 px-2">{{ article.content | safe }}</div>
         <!-- tag start -->
         <div class="d-flex align-items-center mb-4"
              style="color: #646464;
                     font-size: large">
           <span><i class="fa-solid fa-tags"></i></span>
-          {% for tag in post.tags %}
-            {% set tag_link = '/@'~ post.author ~
+          {% for tag in article.tags %}
+            {% set tag_link = '/@'~ article.author ~
                         '/tags?tag=' ~ tag %}
             <a href="{{ tag_link }}">
               <span class="badge badge-custom ms-2">{{ tag }}</span>

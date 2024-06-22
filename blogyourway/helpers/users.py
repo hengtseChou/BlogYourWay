@@ -1,10 +1,10 @@
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 import bcrypt
-from flask import Request, flash, render_template
+from flask import Request, flash
 from flask_login import UserMixin
 
 from blogyourway.config import ENV
@@ -158,19 +158,19 @@ class UserDeletionSetup:
         self._logger = logger
 
     def _get_posts_uid_by_user(self) -> list:
-        target_posts = self._db_handler.post_info.find({"author": self._user_to_be_deleted})
-        target_posts_uid = [post.get("post_uid") for post in target_posts]
+        target_posts = self._db_handler.article_info.find({"author": self._user_to_be_deleted})
+        target_posts_uid = [post.get("article_uid") for post in target_posts]
 
         return target_posts_uid
 
     def _remove_all_posts(self):
-        self._db_handler.post_info.delete_many({"author": self._user_to_be_deleted})
-        self._db_handler.post_content.delete_many({"author": self._user_to_be_deleted})
+        self._db_handler.article_info.delete_many({"author": self._user_to_be_deleted})
+        self._db_handler.article_content.delete_many({"author": self._user_to_be_deleted})
         self._logger.debug(f"Deleted all posts written by user {self._user_to_be_deleted}.")
 
-    def _remove_all_related_comments(self, post_uids: list):
-        for post_uid in post_uids:
-            self._db_handler.comment.delete_many({"post_uid": post_uid})
+    def _remove_all_related_comments(self, article_uids: list):
+        for article_uid in article_uids:
+            self._db_handler.comment.delete_many({"article_uid": article_uid})
         self._logger.debug(f"Deleted relevant comments from user {self._user_to_be_deleted}.")
 
     def _remove_all_user_data(self):

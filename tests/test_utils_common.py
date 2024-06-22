@@ -246,22 +246,22 @@ class TestFormValidatorBlogname:
 
 class TestUIDGenerator:
     @patch("random.choices", side_effect=["postuid1"])
-    def test_generate_post_uid(self, mock_random_choices):
+    def test_generate_article_uid(self, mock_random_choices):
 
         db_handler = MagicMock()
         db_handler.post_info.exists.side_effect = [False]
         uid_generator = UIDGenerator(db_handler)
-        generated_uid = uid_generator.generate_post_uid()
+        generated_uid = uid_generator.generate_article_uid()
 
         assert generated_uid == "postuid1"
 
     @patch("random.choices", side_effect=[["postuid1"], ["postuid2"]])
-    def test_generate_another_post_uid_if_exists(self, mock_random_choices):
+    def test_generate_another_article_uid_if_exists(self, mock_random_choices):
 
         db_handler = MagicMock()
         db_handler.post_info.exists.side_effect = [True, False]
         uid_generator = UIDGenerator(db_handler)
-        generated_uid = uid_generator.generate_post_uid()
+        generated_uid = uid_generator.generate_article_uid()
 
         assert generated_uid == "postuid2"
 

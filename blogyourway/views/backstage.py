@@ -3,7 +3,7 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 from flask_login import current_user, login_required, logout_user
 
 from blogyourway.helpers.common import string_truncate, switch_to_bool
-from blogyourway.helpers.posts import create_post, paging, post_utils, update_post
+from blogyourway.helpers.posts import article_utils, create_article, paging, update_post
 from blogyourway.helpers.users import user_utils
 from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
@@ -17,7 +17,7 @@ def backstage_root():
     return redirect(url_for("backstage.post_control"))
 
 
-@backstage.route("/posts", methods=["GET", "POST"])
+@backstage.route("/articles", methods=["GET", "POST"])
 @login_required
 def post_control():
     ###################################################################
@@ -26,8 +26,8 @@ def post_control():
 
     ###################################################################
 
-    session["user_current_tab"] = "posts"
-    logger_utils.backstage(username=current_user.username, tab="posts")
+    session["user_current_tab"] = "articles"
+    logger_utils.backstage(username=current_user.username, tab="articles")
 
     ###################################################################
 
@@ -40,26 +40,28 @@ def post_control():
 
     if request.method == "POST":
         # logging for this is inside the create post function
-        post_uid = create_post(request)
-        if post_uid is not None:
-            logger.debug(f"post {post_uid} has been created.")
+        article_uid = create_article(request)
+        if article_uid is not None:
+            logger.debug(f"post {article_uid} has been created.")
             flash("New post published successfully!", category="success")
 
-    # query through posts
-    # 20 posts for each page
-    POSTS_EACH_PAGE = 20
-    pagination = paging.setup(current_user.username, current_page, POSTS_EACH_PAGE)
-    posts = post_utils.find_posts_with_pagination(
-        username=current_user.username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
+    # query through articles
+    # 20 articles for each page
+    ARTICLES_EACH_PAGE = 20
+    pagination = paging.setup(current_user.username, current_page, ARTICLES_EACH_PAGE)
+    articles = article_utils.find_articles_with_pagination(
+        username=current_user.username,
+        page_number=current_page,
+        articles_per_page=ARTICLES_EACH_PAGE,
     )
-    for post in posts:
-        post["title"] = string_truncate(post.get("title"), 30)
-        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
-        post["views"] = format(post.get("views"), ",")
-        comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
-        post["comments"] = format(comment_count, ",")
+    for article in articles:
+        article["title"] = string_truncate(article.get("title"), 30)
+        article["created_at"] = article.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
+        article["views"] = format(article.get("views"), ",")
+        comment_count = mongodb.comment.count_documents({"article_uid": article.get("article_uid")})
+        article["comments"] = format(comment_count, ",")
 
-    logger_utils.pagination(tab="posts", num_of_posts=len(posts))
+    logger_utils.pagination(tab="articles", num_of_articles=len(articles))
 
     ###################################################################
 
@@ -67,12 +69,12 @@ def post_control():
 
     ###################################################################
 
-    return render_template("posts.html", user=user, posts=posts, pagination=pagination)
+    return render_template("posts.html", user=user, articles=articles, pagination=pagination)
 
 
-@backstage.route("/edit/posts/<post_uid>", methods=["GET"])
+@backstage.route("/edit/articles/<article_uid>", methods=["GET"])
 @login_required
-def edit_post_get(post_uid):
+def edit_post_get(article_uid):
     ###################################################################
 
     # status control / early returns
@@ -88,8 +90,8 @@ def edit_post_get(post_uid):
     ###################################################################
 
     user = mongodb.user_info.find({"username": current_user.username})
-    target_post = post_utils.get_full_post(post_uid)
-    target_post["tags"] = ", ".join(target_post.get("tags"))
+    target_article = article_utils.get_full_article(article_uid)
+    target_article["tags"] = ", ".join(target_article.get("tags"))
 
     ###################################################################
 
@@ -97,24 +99,24 @@ def edit_post_get(post_uid):
 
     ###################################################################
 
-    return render_template("edit-post.html", post=target_post, user=user)
+    return render_template("edit-post.html", article=target_article, user=user)
 
 
-@backstage.route("/edit/posts/<post_uid>", methods=["POST"])
+@backstage.route("/edit/posts/<article_uid>", methods=["POST"])
 @login_required
-def edit_post_post(post_uid):
+def edit_post_post(article_uid):
     ###################################################################
 
     # main actions
 
     ###################################################################
 
-    update_post(post_uid, request)
-    logger.debug(f"post {post_uid} is updated.")
-    truncated_post_title = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+    update_post(article_uid, request)
+    logger.debug(f"post {article_uid} is updated.")
+    title_truncated = string_truncate(
+        mongodb.article_info.find_one({"article_uid": article_uid}).get("title"), max_len=20
     )
-    flash(f'Your post "{truncated_post_title}" has been updated!', category="success")
+    flash(f'Your article "{title_truncated}" has been updated!', category="success")
 
     ###################################################################
 
@@ -140,29 +142,31 @@ def edit_featured():
 
     ###################################################################
 
-    post_uid = request.args.get("uid")
+    article_uid = request.args.get("uid")
     truncated_post_title = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+        mongodb.article_info.find_one({"article_uid": article_uid}).get("title"), max_len=20
     )
 
     if request.args.get("featured") == "to_true":
         updated_featured_status = True
         flash(
-            f'Your post "{truncated_post_title}" is now featured on the home page!',
+            f'Your article "{truncated_post_title}" is now featured on the home page!',
             category="success",
         )
 
     else:
         updated_featured_status = False
         flash(
-            f'Your post "{truncated_post_title}" is now removed from the home page!',
+            f'Your article "{truncated_post_title}" is now removed from the home page!',
             category="success",
         )
 
-    mongodb.post_info.update_values(
-        filter={"post_uid": post_uid}, update={"featured": updated_featured_status}
+    mongodb.article_info.update_values(
+        filter={"article_uid": article_uid}, update={"featured": updated_featured_status}
     )
-    logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}")
+    logger.debug(
+        f"featuring status for article {article_uid} is now set to {updated_featured_status}"
+    )
 
     ###################################################################
 
@@ -188,24 +192,26 @@ def edit_archived():
 
     ###################################################################
 
-    post_uid = request.args.get("uid")
-    truncated_post_title = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+    article_uid = request.args.get("uid")
+    title_truncated = string_truncate(
+        mongodb.article_info.find_one({"article_uid": article_uid}).get("title"), max_len=20
     )
     if request.args.get("archived") == "to_true":
         updated_archived_status = True
-        flash(f'Your post "{truncated_post_title}" is now archived!', category="success")
+        flash(f'Your article "{title_truncated}" is now archived!', category="success")
     else:
         updated_archived_status = False
         flash(
-            f'Your post "{truncated_post_title}" is now restored from the archive!',
+            f'Your article "{title_truncated}" is now restored from the archive!',
             category="success",
         )
 
-    mongodb.post_info.update_values(
-        filter={"post_uid": post_uid}, update={"archived": updated_archived_status}
+    mongodb.article_info.update_values(
+        filter={"article_uid": article_uid}, update={"archived": updated_archived_status}
     )
-    logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
+    logger.debug(
+        f"archive status for article {article_uid} is now set to {updated_archived_status}"
+    )
 
     ###################################################################
 
@@ -213,7 +219,7 @@ def edit_archived():
 
     ###################################################################
 
-    if session["user_current_tab"] == "posts":
+    if session["user_current_tab"] == "articles":
         return redirect(url_for("backstage.post_control"))
 
     elif session["user_current_tab"] == "archive":
@@ -303,14 +309,14 @@ def archive_control():
     ###################################################################
 
     user = mongodb.user_info.find_one({"username": current_user.username})
-    posts = post_utils.find_all_archived_posts_info(current_user.username)
-    for post in posts:
-        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
-        post["views"] = format(post.get("views"), ",")
-        comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
-        post["comments"] = format(comment_count, ",")
+    articles = article_utils.find_all_archived_articles_info(current_user.username)
+    for article in articles:
+        article["created_at"] = article.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
+        article["views"] = format(article.get("views"), ",")
+        comment_count = mongodb.comment.count_documents({"article_uid": article.get("article_uid")})
+        article["comments"] = format(comment_count, ",")
 
-    logger_utils.pagination(tab="archive", num_of_posts=len(posts))
+    logger_utils.pagination(tab="archive", num_of_articles=len(articles))
 
     ###################################################################
 
@@ -318,10 +324,10 @@ def archive_control():
 
     ###################################################################
 
-    return render_template("archive.html", user=user, posts=posts)
+    return render_template("archive.html", user=user, articles=articles)
 
 
-@backstage.route("/delete/post", methods=["GET"])
+@backstage.route("/delete/article", methods=["GET"])
 @login_required
 def delete_post():
     ###################################################################
@@ -330,7 +336,7 @@ def delete_post():
 
     ###################################################################
 
-    post_uid = request.args.get("uid")
+    article_uid = request.args.get("uid")
 
     ###################################################################
 
@@ -338,13 +344,13 @@ def delete_post():
 
     ###################################################################
 
-    truncated_post_title = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+    title_truncated = string_truncate(
+        mongodb.article_info.find_one({"article_uid": article_uid}).get("title"), max_len=20
     )
-    mongodb.post_info.delete_one({"post_uid": post_uid})
-    mongodb.post_content.delete_one({"post_uid": post_uid})
-    logger.debug(f"post {post_uid} has been deleted")
-    flash(f'Your post "{truncated_post_title}" has been deleted!', category="success")
+    mongodb.article_info.delete_one({"article_uid": article_uid})
+    mongodb.article_content.delete_one({"article_uid": article_uid})
+    logger.debug(f"post {article_uid} has been deleted")
+    flash(f'Your post "{title_truncated}" has been deleted!', category="success")
 
     ###################################################################
 

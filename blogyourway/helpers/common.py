@@ -132,7 +132,7 @@ class UIDGenerator:
             if not self._db_handler.comment.exists("comment_uid", comment_uid):
                 return comment_uid
 
-    def generate_post_uid(self) -> str:
+    def generate_article_uid(self) -> str:
         """look into the post database and give a unique id for new post
 
         Returns:
@@ -140,9 +140,9 @@ class UIDGenerator:
         """
         alphabet = string.ascii_lowercase + string.digits
         while True:
-            post_uid = "".join(random.choices(alphabet, k=8))
-            if not self._db_handler.post_info.exists("post_uid", post_uid):
-                return post_uid
+            article_uid = "".join(random.choices(alphabet, k=8))
+            if not self._db_handler.article_info.exists("article_uid", article_uid):
+                return article_uid
 
 
 ###################################################################

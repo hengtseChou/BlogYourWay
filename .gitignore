@@ -3,6 +3,7 @@
 *.pyc
 *.log
 requirements_debug.txt
+db-reset.sh
 # folder
 __pycache__/
 .venv/

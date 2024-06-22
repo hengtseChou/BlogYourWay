@@ -23,8 +23,8 @@ function fetchReplacementImage(imgElement) {
 }
 
 function sendReadCountRequest() {
-  fetch("/readcount-increment?post_uid={{ post.post_uid }}").catch((error) =>
-    console.error(`Error incrementing read count: ${error}`),
+  fetch("/readcount-increment?article_uid={{ post.article_uid }}").catch(
+    (error) => console.error(`Error incrementing read count: ${error}`),
   );
 }
 

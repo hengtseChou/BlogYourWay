@@ -8,7 +8,7 @@ from markdown import Markdown
 
 from blogyourway.helpers.comments import comment_utils, create_comment
 from blogyourway.helpers.common import sort_dict
-from blogyourway.helpers.posts import html_to_about, html_to_blogpost, paging, post_utils
+from blogyourway.helpers.posts import article_utils, html_to_about, html_to_article, paging
 from blogyourway.helpers.users import user_utils
 from blogyourway.services import logger, logger_utils, mongodb, sitemapper
 
@@ -178,7 +178,7 @@ def home(username):
     ###################################################################
 
     user = mongodb.user_info.find_one({"username": username})
-    featured_posts = post_utils.find_featured_posts_info(username)
+    featured_articles = article_utils.find_featured_articles_info(username)
 
     ###################################################################
 
@@ -194,7 +194,7 @@ def home(username):
 
     ###################################################################
 
-    return render_template("home.html", user=user, posts=featured_posts)
+    return render_template("home.html", user=user, articles=featured_articles)
 
 
 @sitemapper.include(url_variables={"username": user_utils.get_all_username()})
@@ -228,13 +228,13 @@ def tag(username):
 
     ###################################################################
 
-    posts = post_utils.find_all_posts_info(username)
+    articles = article_utils.find_all_articles_info(username)
 
-    posts_with_desired_tag = []
-    for post in posts:
-        if tag in post.get("tags"):
-            post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
-            posts_with_desired_tag.append(post)
+    articles_with_desired_tag = []
+    for article in articles:
+        if tag in article.get("tags"):
+            article["created_at"] = article.get("created_at").strftime("%Y-%m-%d")
+            articles_with_desired_tag.append(article)
 
     ###################################################################
 
@@ -250,17 +250,17 @@ def tag(username):
 
     ###################################################################
 
-    return render_template("tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag)
+    return render_template("tag.html", user=user_info, articles=articles_with_desired_tag, tag=tag)
 
 
 @sitemapper.include(
     url_variables={
-        "username": post_utils.get_all_author(),
-        "post_uid": post_utils.get_all_post_uid(),
+        "username": article_utils.get_all_author(),
+        "article_uid": article_utils.get_all_article_uid(),
     }
 )
-@blog.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
-def post(username, post_uid):
+@blog.route("/@<username>/articles/<article_uid>", methods=["GET", "POST"])
+def post(username, article_uid):
     ###################################################################
 
     # early return for invalid inputs
@@ -270,13 +270,13 @@ def post(username, post_uid):
     if not mongodb.user_info.exists("username", username):
         logger.debug(f"invalid username {username}")
         abort(404)
-    if not mongodb.post_info.exists("post_uid", post_uid):
-        logger.debug(f"invalid post uid {post_uid}")
+    if not mongodb.article_info.exists("article_uid", article_uid):
+        logger.debug(f"invalid article uid {article_uid}")
         abort(404)
 
-    author = mongodb.post_info.find_one({"post_uid": post_uid}).get("author")
+    author = mongodb.article_info.find_one({"article_uid": article_uid}).get("author")
     if username != author:
-        logger.debug(f"User {username} does not own post {post_uid}.")
+        logger.debug(f"User {username} does not own article {article_uid}.")
         abort(404)
 
     ###################################################################
@@ -286,23 +286,23 @@ def post(username, post_uid):
     ###################################################################
 
     author_info = mongodb.user_info.find_one({"username": username})
-    target_post = post_utils.get_full_post(post_uid)
+    target_article = article_utils.get_full_article(article_uid)
 
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
-    target_post["content"] = md.convert(target_post.get("content"))
-    target_post["content"] = html_to_blogpost(target_post.get("content"))
-    target_post["last_updated"] = target_post["last_updated"].strftime("%B %d, %Y")
-    target_post["readtime"] = str(readtime.of_html(target_post.get("content")))
+    target_article["content"] = md.convert(target_article.get("content"))
+    target_article["content"] = html_to_article(target_article.get("content"))
+    target_article["last_updated"] = target_article["last_updated"].strftime("%B %d, %Y")
+    target_article["readtime"] = str(readtime.of_html(target_article.get("content")))
 
     # add comments
     # this section should be placed before finding comments to show on the postu'1 min read'
     if request.method == "POST":
-        create_comment(post_uid, request)
+        create_comment(article_uid, request)
         flash("Comment published!", category="success")
 
     # find comments
     # oldest to newest comment
-    comments = comment_utils.find_comments_by_post_uid(post_uid)
+    comments = comment_utils.find_comments_by_article_uid(article_uid)
     for comment in comments:
         comment["created_at"] = comment.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
 
@@ -313,7 +313,7 @@ def post(username, post_uid):
     ###################################################################
 
     logger_utils.page_visited(request)
-    post_utils.view_increment(post_uid)
+    article_utils.view_increment(article_uid)
 
     ###################################################################
 
@@ -321,7 +321,7 @@ def post(username, post_uid):
 
     ###################################################################
 
-    return render_template("post.html", user=author_info, post=target_post, comments=comments)
+    return render_template("post.html", user=author_info, article=target_article, comments=comments)
 
 
 @blog.route("/readcount-increment", methods=["GET"])
@@ -332,8 +332,8 @@ def readcount_increment():
 
     ###################################################################
 
-    post_uid = request.args.get("post_uid", type=str)
-    post_utils.read_increment(post_uid)
+    article_uid = request.args.get("article_uid", type=str)
+    article_utils.read_increment(article_uid)
 
     ###################################################################
 
@@ -408,15 +408,15 @@ def blog_page(username):
 
     # set up pagination
     current_page = request.args.get("page", default=1, type=int)
-    POSTS_EACH_PAGE = 5
-    pagination = paging.setup(username, current_page, POSTS_EACH_PAGE)
+    ARTICLES_EACH_PAGE = 5
+    pagination = paging.setup(username, current_page, ARTICLES_EACH_PAGE)
 
-    # skip and limit posts with given page
-    posts = post_utils.find_posts_with_pagination(
-        username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
+    # skip and limit articles with given page
+    articles = article_utils.find_articles_with_pagination(
+        username=username, page_number=current_page, articles_per_page=ARTICLES_EACH_PAGE
     )
-    for post in posts:
-        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
+    for article in articles:
+        article["created_at"] = article.get("created_at").strftime("%Y-%m-%d")
 
     # user info
     user_info = user_utils.get_user_info(username)
@@ -437,7 +437,7 @@ def blog_page(username):
     ###################################################################
 
     return render_template(
-        "blog.html", user=user_info, posts=posts, tags=tags, pagination=pagination
+        "blog.html", user=user_info, articles=articles, tags=tags, pagination=pagination
     )
 
 
