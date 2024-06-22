@@ -26,6 +26,12 @@ handle_css_files() {
     git add "$1"
 }
 
+handle_js_files() {
+    echo "[pre-commit]: formatting $1..."
+    prettier "$1" -w --log-level silent
+    git add "$1"
+}
+
 # Read git diff output line by line
 while read -r line; do
     # Get file status and name
@@ -45,9 +51,12 @@ while read -r line; do
         *.css)
             handle_css_files "$file_name"
             ;;
+        *.js)
+            handle_js_files "$file_name"
+            ;;
         esac
     fi
-done < <(git diff --cached --name-status | grep -E '\.(py|html|css)$')
+done < <(git diff --cached --name-status | grep -E '\.(py|html|css|js)$')
 
 if [ "$reformat" == "true" ]; then
     echo "[pre-commit]: done"
