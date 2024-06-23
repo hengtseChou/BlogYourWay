@@ -1,33 +1,5 @@
 {% extends 'base.html' %}
-{% block head %}
-  <style>
-    body {
-      background-color: #f5f5f5;
-    }
-    
-    .card {
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      padding: 30px;
-      border-radius: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .branding {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .branding img {
-      max-height: 36px; /* Adjust based on your logo size */
-      margin-right: 10px;
-    }
-  </style>
-{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/login.css">{% endblock %}
 {% block title %}Login · BlogYourWay{% endblock %}
 {% block body %}
   <div class="container-fluid" style="margin-top: calc(100vh * 0.2);">
@@ -37,7 +9,7 @@
           <div class="card-body">
             <div class="container mb-4">
               <div class="row justify-content-center">
-                <div class="me-auto col-auto branding">
+                <div class="me-auto col-auto logo">
                   <img src="/static/img/logo.png" alt="Logo">
                   <h3 class="fw-bold pt-2">BlogYourWay</h3>
                 </div>
@@ -62,7 +34,7 @@
                              border: 0px">Login</button>
             </form>
             <div class="text-center mt-4">
-              Don't have an account? <a href="/register">Register</a>
+              Don't have an account? <a href="/signup">Sign Up</a>
             </div>
           </div>
         </div>
