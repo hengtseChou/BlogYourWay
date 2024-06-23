@@ -131,8 +131,8 @@ def login_post():
     return redirect(url_for("frontstage.home", username=username))
 
 
-@frontstage.route("/register", methods=["GET"])
-def register_get():
+@frontstage.route("/signup", methods=["GET"])
+def signup_get():
     ###################################################################
 
     # logging / metrics
@@ -147,11 +147,11 @@ def register_get():
 
     ###################################################################
 
-    return render_template("register.html")
+    return render_template("signup.html")
 
 
-@frontstage.route("/register", methods=["POST"])
-def register_post():
+@frontstage.route("/signup", methods=["POST"])
+def signup_post():
     ###################################################################
 
     # main actions
@@ -160,13 +160,13 @@ def register_post():
 
     new_user = user_utils.create_user(request=request)
     if new_user is not None:
-        flash("Registration succeeded.", category="success")
+        flash("Sign up succeeded.", category="success")
         user_info = user_utils.get_user_info(new_user)
         login_user(user_info)
         return redirect(url_for("frontstage.home", username=new_user))
 
     else:
-        return render_template("register.html")
+        return render_template("signup.html")
 
     ###################################################################
 

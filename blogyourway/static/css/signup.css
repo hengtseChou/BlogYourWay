@@ -2,12 +2,12 @@ body {
   background-color: #f5f5f5;
 }
 
-.branding {
+.logo {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.branding img {
+.logo img {
   max-height: 36px; /* Adjust based on your logo size */
   margin-right: 10px;
 }

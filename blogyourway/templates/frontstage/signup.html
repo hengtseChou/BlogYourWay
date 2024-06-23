@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% block head %}<link rel="stylesheet" href="/static/css/register.css" />{% endblock %}
-{% block title %}Create an Account · BlogYourWay{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/signup.css" />{% endblock %}
+{% block title %}Sign Up · BlogYourWay{% endblock %}
 {%
 block body %}
 <div class="container-fluid" style="margin-top: calc(100vh * 0.2)">
@@ -10,13 +10,13 @@ block body %}
         <div class="card-body">
           <div class="container mb-4">
             <div class="row justify-content-center">
-              <div class="me-auto col-auto branding">
+              <div class="me-auto col-auto logo">
                 <img src="/static/img/logo.png" alt="Logo" />
                 <h3 class="fw-bold pt-2">BlogYourWay</h3>
               </div>
             </div>
           </div>
-          <h5 class="text-center my-4">Register</h5>
+          <h5 class="text-center my-4">Sign Up</h5>
           <div class="input-group mb-4">
             <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
             <input type="email"
@@ -53,7 +53,7 @@ block body %}
         <div class="card-body">
           <div class="container mb-4">
             <div class="row justify-content-center">
-              <div class="me-auto col-auto branding">
+              <div class="me-auto col-auto logo">
                 <img src="/static/img/logo.png" alt="Logo" />
                 <h3 class="fw-bold pt-2">BlogYourWay</h3>
               </div>
@@ -99,4 +99,4 @@ block body %}
   </div>
 </div>
 {% endblock %}
-{% block script %}<script src="/static/js/frontstage/register.js"></script>{% endblock %}
+{% block script %}<script src="/static/js/frontstage/signup.js"></script>{% endblock %}
