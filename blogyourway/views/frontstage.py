@@ -20,6 +20,11 @@ frontstage = Blueprint("frontstage", __name__, template_folder="../templates/fro
 #     return {"RECAPTCHA_KEY": RECAPTCHA_KEY}
 
 
+@frontstage.context_processor
+def inject_env_var():
+    return {"RECAPTCHA_KEY": RECAPTCHA_KEY}
+
+
 @sitemapper.include(priority=1)
 @frontstage.route("/", methods=["GET"])
 def landing_page():
