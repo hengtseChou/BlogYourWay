@@ -1,4 +1,4 @@
-const mobileNavBtn = document.getElementById("mobile-nav-articles");
+const mobileNavBtn = document.getElementById("mobile-nav-posts");
 mobileNavBtn.style.color = "white";
 
 const easyMDE = new EasyMDE({
@@ -27,24 +27,24 @@ const easyMDE = new EasyMDE({
   minHeight: "200px",
   spellChecker: false,
 });
-easyMDE.value(articleContent);
+easyMDE.value(postContent);
 
 function validateUpdate() {
   var title = document.getElementById("title").value;
   if (title.trim() === "") {
-    alert("You must enter the title for the article.");
+    alert("You must enter the title for the post.");
     return false;
   }
 
   var subtitle = document.getElementById("subtitle").value;
   if (subtitle.trim() === "") {
-    alert("Add a short description for this article as a subtitle.");
+    alert("Add a short description for this post as a subtitle.");
     return false;
   }
 
   var tags = document.getElementById("tags").value;
   if (tags.trim() === "") {
-    alert("You must add one tag to the article at least.");
+    alert("You must add one tag to the post at least.");
     return false;
   }
   const tagRegex =
@@ -56,7 +56,7 @@ function validateUpdate() {
 
   var cover = document.getElementById("cover").value;
   if (cover.trim() === "") {
-    alert("You must add a cover image for the article.");
+    alert("You must add a cover image for the post.");
     return false;
   }
 

@@ -1,4 +1,4 @@
-const mobileNavBtn = document.getElementById("mobile-nav-articles");
+const mobileNavBtn = document.getElementById("mobile-nav-posts");
 mobileNavBtn.style.color = "white";
 
 const tooltipTriggerList = document.querySelectorAll(
@@ -47,19 +47,19 @@ document.addEventListener("DOMContentLoaded", function () {
 function validateNewPost() {
   var title = document.getElementById("title").value;
   if (title.trim() === "") {
-    alert("You must enter the title for the article.");
+    alert("You must enter the title for the post.");
     return false;
   }
 
   var subtitle = document.getElementById("subtitle").value;
   if (subtitle.trim() === "") {
-    alert("Add a short description for this article as a subtitle.");
+    alert("Add a short description for this post as a subtitle.");
     return false;
   }
 
   var tags = document.getElementById("tags").value;
   if (tags.trim() === "") {
-    alert("You must add one tag to the article at least.");
+    alert("You must add one tag to the post at least.");
     return false;
   }
   const tagRegex = /^[\u4e00-\u9fa5a-zA-Z\s]+(,\s*[\u4e00-\u9fa5a-zA-Z\s]+)*$/;
@@ -70,12 +70,12 @@ function validateNewPost() {
 
   var cover = document.getElementById("cover").value;
   if (cover.trim() === "") {
-    alert("You must add a cover image for the article.");
+    alert("You must add a cover image for the post.");
     return false;
   }
 
   if (easyMDE.value().trim() === "") {
-    alert("You did not write anything for your article!");
+    alert("You did not write anything for your post!");
     return false;
   }
 

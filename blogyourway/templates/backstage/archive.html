@@ -8,9 +8,9 @@
     </div>
     <hr />
     <!-- description -->
-    <p class="ms-2">Articles and works archived will not be seen in your website.</p>
+    <p class="ms-2">Posts and works archived will not be seen in your website.</p>
     <!-- description ends -->
-    {% if articles | length == 0 %}
+    {% if posts | length == 0 %}
       <p class="ms-2">You don't have any archive right now.</p>
     {% else %}
       <div class="col-11">
@@ -29,15 +29,15 @@
             </tr>
           </thead>
           <tbody>
-            {% for article in articles %}
+            {% for post in posts %}
               <tr>
-                <!-- to-do: add article's link to article's title -->
-                <td>{{ article['title'] }}</td>
-                <td>{{ article['created_at'] }}</td>
-                <td class="text-center">{{ article['views'] }}</td>
-                <td class="text-center">{{ article['comments'] }}</td>
+                <!-- to-do: add post's link to post's title -->
+                <td>{{ post['title'] }}</td>
+                <td>{{ post['created_at'] }}</td>
+                <td class="text-center">{{ post['views'] }}</td>
+                <td class="text-center">{{ post['comments'] }}</td>
                 <td class="text-center">
-                  <a href="/backstage/edit-archived?archived=to_false&uid={{ article.article_uid }}"
+                  <a href="/backstage/edit-archived?archived=to_false&uid={{ post.post_uid }}"
                      style="color: black;
                             font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
                 </td>
@@ -45,8 +45,8 @@
                   <a href="#"
                      style="color: black;
                             font-size: 18px"
-                     class="delete-article-btn"
-                     data-article-uid="{{ article.article_uid }}"
+                     class="delete-post-btn"
+                     data-post-uid="{{ post.post_uid }}"
                      data-bs-toggle="modal"
                      data-bs-target="#deleteConfirmationModal"><i class="fa-solid fa-trash-can"></i></a>
                 </td>
@@ -62,24 +62,24 @@
     <h2 class="ms-2 my-3">Archive</h2>
     <hr />
     <p class="ms-2">Posts and works archived will not be seen in your website.</p>
-    {% for article in articles %}
+    {% for post in posts %}
       <div class="card rounded-0 py-2 overflow-visible my-3">
         <div class="card-body">
           <div class="row">
             <div class="col-10">
               <div class="text-truncate">
-                <a href="articles/edit/{{ article.article_uid }}" style="color: black">{{ article['title'] }}</a>
+                <a href="posts/edit/{{ post.post_uid }}" style="color: black">{{ post['title'] }}</a>
               </div>
-              <p style="font-size: small; font-style: italic" class="grey-text mb-2">Created at {{ article['created_at'] }}</p>
+              <p style="font-size: small; font-style: italic" class="grey-text mb-2">Created at {{ post['created_at'] }}</p>
               <div>
-                {% if article['featured'] %}
+                {% if post['featured'] %}
                   <button class="btn btn-sm btn-success rounded-4 me-2"
                           data-bs-toggle="tooltip"
                           data-bs-placement="top"
-                          data-bs-title="Featured articles will be on your home page">Featured</button>
+                          data-bs-title="Featured posts will be on your home page">Featured</button>
                 {% endif %}
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ article['views'] }}</span>
-                <span><i class="fa-regular fa-comment me-2"></i>{{ article['comments'] }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['views'] }}</span>
+                <span><i class="fa-regular fa-comment me-2"></i>{{ post['comments'] }}</span>
               </div>
             </div>
             <div class="col-2">
@@ -92,12 +92,12 @@
                 <ul class="dropdown-menu">
                   <li>
                     <a class="dropdown-item"
-                       href="/backstage/edit-archived?archived=to_false&uid={{ article.article_uid }}">Restore</a>
+                       href="/backstage/edit-archived?archived=to_false&uid={{ post.post_uid }}">Restore</a>
                   </li>
                   <li>
-                    <a class="dropdown-item delete-article-btn"
+                    <a class="dropdown-item delete-post-btn"
                        href="#"
-                       data-article-uid="{{ article.article_uid }}"
+                       data-post-uid="{{ post.post_uid }}"
                        data-bs-toggle="modal"
                        data-bs-target="#deleteConfirmationModal">Delete</a>
                   </li>
@@ -124,10 +124,10 @@
                   data-bs-dismiss="modal"
                   aria-label="Close"></button>
         </div>
-        <div class="modal-body">Are you sure you want to delete this article?</div>
+        <div class="modal-body">Are you sure you want to delete this post?</div>
         <div class="modal-footer">
           <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
-          <a href="#" id="deleteArticleBtn" class="btn delete-btn">Delete</a>
+          <a href="#" id="deletePostBtn" class="btn delete-btn">Delete</a>
         </div>
       </div>
     </div>

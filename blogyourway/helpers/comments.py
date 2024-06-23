@@ -27,7 +27,7 @@ class Comment(MyDataClass):
     email: str
     profile_link: str = field(init=False)
     profile_img_url: str = field(init=False)
-    article_uid: str
+    post_uid: str
     comment_uid: str
     comment: str
     created_at: datetime = field(default=get_today(env=ENV))
@@ -42,7 +42,7 @@ class AnonymousComment(MyDataClass):
     name: str
     email: str
     profile_link: str = field(default="", init=False)
-    article_uid: str
+    post_uid: str
     comment_uid: str
     comment: str
     profile_img_url: str = "/static/img/visitor.png"
@@ -58,7 +58,7 @@ class NewCommentSetup:
 
     Args:
     - request_ (Request): the https request received.
-    - article_uid (str): the post uid which the comment is associated with.
+    - post_uid (str): the post uid which the comment is associated with.
     - comment_uid_generator (UIDGenerator): the dependent uid generator.
     - db_handler (MyDatabase): database.
     - commenter_name (str): pass the plain text commenter name.
@@ -87,7 +87,7 @@ class NewCommentSetup:
             return True
         return False
 
-    def create_comment(self, article_uid: str, request: Request) -> None:
+    def create_comment(self, post_uid: str, request: Request) -> None:
         validator = FormValidator()
         if not self._form_validated(request, validator):
             return
@@ -98,7 +98,7 @@ class NewCommentSetup:
             new_comment = Comment(
                 name=current_user.username,
                 email=current_user.email,
-                article_uid=article_uid,
+                post_uid=post_uid,
                 comment_uid=self._comment_uid,
                 comment=request.form.get("comment"),
             )
@@ -106,7 +106,7 @@ class NewCommentSetup:
             new_comment = AnonymousComment(
                 name=f'{request.form.get("name")} (Visitor)',
                 email=request.form.get("email"),
-                article_uid=article_uid,
+                post_uid=post_uid,
                 comment_uid=self._comment_uid,
                 comment=request.form.get("comment"),
             )
@@ -115,18 +115,18 @@ class NewCommentSetup:
         self._db_handler.comment.insert_one(new_comment)
 
 
-def create_comment(article_uid: str, request: Request) -> None:
+def create_comment(post_uid: str, request: Request) -> None:
     """initialize a new comment setup instance, process the request and upload new comment.
 
     Args:
-        article_uid (str): the post uid which the comment is associated with.
+        post_uid (str): the post uid which the comment is associated with.
         request (Request): the request with form sent.
     """
 
     uid_generator = UIDGenerator(db_handler=mongodb)
 
     comment_setup = NewCommentSetup(comment_uid_generator=uid_generator, db_handler=mongodb)
-    comment_setup.create_comment(article_uid=article_uid, request=request)
+    comment_setup.create_comment(post_uid=post_uid, request=request)
 
 
 ###################################################################
@@ -140,11 +140,9 @@ class CommentUtils:
     def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
-    def find_comments_by_article_uid(self, article_uid: str) -> List[Dict]:
+    def find_comments_by_post_uid(self, post_uid: str) -> List[Dict]:
         result = (
-            self._db_handler.comment.find({"article_uid": article_uid})
-            .sort("created_at", 1)
-            .as_list()
+            self._db_handler.comment.find({"post_uid": post_uid}).sort("created_at", 1).as_list()
         )
         return result
 

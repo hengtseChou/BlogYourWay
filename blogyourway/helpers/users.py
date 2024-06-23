@@ -157,21 +157,21 @@ class UserDeletionSetup:
         self._db_handler = db_handler
         self._logger = logger
 
-    def _get_articles_uid_by_user(self) -> List[str]:
-        articles = self._db_handler.article_info.find({"author": self._user_to_be_deleted})
-        articles_uid = [article.get("article_uid") for article in articles]
+    def _get_posts_uid_by_user(self) -> List[str]:
+        posts = self._db_handler.post_info.find({"author": self._user_to_be_deleted})
+        posts_uid = [post.get("post_uid") for post in posts]
 
-        return articles_uid
+        return posts_uid
 
     def _remove_all_posts(self) -> None:
-        self._db_handler.article_info.delete_many({"author": self._user_to_be_deleted})
-        self._db_handler.article_content.delete_many({"author": self._user_to_be_deleted})
-        self._logger.debug(f"Deleted all articles written by user {self._user_to_be_deleted}.")
+        self._db_handler.post_info.delete_many({"author": self._user_to_be_deleted})
+        self._db_handler.post_content.delete_many({"author": self._user_to_be_deleted})
+        self._logger.debug(f"Deleted all posts written by user {self._user_to_be_deleted}.")
 
-    def _remove_all_related_comments(self, article_uids: list) -> None:
-        for article_uid in article_uids:
-            self._db_handler.comment.delete_many({"article_uid": article_uid})
-        self._logger.debug(f"Deleted comments under articles by user {self._user_to_be_deleted}.")
+    def _remove_all_related_comments(self, post_uids: list) -> None:
+        for post_uid in post_uids:
+            self._db_handler.comment.delete_many({"post_uid": post_uid})
+        self._logger.debug(f"Deleted comments under posts by user {self._user_to_be_deleted}.")
 
     def _remove_all_user_data(self) -> None:
         self._db_handler.user_creds.delete_one({"username": self._user_to_be_deleted})
@@ -181,9 +181,9 @@ class UserDeletionSetup:
         self._logger.debug(f"Deleted user information for user {self._user_to_be_deleted}.")
 
     def start_deletion_process(self) -> None:
-        articles_uid = self._get_articles_uid_by_user()
+        posts_uid = self._get_posts_uid_by_user()
         self._remove_all_posts()
-        self._remove_all_related_comments(articles_uid)
+        self._remove_all_related_comments(posts_uid)
         # this place should includes removing metrics data for the user
         self._remove_all_user_data()
 

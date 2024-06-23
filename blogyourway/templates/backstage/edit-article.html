@@ -2,7 +2,7 @@
 {% block head %}<link rel="stylesheet" href="/static/css/panel.css" />{% endblock %}
 {% block panel %}
   <div style="height: 43px; margin-top: 30px">
-    <h2 class="ms-2">Edit Article</h2>
+    <h2 class="ms-2">Edit Post</h2>
   </div>
   <hr />
   <form method="post" autocomplete="off" id="form" class="row">
@@ -13,7 +13,7 @@
                class="form-control border-underline"
                id="title"
                name="title"
-               value="{{ article.title }}" />
+               value="{{ post.title }}" />
       </div>
       <div class="mb-4">
         <label for="subtitle" class="form-label ms-2 backstage-form-label">· Subtitle</label>
@@ -21,7 +21,7 @@
                class="form-control border-underline"
                id="subtitle"
                name="subtitle"
-               value="{{ article.subtitle }}" />
+               value="{{ post.subtitle }}" />
       </div>
       <div class="mb-4">
         <label for="tags" class="form-label ms-2 backstage-form-label">· Tags</label>
@@ -30,7 +30,7 @@
                id="tags"
                name="tags"
                placeholder="Separate your tags with ','"
-               value="{{ article.tags }}" />
+               value="{{ post.tags }}" />
       </div>
       <div class="mb-4">
         <label for="cover" class="form-label ms-2 backstage-form-label">· Cover image</label>
@@ -39,16 +39,16 @@
                id="cover"
                name="cover_url"
                placeholder="Insert image url here."
-               value="{{ article.cover_url }}" />
+               value="{{ post.cover_url }}" />
       </div>
       <div class="mb-4">
         <textarea id="editor"
                   name="content"
                   style="white-space: pre-line"
-                  placeholder="Note: If you want to include images in your article, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+                  placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
       </div>
       <div class="text-end mb-5">
-        <a href="/backstage/articles" class="btn cancel-btn text-center me-2">Cancel</a>
+        <a href="/backstage/posts" class="btn cancel-btn text-center me-2">Cancel</a>
         <button type="submit"
                 class="btn panel-btn text-center"
                 onclick="return validateUpdate()">Save Changes</button>
@@ -57,6 +57,6 @@
   </form>
 {% endblock %}
 {% block script %}
-  <script>var articleContent = {{ article['content'] | tojson | safe }};</script>
-  <script src="/static/js/backstage/edit-article.js"></script>
+  <script>var postContent = {{ post['content'] | tojson | safe }};</script>
+  <script src="/static/js/backstage/edit-post.js"></script>
 {% endblock %}

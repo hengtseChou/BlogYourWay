@@ -107,14 +107,14 @@ class Database:
     def __init__(self, client: MongoClient) -> None:
         self._client = client
         users_db = client["users"]
-        articles_db = client["articles"]
+        posts_db = client["posts"]
         comments_db = client["comments"]
 
         self._user_creds = ExtendedCollection(users_db["user-creds"])
         self._user_info = ExtendedCollection(users_db["user-info"])
         self._user_about = ExtendedCollection(users_db["user-about"])
-        self._article_info = ExtendedCollection(articles_db["articles-info"])
-        self._article_content = ExtendedCollection(articles_db["articles-content"])
+        self._post_info = ExtendedCollection(posts_db["posts-info"])
+        self._post_content = ExtendedCollection(posts_db["posts-content"])
         self._comment = ExtendedCollection(comments_db["comment"])
 
     @property
@@ -134,12 +134,12 @@ class Database:
         return self._user_about
 
     @property
-    def article_info(self):
-        return self._article_info
+    def post_info(self):
+        return self._post_info
 
     @property
-    def article_content(self):
-        return self._article_content
+    def post_content(self):
+        return self._post_content
 
     @property
     def comment(self):

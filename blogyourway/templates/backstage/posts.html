@@ -6,15 +6,15 @@
     <div class="d-flex align-items-center"
          style="height: 43px;
                 margin-top: 30px">
-      <h2 class="ms-2">Articles</h2>
+      <h2 class="ms-2">Posts</h2>
       <button class="btn panel-btn ms-auto me-3"
               data-bs-toggle="modal"
-              data-bs-target="#newPostModal">+ New Article</button>
+              data-bs-target="#newPostModal">+ New Post</button>
     </div>
     <hr />
-    <!-- <p class="ms-2">Featured articles will be on your home page, sorted by time order.</p> -->
-    {% if articles | length == 0 %}
-      <p class="ms-2">Click the button on the top-right to create your first article!</p>
+    <!-- <p class="ms-2">Featured posts will be on your home page, sorted by time order.</p> -->
+    {% if posts | length == 0 %}
+      <p class="ms-2">Click the button on the top-right to create your first post!</p>
     {% else %}
       <div class="col-11">
         <div class="table-responsive">
@@ -31,38 +31,38 @@
               </tr>
             </thead>
             <tbody>
-              {% for article in articles %}
+              {% for post in posts %}
                 <tr>
                   <td class="align-middle">
-                    <!-- leave article stat for future -->
-                    <!-- <a href="stats/articles/{{ article.article_uid }}" class="me-1" style="color: black">{{ article['title'] }}</a> -->
-                    <a href="/@{{ article.author }}/articles/{{ article.article_uid }}"
-                       style="color: black">{{ article['title'] }}</a>
-                    {% if article['featured'] %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
+                    <!-- leave post stat for future -->
+                    <!-- <a href="stats/posts/{{ post.post_uid }}" class="me-1" style="color: black">{{ post['title'] }}</a> -->
+                    <a href="/@{{ post.author }}/posts/{{ post.post_uid }}"
+                       style="color: black">{{ post['title'] }}</a>
+                    {% if post['featured'] %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
                   </td>
-                  <td>{{ article['created_at'] }}</td>
-                  <td class="text-center">{{ article['views'] }}</td>
-                  <td class="text-center">{{ article['comments'] }}</td>
+                  <td>{{ post['created_at'] }}</td>
+                  <td class="text-center">{{ post['views'] }}</td>
+                  <td class="text-center">{{ post['comments'] }}</td>
                   <td class="text-center">
-                    <a href="edit/article/{{ article.article_uid }}"
+                    <a href="edit/post/{{ post.post_uid }}"
                        style="color: black;
                               font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
                   </td>
-                  {% if article['featured'] %}
+                  {% if post['featured'] %}
                     <td class="text-center">
-                      <a href="edit-featured?featured=to_false&uid={{ article.article_uid }}"
+                      <a href="edit-featured?featured=to_false&uid={{ post.post_uid }}"
                          style="color: black;
                                 font-size: 18px"><i class="fa-regular fa-square-minus"></i></a>
                     </td>
                   {% else %}
                     <td class="text-center">
-                      <a href="edit-featured?featured=to_true&uid={{ article.article_uid }}"
+                      <a href="edit-featured?featured=to_true&uid={{ post.post_uid }}"
                          style="color: black;
                                 font-size: 18px"><i class="fa-regular fa-square-plus"></i></a>
                     </td>
                   {% endif %}
                   <td class="text-center">
-                    <a href="edit-archived?archived=to_true&uid={{ article.article_uid }}"
+                    <a href="edit-archived?archived=to_true&uid={{ post.post_uid }}"
                        style="color: black;
                               font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
                   </td>
@@ -79,14 +79,14 @@
         <div class="col-6 text-start">
           {% if pagination.is_previous_page_allowed %}
             {% set previous_page = pagination.current_page - 1 %}
-            <a href="articles?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts
+            <a href="posts?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts
             </a>
           {% endif %}
         </div>
         <div class="col-6 text-end">
           {% if pagination.is_next_page_allowed %}
             {% set next_page = pagination.current_page + 1 %}
-            <a href="articles?page={{ next_page }}" class="btn">
+            <a href="posts?page={{ next_page }}" class="btn">
             Older Posts <span class="mx-1">➡️</span></a>
           {% endif %}
         </div>
@@ -102,23 +102,23 @@
               data-bs-target="#newPostModal">+ New Post</button>
     </div>
     <hr />
-    {% for article in articles %}
+    {% for post in posts %}
       <div class="card rounded-0 py-2 overflow-visible my-3">
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              <a href="/@{{ article.author }}/articles/{{ article.article_uid }}"
-                 style="color: black">{{ article['title'] }}</a>
-              <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ article['created_at'] }}</p>
+              <a href="/@{{ post.author }}/posts/{{ post.post_uid }}"
+                 style="color: black">{{ post['title'] }}</a>
+              <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ post['created_at'] }}</p>
               <div>
-                {% if article['featured'] %}
+                {% if post['featured'] %}
                   <button class="btn btn-sm btn-success rounded-4 me-2"
                           data-bs-toggle="tooltip"
                           data-bs-placement="top"
-                          data-bs-title="Featured articles will be on your home page">Featured</button>
+                          data-bs-title="Featured posts will be on your home page">Featured</button>
                 {% endif %}
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ article['views'] }}</span>
-                <span><i class="fa-regular fa-comment me-2"></i>{{ article['comments'] }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['views'] }}</span>
+                <span><i class="fa-regular fa-comment me-2"></i>{{ post['comments'] }}</span>
               </div>
             </div>
             <div class="col-2">
@@ -129,22 +129,22 @@
                         aria-expanded="false"></button>
                 <ul class="dropdown-menu">
                   <li>
-                    <a class="dropdown-item" href="edit/article/{{ article.article_uid }}">Edit</a>
+                    <a class="dropdown-item" href="edit/post/{{ post.post_uid }}">Edit</a>
                   </li>
-                  {% if article['featured'] %}
+                  {% if post['featured'] %}
                     <li>
                       <a class="dropdown-item"
-                         href="edit-featured?featured=to_false&uid={{ article.article_uid }}">Remove from featured</a>
+                         href="edit-featured?featured=to_false&uid={{ post.post_uid }}">Remove from featured</a>
                     </li>
                   {% else %}
                     <li>
                       <a class="dropdown-item"
-                         href="edit-featured?featured=to_true&uid={{ article.article_uid }}">Add to featured</a>
+                         href="edit-featured?featured=to_true&uid={{ post.post_uid }}">Add to featured</a>
                     </li>
                   {% endif %}
                   <li>
                     <a class="dropdown-item"
-                       href="edit-archived?archived=to_true&uid={{ article.article_uid }}">Move to archive</a>
+                       href="edit-archived?archived=to_true&uid={{ post.post_uid }}">Move to archive</a>
                   </li>
                 </ul>
               </div>
@@ -158,7 +158,7 @@
       <div class="col-6 text-start">
         {% if pagination.is_previous_page_allowed %}
           {% set previous_page = pagination.current_page - 1 %}
-          <a href="articles?page={{ previous_page }}" class="btn">
+          <a href="posts?page={{ previous_page }}" class="btn">
             <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Newer
             Posts
           </a>
@@ -167,7 +167,7 @@
       <div class="col-6 text-end">
         {% if pagination.is_next_page_allowed %}
           {% set next_page = pagination.current_page + 1 %}
-          <a href="articles?page={{ next_page }}" class="btn">
+          <a href="posts?page={{ next_page }}" class="btn">
             Older Posts
             <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
           </a>
@@ -228,7 +228,7 @@
               <textarea id="editor"
                         name="content"
                         style="white-space: pre-line"
-                        placeholder="Note: If you want to include images in your article, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+                        placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
             </div>
           </div>
           <div class="modal-footer">
@@ -245,5 +245,5 @@
   </div>
 {% endblock %}
 {% block script %}
-  <script src="/static/js/backstage/articles.js"></script>
+  <script src="/static/js/backstage/posts.js"></script>
 {% endblock %}

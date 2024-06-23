@@ -19,8 +19,8 @@ from blogyourway.services.mongo import Database, mongodb
 
 
 @dataclass
-class ArticleInfo(MyDataClass):
-    article_uid: str
+class PostInfo(MyDataClass):
+    post_uid: str
     title: str
     subtitle: str
     author: str
@@ -39,8 +39,8 @@ class ArticleInfo(MyDataClass):
 
 
 @dataclass
-class ArticleContent(MyDataClass):
-    article_uid: str
+class PostContent(MyDataClass):
+    post_uid: str
     author: str
     content: str
 
@@ -51,62 +51,62 @@ def process_tags(tag_string: str) -> List[str]:
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
 
 
-class NewArticleSetup:
-    def __init__(self, article_uid_generator: UIDGenerator, db_handler: Database) -> None:
-        self._article_uid = article_uid_generator.generate_article_uid()
+class NewPostSetup:
+    def __init__(self, post_uid_generator: UIDGenerator, db_handler: Database) -> None:
+        self._post_uid = post_uid_generator.generate_post_uid()
         self._db_handler = db_handler
 
     def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
         return True
 
-    def _create_article_info(self, request: Request, author_name: str) -> Dict:
-        new_article_info = ArticleInfo(
-            article_uid=self._article_uid,
+    def _create_post_info(self, request: Request, author_name: str) -> Dict:
+        new_post_info = PostInfo(
+            post_uid=self._post_uid,
             title=request.form.get("title"),
             subtitle=request.form.get("subtitle"),
             author=author_name,
             tags=process_tags(request.form.get("tags")),
             cover_url=request.form.get("cover_url"),
         )
-        return new_article_info.as_dict()
+        return new_post_info.as_dict()
 
-    def _create_article_content(self, request: Request, author_name: str) -> Dict:
-        new_article_content = ArticleContent(
-            article_uid=self._article_uid, author=author_name, content=request.form.get("content")
+    def _create_post_content(self, request: Request, author_name: str) -> Dict:
+        new_post_content = PostContent(
+            post_uid=self._post_uid, author=author_name, content=request.form.get("content")
         )
-        return new_article_content.as_dict()
+        return new_post_content.as_dict()
 
-    def _increment_tags_for_user(self, new_article_info: Dict) -> None:
-        username = new_article_info.get("author")
-        tags = new_article_info.get("tags")
+    def _increment_tags_for_user(self, new_post_info: Dict) -> None:
+        username = new_post_info.get("author")
+        tags = new_post_info.get("tags")
         tags_increments = {f"tags.{tag}": 1 for tag in tags}
         self._db_handler.user_info.make_increments(
             filter={"username": username}, increments=tags_increments, upsert=True
         )
 
-    def create_article(self, author_name: str, request: Request) -> str | None:
+    def create_post(self, author_name: str, request: Request) -> str | None:
         validator = FormValidator()
         if not self._form_validatd(request=request, validator=validator):
             return None
         # validated
-        new_article_info = self._create_article_info(author_name=author_name, request=request)
-        new_article_content = self._create_article_content(author_name=author_name, request=request)
+        new_post_info = self._create_post_info(author_name=author_name, request=request)
+        new_post_content = self._create_post_content(author_name=author_name, request=request)
 
-        self._db_handler.article_info.insert_one(new_article_info)
-        self._db_handler.article_content.insert_one(new_article_content)
-        self._increment_tags_for_user(new_article_info)
+        self._db_handler.post_info.insert_one(new_post_info)
+        self._db_handler.post_content.insert_one(new_post_content)
+        self._increment_tags_for_user(new_post_info)
 
-        return self._article_uid
+        return self._post_uid
 
 
-def create_article(request: Request) -> str:
+def create_post(request: Request) -> str:
     uid_generator = UIDGenerator(db_handler=mongodb)
 
-    new_article_setup = NewArticleSetup(article_uid_generator=uid_generator, db_handler=mongodb)
-    new_article_uid = new_article_setup.create_article(
+    new_post_setup = NewPostSetup(post_uid_generator=uid_generator, db_handler=mongodb)
+    new_post_uid = new_post_setup.create_post(
         author_name=current_user.username, request=request
     )
-    return new_article_uid
+    return new_post_uid
 
 
 ###################################################################
@@ -117,7 +117,7 @@ def create_article(request: Request) -> str:
 
 
 @dataclass
-class UpdatedArticleInfo(MyDataClass):
+class UpdatedPostInfo(MyDataClass):
     title: str
     subtitle: str
     tags: List[str]
@@ -129,21 +129,21 @@ class UpdatedArticleInfo(MyDataClass):
 
 
 @dataclass
-class UpdatedArticleContent(MyDataClass):
+class UpdatedPostContent(MyDataClass):
     content: str
 
 
-class ArticleUpdateSetup:
+class PostUpdateSetup:
     def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
     def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
         return True
 
-    def _update_tags_for_user(self, article_uid: str, new_tags: Dict) -> None:
-        article_info = self._db_handler.article_info.find_one({"article_uid": article_uid})
-        author = article_info.get("author")
-        old_tags = article_info.get("tags")
+    def _update_tags_for_user(self, post_uid: str, new_tags: Dict) -> None:
+        post_info = self._db_handler.post_info.find_one({"post_uid": post_uid})
+        author = post_info.get("author")
+        old_tags = post_info.get("tags")
         tags_reduction = {f"tags.{tag}": -1 for tag in old_tags}
         self._db_handler.user_info.make_increments(
             filter={"username": author}, increments=tags_reduction
@@ -153,39 +153,39 @@ class ArticleUpdateSetup:
             filter={"username": author}, increments=tags_increment, upsert=True
         )
 
-    def _updated_article_info(self, request: Request) -> Dict:
-        updated_article_info = UpdatedArticleInfo(
+    def _updated_post_info(self, request: Request) -> Dict:
+        updated_post_info = UpdatedPostInfo(
             title=request.form.get("title"),
             subtitle=request.form.get("subtitle"),
             tags=process_tags(request.form.get("tags")),
             cover_url=request.form.get("cover_url"),
         )
-        return updated_article_info.as_dict()
+        return updated_post_info.as_dict()
 
-    def _updated_article_content(self, request: Request) -> Dict:
-        updated_article_content = UpdatedArticleContent(content=request.form.get("content"))
-        return updated_article_content.as_dict()
+    def _updated_post_content(self, request: Request) -> Dict:
+        updated_post_content = UpdatedPostContent(content=request.form.get("content"))
+        return updated_post_content.as_dict()
 
-    def update_article(self, article_uid: str, request: Request) -> None:
+    def update_post(self, post_uid: str, request: Request) -> None:
         validator = FormValidator()
         if not self._form_validatd(request=request, validator=validator):
             return
         # validated
-        updated_article_info = self._updated_article_info(request=request)
-        updated_article_content = self._updated_article_content(request=request)
+        updated_post_info = self._updated_post_info(request=request)
+        updated_post_content = self._updated_post_content(request=request)
 
-        self._update_tags_for_user(article_uid, updated_article_info.get("tags"))
-        self._db_handler.article_info.update_values(
-            filter={"article_uid": article_uid}, update=updated_article_info
+        self._update_tags_for_user(post_uid, updated_post_info.get("tags"))
+        self._db_handler.post_info.update_values(
+            filter={"post_uid": post_uid}, update=updated_post_info
         )
-        self._db_handler.article_content.update_values(
-            filter={"article_uid": article_uid}, update=updated_article_content
+        self._db_handler.post_content.update_values(
+            filter={"post_uid": post_uid}, update=updated_post_content
         )
 
 
-def update_post(article_uid: str, request: Request) -> None:
-    post_update_setup = ArticleUpdateSetup(db_handler=mongodb)
-    post_update_setup.update_article(article_uid=article_uid, request=request)
+def update_post(post_uid: str, request: Request) -> None:
+    post_update_setup = PostUpdateSetup(db_handler=mongodb)
+    post_update_setup.update_post(post_uid=post_uid, request=request)
 
 
 ###################################################################
@@ -248,11 +248,11 @@ class HTMLFormatter:
         return str(self.__soup)
 
 
-def html_to_article(html: str) -> str:
+def html_to_post(html: str) -> str:
     formatter = HTMLFormatter(html)
-    article = formatter.add_padding().change_heading_font().modify_figure().to_string()
+    post = formatter.add_padding().change_heading_font().modify_figure().to_string()
 
-    return article
+    return post
 
 
 def html_to_about(html: str) -> str:
@@ -277,26 +277,26 @@ class Paging:
         self._allow_next_page = None
         self._current_page = None
 
-    def setup(self, username, current_page, articles_per_page):
+    def setup(self, username, current_page, posts_per_page):
         self._has_setup = True
         self._allow_previous_page = False
         self._allow_next_page = False
         self._current_page = current_page
 
         # set up for pagination
-        num_not_archieved = self._db_handler.article_info.count_documents(
+        num_not_archieved = self._db_handler.post_info.count_documents(
             {"author": username, "archived": False}
         )
         if num_not_archieved == 0:
             max_page = 1
         else:
-            max_page = ceil(num_not_archieved / articles_per_page)
+            max_page = ceil(num_not_archieved / posts_per_page)
 
         if current_page > max_page or current_page < 1:
             # not a legal page number
             abort(404)
 
-        if current_page * articles_per_page < num_not_archieved:
+        if current_page * posts_per_page < num_not_archieved:
             self._allow_next_page = True
 
         if current_page > 1:
@@ -328,33 +328,33 @@ paging = Paging(db_handler=mongodb)
 
 ###################################################################
 
-# article utilities
+# post utilities
 
 ###################################################################
 
 
-class ArticleUtils:
+class PostUtils:
     def __init__(self, db_handler: Database):
         self._db_handler = db_handler
 
-    def get_all_article_uid(self) -> List[str]:
-        all_article_info = self._db_handler.article_info.find({})
-        all_article_uid = [article_info.get("article_uid") for article_info in all_article_info]
-        return all_article_uid
+    def get_all_post_uid(self) -> List[str]:
+        all_post_info = self._db_handler.post_info.find({})
+        all_post_uid = [post_info.get("post_uid") for post_info in all_post_info]
+        return all_post_uid
 
     def get_all_author(self) -> List[str]:
-        all_article_info = self._db_handler.article_info.find({})
-        all_author = [article_info.get("author") for article_info in all_article_info]
+        all_post_info = self._db_handler.post_info.find({})
+        all_author = [post_info.get("author") for post_info in all_post_info]
         return all_author
 
     def get_all_last_update(self) -> List[str]:
-        all_article_info = self._db_handler.article_info.find({})
-        all_last_updated = [article_info.get("last_updated") for article_info in all_article_info]
+        all_post_info = self._db_handler.post_info.find({})
+        all_last_updated = [post_info.get("last_updated") for post_info in all_post_info]
         return all_last_updated
 
-    def find_featured_articles_info(self, username: str) -> List[Dict]:
+    def find_featured_posts_info(self, username: str) -> List[Dict]:
         result = (
-            self._db_handler.article_info.find(
+            self._db_handler.post_info.find(
                 {"author": username, "featured": True, "archived": False}
             )
             .sort("created_at", -1)
@@ -365,62 +365,62 @@ class ArticleUtils:
             post["created_at"] = post.get("created_at").strftime("%B %d, %Y")
         return result
 
-    def find_all_articles_info(self, username: str) -> List[Dict]:
+    def find_all_posts_info(self, username: str) -> List[Dict]:
         result = (
-            self._db_handler.article_info.find({"author": username, "archived": False})
+            self._db_handler.post_info.find({"author": username, "archived": False})
             .sort("created_at", -1)
             .as_list()
         )
         return result
 
-    def find_all_archived_articles_info(self, username: str) -> List[Dict]:
+    def find_all_archived_posts_info(self, username: str) -> List[Dict]:
         result = (
-            self._db_handler.article_info.find({"author": username, "archived": True})
+            self._db_handler.post_info.find({"author": username, "archived": True})
             .sort("created_at", -1)
             .as_list()
         )
         return result
 
-    def find_articles_with_pagination(
-        self, username: str, page_number: int, articles_per_page: int
+    def find_posts_with_pagination(
+        self, username: str, page_number: int, posts_per_page: int
     ) -> List[Dict]:
         if page_number == 1:
             result = (
-                self._db_handler.article_info.find({"author": username, "archived": False})
+                self._db_handler.post_info.find({"author": username, "archived": False})
                 .sort("created_at", -1)
-                .limit(articles_per_page)
+                .limit(posts_per_page)
                 .as_list()
             )
 
         elif page_number > 1:
             result = (
-                self._db_handler.article_info.find({"author": username, "archived": False})
+                self._db_handler.post_info.find({"author": username, "archived": False})
                 .sort("created_at", -1)
-                .skip((page_number - 1) * articles_per_page)
-                .limit(articles_per_page)
+                .skip((page_number - 1) * posts_per_page)
+                .limit(posts_per_page)
                 .as_list()
             )
 
         return result
 
-    def get_full_article(self, article_uid: str) -> Dict:
-        target_article = self._db_handler.article_info.find_one({"article_uid": article_uid})
-        target_article_content = self._db_handler.article_content.find_one(
-            {"article_uid": article_uid}
+    def get_full_post(self, post_uid: str) -> Dict:
+        target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
+        target_post_content = self._db_handler.post_content.find_one(
+            {"post_uid": post_uid}
         ).get("content")
-        target_article["content"] = target_article_content
+        target_post["content"] = target_post_content
 
-        return target_article
+        return target_post
 
-    def read_increment(self, article_uid: str) -> None:
-        self._db_handler.article_info.make_increments(
-            filter={"article_uid": article_uid}, increments={"reads": 1}
+    def read_increment(self, post_uid: str) -> None:
+        self._db_handler.post_info.make_increments(
+            filter={"post_uid": post_uid}, increments={"reads": 1}
         )
 
-    def view_increment(self, article_uid: str) -> None:
-        self._db_handler.article_info.make_increments(
-            filter={"article_uid": article_uid}, increments={"views": 1}
+    def view_increment(self, post_uid: str) -> None:
+        self._db_handler.post_info.make_increments(
+            filter={"post_uid": post_uid}, increments={"views": 1}
         )
 
 
-article_utils = ArticleUtils(db_handler=mongodb)
+post_utils = PostUtils(db_handler=mongodb)
