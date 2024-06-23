@@ -20,16 +20,38 @@
       </div>
     </div>
   </div>
-  <div class="container">
-    <div class="row" style="padding-top: 10%">
-      <div class="col-md-6 text-center">
+  <!-- desktop -->
+  <div class="container d-none d-xxl-block">
+    <div class="row" style="padding-top: 5%">
+      <div class="col-6">
         <img class="img-fluid"
              src="/static/img/500.jpg"
              alt=""
              style="padding-top: 10%" />
       </div>
-      <div class="col-11 col-md-5 mx-auto">
-        <h1 class="display-4 fw-bold"  style="padding-top: 15%">Internal Server Error</h1>
+      <div class="offset-1 col-5">
+        <h1 class="display-4 fw-bold"  style="padding-top: 20%">Internal Server Error</h1>
+        <p class="mt-4 fs-5">
+          Something went wrong. We're looking to see what
+          happened.
+        </p>
+        <p onclick="window.history.go(-1); return false;"
+           class="hover-pointer fs-5">
+          <u>👉 Go to the previous page</u>
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- mobile -->
+  <div class="container d-block d-xxl-none">
+    <div class="row pb-5">
+      <div class="col-lg-8 col-10 mx-auto mt-5 mb-3">
+        <h1 class="display-4 fw-bold">Internal Server Error</h1>
+      </div>
+      <div class="col-lg-10 col-12 mx-auto my-2">
+        <img class="img-fluid" src="/static/img/500.jpg" alt="" />
+      </div>
+      <div class="col-lg-8 col-10 mx-auto">
         <p class="mt-4 fs-5">
           Something went wrong. We're looking to see what
           happened.
