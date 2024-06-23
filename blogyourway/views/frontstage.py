@@ -6,6 +6,7 @@ from flask import Blueprint, abort, flash, jsonify, redirect, render_template, r
 from flask_login import current_user, login_user
 from markdown import Markdown
 
+from blogyourway.config import RECAPTCHA_KEY
 from blogyourway.helpers.articles import article_utils, html_to_about, html_to_article, paging
 from blogyourway.helpers.comments import comment_utils, create_comment
 from blogyourway.helpers.common import sort_dict
@@ -13,6 +14,10 @@ from blogyourway.helpers.users import user_utils
 from blogyourway.services import logger, logger_utils, mongodb, sitemapper
 
 frontstage = Blueprint("frontstage", __name__, template_folder="../templates/frontstage/")
+
+# @frontstage.context_processor
+# def inject_env_var():
+#     return {"RECAPTCHA_KEY": RECAPTCHA_KEY}
 
 
 @sitemapper.include(priority=1)
