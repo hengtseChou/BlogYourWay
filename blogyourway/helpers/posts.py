@@ -103,9 +103,7 @@ def create_post(request: Request) -> str:
     uid_generator = UIDGenerator(db_handler=mongodb)
 
     new_post_setup = NewPostSetup(post_uid_generator=uid_generator, db_handler=mongodb)
-    new_post_uid = new_post_setup.create_post(
-        author_name=current_user.username, request=request
-    )
+    new_post_uid = new_post_setup.create_post(author_name=current_user.username, request=request)
     return new_post_uid
 
 
@@ -337,20 +335,26 @@ class PostUtils:
     def __init__(self, db_handler: Database):
         self._db_handler = db_handler
 
-    def get_all_post_uid(self) -> List[str]:
-        all_post_info = self._db_handler.post_info.find({})
-        all_post_uid = [post_info.get("post_uid") for post_info in all_post_info]
-        return all_post_uid
+    # def get_all_post_uid(self) -> List[str]:
+    #     all_post_info = self._db_handler.post_info.find({})
+    #     all_post_uid = [post_info.get("post_uid") for post_info in all_post_info]
+    #     return all_post_uid
 
-    def get_all_author(self) -> List[str]:
-        all_post_info = self._db_handler.post_info.find({})
-        all_author = [post_info.get("author") for post_info in all_post_info]
-        return all_author
+    # def get_all_author(self) -> List[str]:
+    #     all_post_info = self._db_handler.post_info.find({})
+    #     all_author = [post_info.get("author") for post_info in all_post_info]
+    #     return all_author
 
-    def get_all_last_update(self) -> List[str]:
-        all_post_info = self._db_handler.post_info.find({})
-        all_last_updated = [post_info.get("last_updated") for post_info in all_post_info]
-        return all_last_updated
+    # def get_all_last_update(self) -> List[str]:
+    #     all_post_info = self._db_handler.post_info.find({})
+    #     all_last_updated = [post_info.get("last_updated") for post_info in all_post_info]
+    #     return all_last_updated
+    def get_all_posts_info(self, include_archive=False) -> List[Dict]:
+        if include_archive:
+            result = self._db_handler.post_info.find({}).as_list()
+        else:
+            result = (self._db_handler.post_info.find({"archived": False})).as_list()
+        return result
 
     def find_featured_posts_info(self, username: str) -> List[Dict]:
         result = (
@@ -405,9 +409,9 @@ class PostUtils:
 
     def get_full_post(self, post_uid: str) -> Dict:
         target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
-        target_post_content = self._db_handler.post_content.find_one(
-            {"post_uid": post_uid}
-        ).get("content")
+        target_post_content = self._db_handler.post_content.find_one({"post_uid": post_uid}).get(
+            "content"
+        )
         target_post["content"] = target_post_content
 
         return target_post

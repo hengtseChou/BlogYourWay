@@ -1,8 +1,18 @@
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 import bcrypt
 import readtime
-from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    abort,
+    flash,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_login import current_user, login_user
 from markdown import Markdown
 
@@ -11,7 +21,7 @@ from blogyourway.helpers.comments import comment_utils, create_comment
 from blogyourway.helpers.common import sort_dict
 from blogyourway.helpers.posts import html_to_about, html_to_post, paging, post_utils
 from blogyourway.helpers.users import user_utils
-from blogyourway.services import logger, logger_utils, mongodb, sitemapper
+from blogyourway.services import logger, logger_utils, mongodb
 
 frontstage = Blueprint("frontstage", __name__, template_folder="../templates/frontstage/")
 
@@ -25,7 +35,6 @@ def inject_env_var():
     return {"RECAPTCHA_KEY": RECAPTCHA_KEY}
 
 
-@sitemapper.include(priority=1)
 @frontstage.route("/", methods=["GET"])
 def landing_page():
     ###################################################################
@@ -45,7 +54,6 @@ def landing_page():
     return render_template("landing-page.html")
 
 
-@sitemapper.include()
 @frontstage.route("/login", methods=["GET"])
 def login_get():
     ###################################################################
@@ -123,7 +131,6 @@ def login_post():
     return redirect(url_for("frontstage.home", username=username))
 
 
-@sitemapper.include()
 @frontstage.route("/register", methods=["GET"])
 def register_get():
     ###################################################################
@@ -168,7 +175,6 @@ def register_post():
     ###################################################################
 
 
-@sitemapper.include(url_variables={"username": user_utils.get_all_username()})
 @frontstage.route("/@<username>", methods=["GET"])
 def home(username):
     ###################################################################
@@ -207,7 +213,6 @@ def home(username):
     return render_template("home.html", user=user, posts=featured_posts)
 
 
-@sitemapper.include(url_variables={"username": user_utils.get_all_username()})
 @frontstage.route("/@<username>/tags", methods=["GET"])
 def tag(username):
     ###################################################################
@@ -223,7 +228,7 @@ def tag(username):
     # if no tag specified, show blog page
     tag_url_encoded = request.args.get("tag", default=None, type=str)
     if tag_url_encoded is None:
-        return redirect(url_for("blog.blog_page", username=username))
+        return redirect(url_for("frontstage.blog", username=username))
 
     # abort for unknown tag
     tag = unquote(tag_url_encoded)
@@ -263,12 +268,6 @@ def tag(username):
     return render_template("tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag)
 
 
-@sitemapper.include(
-    url_variables={
-        "username": post_utils.get_all_author(),
-        "post_uid": post_utils.get_all_post_uid(),
-    }
-)
 @frontstage.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
 def blogpost(username, post_uid):
     ###################################################################
@@ -354,7 +353,6 @@ def readcount_increment():
     return "OK"
 
 
-@sitemapper.include(url_variables={"username": user_utils.get_all_username()})
 @frontstage.route("/@<username>/about", methods=["GET"])
 def about(username):
     ###################################################################
@@ -397,7 +395,6 @@ def about(username):
     return render_template("about.html", user=user, about=about)
 
 
-@sitemapper.include(url_variables={"username": user_utils.get_all_username()})
 @frontstage.route("/@<username>/blog", methods=["GET"])
 def blog(username):
     ###################################################################
@@ -479,11 +476,47 @@ def error_simulator():
     raise Exception("this is a simulation error.")
 
 
-@frontstage.route("/sitemap.xml", methods=["GET"])
-def sitemap():
-    return sitemapper.generate()
-
-
 @frontstage.route("/robots.txt", methods=["GET"])
 def robotstxt():
     return open("robots.txt", "r")
+
+
+@frontstage.route("/sitemap")
+@frontstage.route("/sitemap/")
+@frontstage.route("/sitemap.xml")
+def sitemap():
+    """
+    Route to dynamically generate a sitemap of your website/application.
+    lastmod and priority tags omitted on static pages.
+    lastmod included on dynamic content such as blog posts.
+    """
+
+    host_components = urlparse(request.host_url)
+    host_base = host_components.scheme + "://" + host_components.netloc
+
+    # Static routes with static content
+    static_urls = []
+    for route in ["/", "/login", "/register"]:
+        static_urls.append({"loc": f"{host_base}{route}"})
+
+    # Dynamic routes with dynamic content
+    dynamic_urls = []
+    for username in user_utils.get_all_username():
+        dynamic_urls.append({"loc": f"{host_base}/@{username}"})
+        dynamic_urls.append({"loc": f"{host_base}/@{username}/blog"})
+        dynamic_urls.append({"loc": f"{host_base}/@{username}/about"})
+    for post in post_utils.get_all_posts_info():
+        url = {
+            "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}",
+            "lastmod": post.get("last_updated"),
+        }
+        dynamic_urls.append(url)
+
+    xml_sitemap = render_template(
+        "sitemap.xml", static_urls=static_urls, dynamic_urls=dynamic_urls, host_base=host_base
+    )
+    response = make_response(xml_sitemap)
+    response.headers["Content-Type"] = "application/xml"
+    logger.debug("Sitemap generated successfully..")
+
+    return response
