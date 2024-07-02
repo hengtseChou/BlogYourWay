@@ -204,17 +204,17 @@ class HTMLFormatter:
         self.__soup = BeautifulSoup(html, "html.parser")
 
     def add_padding(self):
-        # add padding for all first level tags, except figure and img
-        tags = self.__soup.find_all(lambda tag: tag.name not in ["figure", "img"], recursive=False)
-        for tag in tags:
-            current_style = tag.get("style", "")
-            new_style = f"{current_style} padding-top: 10px; padding-bottom: 10px; "
-            tag["style"] = new_style
+        blocks = self.__soup.find_all(
+            lambda tag: tag.name not in ["figure", "img"], recursive=False
+        )
+        for block in blocks:
+            current_class = block.get("class", [])
+            current_class.append("py-2")
+            block["class"] = current_class
 
         return self
 
     def change_headings(self):
-
         small_headings = self.__soup.find_all("h3")
         for head in small_headings:
             head.name = "h5"
@@ -232,13 +232,20 @@ class HTMLFormatter:
 
         return self
 
-    def modify_figure(self, max_width="90%"):
+    def modify_figure(self, max_width="100%"):
         # center image and modify size
         imgs = self.__soup.find_all(["img"])
         for img in imgs:
             current_style = img.get("style", "")
             new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30%; height: auto;"
             img["style"] = new_style
+            # img["loading"] = "lazy"
+            img_src = img["src"]
+            img["src"] = ""
+            img["data-src"] = img_src
+            current_class = img.get("class", [])
+            current_class.append("lazyload")
+            img["class"] = current_class
 
         # center caption
         captions = self.__soup.find_all(["figcaption"])
@@ -246,6 +253,9 @@ class HTMLFormatter:
             current_style = caption.get("style", "")
             new_style = f"{current_style} text-align: center"
             caption["style"] = new_style
+            current_class = img.get("class", [])
+            current_class.append("my-2")
+            img["class"] = current_class
 
         return self
 
