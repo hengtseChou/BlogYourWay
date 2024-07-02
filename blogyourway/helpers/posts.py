@@ -213,15 +213,22 @@ class HTMLFormatter:
 
         return self
 
-    def change_heading_font(self):
-        # Modify the style attribute for each heading tag
-        headings = self.__soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
+    def change_headings(self):
 
-        # Modify the style attribute for each heading tag
-        for heading in headings:
-            current_style = heading.get("style", "")
-            new_style = f"{current_style} font-family: 'Ubuntu', 'Arial', sans-serif;;"
-            heading["style"] = new_style
+        small_headings = self.__soup.find_all("h3")
+        for head in small_headings:
+            head.name = "h5"
+
+        medium_headings = self.__soup.find_all("h2")
+        for head in medium_headings:
+            head.name = "h3"
+
+        big_headings = self.__soup.find_all("h1")
+        for head in big_headings:
+            head.name = "h2"
+            current_class = head.get("class", [])
+            current_class.append("fw-bold")
+            head["class"] = current_class
 
         return self
 
@@ -230,7 +237,7 @@ class HTMLFormatter:
         imgs = self.__soup.find_all(["img"])
         for img in imgs:
             current_style = img.get("style", "")
-            new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30% ;height: auto;"
+            new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30%; height: auto;"
             img["style"] = new_style
 
         # center caption
@@ -248,7 +255,7 @@ class HTMLFormatter:
 
 def html_to_post(html: str) -> str:
     formatter = HTMLFormatter(html)
-    post = formatter.add_padding().change_heading_font().modify_figure().to_string()
+    post = formatter.add_padding().change_headings().modify_figure().to_string()
 
     return post
 
