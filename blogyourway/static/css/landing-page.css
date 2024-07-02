@@ -1,0 +1,43 @@
+.get-started-btn {
+  background-color: #e4622f;
+  color: #ffffff;
+  padding: 10px 30px;
+}
+
+.card-hover {
+  -webkit-box-shadow: 0 1px 1px rgba(72, 78, 85, 0.6);
+  box-shadow: 0 1px 1px rgba(72, 78, 85, 0.6);
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -ms-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+
+.card-hover:hover {
+  -webkit-box-shadow: 0 20px 40px rgba(72, 78, 85, 0.6);
+  box-shadow: 0 20px 40px rgba(72, 78, 85, 0.6);
+  -webkit-transform: translateY(-15px);
+  -moz-transform: translateY(-15px);
+  -ms-transform: translateY(-15px);
+  -o-transform: translateY(-15px);
+  transform: translateY(-15px);
+}
+
+.feature-text {
+  color: #656979;
+}
+
+.icon-orange {
+  color: #e4622f;
+}
+
+.hero-section {
+  text-align: start;
+}
+
+@media (max-width: 1200px) {
+  .hero-section {
+    text-align: center;
+  }
+}

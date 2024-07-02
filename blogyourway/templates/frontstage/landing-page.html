@@ -1,63 +1,31 @@
 {% extends 'base.html' %}
 {% block title %}BlogYourWay · Share As You Want{% endblock %}
 {% block meta_tags %}{% endblock %}
-{% block head %}
-  <style>
-    .get-started-btn {
-      background-color: #e4622f;
-      color: #ffffff;
-      padding: 10px 30px;
-    }
-
-    .card-hover {
-      -webkit-box-shadow: 0 1px 1px rgba(72, 78, 85, .6);
-      box-shadow: 0 1px 1px rgba(72, 78, 85, .6);
-      -webkit-transition: all .2s ease-out;
-      -moz-transition: all .2s ease-out;
-      -ms-transition: all .2s ease-out;
-      -o-transition: all .2s ease-out;
-      transition: all .2s ease-out;
-    }
-
-    .card-hover:hover {
-      -webkit-box-shadow: 0 20px 40px rgba(72, 78, 85, .6);
-      box-shadow: 0 20px 40px rgba(72, 78, 85, .6);
-      -webkit-transform: translateY(-15px);
-      -moz-transform: translateY(-15px);
-      -ms-transform: translateY(-15px);
-      -o-transform: translateY(-15px);
-      transform: translateY(-15px);
-    }
-  </style>
-{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/landing-page.css" />{% endblock %}
 {% block body %}
   <div class="container pt-4">
     <div class="row align-items-center">
       <div class="offset-1 col-auto">
-        <img src="/static/img/logo.png" alt="Logo" width="36" height="36">
+        <img src="/static/img/logo.png" alt="Logo" width="36" height="36" />
       </div>
       <div class="col-auto">
-        <a href="/" style="text-decoration:none; color: black;">
+        <a href="/" style="text-decoration: none; color: black">
           <h3 class="fw-bold pt-2">BlogYourWay</h3>
         </a>
       </div>
     </div>
   </div>
-  <div class="container">
+  <div class="container hero-section">
     <div class="row">
-      <div class="col-11 col-xxl-5 py-5 mx-auto">
-        <h1 class="display-4 fw-bold" style="padding-top: 20%; line-height: 105%">
-          Share thoughts
-          <br />
-          and works at once
-        </h1>
+      <div class="col-9 col-xl-5 py-5 mx-auto">
+        <h1 class="display-4 fw-bold" style="padding-top: 20%; line-height: 105%">Share thoughts and works at once</h1>
         <p class="py-4" style="line-height: 150%">
           BlogYourWay is a perfect solution for hosting your content, including
           blogging and work showcases. All come with markdown-support.
         </p>
-        <a class="btn get-started-btn fw-bold " href="/signup">Get Started</a>
+        <a class="btn get-started-btn fw-bold" href="/signup">Get Started</a>
       </div>
-      <div class="col-xxl-6 text-center d-none d-xxl-block">
+      <div class="col-xl-6 text-center d-none d-xxl-block">
         <img class="img-fluid" src="/static/img/landing.jpg" alt="" />
       </div>
     </div>
@@ -72,12 +40,17 @@
           <div class="card card-hover rounded-0 border-0 shadow-sm"
                style="height: 100%">
             <div class="card-body">
-              <h1 class="ps-3 py-3" style="color: #e4622f;">
+              <h1 class="ps-3 py-3 icon-orange">
                 <i class="fa-solid fa-pen-to-square"></i>
               </h1>
               <h5 class="card-title py-3">Simple yet intuitive blogging</h5>
-              <p class="card-text" style="color: #656979;">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut.
+              <p class="card-text feature-text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magnam aliquam
+                quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore
+                dolemus, fieri tamen permagna accessio potest, si aliquod aeternum
+                et infinitum impendere malum nobis opinemur. Quod idem licet
+                transferre in voluptatem, ut.
               </p>
             </div>
           </div>
@@ -86,12 +59,17 @@
           <div class="card card-hover rounded-0 border-0 shadow-sm"
                style="height: 100%">
             <div class="card-body">
-              <h1 class="ps-3 py-3" style="color: #e4622f;">
+              <h1 class="ps-3 py-3 icon-orange">
                 <i class="fa-solid fa-palette"></i>
               </h1>
               <h5 class="card-title py-3">Share your works via BlogYourWay</h5>
-              <p class="card-text" style="color: #656979;">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut.
+              <p class="card-text feature-text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magnam aliquam
+                quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore
+                dolemus, fieri tamen permagna accessio potest, si aliquod aeternum
+                et infinitum impendere malum nobis opinemur. Quod idem licet
+                transferre in voluptatem, ut.
               </p>
             </div>
           </div>
@@ -100,12 +78,17 @@
           <div class="card card-hover rounded-0 border-0 shadow-sm"
                style="height: 100%">
             <div class="card-body">
-              <h1 class="ps-3 py-3" style="color: #e4622f;">
+              <h1 class="ps-3 py-3 icon-orange">
                 <i class="fa-solid fa-font-awesome"></i>
               </h1>
               <h5 class="card-title py-3">Create your personal changelog</h5>
-              <p class="card-text" style="color: #656979;">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere malum nobis opinemur. Quod idem licet transferre in voluptatem, ut.
+              <p class="card-text feature-text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magnam aliquam
+                quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore
+                dolemus, fieri tamen permagna accessio potest, si aliquod aeternum
+                et infinitum impendere malum nobis opinemur. Quod idem licet
+                transferre in voluptatem, ut.
               </p>
             </div>
           </div>
@@ -113,10 +96,33 @@
       </div>
     </div>
   </div>
-  <footer class="text-center">
-    <p>
-      &copy; <span id="yearTag"></span> BlogYourWay. All rights reserved.
-    </p>
+  <footer class="bg-dark text-white py-5">
+    <div class="container">
+      <div class="d-md-block d-none">
+        <hr class="my-4" />
+      </div>
+      <div class="row">
+        <div class="col-md-6 text-md-start text-center ">
+          <p class="small">
+            &copy; <span id="yearTag"></span> BlogYourWay. All rights reserved.
+          </p>
+        </div>
+        <div class="col-md-0 d-md-none d-block">
+          <hr class="my-4" />
+        </div>
+        <div class="col-md-6 text-md-start text-center">
+          <h2 class="h5 mb-3">Join Our Open Source Community</h2>
+          <p class="mb-4 fw-light">
+            BlogYourWay is an open source side project and we welcome
+            contributions or advice from everyone. Whether you're looking to fix
+            bugs, add new features, or improve documentation, your help is
+            appreciated!
+          </p>
+          <a href="https://github.com/hengtseChou/blogyourway"
+             class="btn btn-outline-light">Contribute on GitHub</a>
+        </div>
+      </div>
+    </div>
   </footer>
 {% endblock %}
 {% block script %}{% endblock %}
