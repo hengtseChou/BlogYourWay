@@ -12,28 +12,16 @@
       <div class="offset-lg-2 col-lg-8 col-12">
         <div class="row" style="min-height: calc(100vh - 330px)">
           <!-- post-column -->
-          <div class="col-lg-8 col-11 mx-auto">
+          <div class="col-lg-8 col-12 mx-auto">
             {% if posts|length != 0 %}
               <h5 class="text-start mt-4 ms-2 fw-bold" style="color: #646464">Featured Posts</h5>
               {% for post in posts %}
                 {% set post_link = '/@' ~ post.author ~'/posts/' ~ post.post_uid %}
-                <div class="mt-4 mb-5 ms-2">
+                <div class="ms-lg-2 ms-0 my-4 p-4 border rounded rounded-2">
                   <a href="{{ post_link }}" class="header-link">
                     <h3 class="fw-bold">{{ post.title }}</h3>
                   </a>
                   <div class="d-flex align-items-center my-3">
-                    <a href="about">
-                      {% if user.profile_img_url|length == 0 %}
-                        <img src="/static/img/default-profile.png"
-                             alt="profile-img"
-                             class="profile-md me-2">
-                      {% else %}
-                        <img src="{{ user.profile_img_url }}"
-                             alt="profile-img"
-                             class="profile-md me-2">
-                      {% endif %}
-                    </a>
-                    <a href="about" class="author-link mx-2">{{ post.author }}</a>
                     <div class="grey-text" style="font-size: large;">on {{ post.created_at }}</div>
                   </div>
                   <div class="mb-3" style="font-size: large;">{{ post.subtitle }}</div>
@@ -47,11 +35,6 @@
                     {% endfor %}
                   </div>
                 </div>
-                {% if loop.index != posts|length %}
-                  <hr>
-                {% else %}
-                  <div style="height: 50px;"></div>
-                {% endif %}
               {% endfor %}
             {% else %}
               <h5 class="text-start py-5 fw-bold" style="color: #646464;">No featured posts yet!</h5>

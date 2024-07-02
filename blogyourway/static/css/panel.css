@@ -8,7 +8,6 @@
   width: 250px;
   padding: 20px;
   overflow-y: auto;
-  font-family: "Ubuntu", "Noto Sans TC", sans-serif;
 }
 .sidebar hr {
   border-top: 1px solid #fff;

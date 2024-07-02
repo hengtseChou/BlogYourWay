@@ -1,5 +1,6 @@
 body {
   font-family: "Ubuntu", "Noto Sans TC", sans-serif;
+  min-height: 100vh;
 }
 
 .toast {
