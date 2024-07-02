@@ -1,5 +1,3 @@
-hljs.highlightAll();
-
 // notification (toast) from flask
 document.addEventListener("DOMContentLoaded", function () {
   setTimeout(function () {

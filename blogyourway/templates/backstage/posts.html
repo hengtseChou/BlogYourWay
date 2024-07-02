@@ -1,5 +1,12 @@
 {% extends 'panel.html' %}
-{% block head %}<link rel="stylesheet" href="/static/css/panel.css" />{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="/static/css/panel.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
+          defer></script>
+  <script src="/static/js/backstage/posts.js" defer></script>
+{% endblock %}
 {% block panel %}
   <!-- desktop view -->
   <div class="d-none d-md-block">
@@ -243,7 +250,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
-{% block script %}
-  <script src="/static/js/backstage/posts.js"></script>
 {% endblock %}

@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 {% block title %}{{ post.title }}{% endblock %}
-{%
-block meta_tags %}
-<meta name="description" content="{{ post['subtitle'] }}" />
-<meta property="og:image" content="{{ post['cover_url'] }}" />
+{% block meta_tags %}
+  <meta name="description" content="{{ post['subtitle'] }}" />
+  <meta property="og:image" content="{{ post['cover_url'] }}" />
 {% endblock %}
 {% block head %}
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  <script>
-  function onSubmit(token) {
-    document.getElementById("comment-form").submit();
-  }
-  </script>
   <link rel="stylesheet" href="/static/css/blogpost.css">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <link rel="preconnect" href="https://www.google.com" />
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
+        integrity="sha512-hasIneQUHlh06VNBe7f6ZcHmeRTLIaQWFd43YriJ0UND19bvYRauxthDg8E4eVNPm9bRUhr5JGeqH7FRFXQu5g=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"
+          integrity="sha512-bgHRAiTjGrzHzLyKOnpFvaEpGzJet3z4tZnXGjpsCcqOnAH6VGUx9frc5bcIhKTVLEiCO6vEhNAgx5jtLUYrfA=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+          defer></script>
+  <script src="/static/js/frontstage/blogpost.js" defer></script>
 {% endblock %}
 {% block body %}
   {% include 'navbar.html' %}
@@ -160,4 +167,3 @@ block meta_tags %}
   </div>
   {% include 'footer.html' %}
 {% endblock %}
-{% block script %}<script src="/static/js/frontstage/blogpost.js"></script>{% endblock %}

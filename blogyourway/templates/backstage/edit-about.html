@@ -1,5 +1,12 @@
 {% extends 'panel.html' %}
-{% block head %}<link rel="stylesheet" href="/static/css/panel.css" />{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="/static/css/panel.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
+          defer></script>
+  <script src="/static/js/backstage/edit-about.js" defer></script>
+{% endblock %}
 {% block panel %}
   <div style="height: 43px; margin-top: 30px">
     <h2 class="ms-2">About</h2>
@@ -41,7 +48,4 @@
     </div>
   </form>
 {% endblock %}
-{% block script %}
-  <script>var userAbout = {{ user.about | tojson | safe }};</script>
-  <script src="/static/js/backstage/edit-about.js"></script>
-{% endblock %}
+{% block script %}<script>var userAbout = {{ user.about | tojson | safe }};</script>{% endblock %}

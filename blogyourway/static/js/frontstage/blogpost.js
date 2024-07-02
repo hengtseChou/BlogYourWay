@@ -1,10 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".ajax-profile-pic").forEach(fetchReplacementImage);
-  setTimeout(sendReadCountRequest, 30000);
-  document
-    .getElementById("comment-form")
-    .addEventListener("keypress", preventFormEnter);
-});
+function onSubmit(token) {
+  document.getElementById("comment-form").submit();
+}
 
 function fetchReplacementImage(imgElement) {
   const originalSrc = imgElement.getAttribute("src");
@@ -33,3 +29,13 @@ function preventFormEnter(event) {
     event.preventDefault();
   }
 }
+
+hljs.highlightAll();
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".ajax-profile-pic").forEach(fetchReplacementImage);
+  setTimeout(sendReadCountRequest, 30000);
+  document
+    .getElementById("comment-form")
+    .addEventListener("keypress", preventFormEnter);
+});
