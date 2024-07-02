@@ -36,16 +36,16 @@ def create_app() -> Flask:
     # debug mode
     if ENV == "debug":
         app.config["DEBUG"] = True
-        from flask_debugtoolbar import DebugToolbarExtension
+        # from flask_debugtoolbar import DebugToolbarExtension
 
-        toolbar = DebugToolbarExtension()
-        toolbar.init_app(app)
-        app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
-        logger.debug("Debugtoolbar initialized.")
+        # toolbar = DebugToolbarExtension()
+        # toolbar.init_app(app)
+        # app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
+        # logger.debug("Debugtoolbar initialized.")
 
     ## login
     login_manager = LoginManager()
-    login_manager.login_view = "blog.login_get"
+    login_manager.login_view = "frontstage.login_get"
     login_manager.login_message = "Please login to proceed."
     login_manager.init_app(app)
     logger.debug("Login manager initialized.")

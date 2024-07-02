@@ -495,7 +495,7 @@ def settings_post():
         user_utils.delete_user(username)
         flash("Account deleted successfully!", category="success")
         logger.debug(f"User {username} has been deleted.")
-        return redirect(url_for("blog.register_get"))
+        return redirect(url_for("frontstage.register_get"))
 
     user = mongodb.user_info.find_one({"username": current_user.username})
 
