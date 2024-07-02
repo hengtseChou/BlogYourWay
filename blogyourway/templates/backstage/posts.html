@@ -223,12 +223,30 @@
                      name="tags"
                      placeholder="Separate your tags with ','" />
             </div>
-            <div class="mb-4">
+            <div class="mb-4 d-flex justify-content-start">
+              <button type="button"
+                      class="btn panel-btn text-center me-2"
+                      id="add-cover-button"
+                      onclick="toggleCoverUrl()">+ Cover image</button>
+              <button type="button"
+                      class="btn panel-btn text-center"
+                      id="add-slug-button"
+                      onclick="toggleSlug()">+ Custom slug</button>
+            </div>
+            <div class="mb-4" id="cover-section" style="display:none;">
               <label for="cover" class="form-label ms-2 backstage-form-label">· Cover image</label>
               <input type="text"
                      class="form-control border-underline"
                      id="cover"
                      name="cover_url"
+                     placeholder="Insert image url" />
+            </div>
+            <div class="mb-4" id="slug-section" style="display:none;">
+              <label for="slug" class="form-label ms-2 backstage-form-label">· Custom slug</label>
+              <input type="text"
+                     class="form-control border-underline"
+                     id="slug"
+                     name="slug"
                      placeholder="Insert image url" />
             </div>
             <div class="mb-4">

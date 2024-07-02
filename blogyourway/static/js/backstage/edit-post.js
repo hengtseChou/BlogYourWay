@@ -54,11 +54,11 @@ function validateUpdate() {
     return false;
   }
 
-  var cover = document.getElementById("cover").value;
-  if (cover.trim() === "") {
-    alert("You must add a cover image for the post.");
-    return false;
-  }
+  // var cover = document.getElementById("cover").value;
+  // if (cover.trim() === "") {
+  //   alert("You must add a cover image for the post.");
+  //   return false;
+  // }
 
   if (easyMDE.value().trim() === "") {
     alert("You did not write anything!");
