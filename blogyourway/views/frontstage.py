@@ -25,10 +25,6 @@ from blogyourway.services import logger, logger_utils, mongodb
 
 frontstage = Blueprint("frontstage", __name__, template_folder="../templates/frontstage/")
 
-# @frontstage.context_processor
-# def inject_env_var():
-#     return {"RECAPTCHA_KEY": RECAPTCHA_KEY}
-
 
 @frontstage.context_processor
 def inject_env_var():
