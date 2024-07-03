@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from math import ceil
 from typing import Dict, List
@@ -8,7 +8,7 @@ from flask import Request, abort
 from flask_login import current_user
 
 from blogyourway.config import ENV
-from blogyourway.helpers.common import FormValidator, MyDataClass, UIDGenerator, get_today
+from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today
 from blogyourway.services.mongo import Database, mongodb
 
 ###################################################################
@@ -19,7 +19,7 @@ from blogyourway.services.mongo import Database, mongodb
 
 
 @dataclass
-class PostInfo(MyDataClass):
+class PostInfo:
     post_uid: str
     title: str
     subtitle: str
@@ -39,7 +39,7 @@ class PostInfo(MyDataClass):
 
 
 @dataclass
-class PostContent(MyDataClass):
+class PostContent:
     post_uid: str
     author: str
     content: str
@@ -68,13 +68,13 @@ class NewPostSetup:
             tags=process_tags(request.form.get("tags")),
             cover_url=request.form.get("cover_url"),
         )
-        return new_post_info.as_dict()
+        return asdict(new_post_info)
 
     def _create_post_content(self, request: Request, author_name: str) -> Dict:
         new_post_content = PostContent(
             post_uid=self._post_uid, author=author_name, content=request.form.get("content")
         )
-        return new_post_content.as_dict()
+        return asdict(new_post_content)
 
     def _increment_tags_for_user(self, new_post_info: Dict) -> None:
         username = new_post_info.get("author")
@@ -115,7 +115,7 @@ def create_post(request: Request) -> str:
 
 
 @dataclass
-class UpdatedPostInfo(MyDataClass):
+class UpdatedPostInfo:
     title: str
     subtitle: str
     tags: List[str]
@@ -127,7 +127,7 @@ class UpdatedPostInfo(MyDataClass):
 
 
 @dataclass
-class UpdatedPostContent(MyDataClass):
+class UpdatedPostContent:
     content: str
 
 
@@ -158,11 +158,11 @@ class PostUpdateSetup:
             tags=process_tags(request.form.get("tags")),
             cover_url=request.form.get("cover_url"),
         )
-        return updated_post_info.as_dict()
+        return asdict(updated_post_info)
 
     def _updated_post_content(self, request: Request) -> Dict:
         updated_post_content = UpdatedPostContent(content=request.form.get("content"))
-        return updated_post_content.as_dict()
+        return asdict(updated_post_content)
 
     def update_post(self, post_uid: str, request: Request) -> None:
         validator = FormValidator()

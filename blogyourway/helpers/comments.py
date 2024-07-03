@@ -2,7 +2,7 @@
 This module includes a create comment function, and a comment utility class.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Dict, List
 
@@ -11,7 +11,7 @@ from flask import Request
 from flask_login import current_user
 
 from blogyourway.config import ENV, RECAPTCHA_SECRET
-from blogyourway.helpers.common import FormValidator, MyDataClass, UIDGenerator, get_today
+from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today
 from blogyourway.services.mongo import Database, mongodb
 
 ###################################################################
@@ -22,7 +22,7 @@ from blogyourway.services.mongo import Database, mongodb
 
 
 @dataclass
-class Comment(MyDataClass):
+class Comment:
     name: str
     email: str
     profile_link: str = field(init=False)
@@ -38,7 +38,7 @@ class Comment(MyDataClass):
 
 
 @dataclass
-class AnonymousComment(MyDataClass):
+class AnonymousComment:
     name: str
     email: str
     profile_link: str = field(default="", init=False)
@@ -111,7 +111,7 @@ class NewCommentSetup:
                 comment=request.form.get("comment"),
             )
 
-        new_comment = new_comment.as_dict()
+        new_comment = asdict(new_comment)
         self._db_handler.comment.insert_one(new_comment)
 
 

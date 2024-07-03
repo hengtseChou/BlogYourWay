@@ -152,14 +152,6 @@ class UIDGenerator:
 ###################################################################
 
 
-@dataclass
-class MyDataClass:
-    """Dataclass with additional method of converting itself into a dict."""
-
-    def as_dict(self):
-        return {k: v for k, v in asdict(self).items()}
-
-
 def get_today(env: str) -> datetime:
     if env == "debug":
         today = datetime.now()

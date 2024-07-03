@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Dict, List
 
@@ -8,13 +8,13 @@ from flask import Request, flash
 from flask_login import UserMixin
 
 from blogyourway.config import ENV
-from blogyourway.helpers.common import FormValidator, MyDataClass, get_today
+from blogyourway.helpers.common import FormValidator, get_today
 from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
 
 
 @dataclass
-class UserInfo(UserMixin, MyDataClass):
+class UserInfo(UserMixin):
     username: str
     email: str
     blogname: str
@@ -37,14 +37,14 @@ class UserInfo(UserMixin, MyDataClass):
 
 
 @dataclass
-class UserCreds(MyDataClass):
+class UserCreds:
     username: str
     email: str
     password: str
 
 
 @dataclass
-class UserAbout(MyDataClass):
+class UserAbout:
     username: str
     about: str = ""
 
@@ -90,15 +90,15 @@ class NewUserSetup:
 
     def _create_user_creds(self, username: str, email: str, hashed_password: str) -> Dict:
         new_user_creds = UserCreds(username=username, email=email, password=hashed_password)
-        return new_user_creds.as_dict()
+        return asdict(new_user_creds)
 
     def _create_user_info(self, username: str, email: str, blogname: str) -> Dict:
         new_user_info = UserInfo(username=username, email=email, blogname=blogname)
-        return new_user_info.as_dict()
+        return asdict(new_user_info)
 
     def _create_user_about(self, username: str) -> Dict:
         new_user_about = UserAbout(username=username)
-        return new_user_about.as_dict()
+        return asdict(new_user_about)
 
     @staticmethod
     def _hash_password(password: str) -> str:
