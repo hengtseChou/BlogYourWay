@@ -415,12 +415,12 @@ def blog(username):
 
     # set up pagination
     current_page = request.args.get("page", default=1, type=int)
-    ARTICLES_EACH_PAGE = 5
-    pagination = paging.setup(username, current_page, ARTICLES_EACH_PAGE)
+    POSTS_EACH_PAGE = 5
+    pagination = paging.setup(username, current_page, POSTS_EACH_PAGE)
 
     # skip and limit posts with given page
     posts = post_utils.find_posts_with_pagination(
-        username=username, page_number=current_page, posts_per_page=ARTICLES_EACH_PAGE
+        username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
     )
     for post in posts:
         post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")

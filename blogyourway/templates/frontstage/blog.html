@@ -5,9 +5,8 @@
   {% include 'cover.html' %}
   <div class="container-fluid">
     <div class="row">
-      <div class="offset-lg-2 col-lg-8 col-12"
-           style="min-height: calc(100vh - 330px)">
-        <div class="row">
+      <div class="offset-lg-2 col-lg-8 col-12">
+        <div class="row fill-up-space">
           <!-- post column -->
           <div class="col-lg-8 col-12 mx-auto mt-4">
             {% if posts | length != 0 %}
@@ -55,38 +54,33 @@
             </div>
           </div>
         </div>
-      </div>
-      {% if pagination.is_previous_page_allowed or pagination.is_next_page_allowed %}
-        <div class="border border-1 text-center py-2 my-3"
-             style="background-color: #f5f5f5">
-          <div class="row">
-            <div class="offset-md-2 col-md-4 col-6 text-start">
-              {% if pagination.is_previous_page_allowed %}
-                {% set previous_page = pagination.current_page - 1 %}
-                <a class="btn ms-3"
-                   href="{{ '/@' ~ user.username ~ '/blog?page=' ~ previous_page }}">
-                  <h5>
-                    <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span>
-                    Newer Posts
-                  </h5>
-                </a>
-              {% endif %}
-            </div>
-            <div class="col-md-4 col-6 text-end">
-              {% if pagination.is_next_page_allowed %}
-                {% set next_page = pagination.current_page + 1 %}
-                <a class="btn me-3"
-                   href="{{ '/@' ~ user.username ~ '/blog?page=' ~ next_page }}">
-                  <h5>
-                    Older Posts
-                    <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
-                  </h5>
-                </a>
-              {% endif %}
+        {% if pagination.is_previous_page_allowed or pagination.is_next_page_allowed %}
+          <div class="border border-1 py-2 my-3 bg-light-grey">
+            <div class="row">
+              <div class="col-6 text-start">
+                {% if pagination.is_previous_page_allowed %}
+                  {% set previous_page = pagination.current_page - 1 %}
+                  <a class="btn ms-3"
+                     href="{{ '/@' ~ user.username ~ '/blog?page=' ~ previous_page }}">
+                    <small class="mx-1"><i class="fa-solid fa-angles-left"></i></small>
+                    Prev
+                  </a>
+                {% endif %}
+              </div>
+              <div class="col-6 text-end">
+                {% if pagination.is_next_page_allowed %}
+                  {% set next_page = pagination.current_page + 1 %}
+                  <a class="btn me-3"
+                     href="{{ '/@' ~ user.username ~ '/blog?page=' ~ next_page }}">
+                    Next
+                    <small class="mx-1"><i class="fa-solid fa-angles-right"></i></small>
+                  </a>
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
   </div>
   {% include 'footer.html' %}

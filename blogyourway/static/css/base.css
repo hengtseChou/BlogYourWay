@@ -17,6 +17,14 @@ body {
   font-size: 16px;
 }
 
+.bg-light-grey {
+  background-color: #f5f5f5;
+}
+
+.fill-up-space {
+  min-height: calc(100vh - 330px);
+}
+
 .cover-container {
   width: 100%;
   height: calc(100vw / 3);

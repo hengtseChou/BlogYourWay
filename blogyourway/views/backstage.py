@@ -47,12 +47,12 @@ def posts_panel():
 
     # query through posts
     # 20 posts for each page
-    ARTICLES_EACH_PAGE = 20
-    pagination = paging.setup(current_user.username, current_page, ARTICLES_EACH_PAGE)
+    POSTS_EACH_PAGE = 20
+    pagination = paging.setup(current_user.username, current_page, POSTS_EACH_PAGE)
     posts = post_utils.find_posts_with_pagination(
         username=current_user.username,
         page_number=current_page,
-        posts_per_page=ARTICLES_EACH_PAGE,
+        posts_per_page=POSTS_EACH_PAGE,
     )
     for post in posts:
         post["title"] = string_truncate(post.get("title"), 30)

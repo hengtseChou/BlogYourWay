@@ -10,7 +10,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="offset-lg-2 col-lg-8 col-12">
-        <div class="row" style="min-height: calc(100vh - 330px)">
+        <div class="row fill-up-space">
           <!-- post-column -->
           <div class="col-lg-8 col-12 mx-auto">
             {% if posts|length != 0 %}
@@ -74,8 +74,7 @@
             </div>
           </div>
         </div>
-        <div class="border border-1 text-center py-2 my-3"
-             style="background-color: #f5f5f5">
+        <div class="border border-1 text-center py-2 my-3 bg-light-grey">
           {% set blog_link = '/@'~ user.username ~ '/blog' %}
           <a href="{{ blog_link }}" class="btn">View more posts</a href="blog">
           </div>
