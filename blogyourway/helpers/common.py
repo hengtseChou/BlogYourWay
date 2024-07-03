@@ -39,7 +39,7 @@ class FormValidator:
         - validate_email("invalid.email") -> False
         """
 
-        email_regex = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z]{2,7})+$"
+        email_regex = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z]{2,7})+$")
         if re.match(email_regex, email):
             return True
         return False
@@ -68,7 +68,7 @@ class FormValidator:
         - validate_password("Pwd 123") -> False
         """
 
-        password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{8,}$"
+        password_regex = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).{8,}$")
         if re.match(password_regex, password):
             return True
         return False
@@ -88,7 +88,7 @@ class FormValidator:
         - Can have zero or more lowercase letters, digits, or hyphens in the middle.
         - Optionally, may end with a lowercase letter or digit.
         """
-        username_regex = r"^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$"
+        username_regex = re.compile(r"^[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$")
         if re.match(username_regex, username):
             return True
         return False
@@ -102,7 +102,7 @@ class FormValidator:
         Returns:
         - bool: True if the blog name is valid.
         """
-        blogname_regex = r"^.{1,20}$"
+        blogname_regex = re.compile(r"^.{1,20}$")
         if re.match(blogname_regex, blogname):
             return True
         return False
