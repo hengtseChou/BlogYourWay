@@ -1,18 +1,23 @@
-<div class="d-none d-md-block">
-  <footer class="text-center">
-    <p>
-      &copy; <span id="yearTag"></span> {{ user["blogname"] }}. Powered by
-      <a href="/" style="color: lightgray">BlogYourWay</a>&nbsp;&nbsp;<i class="fa-solid fa-face-smile"></i>
-    </p>
-  </footer>
-</div>
-<div class="d-block d-md-none">
-  <footer class="text-center">
-    <p>
-      &copy; <span id="yearTagMobile"></span> {{ user["blogname"] }}.
-      <br />
-      Powered by
-      <a href="/" style="color: lightgray">BlogYourWay</a>&nbsp;&nbsp;<i class="fa-solid fa-face-smile"></i>
-    </p>
-  </footer>
-</div>
+<footer class="bg-dark text-white py-5">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="offset-lg-2 col-lg-8 col-12">
+        <div class="d-md-block d-none">
+          <hr class="my-4" />
+        </div>
+        <div class="row">
+          <div class="col-md-6 text-md-start text-center ">
+            <p class="small">
+              &copy; <span id="yearTag"></span> {{ user["blogname"] }}. Powered by
+              <a href="/" class="light-grey-text">BlogYourWay</a>&nbsp;&nbsp;<i class="fa-solid fa-face-smile"></i>
+            </p>
+          </div>
+          <div class="col-md-0 d-md-none d-block">
+            <hr class="my-4" />
+          </div>
+          <div class="col-md-6 text-md-end text-center">social links</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
