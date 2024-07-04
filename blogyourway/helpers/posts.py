@@ -21,6 +21,7 @@ from blogyourway.services.mongo import Database, mongodb
 @dataclass
 class PostInfo:
     post_uid: str
+    custom_slug: str
     title: str
     subtitle: str
     author: str
@@ -66,6 +67,7 @@ class NewPostSetup:
             subtitle=request.form.get("subtitle"),
             author=author_name,
             tags=process_tags(request.form.get("tags")),
+            custom_slug=request.form.get("custom-slug"),
             cover_url=request.form.get("cover_url"),
         )
         return asdict(new_post_info)
@@ -120,6 +122,7 @@ class UpdatedPostInfo:
     subtitle: str
     tags: List[str]
     cover_url: str
+    custom_slug: str
     last_updated: datetime = field(init=False)
 
     def __post_init__(self):
@@ -157,6 +160,7 @@ class PostUpdateSetup:
             subtitle=request.form.get("subtitle"),
             tags=process_tags(request.form.get("tags")),
             cover_url=request.form.get("cover_url"),
+            custom_slug=request.form.get("custom_slug"),
         )
         return asdict(updated_post_info)
 

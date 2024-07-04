@@ -93,7 +93,7 @@ class LoggerUtils:
     def login_failed(self, request: Request, msg: str):
         msg = msg.strip().strip(".")
         client_ip = return_client_ip(request, ENV)
-        self._logger.debug(f"{client_ip} - Login failed. Msg: {msg}. ")
+        self._logger.debug(f"{client_ip} - Login failed. Msg: {msg}.")
 
     def login_succeeded(self, request: Request, username: str):
         client_ip = return_client_ip(request, ENV)
@@ -106,13 +106,13 @@ class LoggerUtils:
     def registration_failed(self, request: Request, msg: str):
         msg = msg.strip().strip(".")
         client_ip = return_client_ip(request, ENV)
-        self._logger.debug(f"{client_ip} - Registration failed. Msg: {msg}. ")
+        self._logger.debug(f"{client_ip} - Registration failed. Msg: {msg}.")
 
     def registration_succeeded(self, request: Request):
         regist_form = request.form.to_dict()
         username = regist_form.get("username")
         client_ip = return_client_ip(request, ENV)
-        self._logger.info(f"{client_ip} - New user {username} has been created. ")
+        self._logger.info(f"{client_ip} - New user {username} has been created.")
 
     def backstage(self, username: str, tab: str):
         self._logger.debug(f"User {username} switched to {tab} tab.")

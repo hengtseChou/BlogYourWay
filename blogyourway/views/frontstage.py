@@ -1,3 +1,4 @@
+from typing import Tuple
 from urllib.parse import unquote, urlparse
 
 import bcrypt
@@ -264,32 +265,7 @@ def tag(username):
     return render_template("tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag)
 
 
-@frontstage.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
-def blogpost(username, post_uid):
-    ###################################################################
-
-    # early return for invalid inputs
-
-    ###################################################################
-
-    if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
-        abort(404)
-    if not mongodb.post_info.exists("post_uid", post_uid):
-        logger.debug(f"invalid post uid {post_uid}")
-        abort(404)
-
-    author = mongodb.post_info.find_one({"post_uid": post_uid}).get("author")
-    if username != author:
-        logger.debug(f"User {username} does not own post {post_uid}.")
-        abort(404)
-
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
+def blogpost_main_actions(username, post_uid, request):
     author_info = mongodb.user_info.find_one({"username": username})
     target_post = post_utils.get_full_post(post_uid)
 
@@ -327,6 +303,86 @@ def blogpost(username, post_uid):
     ###################################################################
 
     return render_template("blogpost.html", user=author_info, post=target_post, comments=comments)
+
+
+@frontstage.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
+def blogpost(username, post_uid):
+    ###################################################################
+
+    # early return for invalid inputs
+
+    ###################################################################
+
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
+        abort(404)
+    if not mongodb.post_info.exists("post_uid", post_uid):
+        logger.debug(f"invalid post uid {post_uid}")
+        abort(404)
+
+    post_info = mongodb.post_info.find_one({"post_uid": post_uid})
+    if username != post_info.get("author"):
+        logger.debug(f"User {username} does not own post {post_uid}")
+        abort(404)
+
+    custom_slug = post_info.get("custom_slug")
+    if custom_slug != "":
+        return redirect(
+            url_for(
+                "frontstage.blogpost_with_slug",
+                username=username,
+                post_uid=post_uid,
+                slug=custom_slug,
+            )
+        )
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    return blogpost_main_actions(username, post_uid, request)
+
+
+@frontstage.route("/@<username>/posts/<post_uid>/<slug>", methods=["GET", "POST"])
+def blogpost_with_slug(username, post_uid, slug):
+    ###################################################################
+
+    # early return for invalid inputs
+
+    ###################################################################
+
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
+        abort(404)
+    if not mongodb.post_info.exists("post_uid", post_uid):
+        logger.debug(f"invalid post uid {post_uid}")
+        abort(404)
+
+    post_info = mongodb.post_info.find_one({"post_uid": post_uid})
+    if username != post_info.get("author"):
+        logger.debug(f"User {username} does not own post {post_uid}")
+        abort(404)
+
+    custom_slug = post_info.get("custom_slug")
+    if custom_slug != slug:
+        return redirect(
+            url_for(
+                "frontstage.blogpost_with_slug",
+                username=username,
+                post_uid=post_uid,
+                slug=custom_slug,
+            )
+        )
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    return blogpost_main_actions(username, post_uid, request)
 
 
 @frontstage.route("/readcount-increment", methods=["GET"])

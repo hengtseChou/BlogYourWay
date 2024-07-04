@@ -49,6 +49,15 @@
                value="{{ post.cover_url }}" />
       </div>
       <div class="mb-4">
+        <label for="custom-slug" class="form-label ms-2 backstage-form-label">· Custom slug</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="custom-slug"
+               name="custom_slug"
+               placeholder=""
+               value="{{ post.custom_slug }}" />
+      </div>
+      <div class="mb-4">
         <textarea id="editor"
                   name="content"
                   style="white-space: pre-line"
