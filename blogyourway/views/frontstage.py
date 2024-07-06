@@ -1,4 +1,3 @@
-from typing import Tuple
 from urllib.parse import unquote, urlparse
 
 import bcrypt
@@ -200,6 +199,7 @@ def home(username):
     ###################################################################
 
     logger_utils.page_visited(request)
+    user_utils.total_view_increment(username)
 
     ###################################################################
 
@@ -255,6 +255,7 @@ def tag(username):
     ###################################################################
 
     logger_utils.page_visited(request)
+    user_utils.total_view_increment(username)
 
     ###################################################################
 
@@ -295,6 +296,7 @@ def blogpost_main_actions(username, post_uid, request):
 
     logger_utils.page_visited(request)
     post_utils.view_increment(post_uid)
+    user_utils.total_view_increment(username)
 
     ###################################################################
 
@@ -437,6 +439,7 @@ def about(username):
     ###################################################################
 
     logger_utils.page_visited(request)
+    user_utils.total_view_increment(username)
 
     ###################################################################
 
@@ -489,6 +492,7 @@ def blog(username):
     ###################################################################
 
     logger_utils.page_visited(request)
+    user_utils.total_view_increment(username)
 
     ###################################################################
 

@@ -231,7 +231,8 @@ class HTMLFormatter:
         for head in big_headings:
             head.name = "h2"
             current_class = head.get("class", [])
-            current_class.append("fw-bold")
+            # current_class.append("fw-bold")
+            # current_class.append("border-bottom")
             head["class"] = current_class
 
         return self
@@ -276,7 +277,7 @@ def html_to_post(html: str) -> str:
 
 def html_to_about(html: str) -> str:
     formatter = HTMLFormatter(html)
-    about = formatter.add_padding().modify_figure(max_width="50%").to_string()
+    about = formatter.add_padding().change_headings().modify_figure().to_string()
 
     return about
 

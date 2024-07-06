@@ -31,7 +31,7 @@ body {
 
 .cover-container {
   width: 100%;
-  height: calc(100vw / 3);
+  height: calc(100vw / 3.5);
   min-height: 250px;
   margin-top: -10px;
   background-size: cover; /* This will maintain the aspect ratio and crop the image */
