@@ -31,128 +31,149 @@
                  value="{{ user.blogname }}" />
         </div>
         <div class="mb-4 form-check form-switch ms-2">
-          <input
-            type="checkbox"
-            class="form-check-input custom-control-input card-checkbox"
-            id="changelog_enabled"
-            name="changelog_enabled"
-            {%
-            if
-            user.changelog_enabled
-            %}checked{%
-            endif
-            %}
-            />
-            <label for="changelog_enabled"
-                   class="form-check-label ms-2 custom-control-label">Enable changelog for your blog</label>
-          </div>
-          <div class="mb-4 form-check form-switch ms-2">
-            <input
-              type="checkbox"
-              class="form-check-input custom-control-input card-checkbox"
-              id="gallery_enabled"
-              name="gallery_enabled"
-              {%
-              if
-              user.gallery_enabled
-              %}checked{%
-              endif
-              %}
-              />
-              <label for="gallery_enabled"
-                     class="form-check-label ms-2 custom-control-label">Enable gallery for your blog</label>
-            </div>
-            <div class="text-end mb-5">
-              <button type="submit"
-                      class="btn panel-btn text-center"
-                      style="width: 20%;
-                             min-width: 150px"
-                      name="general">Save Changes</button>
-            </div>
-          </form>
-          <!-- update pw -->
-          <h4 class="ms-2 mb-4">Update Password</h4>
-          <form method="post" autocomplete="off" id="changepw-form">
-            <div class="ms-2 mb-3 row">
-              <label for="current" class="col-4 form-label">Current Password</label>
-              <div class="col-8">
-                <input type="password" class="form-control" id="current" name="current" />
-              </div>
-            </div>
-            <div class="ms-2 mb-3 row">
-              <label for="new" class="col-4 form-label">New Password</label>
-              <div class="col-8">
-                <input type="password" class="form-control" id="new" name="new" />
-              </div>
-            </div>
-            <div class="ms-2 mb-4 row">
-              <label for="confirm" class="col-4 form-label">Confirm New Password</label>
-              <div class="col-8">
-                <input type="password" class="form-control" id="confirm" name="confirm" />
-              </div>
-            </div>
-            <div class="text-end mb-4">
-              <button type="submit"
-                      class="btn panel-btn text-center"
-                      style="width: 20%;
-                             min-width: 150px"
-                      name="changepw"
-                      onclick="return validatePasswords()">Save Changes</button>
-            </div>
-          </form>
-          <hr />
-          <!-- delete -->
-          <div class="text-end mt-4 mb-5">
-            <button class="btn delete-btn"
-                    data-bs-toggle="modal"
-                    data-bs-target="#delete"
-                    style="width: 20%;
-                           min-width: 150px">Delete Account</button>
+          <input type="checkbox"
+                 class="form-check-input custom-control-input card-checkbox"
+                 id="changelog_enabled"
+                 name="changelog_enabled"
+                 {% if user.changelog_enabled %}checked{% endif %} />
+          <label for="changelog_enabled"
+                 class="form-check-label ms-2 custom-control-label">Enable changelog for your blog</label>
+        </div>
+        <div class="mb-4 form-check form-switch ms-2">
+          <input type="checkbox"
+                 class="form-check-input custom-control-input card-checkbox"
+                 id="gallery_enabled"
+                 name="gallery_enabled"
+                 {% if user.gallery_enabled %}checked{% endif %} />
+          <label for="gallery_enabled"
+                 class="form-check-label ms-2 custom-control-label">Enable gallery for your blog</label>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-6 text-end mb-5 ms-auto">
+            <button type="submit" class="btn panel-btn text-center w-100" name="general">Save Changes</button>
           </div>
         </div>
-      </div>
-      <!-- Modal -->
-      <div class="modal fade"
-           id="delete"
-           tabindex="-1"
-           aria-labelledby="deleteAccountConfirmationModal"
-           aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="deleteAccountConfirmationModal">Delete Account</h5>
-              <button type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"></button>
+      </form>
+      <!-- social links -->
+      <h4 class="ms-2 mb-4">Social Links</h4>
+      <form method="post" autocomplete="off" id="social-links-form">
+        <div id="inputContainer" class="mb-4">
+          {% for i in range(user.social_links|length) %}
+            {% set platform = user.social_links[i]['platform'] %}
+            {% set url = user.social_links[i]['url'] %}
+            <div class="input-group mb-2">
+              <span class="input-group-text">Link {{ i + 1 }}</span>
+              <input type="text"
+                     class="form-control"
+                     name="url-{{ i + 1 }}"
+                     placeholder="Url goes here"
+                     value="{{ url }}" />
+              <select class="form-select" name="platform-{{ i + 1 }}">
+                <option value="facebook" {% if platform=="facebook" %}selected{% endif %}>Facebook</option>
+                <option value="instagram" {% if platform=="instagram" %}selected{% endif %}>Instagram</option>
+                <option value="twitter" {% if platform=="twitter" %}selected{% endif %}>X (Twitter)</option>
+                <option value="medium" {% if platform=="medium" %}selected{% endif %}>Medium</option>
+                <option value="linkedin" {% if platform=="linkedin" %}selected{% endif %}>Linkedin</option>
+                <option value="github" {% if platform=="github" %}selected{% endif %}>Github</option>
+              </select>
+              <button class="btn panel-btn btn-remove" aria-label="Close">Remove</button>
             </div>
-            <form method="post" autocomplete="off" id="delete-form">
-              <div class="modal-body">
-                <p>
-                  Do you sure you want to delete account? All your works and posts
-                  will be deleted!
-                </p>
-                <p style="color: #646464">
-                  Type <span class="fw-bold">your password</span> to proceed.
-                </p>
-                <div class="mb-4">
-                  <input type="password"
-                         class="form-control"
-                         id="delete-confirm-pw"
-                         name="delete-confirm-pw" />
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                <button type="submit"
-                        class="btn"
-                        name="delete-account"
-                        style="background-color: #911d21;
-                               color: white">Delete</button>
-              </div>
-            </form>
+          {% endfor %}
+        </div>
+        <div class="row g-3">
+          <div class="col-md-2 col-4 text-end ms-auto">
+            <button type="button" class="btn panel-btn text-center w-100" id="add">Add</button>
+          </div>
+          <div class="col-md-3 col-6 text-end mb-5">
+            <button type="submit"
+                    class="btn panel-btn text-center w-100"
+                    name="social-links">Save Changes</button>
           </div>
         </div>
+      </form>
+      <!-- update pw -->
+      <h4 class="ms-2 mb-4">Update Password</h4>
+      <form method="post" autocomplete="off" id="changepw-form">
+        <div class="ms-2 mb-3 row">
+          <label for="current" class="col-4 form-label">Current Password</label>
+          <div class="col-8">
+            <input type="password" class="form-control" id="current" name="current" />
+          </div>
+        </div>
+        <div class="ms-2 mb-3 row">
+          <label for="new" class="col-4 form-label">New Password</label>
+          <div class="col-8">
+            <input type="password" class="form-control" id="new" name="new" />
+          </div>
+        </div>
+        <div class="ms-2 mb-4 row">
+          <label for="confirm" class="col-4 form-label">Confirm New Password</label>
+          <div class="col-8">
+            <input type="password" class="form-control" id="confirm" name="confirm" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-6 text-end mb-4 ms-auto">
+            <button type="submit"
+                    class="btn panel-btn text-center w-100"
+                    name="changepw"
+                    onclick="return validatePasswords()">Save Changes</button>
+          </div>
+        </div>
+      </form>
+      <hr />
+      <!-- delete -->
+      <div class="row">
+        <div class="col-md-3 col-6 text-end mt-4 mb-5 ms-auto">
+          <button class="btn delete-btn w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#delete">Delete Account</button>
+        </div>
       </div>
-    {% endblock %}
-    {% block script %}<script src="/static/js/backstage/settings.js"></script>{% endblock %}
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade"
+       id="delete"
+       tabindex="-1"
+       aria-labelledby="deleteAccountConfirmationModal"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteAccountConfirmationModal">Delete Account</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <form method="post" autocomplete="off" id="delete-form">
+          <div class="modal-body">
+            <p>
+              Do you sure you want to delete account? All your works and posts
+              will be deleted!
+            </p>
+            <p style="color: #646464">
+              Type <span class="fw-bold">your password</span> to proceed.
+            </p>
+            <div class="mb-4">
+              <input type="password"
+                     class="form-control"
+                     id="delete-confirm-pw"
+                     name="delete-confirm-pw" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            <button type="submit"
+                    class="btn"
+                    name="delete-account"
+                    style="background-color: #911d21;
+                           color: white">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}<script src="/static/js/backstage/settings.js"></script>{% endblock %}

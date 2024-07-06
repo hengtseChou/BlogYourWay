@@ -434,6 +434,7 @@ def settings_post():
 
     general = request.form.get("general")
     change_pw = request.form.get("changepw")
+    social_links = request.form.get("social-links")
     delete_account = request.form.get("delete-account")
 
     if general is not None:
@@ -453,6 +454,20 @@ def settings_post():
         )
         logger.debug(f"general settings for {current_user.username} has been updated")
         flash("Update succeeded!", category="success")
+
+    elif social_links is not None:
+        user = mongodb.user_info.find_one({"username": current_user.username})
+        form = request.form.to_dict()
+        form_values = list(form.values())
+
+        updated_links = []
+        for i in range(0, len(form_values) - 1, 2):
+            updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
+        mongodb.user_info.update_values(
+            filter={"username": current_user.username}, update={"social_links": updated_links}
+        )
+        logger.debug(f"social links for {current_user.username} has been updated.")
+        flash("Social Links updated!", category="success")
 
     elif change_pw is not None:
         current_pw_input = request.form.get("current")

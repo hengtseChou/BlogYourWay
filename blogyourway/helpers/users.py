@@ -22,6 +22,7 @@ class UserInfo(UserMixin):
     profile_img_url: str = ""
     short_bio: str = ""
     created_at: datetime = None
+    social_links: List[Dict[str, str]] = field(default_factory=list)
     changelog_enabled: bool = False
     gallery_enabled: bool = False
     total_views: int = 0

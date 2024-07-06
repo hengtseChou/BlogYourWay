@@ -8,14 +8,32 @@
         <div class="row">
           <div class="col-md-6 text-md-start text-center ">
             <p class="small">
-              &copy; <span id="yearTag"></span> {{ user["blogname"] }}. Powered by
+              &copy; <span id="yearTag"></span> {{ user.blogname }}. Powered by
               <a href="/" class="light-grey-text">BlogYourWay</a>&nbsp;&nbsp;<i class="fa-solid fa-face-smile"></i>
             </p>
           </div>
           <div class="col-md-0 d-md-none d-block">
             <hr class="my-4" />
           </div>
-          <div class="col-md-6 text-md-end text-center">social links</div>
+          <div class="col-md-6 text-md-end text-center">
+            <h3>
+              {% for social_link in user.social_links %}
+                {% if social_link["platform"] == "facebook" %}
+                  <a href="https://{{ social_link['url'] }}" class="light-grey-text mx-2"><i class="fa-brands fa-facebook"></i></a>
+                {% elif social_link["platform"] == "instagram" %}
+                  <a href="https://{{ social_link['url'] }}" class="light-grey-text mx-2"><i class="fa-brands fa-instagram"></i></a>
+                {% elif social_link["platform"] == "twitter" %}
+                  <a href="https://{{ social_link['url'] }}" class="light-grey-text mx-2"><i class="fa-brands fa-x-twitter"></i></a>
+                {% elif social_link["platform"] == "medium" %}
+                  <a href="https://{{ social_link['url'] }}" class="light-grey-text mx-2"><i class="fa-brands fa-medium"></i></a>
+                {% elif social_link["platform"] == "linkedin" %}
+                  <a href="https://{{ social_link['url'] }}" class="light-grey-text mx-2"><i class="fa-brands fa-linkedin-in"></i></a>
+                {% elif social_link["platform"] == "github" %}
+                  <a href="https://{{ social_link['url'] }}" class="light-grey-text mx-2"><i class="fa-brands fa-github"></i></a>
+                {% endif %}
+              {% endfor %}
+            </h3>
+          </div>
         </div>
       </div>
     </div>
