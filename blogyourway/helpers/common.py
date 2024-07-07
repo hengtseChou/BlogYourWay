@@ -5,7 +5,6 @@ This module collects the common utulity functions from the application.
 import random
 import re
 import string
-from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 
 from blogyourway.services.mongo import Database

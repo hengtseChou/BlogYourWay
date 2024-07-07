@@ -4,7 +4,6 @@ This module includes a create comment function, and a comment utility class.
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Dict, List
 
 import requests
 from flask import Request
@@ -140,7 +139,7 @@ class CommentUtils:
     def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
-    def find_comments_by_post_uid(self, post_uid: str) -> List[Dict]:
+    def find_comments_by_post_uid(self, post_uid: str) -> list[dict]:
         result = (
             self._db_handler.comment.find({"post_uid": post_uid}).sort("created_at", 1).as_list()
         )

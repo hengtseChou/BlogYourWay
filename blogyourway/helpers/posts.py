@@ -1,7 +1,6 @@
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from math import ceil
-from typing import Dict, List
 
 from bs4 import BeautifulSoup
 from flask import Request, abort
@@ -25,7 +24,7 @@ class PostInfo:
     title: str
     subtitle: str
     author: str
-    tags: List[str]
+    tags: list[str]
     cover_url: str
     created_at: datetime = field(init=False)
     last_updated: datetime = field(init=False)
@@ -46,7 +45,7 @@ class PostContent:
     content: str
 
 
-def process_tags(tag_string: str) -> List[str]:
+def process_tags(tag_string: str) -> list[str]:
     if tag_string == "":
         return []
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
@@ -60,7 +59,7 @@ class NewPostSetup:
     def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
         return True
 
-    def _create_post_info(self, request: Request, author_name: str) -> Dict:
+    def _create_post_info(self, request: Request, author_name: str) -> dict:
         new_post_info = PostInfo(
             post_uid=self._post_uid,
             title=request.form.get("title"),
@@ -72,13 +71,13 @@ class NewPostSetup:
         )
         return asdict(new_post_info)
 
-    def _create_post_content(self, request: Request, author_name: str) -> Dict:
+    def _create_post_content(self, request: Request, author_name: str) -> dict:
         new_post_content = PostContent(
             post_uid=self._post_uid, author=author_name, content=request.form.get("content")
         )
         return asdict(new_post_content)
 
-    def _increment_tags_for_user(self, new_post_info: Dict) -> None:
+    def _increment_tags_for_user(self, new_post_info: dict) -> None:
         username = new_post_info.get("author")
         tags = new_post_info.get("tags")
         tags_increments = {f"tags.{tag}": 1 for tag in tags}
@@ -120,7 +119,7 @@ def create_post(request: Request) -> str:
 class UpdatedPostInfo:
     title: str
     subtitle: str
-    tags: List[str]
+    tags: list[str]
     cover_url: str
     custom_slug: str
     last_updated: datetime = field(init=False)
@@ -141,7 +140,7 @@ class PostUpdateSetup:
     def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
         return True
 
-    def _update_tags_for_user(self, post_uid: str, new_tags: Dict) -> None:
+    def _update_tags_for_user(self, post_uid: str, new_tags: dict) -> None:
         post_info = self._db_handler.post_info.find_one({"post_uid": post_uid})
         author = post_info.get("author")
         old_tags = post_info.get("tags")
@@ -154,7 +153,7 @@ class PostUpdateSetup:
             filter={"username": author}, increments=tags_increment, upsert=True
         )
 
-    def _updated_post_info(self, request: Request) -> Dict:
+    def _updated_post_info(self, request: Request) -> dict:
         updated_post_info = UpdatedPostInfo(
             title=request.form.get("title"),
             subtitle=request.form.get("subtitle"),
@@ -164,7 +163,7 @@ class PostUpdateSetup:
         )
         return asdict(updated_post_info)
 
-    def _updated_post_content(self, request: Request) -> Dict:
+    def _updated_post_content(self, request: Request) -> dict:
         updated_post_content = UpdatedPostContent(content=request.form.get("content"))
         return asdict(updated_post_content)
 
@@ -357,28 +356,28 @@ class PostUtils:
     def __init__(self, db_handler: Database):
         self._db_handler = db_handler
 
-    # def get_all_post_uid(self) -> List[str]:
+    # def get_all_post_uid(self) -> list[str]:
     #     all_post_info = self._db_handler.post_info.find({})
     #     all_post_uid = [post_info.get("post_uid") for post_info in all_post_info]
     #     return all_post_uid
 
-    # def get_all_author(self) -> List[str]:
+    # def get_all_author(self) -> list[str]:
     #     all_post_info = self._db_handler.post_info.find({})
     #     all_author = [post_info.get("author") for post_info in all_post_info]
     #     return all_author
 
-    # def get_all_last_update(self) -> List[str]:
+    # def get_all_last_update(self) -> list[str]:
     #     all_post_info = self._db_handler.post_info.find({})
     #     all_last_updated = [post_info.get("last_updated") for post_info in all_post_info]
     #     return all_last_updated
-    def get_all_posts_info(self, include_archive=False) -> List[Dict]:
+    def get_all_posts_info(self, include_archive=False) -> list[dict]:
         if include_archive:
             result = self._db_handler.post_info.find({}).as_list()
         else:
             result = (self._db_handler.post_info.find({"archived": False})).as_list()
         return result
 
-    def find_featured_posts_info(self, username: str) -> List[Dict]:
+    def find_featured_posts_info(self, username: str) -> list[dict]:
         result = (
             self._db_handler.post_info.find(
                 {"author": username, "featured": True, "archived": False}
@@ -391,7 +390,7 @@ class PostUtils:
             post["created_at"] = post.get("created_at").strftime("%B %d, %Y")
         return result
 
-    def find_all_posts_info(self, username: str) -> List[Dict]:
+    def find_all_posts_info(self, username: str) -> list[dict]:
         result = (
             self._db_handler.post_info.find({"author": username, "archived": False})
             .sort("created_at", -1)
@@ -399,7 +398,7 @@ class PostUtils:
         )
         return result
 
-    def find_all_archived_posts_info(self, username: str) -> List[Dict]:
+    def find_all_archived_posts_info(self, username: str) -> list[dict]:
         result = (
             self._db_handler.post_info.find({"author": username, "archived": True})
             .sort("created_at", -1)
@@ -409,7 +408,7 @@ class PostUtils:
 
     def find_posts_with_pagination(
         self, username: str, page_number: int, posts_per_page: int
-    ) -> List[Dict]:
+    ) -> list[dict]:
         if page_number == 1:
             result = (
                 self._db_handler.post_info.find({"author": username, "archived": False})
@@ -429,7 +428,7 @@ class PostUtils:
 
         return result
 
-    def get_full_post(self, post_uid: str) -> Dict:
+    def get_full_post(self, post_uid: str) -> dict:
         target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
         target_post_content = self._db_handler.post_content.find_one({"post_uid": post_uid}).get(
             "content"

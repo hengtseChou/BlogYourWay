@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.cursor import Cursor
@@ -11,23 +9,23 @@ class ExtendedCollection:
     def __init__(self, collection: Collection):
         self._col = collection
 
-    def find(self, filter: Dict):
+    def find(self, filter: dict):
         return ExtendedCursor(self._col, filter)
 
-    def insert_one(self, document: Dict) -> None:
+    def insert_one(self, document: dict) -> None:
         self._col.insert_one(document)
 
-    def count_documents(self, filter: Dict) -> int:
+    def count_documents(self, filter: dict) -> int:
         return self._col.count_documents(filter)
 
-    def delete_one(self, filter: Dict) -> None:
+    def delete_one(self, filter: dict) -> None:
         self._col.delete_one(filter)
 
-    def delete_many(self, filter: Dict) -> None:
+    def delete_many(self, filter: dict) -> None:
         self._col.delete_many(filter)
 
     # this application usually does not consider the case where records not found
-    def find_one(self, filter) -> Dict:
+    def find_one(self, filter) -> dict:
         result = self._col.find_one(filter)
         if result is None:
             return result
@@ -90,7 +88,7 @@ class ExtendedCursor(Cursor):
         super().limit(limit)
         return self
 
-    def as_list(self) -> List:
+    def as_list(self) -> list:
         self.__check_okay_to_chain()
         return list(self)
 

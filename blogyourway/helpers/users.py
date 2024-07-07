@@ -1,7 +1,6 @@
 import logging
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Dict, List
 
 import bcrypt
 from flask import Request, flash
@@ -22,11 +21,11 @@ class UserInfo(UserMixin):
     profile_img_url: str = ""
     short_bio: str = ""
     created_at: datetime = None
-    social_links: List[Dict[str, str]] = field(default_factory=list)
+    social_links: list[dict[str, str]] = field(default_factory=list)
     changelog_enabled: bool = False
     gallery_enabled: bool = False
     total_views: int = 0
-    tags: Dict[str, int] = field(default_factory=dict)
+    tags: dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
         if self.created_at is None:
@@ -89,15 +88,15 @@ class NewUserSetup:
                 return True
         return False
 
-    def _create_user_creds(self, username: str, email: str, hashed_password: str) -> Dict:
+    def _create_user_creds(self, username: str, email: str, hashed_password: str) -> dict:
         new_user_creds = UserCreds(username=username, email=email, password=hashed_password)
         return asdict(new_user_creds)
 
-    def _create_user_info(self, username: str, email: str, blogname: str) -> Dict:
+    def _create_user_info(self, username: str, email: str, blogname: str) -> dict:
         new_user_info = UserInfo(username=username, email=email, blogname=blogname)
         return asdict(new_user_info)
 
-    def _create_user_about(self, username: str) -> Dict:
+    def _create_user_about(self, username: str) -> dict:
         new_user_about = UserAbout(username=username)
         return asdict(new_user_about)
 
@@ -158,7 +157,7 @@ class UserDeletionSetup:
         self._db_handler = db_handler
         self._logger = logger
 
-    def _get_posts_uid_by_user(self) -> List[str]:
+    def _get_posts_uid_by_user(self) -> list[str]:
         posts = self._db_handler.post_info.find({"author": self._user_to_be_deleted})
         posts_uid = [post.get("post_uid") for post in posts]
 
@@ -201,7 +200,7 @@ class UserUtils:
         self._db_handler = db_handler
         self._logger = logger
 
-    def get_all_username(self) -> List[str]:
+    def get_all_username(self) -> list[str]:
         all_user_info = self._db_handler.user_info.find({})
         all_username = [user_info.get("username") for user_info in all_user_info]
         return all_username
