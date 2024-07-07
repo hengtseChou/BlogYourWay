@@ -543,3 +543,12 @@ def logout():
     ###################################################################
 
     return redirect(url_for("frontstage.home", username=username))
+
+
+@backstage.route("/projects", methods=["GET"])
+@login_required
+def gallery_get():
+
+    user = mongodb.user_info.find_one({"username": current_user.username})
+
+    return render_template("projects.html", user=user)

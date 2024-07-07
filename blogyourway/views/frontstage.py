@@ -164,12 +164,6 @@ def signup_post():
     else:
         return render_template("signup.html")
 
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
 
 @frontstage.route("/@<username>", methods=["GET"])
 def home(username):
@@ -583,3 +577,56 @@ def sitemap():
     logger.debug("Sitemap generated successfully..")
 
     return response
+
+
+@frontstage.route("/@<username>/gallery", methods=["GET"])
+def gallery(username):
+    ###################################################################
+
+    # early returns
+
+    ###################################################################
+
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
+        abort(404)
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    # set up pagination
+    current_page = request.args.get("page", default=1, type=int)
+    POSTS_EACH_PAGE = 12
+    # pagination = paging.setup(username, current_page, POSTS_EACH_PAGE)
+
+    # # skip and limit posts with given page
+    # posts = post_utils.find_posts_with_pagination(
+    #     username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
+    # )
+    # for post in posts:
+    #     post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
+
+    # # user info
+    user_info = user_utils.get_user_info(username)
+    # tags = sort_dict(user_info.tags)
+    # tags = {tag: count for tag, count in tags.items() if count > 0}
+
+    ###################################################################
+
+    # logging / metrics
+
+    ###################################################################
+
+    # logger_utils.page_visited(request)
+    # user_utils.total_view_increment(username)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("gallery.html", user=user_info)

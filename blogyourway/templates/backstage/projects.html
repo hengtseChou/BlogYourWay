@@ -1,0 +1,111 @@
+{% extends 'panel.html' %}
+{% block head %}
+  <link rel="stylesheet" href="/static/css/panel.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
+          defer></script>
+  <script src="/static/js/backstage/projects.js" defer></script>
+{% endblock %}
+{% block panel %}
+  <!-- desktop view -->
+  <div class="d-none d-md-block">
+    <div class="d-flex align-items-center"
+         style="height: 44px;
+                margin-top: 30px">
+      <h2 class="ms-2">Projects</h2>
+      <button class="btn panel-btn ms-auto me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#newProjectModal">+ New Project</button>
+    </div>
+    <hr />
+  </div>
+  <!-- Modal -->
+  <div class="modal fade"
+       id="newProjectModal"
+       data-bs-backdrop="static"
+       data-bs-keyboard="false"
+       tabindex="-1"
+       aria-labelledby="myModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Write About Your Project...</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <form method="post" autocomplete="off" id="form">
+          <div class="modal-body">
+            <div class="mb-4">
+              <label for="title" class="form-label ms-2 backstage-form-label">· Title</label>
+              <input type="text"
+                     class="form-control border-underline"
+                     id="title"
+                     name="title" />
+            </div>
+            <div class="mb-4">
+              <label for="tags" class="form-label ms-2 backstage-form-label">· Tags</label>
+              <input type="text"
+                     class="form-control border-underline"
+                     id="tags"
+                     name="tags"
+                     placeholder="Separate your tags with ','" />
+            </div>
+            <div class="mb-4">
+              <label for="images" class="form-label ms-2 backstage-form-label">· Images</label>
+              <div id="inputContainer">
+                <div class="input-group mb-2">
+                  <span class="input-group-text">Image 1</span>
+                  <input class="form-control project-img"
+                         type="text"
+                         name="url-1"
+                         id="url-1"
+                         placeholder="url">
+                  <input class="form-control project-img-caption"
+                         type="text"
+                         name="caption-1"
+                         id="caption-1"
+                         placeholder="caption">
+                </div>
+              </div>
+            </div>
+            <div class="mb-4 d-flex justify-content-start">
+              <button type="button"
+                      class="btn panel-btn text-center me-2"
+                      id="add-more-image">+ More Image</button>
+              <button type="button"
+                      class="btn panel-btn text-center"
+                      id="add-slug-button"
+                      onclick="toggleSlug()">+ Custom Slug</button>
+            </div>
+            <div class="mb-4" id="slug-section" style="display:none;">
+              <label for="slug" class="form-label ms-2 backstage-form-label">· Custom slug</label>
+              <input type="text"
+                     class="form-control border-underline"
+                     id="custom-slug"
+                     name="custom-slug"
+                     placeholder="" />
+            </div>
+            <div class="mb-4">
+              <textarea id="editor"
+                        name="content"
+                        style="white-space: pre-line"
+                        placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button"
+                    class="btn cancel-btn text-center me-2"
+                    data-bs-dismiss="modal">Cancel</button>
+            <button type="submit"
+                    class="btn panel-btn text-center"
+                    onclick="return validateNewProject()">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
