@@ -73,7 +73,7 @@ function validateNewPost() {
   // }
 
   if (easyMDE.value().trim() === "") {
-    alert("You did not write anything for your post!");
+    alert("Write something for your post!");
     return false;
   }
 
