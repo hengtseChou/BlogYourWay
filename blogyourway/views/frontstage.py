@@ -562,10 +562,17 @@ def sitemap():
         dynamic_urls.append({"loc": f"{host_base}/@{username}/blog"})
         dynamic_urls.append({"loc": f"{host_base}/@{username}/about"})
     for post in post_utils.get_all_posts_info():
-        url = {
-            "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}",
-            "lastmod": post.get("last_updated"),
-        }
+        slug = post.get("slug")
+        if slug:
+            url = {
+                "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug}",
+                "lastmod": post.get("last_updated"),
+            }
+        else:
+            url = {
+                "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}",
+                "lastmod": post.get("last_updated"),
+            }
         dynamic_urls.append(url)
 
     xml_sitemap = render_template(
