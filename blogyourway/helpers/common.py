@@ -6,6 +6,9 @@ import random
 import re
 import string
 from datetime import datetime, timedelta
+from math import ceil
+
+from flask import abort
 
 from blogyourway.services.mongo import Database
 
@@ -199,3 +202,67 @@ def sort_dict(_dict: dict) -> dict:
     for key in sorted_dict_key:
         sorted_dict[key] = _dict[key]
     return sorted_dict
+
+
+class Paging:
+    def __init__(self, db_handler: Database) -> None:
+        self._db_handler = db_handler
+        self._has_setup = False
+        self._allow_previous_page = None
+        self._allow_next_page = None
+        self._current_page = None
+
+    def setup(self, username, database, current_page, num_per_page):
+        self._has_setup = True
+        self._database = database
+        self._allow_previous_page = False
+        self._allow_next_page = False
+        self._current_page = current_page
+
+        # set up for pagination
+        # factory mode
+        if self._database == "post_info":
+            num_not_archieved = self._db_handler.post_info.count_documents(
+                {"author": username, "archived": False}
+            )
+        elif self._database == "project_info":
+            num_not_archieved = self._db_handler.project_info.count_documents(
+                {"author": username, "archived": False}
+            )
+        else:
+            raise Exception("Unknown database option for paging class.")
+
+        if num_not_archieved == 0:
+            max_page = 1
+        else:
+            max_page = ceil(num_not_archieved / num_per_page)
+
+        if current_page > max_page or current_page < 1:
+            # not a legal page number
+            abort(404)
+
+        if current_page * num_per_page < num_not_archieved:
+            self._allow_next_page = True
+
+        if current_page > 1:
+            self._allow_previous_page = True
+
+        return self
+
+    @property
+    def is_previous_page_allowed(self):
+        if not self._has_setup:
+            raise AttributeError("pagination has not setup yet.")
+        return self._allow_previous_page
+
+    @property
+    def is_next_page_allowed(self):
+        if not self._has_setup:
+            raise AttributeError("pagination has not setup yet.")
+        return self._allow_next_page
+
+    @property
+    def current_page(self):
+        if not self._has_setup:
+            raise AttributeError("pagination has not setup yet.")
+        return self._current_page
