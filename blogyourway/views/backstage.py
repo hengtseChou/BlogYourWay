@@ -2,8 +2,9 @@ from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
-from blogyourway.helpers.common import string_truncate, switch_to_bool
-from blogyourway.helpers.posts import create_post, paging, post_utils, update_post
+from blogyourway.helpers.common import Paging, string_truncate, switch_to_bool
+from blogyourway.helpers.posts import create_post, post_utils, update_post
+from blogyourway.helpers.projects import create_project, projects_utils
 from blogyourway.helpers.users import user_utils
 from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
@@ -48,7 +49,8 @@ def posts_panel():
     # query through posts
     # 20 posts for each page
     POSTS_EACH_PAGE = 20
-    pagination = paging.setup(current_user.username, current_page, POSTS_EACH_PAGE)
+    paging = Paging(db_handler=mongodb)
+    pagination = paging.setup(current_user.username, "post_info", current_page, POSTS_EACH_PAGE)
     posts = post_utils.find_posts_with_pagination(
         username=current_user.username,
         page_number=current_page,
@@ -545,10 +547,23 @@ def logout():
     return redirect(url_for("frontstage.home", username=username))
 
 
-@backstage.route("/projects", methods=["GET"])
+@backstage.route("/projects", methods=["GET", "POST"])
 @login_required
-def gallery_get():
+def projects_panel():
+
+    session["user_current_tab"] = "projects"
+    logger_utils.backstage(username=current_user.username, tab="projects")
 
     user = mongodb.user_info.find_one({"username": current_user.username})
 
-    return render_template("projects.html", user=user)
+    if request.method == "POST":
+
+        project_uid = create_project(request)
+        if project_uid is not None:
+            logger.debug(f"project {project_uid} has been created.")
+            flash("New project published successfully!", category="success")
+
+    user = mongodb.user_info.find_one({"username": current_user.username})
+    projects = projects_utils.find_projects_info_by_username(current_user.username)
+
+    return render_template("projects.html", user=user, projects=projects)

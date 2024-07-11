@@ -18,8 +18,9 @@ from markdown import Markdown
 
 from blogyourway.config import RECAPTCHA_KEY
 from blogyourway.helpers.comments import comment_utils, create_comment
-from blogyourway.helpers.common import sort_dict
-from blogyourway.helpers.posts import html_to_about, html_to_post, paging, post_utils
+from blogyourway.helpers.common import Paging, sort_dict
+from blogyourway.helpers.posts import html_to_about, html_to_post, post_utils
+from blogyourway.helpers.projects import projects_utils
 from blogyourway.helpers.users import user_utils
 from blogyourway.services import logger, logger_utils, mongodb
 
@@ -102,7 +103,8 @@ def login_post():
     if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
         flash("Invalid password. Please try again.", category="error")
         logger_utils.login_failed(
-            request=request, msg=f"invalid password with email {login_form.get('email')}"
+            request=request,
+            msg=f"invalid password with email {login_form.get('email')}",
         )
         return render_template("login.html")
 
@@ -234,7 +236,7 @@ def tag(username):
 
     ###################################################################
 
-    posts = post_utils.find_all_posts_info(username)
+    posts = post_utils.find_posts_info_by_username(username)
 
     posts_with_desired_tag = []
     for post in posts:
@@ -465,7 +467,8 @@ def blog(username):
     # set up pagination
     current_page = request.args.get("page", default=1, type=int)
     POSTS_EACH_PAGE = 5
-    pagination = paging.setup(username, current_page, POSTS_EACH_PAGE)
+    paging = Paging(mongodb)
+    pagination = paging.setup(username, "post_info", current_page, POSTS_EACH_PAGE)
 
     # skip and limit posts with given page
     posts = post_utils.find_posts_with_pagination(
@@ -570,11 +573,14 @@ def sitemap():
         dynamic_urls.append(url)
 
     xml_sitemap = render_template(
-        "sitemap.xml", static_urls=static_urls, dynamic_urls=dynamic_urls, host_base=host_base
+        "sitemap.xml",
+        static_urls=static_urls,
+        dynamic_urls=dynamic_urls,
+        host_base=host_base,
     )
     response = make_response(xml_sitemap)
     response.headers["Content-Type"] = "application/xml"
-    logger.debug("Sitemap generated successfully..")
+    logger.debug("Sitemap generated successfully.")
 
     return response
 
@@ -599,20 +605,21 @@ def gallery(username):
 
     # set up pagination
     current_page = request.args.get("page", default=1, type=int)
-    POSTS_EACH_PAGE = 12
-    # pagination = paging.setup(username, current_page, POSTS_EACH_PAGE)
+    PROJECTS_EACH_PAGE = 12
+    paging = Paging(mongodb)
+    pagination = paging.setup(username, "project_info", current_page, PROJECTS_EACH_PAGE)
 
-    # # skip and limit posts with given page
-    # posts = post_utils.find_posts_with_pagination(
-    #     username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
-    # )
-    # for post in posts:
-    #     post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
+    # skip and limit posts with given page
+    projects = projects_utils.find_projects_with_pagination(
+        username=username,
+        page_number=current_page,
+        projects_per_page=PROJECTS_EACH_PAGE,
+    )
+    for project in projects:
+        project["created_at"] = project.get("created_at").strftime("%Y-%m-%d")
 
-    # # user info
+    # user info
     user_info = user_utils.get_user_info(username)
-    # tags = sort_dict(user_info.tags)
-    # tags = {tag: count for tag, count in tags.items() if count > 0}
 
     ###################################################################
 
@@ -620,8 +627,8 @@ def gallery(username):
 
     ###################################################################
 
-    # logger_utils.page_visited(request)
-    # user_utils.total_view_increment(username)
+    logger_utils.page_visited(request)
+    user_utils.total_view_increment(username)
 
     ###################################################################
 
@@ -629,4 +636,4 @@ def gallery(username):
 
     ###################################################################
 
-    return render_template("gallery.html", user=user_info)
+    return render_template("gallery.html", user=user_info, projects=projects, pagination=pagination)
