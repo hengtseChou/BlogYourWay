@@ -107,6 +107,7 @@ class Database:
         users_db = client["users"]
         posts_db = client["posts"]
         comments_db = client["comments"]
+        project_db = client["projects"]
 
         self._user_creds = ExtendedCollection(users_db["user-creds"])
         self._user_info = ExtendedCollection(users_db["user-info"])
@@ -114,6 +115,8 @@ class Database:
         self._post_info = ExtendedCollection(posts_db["posts-info"])
         self._post_content = ExtendedCollection(posts_db["posts-content"])
         self._comment = ExtendedCollection(comments_db["comment"])
+        self._project_info = ExtendedCollection(project_db["project-info"])
+        self._project_content = ExtendedCollection(project_db["project-content"])
 
     @property
     def client(self):
@@ -142,6 +145,14 @@ class Database:
     @property
     def comment(self):
         return self._comment
+
+    @property
+    def project_info(self):
+        return self._project_info
+
+    @property
+    def project_content(self):
+        return self._project_content
 
 
 client = MongoClient(MONGO_URL, connect=False)
