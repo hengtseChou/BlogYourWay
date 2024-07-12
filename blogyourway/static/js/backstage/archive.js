@@ -2,12 +2,21 @@ const mobileNavBtn = document.getElementById("mobile-nav-archive");
 mobileNavBtn.style.color = "white";
 
 document.addEventListener("DOMContentLoaded", function () {
-  const deleteButtons = document.querySelectorAll(".delete-post-btn");
-  const deleteModalLink = document.getElementById("deletePostBtn");
-  deleteButtons.forEach((button) => {
+  const deletePostBtn = document.querySelectorAll(".delete-post-btn");
+  const deletePostModal = document.getElementById("deletePostBtn");
+  deletePostBtn.forEach((button) => {
     button.addEventListener("click", function () {
       const postUid = this.dataset.postUid;
-      deleteModalLink.href = `/backstage/delete/post?&uid=${postUid}`; // Update the modal's delete link
+      deletePostModal.href = `/backstage/delete/post?&uid=${postUid}`; // Update the modal's delete link
+    });
+  });
+
+  const deleteProjectBtn = document.querySelectorAll(".delete-project-btn");
+  const deleteProjectModal = document.getElementById("deleteProjectBtn");
+  deleteProjectBtn.forEach((button) => {
+    button.addEventListener("click", function () {
+      const projectUid = this.dataset.projectUid;
+      deleteProjectModal.href = `/backstage/delete/project?&uid=${projectUid}`; // Update the modal's delete link
     });
   });
 });

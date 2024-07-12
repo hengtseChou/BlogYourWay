@@ -137,5 +137,13 @@ class ProjectsUtils:
 
         return result
 
+    def find_all_archived_project_info(self, username) -> list[dict]:
+        result = (
+            self._db_handler.project_info.find({"author": username, "archived": True})
+            .sort("created_at", -1)
+            .as_list()
+        )
+        return result
+
 
 projects_utils = ProjectsUtils(mongodb)

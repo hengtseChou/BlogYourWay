@@ -10,10 +10,12 @@
     <!-- description -->
     <p class="ms-2">Posts and projects archived will not be seen in your website.</p>
     <!-- description ends -->
-    {% if posts | length == 0 %}
+    {% if posts | length == 0 and projects | length == 0 %}
       <p class="ms-2">You don't have any archive right now.</p>
-    {% else %}
+    {% endif %}
+    {% if posts | length != 0 %}
       <div class="col-11">
+        <!-- <h4 class="ms-2">--- Posts ---</h4> -->
         <table class="table">
           <caption class="ms-2">
             Posts
@@ -37,7 +39,7 @@
                 <td class="text-center">{{ post['views'] }}</td>
                 <td class="text-center">{{ post['comments'] }}</td>
                 <td class="text-center">
-                  <a href="/backstage/edit-archived?archived=to_false&uid={{ post.post_uid }}"
+                  <a href="/backstage/edit-archived?type=post&archived=to_false&uid={{ post.post_uid }}"
                      style="color: black;
                             font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
                 </td>
@@ -48,7 +50,52 @@
                      class="delete-post-btn"
                      data-post-uid="{{ post.post_uid }}"
                      data-bs-toggle="modal"
-                     data-bs-target="#deleteConfirmationModal"><i class="fa-solid fa-trash-can"></i></a>
+                     data-bs-target="#deletePostModal"><i class="fa-solid fa-trash-can"></i></a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <!-- <h4 class="ms-2">--- Projects ---</h4> -->
+      </div>
+    {% endif %}
+    {% if projects | length != 0 %}
+      <div class="col-11">
+        <table class="table">
+          <caption class="ms-2">
+            Projects
+          </caption>
+          <thead>
+            <tr>
+              <th style="width: 48%">Title</th>
+              <th style="width: 16%">Created At</th>
+              <th style="width: 10%" class="text-center">Clicks</th>
+              <th style="width: 10%" class="text-center">Comments</th>
+              <th style="width: 8%" class="text-center">Go Live</th>
+              <th style="width: 8%" class="text-center">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for project in projects %}
+              <tr>
+                <!-- to-do: add project's link to project's title -->
+                <td>{{ project['title'] }}</td>
+                <td>{{ project['created_at'] }}</td>
+                <td class="text-center">{{ project['views'] }}</td>
+                <td class="text-center">/</td>
+                <td class="text-center">
+                  <a href="/backstage/edit-archived?type=project&archived=to_false&uid={{ project.project_uid }}"
+                     style="color: black;
+                            font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
+                </td>
+                <td class="text-center">
+                  <a href="#"
+                     style="color: black;
+                            font-size: 18px"
+                     class="delete-project-btn"
+                     data-project-uid="{{ project.project_uid }}"
+                     data-bs-toggle="modal"
+                     data-bs-target="#deleteProjectModal"><i class="fa-solid fa-trash-can"></i></a>
                 </td>
               </tr>
             {% endfor %}
@@ -62,22 +109,15 @@
     <h2 class="ms-2 my-3">Archive</h2>
     <hr />
     <p class="ms-2">Posts and works archived will not be seen in your website.</p>
+    {% if posts | length != 0 %}<h5 class="ms-2 my-3">- Posts -</h5>{% endif %}
     {% for post in posts %}
       <div class="card rounded-0 py-2 overflow-visible my-3">
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              <div class="text-truncate">
-                <a href="posts/edit/{{ post.post_uid }}" style="color: black">{{ post['title'] }}</a>
-              </div>
+              <div class="text-truncate">{{ post['title'] }}</div>
               <p style="font-size: small; font-style: italic" class="grey-text mb-2">Created at {{ post['created_at'] }}</p>
               <div>
-                {% if post['featured'] %}
-                  <button class="btn btn-sm btn-success rounded-4 me-2"
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="top"
-                          data-bs-title="Featured posts will be on your home page">Featured</button>
-                {% endif %}
                 <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['views'] }}</span>
                 <span><i class="fa-regular fa-comment me-2"></i>{{ post['comments'] }}</span>
               </div>
@@ -92,14 +132,52 @@
                 <ul class="dropdown-menu">
                   <li>
                     <a class="dropdown-item"
-                       href="/backstage/edit-archived?archived=to_false&uid={{ post.post_uid }}">Restore</a>
+                       href="/backstage/edit-archived?type=post&archived=to_false&uid={{ post.post_uid }}">Restore</a>
                   </li>
                   <li>
                     <a class="dropdown-item delete-post-btn"
                        href="#"
                        data-post-uid="{{ post.post_uid }}"
                        data-bs-toggle="modal"
-                       data-bs-target="#deleteConfirmationModal">Delete</a>
+                       data-bs-target="#deletePostModal">Delete</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    {% if projects | length != 0 %}<h5 class="ms-2 my-3">- Projects -</h5>{% endif %}
+    {% for project in projects %}
+      <div class="card rounded-0 py-2 overflow-visible my-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-10">
+              <div class="text-truncate">{{ project['title'] }}</div>
+              <p style="font-size: small; font-style: italic" class="grey-text mb-2">Created at {{ project['created_at'] }}</p>
+              <div>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project['views'] }}</span>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="text-end dropdown">
+                <a class="btn dropdown-toggle"
+                   href="#"
+                   role="button"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false"></a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item"
+                       href="/backstage/edit-archived?type=project&archived=to_false&uid={{ project.project_uid }}">Restore</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item delete-project-btn"
+                       href="#"
+                       data-project-uid="{{ project.project_uid }}"
+                       data-bs-toggle="modal"
+                       data-bs-target="#deleteProjectModal">Delete</a>
                   </li>
                 </ul>
               </div>
@@ -111,14 +189,14 @@
   </div>
   <!-- Delete Confirmation Modal -->
   <div class="modal fade"
-       id="deleteConfirmationModal"
+       id="deletePostModal"
        tabindex="-1"
-       aria-labelledby="deleteConfirmationModalLabel"
+       aria-labelledby="deletePostModalLabel"
        aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+          <h5 class="modal-title" id="deletePostModalLabel">Confirm Deletion</h5>
           <button type="button"
                   class="btn-close"
                   data-bs-dismiss="modal"
@@ -128,6 +206,28 @@
         <div class="modal-footer">
           <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
           <a href="#" id="deletePostBtn" class="btn delete-btn">Delete</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade"
+       id="deleteProjectModal"
+       tabindex="-1"
+       aria-labelledby="deleteProjectModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteProjectModalLabel">Confirm Deletion</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">Are you sure you want to delete this project?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
+          <a href="#" id="deleteProjectBtn" class="btn delete-btn">Delete</a>
         </div>
       </div>
     </div>

@@ -63,7 +63,7 @@ def posts_panel():
         comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
         post["comments"] = format(comment_count, ",")
 
-    logger_utils.pagination(tab="posts", num_of_posts=len(posts))
+    logger_utils.pagination(tab="posts", num=len(posts))
 
     ###################################################################
 
@@ -192,32 +192,61 @@ def edit_archived():
 
     ###################################################################
 
-    post_uid = request.args.get("uid")
-    post_info = mongodb.post_info.find_one({"post_uid": post_uid})
+    content_type = request.args.get("type")
 
-    author = post_info.get("author")
-    tags = post_info.get("tags")
-    title_truncated = string_truncate(post_info.get("title"), max_len=20)
+    if content_type == "post":
 
-    if request.args.get("archived") == "to_true":
-        updated_archived_status = True
-        tags_increment = {f"tags.{tag}": -1 for tag in tags}
-        flash(f'Your post "{title_truncated}" is now archived!', category="success")
-    else:
-        updated_archived_status = False
-        tags_increment = {f"tags.{tag}": 1 for tag in tags}
-        flash(
-            f'Your post "{title_truncated}" is now restored from the archive!',
-            category="success",
+        post_uid = request.args.get("uid")
+        post_info = mongodb.post_info.find_one({"post_uid": post_uid})
+
+        author = post_info.get("author")
+        tags = post_info.get("tags")
+        title_truncated = string_truncate(post_info.get("title"), max_len=20)
+
+        if request.args.get("archived") == "to_true":
+            updated_archived_status = True
+            tags_increment = {f"tags.{tag}": -1 for tag in tags}
+            flash(f'Your post "{title_truncated}" is now archived!', category="success")
+        else:
+            updated_archived_status = False
+            tags_increment = {f"tags.{tag}": 1 for tag in tags}
+            flash(
+                f'Your post "{title_truncated}" is now restored from the archive!',
+                category="success",
+            )
+
+        mongodb.post_info.update_values(
+            filter={"post_uid": post_uid}, update={"archived": updated_archived_status}
         )
+        mongodb.user_info.make_increments(
+            filter={"username": author}, increments=tags_increment, upsert=True
+        )
+        logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
 
-    mongodb.post_info.update_values(
-        filter={"post_uid": post_uid}, update={"archived": updated_archived_status}
-    )
-    mongodb.user_info.make_increments(
-        filter={"username": author}, increments=tags_increment, upsert=True
-    )
-    logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
+    elif content_type == "project":
+
+        project_uid = request.args.get("uid")
+        project_info = mongodb.project_info.find_one({"project_uid": project_uid})
+
+        author = project_info.get("author")
+        title_truncated = string_truncate(project_info.get("title"), max_len=20)
+
+        if request.args.get("archived") == "to_true":
+            updated_archived_status = True
+            flash(f'Your project "{title_truncated}" is now archived!', category="success")
+        else:
+            updated_archived_status = False
+            flash(
+                f'Your project "{title_truncated}" is now restored from the archive!',
+                category="success",
+            )
+
+        mongodb.project_info.update_values(
+            filter={"project_uid": project_uid}, update={"archived": updated_archived_status}
+        )
+        logger.debug(
+            f"archive status for project {project_uid} is now set to {updated_archived_status}"
+        )
 
     ###################################################################
 
@@ -230,6 +259,9 @@ def edit_archived():
 
     elif session["user_current_tab"] == "archive":
         return redirect(url_for("backstage.archive_panel"))
+
+    elif session["user_current_tab"] == "projects":
+        return redirect(url_for("backstage.projects_panel"))
 
 
 @backstage.route("/about", methods=["GET"])
@@ -321,8 +353,12 @@ def archive_panel():
         post["views"] = format(post.get("views"), ",")
         comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
         post["comments"] = format(comment_count, ",")
+    projects = projects_utils.find_all_archived_project_info(current_user.username)
+    for project in projects:
+        project["created_at"] = project.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
+        project["views"] = format(project.get("views"), ",")
 
-    logger_utils.pagination(tab="archive", num_of_posts=len(posts))
+    logger_utils.pagination(tab="archive", num=(len(posts) + len(projects)))
 
     ###################################################################
 
@@ -330,7 +366,7 @@ def archive_panel():
 
     ###################################################################
 
-    return render_template("archive.html", user=user, posts=posts)
+    return render_template("archive.html", user=user, posts=posts, projects=projects)
 
 
 @backstage.route("/delete/post", methods=["GET"])
@@ -554,7 +590,7 @@ def projects_panel():
     session["user_current_tab"] = "projects"
     logger_utils.backstage(username=current_user.username, tab="projects")
 
-    user = mongodb.user_info.find_one({"username": current_user.username})
+    current_page = request.args.get("page", default=1, type=int)
 
     if request.method == "POST":
 
@@ -564,6 +600,54 @@ def projects_panel():
             flash("New project published successfully!", category="success")
 
     user = mongodb.user_info.find_one({"username": current_user.username})
-    projects = projects_utils.find_projects_info_by_username(current_user.username)
+    PROJECTS_PER_PAGE = 10
+    projects = projects_utils.find_projects_with_pagination(
+        current_user.username, current_page, PROJECTS_PER_PAGE
+    )
+    paging = Paging(mongodb)
+    paging.setup(current_user.username, "project_info", current_page, PROJECTS_PER_PAGE)
 
-    return render_template("projects.html", user=user, projects=projects)
+    for project in projects:
+        project["title"] = string_truncate(project.get("title"), 40)
+        project["created_at"] = project.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
+        project["views"] = format(project.get("views"), ",")
+
+    logger_utils.pagination(tab="posts", num=len(projects))
+
+    return render_template("projects.html", user=user, projects=projects, pagination=paging)
+
+
+@backstage.route("/delete/project", methods=["GET"])
+@login_required
+def delete_project():
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################
+
+    project_uid = request.args.get("uid")
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    title_truncated = string_truncate(
+        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"), max_len=20
+    )
+    mongodb.project_info.delete_one({"project_uid": project_uid})
+    mongodb.project_content.delete_one({"project_uid": project_uid})
+    logger.debug(f"project {project_uid} has been deleted")
+    flash(f'Your project "{title_truncated}" has been deleted!', category="success")
+    # post must be archived before deletion
+    # so no need to increment over tags here
+
+    ###################################################################
+
+    # return page contents
+
+    ###################################################################
+
+    return redirect(url_for("backstage.archive_panel"))

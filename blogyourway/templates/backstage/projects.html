@@ -19,6 +19,128 @@
               data-bs-target="#newProjectModal">+ New Project</button>
     </div>
     <hr />
+    {% if projects | length == 0 %}
+      <p class="ms-2">Click the button on the top-right to publish your first project!</p>
+    {% else %}
+      <div class="col-11">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 50%">Title</th>
+                <th style="width: 16%">Created At</th>
+                <th style="width: 10%" class="text-center">Views</th>
+                <th style="width: 8%" class="text-center">Edit</th>
+                <th style="width: 8%" class="text-center">Archive</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for project in projects %}
+                <tr>
+                  <td class="align-middle">
+                    <a href="/@{{ project.author }}/projects/{{ project.project_uid }}"
+                       style="color: black">{{ project['title'] }}</a>
+                  </td>
+                  <td>{{ project['created_at'] }}</td>
+                  <td class="text-center">{{ project['views'] }}</td>
+                  <td class="text-center">
+                    <a href="edit/project/{{ project.project_uid }}"
+                       style="color: black;
+                              font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
+                  </td>
+                  <td class="text-center">
+                    <a href="edit-archived?type=project&archived=to_true&uid={{ project.project_uid }}"
+                       style="color: black;
+                              font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% endif %}
+    <div class="container">
+      <div class="row">
+        <div class="col-6 text-start">
+          {% if pagination.is_previous_page_allowed %}
+            {% set previous_page = pagination.current_page - 1 %}
+            <a href="projects?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts
+            </a>
+          {% endif %}
+        </div>
+        <div class="col-6 text-end">
+          {% if pagination.is_next_page_allowed %}
+            {% set next_page = pagination.current_page + 1 %}
+            <a href="projects?page={{ next_page }}" class="btn">
+            Older Posts <span class="mx-1">➡️</span></a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- mobile view -->
+  <div class="d-block d-md-none mt-2">
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="ms-2 mt-3">Projects</h2>
+      <button class="btn panel-btn ms-auto me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#newProjectModal">+ New Project</button>
+    </div>
+    <hr />
+    {% for project in projects %}
+      <div class="card rounded-0 py-2 overflow-visible my-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-10">
+              <a href="/@{{ project.author }}/projects/{{ project.project_uid }}"
+                 style="color: black">{{ project['title'] }}</a>
+              <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ project['created_at'] }}</p>
+              <div>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project['views'] }}</span>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="text-end dropdown">
+                <button class="btn dropdown-toggle"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"></button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="edit/project/{{ project.project_uid }}">Edit</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item"
+                       href="edit-archived?type=project&archived=to_true&uid={{ project.project_uid }}">Move to archive</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    <!-- pagination -->
+    <div class="row">
+      <div class="col-6 text-start">
+        {% if pagination.is_previous_page_allowed %}
+          {% set previous_page = pagination.current_page - 1 %}
+          <a href="projects?page={{ previous_page }}" class="btn">
+            <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Newer Posts
+          </a>
+        {% endif %}
+      </div>
+      <div class="col-6 text-end">
+        {% if pagination.is_next_page_allowed %}
+          {% set next_page = pagination.current_page + 1 %}
+          <a href="projects?page={{ next_page }}" class="btn">
+            Older Posts
+            <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
   </div>
   <!-- Modal -->
   <div class="modal fade"

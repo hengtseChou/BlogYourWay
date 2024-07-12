@@ -117,8 +117,8 @@ class LoggerUtils:
     def backstage(self, username: str, tab: str):
         self._logger.debug(f"User {username} switched to {tab} tab.")
 
-    def pagination(self, tab: str, num_of_posts: int):
-        self._logger.debug(f"Showing {num_of_posts} posts at {tab} tab.")
+    def pagination(self, tab: str, num: int):
+        self._logger.debug(f"Showing {num} records at {tab} tab.")
 
 
 logger = Logger(env=ENV)
