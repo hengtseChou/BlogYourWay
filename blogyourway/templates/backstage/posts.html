@@ -69,7 +69,7 @@
                     </td>
                   {% endif %}
                   <td class="text-center">
-                    <a href="edit-archived?archived=to_true&uid={{ post.post_uid }}"
+                    <a href="edit-archived?type=post&archived=to_true&uid={{ post.post_uid }}"
                        style="color: black;
                               font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
                   </td>
@@ -151,7 +151,7 @@
                   {% endif %}
                   <li>
                     <a class="dropdown-item"
-                       href="edit-archived?archived=to_true&uid={{ post.post_uid }}">Move to archive</a>
+                       href="edit-archived?type=post&archived=to_true&uid={{ post.post_uid }}">Move to archive</a>
                   </li>
                 </ul>
               </div>
@@ -166,8 +166,7 @@
         {% if pagination.is_previous_page_allowed %}
           {% set previous_page = pagination.current_page - 1 %}
           <a href="posts?page={{ previous_page }}" class="btn">
-            <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Newer
-            Posts
+            <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Newer Posts
           </a>
         {% endif %}
       </div>
