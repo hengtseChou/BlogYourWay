@@ -66,7 +66,7 @@ function createSpan(orderNumber) {
 function createInput(orderNumber) {
   const input = document.createElement("input");
   input.type = "text";
-  input.className = "form-control";
+  input.className = "form-control project-img";
   input.name = "url-" + orderNumber;
   input.placeholder = "url";
   return input;
@@ -75,7 +75,7 @@ function createInput(orderNumber) {
 function createCaption(orderNumber) {
   const input = document.createElement("input");
   input.type = "text";
-  input.className = "form-control";
+  input.className = "form-control project-img-caption";
   input.name = "caption-" + orderNumber;
   input.placeholder = "caption";
   return input;
@@ -102,8 +102,8 @@ function updateOrderNumbers() {
     const orderNumber = index + 1;
     group.querySelector(".input-group-text").textContent =
       "Image " + orderNumber;
-    group.querySelector("input").name = "url-" + orderNumber;
-    group.querySelector("input").name = "caption-" + orderNumber;
+    group.querySelector(".project-img").name = "url-" + orderNumber;
+    group.querySelector(".project-img-caption").name = "caption-" + orderNumber;
   });
 }
 
@@ -111,6 +111,12 @@ function validateNewProject() {
   var title = document.getElementById("title").value;
   if (title.trim() === "") {
     alert("You must enter the title for the project.");
+    return false;
+  }
+
+  var desc = document.getElementById("desc").value;
+  if (desc.trim() === "") {
+    alert("You must a short description for the project.");
     return false;
   }
 

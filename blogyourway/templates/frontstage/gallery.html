@@ -1,11 +1,35 @@
 {% extends 'base.html' %}
+{% block head %}<link rel="stylesheet" href="/static/css/gallery.css" />{% endblock %}
 {% block title %}Gallery - {{ user.blogname }}{% endblock %}
 {% block body %}
   {% include 'navbar.html' %}
-  <div class="container-fluid">
-    <div class="row">
+  <div class="container-fluid fill-up-space">
+    <div class="row my-5">
       <div class="col-lg-8 col-12 mx-auto">
-        <div class="row"></div>
+        <h1 class="mt-5 mb-3 ps-3 border-bottom fw-bold ">Projects</h1>
+        <div class="row">
+          {% if projects | length != 0 %}
+            {% for project in projects %}
+              {% set project_link = 'projects/' ~ project.project_uid %}
+              <div class="col-lg-4 col-12 my-4">
+                <a href="{{ project_link }}">
+                  <div class="image-card">
+                    <img src="{{ project.images[0]['url'] }}"
+                         alt="project cover"
+                         class="cover-image">
+                    <div class="overlay"></div>
+                    <div class="card-body">
+                      <h5 class="card-title text-white">{{ project.title }}</h5>
+                      <p class="card-text text-white">{{ project.short_description }}</p>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          {% else %}
+            <h5 class="mt-4 ps-3 fw-bold dark-grey-text">No project published yet!</h5>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>
