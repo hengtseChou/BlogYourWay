@@ -637,3 +637,88 @@ def gallery(username):
     ###################################################################
 
     return render_template("gallery.html", user=user_info, projects=projects, pagination=pagination)
+
+
+def project_main_actions(username, project_uid):
+
+    return render_template("project.html")
+
+
+@frontstage.route("/@<username>/project/<project_uid>", methods=["GET"])
+def project(username, project_uid):
+    ###################################################################
+
+    # early return for invalid inputs
+
+    ###################################################################
+
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
+        abort(404)
+    if not mongodb.project_info.exists("project_uid", project_uid):
+        logger.debug(f"invalid post uid {project_uid}")
+        abort(404)
+
+    project_info = mongodb.project_info.find_one({"project_uid": project_uid})
+    if username != project_info.get("author"):
+        logger.debug(f"User {username} does not own project {project_uid}")
+        abort(404)
+
+    custom_slug = project_info.get("custom_slug")
+    if custom_slug != "":
+        return redirect(
+            url_for(
+                "frontstage.project_with_slug",
+                username=username,
+                project_uid=project_uid,
+                slug=custom_slug,
+            )
+        )
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    return project_main_actions(username, project_uid, request)
+
+
+@frontstage.route("/@<username>/project/<project_uid>/<slug>", methods=["GET"])
+def project_with_slug(username, project_uid, slug):
+    ###################################################################
+
+    # early return for invalid inputs
+
+    ###################################################################
+
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
+        abort(404)
+    if not mongodb.project_info.exists("project_uid", project_uid):
+        logger.debug(f"invalid post uid {project_uid}")
+        abort(404)
+
+    project_info = mongodb.project_info.find_one({"project_uid": project_uid})
+    if username != project_info.get("author"):
+        logger.debug(f"User {username} does not own project {project_uid}")
+        abort(404)
+
+    custom_slug = project_info.get("custom_slug")
+    if custom_slug != slug:
+        return redirect(
+            url_for(
+                "frontstage.project_with_slug",
+                username=username,
+                project_uid=project_uid,
+                slug=custom_slug,
+            )
+        )
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    return project_main_actions(username, project_uid, request)
