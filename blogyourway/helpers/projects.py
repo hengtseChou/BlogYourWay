@@ -15,6 +15,7 @@ class ProjectInfo:
     project_uid: str
     custom_slug: str
     title: str
+    short_description: str
     author: str
     tags: list[str]
     images: list[str]
@@ -62,6 +63,7 @@ class NewProjectSetup:
             project_uid=self._project_uid,
             custom_slug=request.form.get("custom-slug"),
             title=request.form.get("title"),
+            short_description=request.form.get("desc"),
             author=author_name,
             tags=process_tags(request.form.get("tags")),
             images=process_form_images(request),
