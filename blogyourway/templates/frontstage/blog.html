@@ -11,8 +11,7 @@
           <div class="col-lg-8 col-12 mx-auto mt-4">
             {% if posts | length != 0 %}
               {% for post in posts %}
-                {% set
-                post_link = 'posts/' ~ post.post_uid %}
+                {% set post_link = 'posts/' ~ post.post_uid %}
                 <div class="ms-lg-2 ms-0 my-4 p-4 border rounded rounded-2">
                   <a href="{{ post_link }}" class="header-link">
                     <h3 class="fw-bold">{{ post.title }}</h3>
@@ -35,13 +34,13 @@
                 </div>
               {% endfor %}
             {% else %}
-              <h5 class="text-start mt-4 fw-bold" style="color: #646464">No post published yet!</h5>
+              <h5 class="text-start mt-4 fw-bold dark-grey-text">No post published yet!</h5>
             {% endif %}
           </div>
           <!-- tag column -->
           <div class="d-none d-lg-block col-lg-4">
             <div class="text-start pt-5 ps-3">
-              <h5 class="fw-bold mb-3" style="color: #646464">Topics in this blog</h5>
+              <h5 class="fw-bold mb-3 dark-grey-text">Topics in this blog</h5>
               {% for tag, count in tags.items() %}
                 {% set tag_link = 'tags?tag=' ~ tag %}
                 <a href="{{ tag_link }}" style="text-decoration: none">
