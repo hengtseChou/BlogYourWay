@@ -1,0 +1,107 @@
+{% extends 'panel.html' %}
+{% block head %}
+  <link rel="stylesheet" href="/static/css/panel.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
+          defer></script>
+  <script src="/static/js/backstage/edit-project.js" defer></script>
+{% endblock %}
+{% block panel %}
+  <div style="height: 44px; margin-top: 30px">
+    <h2 class="ms-2">Edit Project</h2>
+  </div>
+  <hr />
+  <form method="post" autocomplete="off" id="form" class="row">
+    <div class="col-12 col-md-9">
+      <div class="mb-4">
+        <label for="title" class="form-label ms-2 backstage-form-label">· Title</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="title"
+               name="title"
+               value="{{ project.title }}" />
+      </div>
+      <div class="mb-4">
+        <label for="subtitle" class="form-label ms-2 backstage-form-label">· Short Description</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="desc"
+               name="desc"
+               value="{{ project.short_description }}" />
+      </div>
+      <div class="mb-4">
+        <label for="tags" class="form-label ms-2 backstage-form-label">· Tags</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="tags"
+               name="tags"
+               placeholder="Separate your tags with ','"
+               value="{{ project.tags }}" />
+      </div>
+      <div class="mb-4">
+        <label for="images" class="form-label ms-2 backstage-form-label">· Images</label>
+        <div id="inputContainer">
+          <div class="input-group mb-2">
+            <span class="input-group-text">Image 1</span>
+            <input class="form-control project-img"
+                   type="text"
+                   name="url-1"
+                   id="url-1"
+                   placeholder="url"
+                   value="{{ project.images[0]['url'] }}">
+            <input class="form-control project-img-caption"
+                   type="text"
+                   name="caption-1"
+                   id="caption-1"
+                   placeholder="caption"
+                   value="{{ project.images[0]['caption'] }}">
+          </div>
+          {% for image in project.images[1:] %}
+            <div class="input-group mb-2">
+              <span class="input-group-text">Image {{ loop.index + 1 }}</span>
+              <input type="text"
+                     class="form-control project-img"
+                     name="url-{{ loop.index + 1 }}"
+                     placeholder="url"
+                     value="{{ image['url'] }}">
+              <input type="text"
+                     class="form-control project-img-caption"
+                     name="caption-{{ loop.index + 1 }}"
+                     placeholder="caption"
+                     value="{{ image['caption'] }}">
+              <button class="btn btn-remove panel-btn" aria-label="Close">Remove</button>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="mb-4 d-flex justify-content-start">
+        <button type="button"
+                class="btn panel-btn text-center me-2"
+                id="add-more-image">+ More Image</button>
+      </div>
+      <div class="mb-4">
+        <label for="custom-slug" class="form-label ms-2 backstage-form-label">· Custom slug</label>
+        <input type="text"
+               class="form-control border-underline"
+               id="custom-slug"
+               name="custom_slug"
+               placeholder=""
+               value="{{ project.custom_slug }}" />
+      </div>
+      <div class="mb-4">
+        <textarea id="editor"
+                  name="content"
+                  style="white-space: pre-line"
+                  placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+      </div>
+      <div class="text-end mb-5">
+        <a href="/backstage/posts" class="btn cancel-btn text-center me-2">Cancel</a>
+        <button type="submit"
+                class="btn panel-btn text-center"
+                onclick="return validateUpdate()">Save Changes</button>
+      </div>
+    </div>
+  </form>
+{% endblock %}
+{% block script %}<script>var projectContent = {{ project['content'] | tojson | safe }};</script>{% endblock %}

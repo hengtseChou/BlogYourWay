@@ -4,7 +4,7 @@ from flask_login import current_user, login_required, logout_user
 
 from blogyourway.helpers.common import Paging, string_truncate, switch_to_bool
 from blogyourway.helpers.posts import create_post, post_utils, update_post
-from blogyourway.helpers.projects import create_project, projects_utils
+from blogyourway.helpers.projects import create_project, projects_utils, update_project
 from blogyourway.helpers.users import user_utils
 from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
@@ -91,7 +91,7 @@ def edit_post_get(post_uid):
 
     ###################################################################
 
-    user = mongodb.user_info.find({"username": current_user.username})
+    user = mongodb.user_info.find_one({"username": current_user.username})
     target_post = post_utils.get_full_post(post_uid)
     target_post["tags"] = ", ".join(target_post.get("tags"))
 
@@ -651,3 +651,58 @@ def delete_project():
     ###################################################################
 
     return redirect(url_for("backstage.archive_panel"))
+
+
+@backstage.route("/edit/project/<project_uid>", methods=["GET"])
+@login_required
+def edit_project_get(project_uid):
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################
+
+    logger_utils.backstage(username=current_user.username, tab="edit_project")
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    user = mongodb.user_info.find_one({"username": current_user.username})
+    project = projects_utils.get_full_project(project_uid)
+    project["tags"] = ", ".join(project.get("tags"))
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("edit-project.html", project=project, user=user)
+
+
+@backstage.route("/edit/project/<project_uid>", methods=["POST"])
+@login_required
+def edit_project_post(project_uid):
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    update_project(project_uid, request)
+    logger.debug(f"project {project_uid} is updated.")
+    title_truncated = string_truncate(
+        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"), max_len=20
+    )
+    flash(f'Your project "{title_truncated}" has been updated!', category="success")
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return redirect(url_for("backstage.projects_panel"))

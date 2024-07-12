@@ -18,7 +18,7 @@ class ProjectInfo:
     short_description: str
     author: str
     tags: list[str]
-    images: list[str]
+    images: list[dict[str, str]]
     created_at: datetime = field(init=False)
     last_updated: datetime = field(init=False)
     archived: bool = False
@@ -145,5 +145,74 @@ class ProjectsUtils:
         )
         return result
 
+    def get_full_project(self, project_uid: str) -> dict:
+        project = self._db_handler.project_info.find_one({"project_uid": project_uid})
+        project_content = self._db_handler.project_content.find_one(
+            {"project_uid": project_uid}
+        ).get("content")
+        project["content"] = project_content
+
+        return project
+
 
 projects_utils = ProjectsUtils(mongodb)
+
+
+@dataclass
+class UpdatedProjectInfo:
+    title: str
+    short_description: str
+    tags: list[str]
+    images: list[dict[str, str]]
+    custom_slug: str
+    last_updated: datetime = field(init=False)
+
+    def __post_init__(self):
+        self.last_updated = get_today(env=ENV)
+
+
+@dataclass
+class UpdatedProjectContent:
+    content: str
+
+
+class ProjectUpdateSetup:
+    def __init__(self, db_handler: Database) -> None:
+        self._db_handler = db_handler
+
+    def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
+        return True
+
+    def _updated_project_info(self, request: Request) -> dict:
+        updated_post_info = UpdatedProjectInfo(
+            title=request.form.get("title"),
+            short_description=request.form.get("desc"),
+            tags=process_tags(request.form.get("tags")),
+            images=process_form_images(request),
+            custom_slug=request.form.get("custom_slug"),
+        )
+        return asdict(updated_post_info)
+
+    def _updated_project_content(self, request: Request) -> dict:
+        updated_post_content = UpdatedProjectContent(content=request.form.get("content"))
+        return asdict(updated_post_content)
+
+    def update_project(self, project_uid: str, request: Request) -> None:
+        validator = FormValidator()
+        if not self._form_validatd(request=request, validator=validator):
+            return
+        # validated
+        updated_project_info = self._updated_project_info(request=request)
+        updated_project_content = self._updated_project_content(request=request)
+
+        self._db_handler.project_info.update_values(
+            filter={"project_uid": project_uid}, update=updated_project_info
+        )
+        self._db_handler.project_content.update_values(
+            filter={"project_uid": project_uid}, update=updated_project_content
+        )
+
+
+def update_project(project_uid: str, request: Request) -> None:
+    project_update_setup = ProjectUpdateSetup(db_handler=mongodb)
+    project_update_setup.update_project(project_uid=project_uid, request=request)
