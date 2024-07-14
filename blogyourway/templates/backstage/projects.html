@@ -51,7 +51,7 @@
                               font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
                   </td>
                   <td class="text-center">
-                    <a href="{{ url_for('backstage.edit_archived', type='project', uid=project.project_uid, archived='to_true') }}"
+                    <a href="{{ url_for('backstage.toggle_archived', type='project', uid=project.project_uid, archived='to_true') }}"
                        style="color: black;
                               font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
                   </td>
@@ -67,7 +67,7 @@
         <div class="col-6 text-start">
           {% if pagination.is_previous_page_allowed %}
             <a href="{{ url_for(backstage.projects_panel, page=(pagination.current_page - 1) ) }}"
-               class="btn"><span class="mx-1">⬅️</span> Newer Posts
+               class="btn"><span class="mx-1">⬅️</span> Prev
             </a>
           {% endif %}
         </div>
@@ -75,7 +75,7 @@
           {% if pagination.is_next_page_allowed %}
             <a href="{{ url_for(backstage.projects_panel, page=(pagination.current_page + 1) ) }}"
                class="btn">
-            Older Posts <span class="mx-1">➡️</span></a>
+            Next <span class="mx-1">➡️</span></a>
           {% endif %}
         </div>
       </div>
@@ -114,7 +114,7 @@
                   </li>
                   <li>
                     <a class="dropdown-item"
-                       href="{{ url_for('backstage.edit_archived', type='project', uid=project.project_uid, archived='to_true') }}">Move to archive</a>
+                       href="{{ url_for('backstage.toggle_archived', type='project', uid=project.project_uid, archived='to_true') }}">Move to archive</a>
                   </li>
                 </ul>
               </div>

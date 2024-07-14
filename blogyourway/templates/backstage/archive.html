@@ -42,7 +42,7 @@
                 <td class="text-center">{{ post.views }}</td>
                 <td class="text-center">{{ post.comments }}</td>
                 <td class="text-center">
-                  <a href="{{ url_for('backstage.edit_archived', type='post', uid=post.post_uid, archived='to_false') }}"
+                  <a href="{{ url_for('backstage.toggle_archived', type='post', uid=post.post_uid, archived='to_false') }}"
                      style="color: black;
                             font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
                 </td>
@@ -87,7 +87,7 @@
                 <td class="text-center">{{ project.views }}</td>
                 <td class="text-center">/</td>
                 <td class="text-center">
-                  <a href="{{ url_for('backstage.edit_archived', type='project', uid=project.project_uid, archived='to_false') }}"
+                  <a href="{{ url_for('backstage.toggle_archived', type='project', uid=project.project_uid, archived='to_false') }}"
                      style="color: black;
                             font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
                 </td>
@@ -135,7 +135,7 @@
                 <ul class="dropdown-menu">
                   <li>
                     <a class="dropdown-item"
-                       href="{{ url_for('backstage.edit_archived', type='post', uid=post.post_uid, archived='to_false') }}">Restore</a>
+                       href="{{ url_for('backstage.toggle_archived', type='post', uid=post.post_uid, archived='to_false') }}">Restore</a>
                   </li>
                   <li>
                     <a class="dropdown-item delete-post-btn"
@@ -173,7 +173,7 @@
                 <ul class="dropdown-menu">
                   <li>
                     <a class="dropdown-item"
-                       href="{{ url_for('backstage.edit_archived', type='project', uid=project.project_uid, archived='to_false') }}">Restore</a>
+                       href="{{ url_for('backstage.toggle_archived', type='project', uid=project.project_uid, archived='to_false') }}">Restore</a>
                   </li>
                   <li>
                     <a class="dropdown-item delete-project-btn"
