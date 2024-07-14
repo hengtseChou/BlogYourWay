@@ -75,258 +75,40 @@ def posts_panel():
     return render_template("backstage/posts.html", user=user, posts=posts, pagination=pagination)
 
 
-@backstage.route("/edit/post/<post_uid>", methods=["GET"])
+@backstage.route("/projects", methods=["GET", "POST"])
 @login_required
-def edit_post_get(post_uid):
-    ###################################################################
+def projects_panel():
 
-    # status control / early returns
+    session["user_current_tab"] = "projects"
+    logger_utils.backstage(username=current_user.username, tab="projects")
 
-    ###################################################################
+    current_page = request.args.get("page", default=1, type=int)
 
-    logger_utils.backstage(username=current_user.username, tab="edit_post")
+    if request.method == "POST":
 
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
+        project_uid = create_project(request)
+        if project_uid is not None:
+            logger.debug(f"project {project_uid} has been created.")
+            flash("New project published successfully!", category="success")
 
     user = mongodb.user_info.find_one({"username": current_user.username})
-    target_post = post_utils.get_full_post(post_uid)
-    target_post["tags"] = ", ".join(target_post.get("tags"))
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("backstage/edit-post.html", post=target_post, user=user)
-
-
-@backstage.route("/edit/post/<post_uid>", methods=["POST"])
-@login_required
-def edit_post_post(post_uid):
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    update_post(post_uid, request)
-    logger.debug(f"post {post_uid} is updated.")
-    title_truncated = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+    PROJECTS_PER_PAGE = 10
+    projects = projects_utils.find_projects_with_pagination(
+        current_user.username, current_page, PROJECTS_PER_PAGE
     )
-    flash(f'Your post "{title_truncated}" has been updated!', category="success")
+    paging = Paging(mongodb)
+    paging.setup(current_user.username, "project_info", current_page, PROJECTS_PER_PAGE)
 
-    ###################################################################
+    for project in projects:
+        project["title"] = string_truncate(project.get("title"), 40)
+        project["created_at"] = project.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
+        project["views"] = format(project.get("views"), ",")
 
-    # return page content
+    logger_utils.pagination(tab="posts", num=len(projects))
 
-    ###################################################################
-
-    return redirect(url_for("backstage.posts_panel"))
-
-
-@backstage.route("/edit-featured", methods=["GET"])
-@login_required
-def edit_featured():
-    ###################################################################
-
-    # status control / early returns
-
-    ###################################################################
-
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    post_uid = request.args.get("uid")
-    truncated_post_title = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+    return render_template(
+        "backstage/projects.html", user=user, projects=projects, pagination=paging
     )
-
-    if request.args.get("featured") == "to_true":
-        updated_featured_status = True
-        flash(
-            f'Your post "{truncated_post_title}" is now featured on the home page!',
-            category="success",
-        )
-
-    else:
-        updated_featured_status = False
-        flash(
-            f'Your post "{truncated_post_title}" is now removed from the home page!',
-            category="success",
-        )
-
-    mongodb.post_info.update_values(
-        filter={"post_uid": post_uid}, update={"featured": updated_featured_status}
-    )
-    logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}")
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return redirect(url_for("backstage.posts_panel"))
-
-
-@backstage.route("/edit-archived", methods=["GET"])
-@login_required
-def edit_archived():
-    ###################################################################
-
-    # status control / early returns
-
-    ###################################################################
-
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    content_type = request.args.get("type")
-
-    if content_type == "post":
-
-        post_uid = request.args.get("uid")
-        post_info = mongodb.post_info.find_one({"post_uid": post_uid})
-
-        author = post_info.get("author")
-        tags = post_info.get("tags")
-        title_truncated = string_truncate(post_info.get("title"), max_len=20)
-
-        if request.args.get("archived") == "to_true":
-            updated_archived_status = True
-            tags_increment = {f"tags.{tag}": -1 for tag in tags}
-            flash(f'Your post "{title_truncated}" is now archived!', category="success")
-        else:
-            updated_archived_status = False
-            tags_increment = {f"tags.{tag}": 1 for tag in tags}
-            flash(
-                f'Your post "{title_truncated}" is now restored from the archive!',
-                category="success",
-            )
-
-        mongodb.post_info.update_values(
-            filter={"post_uid": post_uid}, update={"archived": updated_archived_status}
-        )
-        mongodb.user_info.make_increments(
-            filter={"username": author}, increments=tags_increment, upsert=True
-        )
-        logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
-
-    elif content_type == "project":
-
-        project_uid = request.args.get("uid")
-        project_info = mongodb.project_info.find_one({"project_uid": project_uid})
-
-        author = project_info.get("author")
-        title_truncated = string_truncate(project_info.get("title"), max_len=20)
-
-        if request.args.get("archived") == "to_true":
-            updated_archived_status = True
-            flash(f'Your project "{title_truncated}" is now archived!', category="success")
-        else:
-            updated_archived_status = False
-            flash(
-                f'Your project "{title_truncated}" is now restored from the archive!',
-                category="success",
-            )
-
-        mongodb.project_info.update_values(
-            filter={"project_uid": project_uid}, update={"archived": updated_archived_status}
-        )
-        logger.debug(
-            f"archive status for project {project_uid} is now set to {updated_archived_status}"
-        )
-
-    ###################################################################
-
-    # return page contents
-
-    ###################################################################
-
-    if session["user_current_tab"] == "posts":
-        return redirect(url_for("backstage.posts_panel"))
-
-    elif session["user_current_tab"] == "archive":
-        return redirect(url_for("backstage.archive_panel"))
-
-    elif session["user_current_tab"] == "projects":
-        return redirect(url_for("backstage.projects_panel"))
-
-
-@backstage.route("/about", methods=["GET"])
-@login_required
-def edit_about_get():
-    ###################################################################
-
-    # status control / early returns
-
-    ###################################################################
-
-    logger_utils.backstage(username=current_user.username, tab="about")
-
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    user_info = mongodb.user_info.find_one({"username": current_user.username})
-    user_about = mongodb.user_about.find_one({"username": current_user.username})
-    user = user_info | user_about
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("backstage/edit-about.html", user=user)
-
-
-@backstage.route("/about", methods=["POST"])
-@login_required
-def edit_about_post():
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    user_info = mongodb.user_info.find_one({"username": current_user.username})
-    user_about = mongodb.user_about.find_one({"username": current_user.username})
-    user = user_info | user_about
-
-    form = request.form.to_dict()
-    updated_info = {"profile_img_url": form.get("profile_img_url"), "short_bio": form["short_bio"]}
-    updated_about = {"about": form.get("about")}
-    mongodb.user_info.update_values(filter={"username": user.get("username")}, update=updated_info)
-    mongodb.user_about.update_values(
-        filter={"username": user.get("username")}, update=updated_about
-    )
-    user.update(updated_info)
-    user.update(updated_about)
-    logger.debug(f"information for user {current_user.username} has been updated")
-    flash("Information updated!", category="success")
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("backstage/edit-about.html", user=user)
 
 
 @backstage.route("/archive", methods=["GET"])
@@ -370,42 +152,6 @@ def archive_panel():
     return render_template("backstage/archive.html", user=user, posts=posts, projects=projects)
 
 
-@backstage.route("/delete/post", methods=["GET"])
-@login_required
-def delete_post():
-    ###################################################################
-
-    # status control / early returns
-
-    ###################################################################
-
-    post_uid = request.args.get("uid")
-
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    title_truncated = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
-    )
-    mongodb.post_info.delete_one({"post_uid": post_uid})
-    mongodb.post_content.delete_one({"post_uid": post_uid})
-    logger.debug(f"post {post_uid} has been deleted")
-    flash(f'Your post "{title_truncated}" has been deleted!', category="success")
-    # post must be archived before deletion
-    # so no need to increment over tags here
-
-    ###################################################################
-
-    # return page contents
-
-    ###################################################################
-
-    return redirect(url_for("backstage.archive_panel"))
-
-
 @backstage.route("/theme", methods=["GET", "POST"])
 @login_required
 def theme_panel():
@@ -436,7 +182,7 @@ def theme_panel():
 
 @backstage.route("/settings", methods=["GET"])
 @login_required
-def settings_get():
+def settings_panel_get():
     ###################################################################
 
     # status control / early returns
@@ -464,7 +210,7 @@ def settings_get():
 
 @backstage.route("/settings", methods=["POST"])
 @login_required
-def settings_post():
+def settings_panel_post():
     ###################################################################
 
     # main actions
@@ -562,74 +308,16 @@ def settings_post():
     return render_template("backstage/settings.html", user=user)
 
 
-@backstage.route("/logout", methods=["GET"])
+@backstage.route("/edit/post/<post_uid>", methods=["GET"])
 @login_required
-def logout():
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    username = current_user.username
-    logout_user()
-    logger_utils.logout(request=request, username=username)
-
-    ###################################################################
-
-    # return page contents
-
-    ###################################################################
-
-    return redirect(url_for("frontstage.home", username=username))
-
-
-@backstage.route("/projects", methods=["GET", "POST"])
-@login_required
-def projects_panel():
-
-    session["user_current_tab"] = "projects"
-    logger_utils.backstage(username=current_user.username, tab="projects")
-
-    current_page = request.args.get("page", default=1, type=int)
-
-    if request.method == "POST":
-
-        project_uid = create_project(request)
-        if project_uid is not None:
-            logger.debug(f"project {project_uid} has been created.")
-            flash("New project published successfully!", category="success")
-
-    user = mongodb.user_info.find_one({"username": current_user.username})
-    PROJECTS_PER_PAGE = 10
-    projects = projects_utils.find_projects_with_pagination(
-        current_user.username, current_page, PROJECTS_PER_PAGE
-    )
-    paging = Paging(mongodb)
-    paging.setup(current_user.username, "project_info", current_page, PROJECTS_PER_PAGE)
-
-    for project in projects:
-        project["title"] = string_truncate(project.get("title"), 40)
-        project["created_at"] = project.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
-        project["views"] = format(project.get("views"), ",")
-
-    logger_utils.pagination(tab="posts", num=len(projects))
-
-    return render_template(
-        "backstage/projects.html", user=user, projects=projects, pagination=paging
-    )
-
-
-@backstage.route("/delete/project", methods=["GET"])
-@login_required
-def delete_project():
+def edit_post_get(post_uid):
     ###################################################################
 
     # status control / early returns
 
     ###################################################################
 
-    project_uid = request.args.get("uid")
+    logger_utils.backstage(username=current_user.username, tab="edit_post")
 
     ###################################################################
 
@@ -637,23 +325,106 @@ def delete_project():
 
     ###################################################################
 
+    user = mongodb.user_info.find_one({"username": current_user.username})
+    target_post = post_utils.get_full_post(post_uid)
+    target_post["tags"] = ", ".join(target_post.get("tags"))
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("backstage/edit-post.html", post=target_post, user=user)
+
+
+@backstage.route("/edit/post/<post_uid>", methods=["POST"])
+@login_required
+def edit_post_post(post_uid):
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    update_post(post_uid, request)
+    logger.debug(f"post {post_uid} is updated.")
     title_truncated = string_truncate(
-        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"), max_len=20
+        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
     )
-    mongodb.project_info.delete_one({"project_uid": project_uid})
-    mongodb.project_content.delete_one({"project_uid": project_uid})
-    logger.debug(f"project {project_uid} has been deleted")
-    flash(f'Your project "{title_truncated}" has been deleted!', category="success")
-    # post must be archived before deletion
-    # so no need to increment over tags here
+    flash(f'Your post "{title_truncated}" has been updated!', category="success")
 
     ###################################################################
 
-    # return page contents
+    # return page content
 
     ###################################################################
 
-    return redirect(url_for("backstage/backstage.archive_panel"))
+    return redirect(url_for("backstage.posts_panel"))
+
+
+@backstage.route("/about", methods=["GET"])
+@login_required
+def edit_about_get():
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################
+
+    logger_utils.backstage(username=current_user.username, tab="about")
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    user_info = mongodb.user_info.find_one({"username": current_user.username})
+    user_about = mongodb.user_about.find_one({"username": current_user.username})
+    user = user_info | user_about
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("backstage/edit-about.html", user=user)
+
+
+@backstage.route("/about", methods=["POST"])
+@login_required
+def edit_about_post():
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    user_info = mongodb.user_info.find_one({"username": current_user.username})
+    user_about = mongodb.user_about.find_one({"username": current_user.username})
+    user = user_info | user_about
+
+    form = request.form.to_dict()
+    updated_info = {"profile_img_url": form.get("profile_img_url"), "short_bio": form["short_bio"]}
+    updated_about = {"about": form.get("about")}
+    mongodb.user_info.update_values(filter={"username": user.get("username")}, update=updated_info)
+    mongodb.user_about.update_values(
+        filter={"username": user.get("username")}, update=updated_about
+    )
+    user.update(updated_info)
+    user.update(updated_about)
+    logger.debug(f"information for user {current_user.username} has been updated")
+    flash("Information updated!", category="success")
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("backstage/edit-about.html", user=user)
 
 
 @backstage.route("/edit/project/<project_uid>", methods=["GET"])
@@ -709,3 +480,232 @@ def edit_project_post(project_uid):
     ###################################################################
 
     return redirect(url_for("backstage.projects_panel"))
+
+
+@backstage.route("/edit-featured", methods=["GET"])
+@login_required
+def toggle_featured():
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    post_uid = request.args.get("uid")
+    truncated_post_title = string_truncate(
+        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+    )
+
+    if request.args.get("featured") == "to_true":
+        updated_featured_status = True
+        flash(
+            f'Your post "{truncated_post_title}" is now featured on the home page!',
+            category="success",
+        )
+
+    else:
+        updated_featured_status = False
+        flash(
+            f'Your post "{truncated_post_title}" is now removed from the home page!',
+            category="success",
+        )
+
+    mongodb.post_info.update_values(
+        filter={"post_uid": post_uid}, update={"featured": updated_featured_status}
+    )
+    logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}")
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return redirect(url_for("backstage.posts_panel"))
+
+
+@backstage.route("/edit-archived", methods=["GET"])
+@login_required
+def toggle_archived():
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    content_type = request.args.get("type")
+
+    if content_type == "post":
+
+        post_uid = request.args.get("uid")
+        post_info = mongodb.post_info.find_one({"post_uid": post_uid})
+
+        author = post_info.get("author")
+        tags = post_info.get("tags")
+        title_truncated = string_truncate(post_info.get("title"), max_len=20)
+
+        if request.args.get("archived") == "to_true":
+            updated_archived_status = True
+            tags_increment = {f"tags.{tag}": -1 for tag in tags}
+            flash(f'Your post "{title_truncated}" is now archived!', category="success")
+        else:
+            updated_archived_status = False
+            tags_increment = {f"tags.{tag}": 1 for tag in tags}
+            flash(
+                f'Your post "{title_truncated}" is now restored from the archive!',
+                category="success",
+            )
+
+        mongodb.post_info.update_values(
+            filter={"post_uid": post_uid}, update={"archived": updated_archived_status}
+        )
+        mongodb.user_info.make_increments(
+            filter={"username": author}, increments=tags_increment, upsert=True
+        )
+        logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
+
+    elif content_type == "project":
+
+        project_uid = request.args.get("uid")
+        project_info = mongodb.project_info.find_one({"project_uid": project_uid})
+
+        author = project_info.get("author")
+        title_truncated = string_truncate(project_info.get("title"), max_len=20)
+
+        if request.args.get("archived") == "to_true":
+            updated_archived_status = True
+            flash(f'Your project "{title_truncated}" is now archived!', category="success")
+        else:
+            updated_archived_status = False
+            flash(
+                f'Your project "{title_truncated}" is now restored from the archive!',
+                category="success",
+            )
+
+        mongodb.project_info.update_values(
+            filter={"project_uid": project_uid}, update={"archived": updated_archived_status}
+        )
+        logger.debug(
+            f"archive status for project {project_uid} is now set to {updated_archived_status}"
+        )
+
+    ###################################################################
+
+    # return page contents
+
+    ###################################################################
+
+    if session["user_current_tab"] == "posts":
+        return redirect(url_for("backstage.posts_panel"))
+
+    elif session["user_current_tab"] == "archive":
+        return redirect(url_for("backstage.archive_panel"))
+
+    elif session["user_current_tab"] == "projects":
+        return redirect(url_for("backstage.projects_panel"))
+
+
+@backstage.route("/delete/post", methods=["GET"])
+@login_required
+def delete_post():
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################
+
+    post_uid = request.args.get("uid")
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    title_truncated = string_truncate(
+        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
+    )
+    mongodb.post_info.delete_one({"post_uid": post_uid})
+    mongodb.post_content.delete_one({"post_uid": post_uid})
+    logger.debug(f"post {post_uid} has been deleted")
+    flash(f'Your post "{title_truncated}" has been deleted!', category="success")
+    # post must be archived before deletion
+    # so no need to increment over tags here
+
+    ###################################################################
+
+    # return page contents
+
+    ###################################################################
+
+    return redirect(url_for("backstage.archive_panel"))
+
+
+@backstage.route("/delete/project", methods=["GET"])
+@login_required
+def delete_project():
+    ###################################################################
+
+    # status control / early returns
+
+    ###################################################################
+
+    project_uid = request.args.get("uid")
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    title_truncated = string_truncate(
+        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"), max_len=20
+    )
+    mongodb.project_info.delete_one({"project_uid": project_uid})
+    mongodb.project_content.delete_one({"project_uid": project_uid})
+    logger.debug(f"project {project_uid} has been deleted")
+    flash(f'Your project "{title_truncated}" has been deleted!', category="success")
+    # post must be archived before deletion
+    # so no need to increment over tags here
+
+    ###################################################################
+
+    # return page contents
+
+    ###################################################################
+
+    return redirect(url_for("backstage/backstage.archive_panel"))
+
+
+@backstage.route("/logout", methods=["GET"])
+@login_required
+def logout():
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    username = current_user.username
+    logout_user()
+    logger_utils.logout(request=request, username=username)
+
+    ###################################################################
+
+    # return page contents
+
+    ###################################################################
+
+    return redirect(url_for("frontstage.home", username=username))

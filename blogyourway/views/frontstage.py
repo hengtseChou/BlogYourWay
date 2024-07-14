@@ -206,8 +206,8 @@ def home(username):
     return render_template("frontstage/home.html", user=user, posts=featured_posts)
 
 
-@frontstage.route("/@<username>/tags", methods=["GET"])
-def tag(username):
+@frontstage.route("/@<username>/blog", methods=["GET"])
+def blog(username):
     ###################################################################
 
     # early returns
@@ -218,31 +218,29 @@ def tag(username):
         logger.debug(f"invalid username {username}")
         abort(404)
 
-    # if no tag specified, show blog page
-    tag_url_encoded = request.args.get("tag", default=None, type=str)
-    if tag_url_encoded is None:
-        return redirect(url_for("frontstage.blog", username=username))
-
-    # abort for unknown tag
-    tag = unquote(tag_url_encoded)
-    user_info = user_utils.get_user_info(username)
-    if tag not in user_info.tags.keys():
-        logger.debug(f"invalid tag {tag}")
-        abort(404)
-
     ###################################################################
 
     # main actions
 
     ###################################################################
 
-    posts = post_utils.find_posts_info_by_username(username)
+    # set up pagination
+    current_page = request.args.get("page", default=1, type=int)
+    POSTS_EACH_PAGE = 5
+    paging = Paging(mongodb)
+    pagination = paging.setup(username, "post_info", current_page, POSTS_EACH_PAGE)
 
-    posts_with_desired_tag = []
+    # skip and limit posts with given page
+    posts = post_utils.find_posts_with_pagination(
+        username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
+    )
     for post in posts:
-        if tag in post.get("tags"):
-            post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
-            posts_with_desired_tag.append(post)
+        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
+
+    # user info
+    user_info = user_utils.get_user_info(username)
+    tags = sort_dict(user_info.tags)
+    tags = {tag: count for tag, count in tags.items() if count > 0}
 
     ###################################################################
 
@@ -260,7 +258,7 @@ def tag(username):
     ###################################################################
 
     return render_template(
-        "frontstage/tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag
+        "frontstage/blog.html", user=user_info, posts=posts, tags=tags, pagination=pagination
     )
 
 
@@ -387,71 +385,8 @@ def blogpost_with_slug(username, post_uid, slug):
     return blogpost_main_actions(username, post_uid, request)
 
 
-@frontstage.route("/readcount-increment", methods=["GET"])
-def readcount_increment():
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    post_uid = request.args.get("post_uid", type=str)
-    post_utils.read_increment(post_uid)
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return "OK"
-
-
-@frontstage.route("/@<username>/about", methods=["GET"])
-def about(username):
-    ###################################################################
-
-    # early return for invalid inputs
-
-    ###################################################################
-
-    if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
-        abort(404)
-
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    user = mongodb.user_info.find_one({"username": username})
-    user_about = mongodb.user_about.find_one({"username": username})["about"]
-
-    md = Markdown(extensions=["markdown_captions", "fenced_code"])
-    about = md.convert(user_about)
-    about = html_to_about(about)
-
-    ###################################################################
-
-    # logging / metrics
-
-    ###################################################################
-
-    logger_utils.page_visited(request)
-    user_utils.total_view_increment(username)
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("frontstage/about.html", user=user, about=about)
-
-
-@frontstage.route("/@<username>/blog", methods=["GET"])
-def blog(username):
+@frontstage.route("/@<username>/tags", methods=["GET"])
+def tag(username):
     ###################################################################
 
     # early returns
@@ -462,29 +397,31 @@ def blog(username):
         logger.debug(f"invalid username {username}")
         abort(404)
 
+    # if no tag specified, show blog page
+    tag_url_encoded = request.args.get("tag", default=None, type=str)
+    if tag_url_encoded is None:
+        return redirect(url_for("frontstage.blog", username=username))
+
+    # abort for unknown tag
+    tag = unquote(tag_url_encoded)
+    user_info = user_utils.get_user_info(username)
+    if tag not in user_info.tags.keys():
+        logger.debug(f"invalid tag {tag}")
+        abort(404)
+
     ###################################################################
 
     # main actions
 
     ###################################################################
 
-    # set up pagination
-    current_page = request.args.get("page", default=1, type=int)
-    POSTS_EACH_PAGE = 5
-    paging = Paging(mongodb)
-    pagination = paging.setup(username, "post_info", current_page, POSTS_EACH_PAGE)
+    posts = post_utils.find_posts_info_by_username(username)
 
-    # skip and limit posts with given page
-    posts = post_utils.find_posts_with_pagination(
-        username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
-    )
+    posts_with_desired_tag = []
     for post in posts:
-        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
-
-    # user info
-    user_info = user_utils.get_user_info(username)
-    tags = sort_dict(user_info.tags)
-    tags = {tag: count for tag, count in tags.items() if count > 0}
+        if tag in post.get("tags"):
+            post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
+            posts_with_desired_tag.append(post)
 
     ###################################################################
 
@@ -502,91 +439,8 @@ def blog(username):
     ###################################################################
 
     return render_template(
-        "frontstage/blog.html", user=user_info, posts=posts, tags=tags, pagination=pagination
+        "frontstage/tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag
     )
-
-
-@frontstage.route("/@<username>/get-profile-img", methods=["GET"])
-def get_profile_img(username):
-    user = mongodb.user_info.find_one({"username": username})
-
-    if user.get("profile_img_url"):
-        profile_img_url = user["profile_img_url"]
-    else:
-        profile_img_url = "/static/img/default-profile.png"
-
-    return jsonify({"imageUrl": profile_img_url})
-
-
-@frontstage.route("/is-unique", methods=["GET"])
-def is_unique():
-    email = request.args.get("email", default=None, type=str)
-    username = request.args.get("username", default=None, type=str)
-    if email is not None:
-        return jsonify(not mongodb.user_info.exists(key="email", value=email))
-    elif username is not None:
-        return jsonify(not mongodb.user_info.exists(key="username", value=username))
-
-
-@frontstage.route("/error", methods=["GET"])
-def error_simulator():
-    raise Exception("this is a simulation error.")
-
-
-@frontstage.route("/robots.txt", methods=["GET"])
-def robotstxt():
-    return open("robots.txt", "r")
-
-
-@frontstage.route("/sitemap")
-@frontstage.route("/sitemap/")
-@frontstage.route("/sitemap.xml")
-def sitemap():
-    """
-    Route to dynamically generate a sitemap of your website/application.
-    lastmod and priority tags omitted on static pages.
-    lastmod included on dynamic content such as blog posts.
-    """
-
-    host_components = urlparse(request.host_url)
-    host_base = host_components.scheme + "://" + host_components.netloc
-
-    # Static routes with static content
-    static_urls = []
-    for route in ["/", "/login", "/register"]:
-        static_urls.append({"loc": f"{host_base}{route}"})
-
-    # Dynamic routes with dynamic content
-    dynamic_urls = []
-    for username in user_utils.get_all_username():
-        dynamic_urls.append({"loc": f"{host_base}/@{username}"})
-        dynamic_urls.append({"loc": f"{host_base}/@{username}/blog"})
-        dynamic_urls.append({"loc": f"{host_base}/@{username}/about"})
-    for post in post_utils.get_all_posts_info():
-        slug = post.get("slug")
-        if slug:
-            url = {
-                "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug}",
-                "lastmod": post.get("last_updated"),
-            }
-        else:
-            url = {
-                "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}",
-                "lastmod": post.get("last_updated"),
-            }
-        dynamic_urls.append(url)
-
-    xml_sitemap = render_template(
-        "sitemap.xml",
-        static_urls=static_urls,
-        dynamic_urls=dynamic_urls,
-        host_base=host_base,
-    )
-    response = make_response(xml_sitemap)
-    response.headers["Content-Type"] = "application/xml"
-    logger.debug("Sitemap generated successfully.")
-
-    return response
 
 
 @frontstage.route("/@<username>/gallery", methods=["GET"])
@@ -733,3 +587,149 @@ def project_with_slug(username, project_uid, slug):
 @frontstage.route("/@<username>/changelog", methods=["GET"])
 def changelog(username):
     pass
+
+
+@frontstage.route("/@<username>/about", methods=["GET"])
+def about(username):
+    ###################################################################
+
+    # early return for invalid inputs
+
+    ###################################################################
+
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"invalid username {username}")
+        abort(404)
+
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    user = mongodb.user_info.find_one({"username": username})
+    user_about = mongodb.user_about.find_one({"username": username})["about"]
+
+    md = Markdown(extensions=["markdown_captions", "fenced_code"])
+    about = md.convert(user_about)
+    about = html_to_about(about)
+
+    ###################################################################
+
+    # logging / metrics
+
+    ###################################################################
+
+    logger_utils.page_visited(request)
+    user_utils.total_view_increment(username)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("frontstage/about.html", user=user, about=about)
+
+
+@frontstage.route("/@<username>/get-profile-img", methods=["GET"])
+def get_profile_img(username):
+    user = mongodb.user_info.find_one({"username": username})
+
+    if user.get("profile_img_url"):
+        profile_img_url = user["profile_img_url"]
+    else:
+        profile_img_url = "/static/img/default-profile.png"
+
+    return jsonify({"imageUrl": profile_img_url})
+
+
+@frontstage.route("/is-unique", methods=["GET"])
+def is_unique():
+    email = request.args.get("email", default=None, type=str)
+    username = request.args.get("username", default=None, type=str)
+    if email is not None:
+        return jsonify(not mongodb.user_info.exists(key="email", value=email))
+    elif username is not None:
+        return jsonify(not mongodb.user_info.exists(key="username", value=username))
+
+
+@frontstage.route("/readcount-increment", methods=["GET"])
+def readcount_increment():
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    post_uid = request.args.get("post_uid", type=str)
+    post_utils.read_increment(post_uid)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return "OK"
+
+
+@frontstage.route("/error", methods=["GET"])
+def error_simulator():
+    raise Exception("this is a simulation error.")
+
+
+@frontstage.route("/robots.txt", methods=["GET"])
+def robotstxt():
+    return open("robots.txt", "r")
+
+
+@frontstage.route("/sitemap")
+@frontstage.route("/sitemap/")
+@frontstage.route("/sitemap.xml")
+def sitemap():
+    """
+    Route to dynamically generate a sitemap of your website/application.
+    lastmod and priority tags omitted on static pages.
+    lastmod included on dynamic content such as blog posts.
+    """
+
+    host_components = urlparse(request.host_url)
+    host_base = host_components.scheme + "://" + host_components.netloc
+
+    # Static routes with static content
+    static_urls = []
+    for route in ["/", "/login", "/register"]:
+        static_urls.append({"loc": f"{host_base}{route}"})
+
+    # Dynamic routes with dynamic content
+    dynamic_urls = []
+    for username in user_utils.get_all_username():
+        dynamic_urls.append({"loc": f"{host_base}/@{username}"})
+        dynamic_urls.append({"loc": f"{host_base}/@{username}/blog"})
+        dynamic_urls.append({"loc": f"{host_base}/@{username}/about"})
+    for post in post_utils.get_all_posts_info():
+        slug = post.get("slug")
+        if slug:
+            url = {
+                "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug}",
+                "lastmod": post.get("last_updated"),
+            }
+        else:
+            url = {
+                "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}",
+                "lastmod": post.get("last_updated"),
+            }
+        dynamic_urls.append(url)
+
+    xml_sitemap = render_template(
+        "sitemap.xml",
+        static_urls=static_urls,
+        dynamic_urls=dynamic_urls,
+        host_base=host_base,
+    )
+    response = make_response(xml_sitemap)
+    response.headers["Content-Type"] = "application/xml"
+    logger.debug("Sitemap generated successfully.")
+
+    return response
