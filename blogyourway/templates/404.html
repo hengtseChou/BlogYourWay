@@ -11,7 +11,10 @@
   <div class="container pt-4">
     <div class="row align-items-center">
       <div class="offset-1 col-auto">
-        <img src="/static/img/logo.png" alt="Logo" width="36" height="36">
+        <img src="{{ url_for('static', filename='img/logo.png') }}"
+             alt="Logo"
+             width="36"
+             height="36">
       </div>
       <div class="col-auto">
         <a href="/" style="text-decoration:none; color: black;">
@@ -24,7 +27,9 @@
   <div class="container d-none d-xxl-block">
     <div class="row pb-5" style="padding-top: 100px">
       <div class="col-6">
-        <img class="img-fluid" src="/static/img/404.jpg" alt="" />
+        <img class="img-fluid"
+             src="{{ url_for('static', filename='img/404.jpg') }}"
+             alt="404 not found" />
       </div>
       <div class="offset-1 col-5">
         <h1 class="display-4 fw-bold" style="padding-top: 30%">404 Not Found!</h1>
@@ -43,7 +48,9 @@
         <h1 class="display-4 fw-bold">404 Not Found!</h1>
       </div>
       <div class="col-lg-10 col-12 mx-auto my-2">
-        <img class="img-fluid" src="/static/img/404.jpg" alt="" />
+        <img class="img-fluid"
+             src="{{ url_for('static', filename='img/404.jpg') }}"
+             alt="404 not found" />
       </div>
       <div class="col-lg-8 col-10 mx-auto">
         <p class="mt-4 fs-5">Oops! The page you are looking for could not be found.</p>

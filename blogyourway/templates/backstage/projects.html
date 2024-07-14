@@ -1,11 +1,13 @@
-{% extends 'panel.html' %}
+{% extends 'backstage/panel.html' %}
 {% block head %}
-  <link rel="stylesheet" href="/static/css/panel.css" />
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/panel.css') }}" />
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
           defer></script>
-  <script src="/static/js/backstage/projects.js" defer></script>
+  <script src="{{ url_for('static', filename='js/backstage/projects.js') }}"
+          defer></script>
 {% endblock %}
 {% block panel %}
   <!-- desktop view -->
@@ -38,18 +40,18 @@
               {% for project in projects %}
                 <tr>
                   <td class="align-middle">
-                    <a href="/@{{ project.author }}/projects/{{ project.project_uid }}"
-                       style="color: black">{{ project['title'] }}</a>
+                    <a href="{{ url_for('frontstage.project', username=project.author, project_uid=project.project_uid) }}"
+                       style="color: black">{{ project.title }}</a>
                   </td>
-                  <td>{{ project['created_at'] }}</td>
-                  <td class="text-center">{{ project['views'] }}</td>
+                  <td>{{ project.created_at }}</td>
+                  <td class="text-center">{{ project.views }}</td>
                   <td class="text-center">
-                    <a href="edit/project/{{ project.project_uid }}"
+                    <a href="{{ url_for('backstage.edit_project_get', project_uid=project.project_uid) }}"
                        style="color: black;
                               font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
                   </td>
                   <td class="text-center">
-                    <a href="edit-archived?type=project&archived=to_true&uid={{ project.project_uid }}"
+                    <a href="{{ url_for('backstage.edit_archived', type='project', uid=project.project_uid, archived='to_true') }}"
                        style="color: black;
                               font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
                   </td>
@@ -64,15 +66,15 @@
       <div class="row">
         <div class="col-6 text-start">
           {% if pagination.is_previous_page_allowed %}
-            {% set previous_page = pagination.current_page - 1 %}
-            <a href="projects?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts
+            <a href="{{ url_for(backstage.projects_panel, page=(pagination.current_page - 1) ) }}"
+               class="btn"><span class="mx-1">⬅️</span> Newer Posts
             </a>
           {% endif %}
         </div>
         <div class="col-6 text-end">
           {% if pagination.is_next_page_allowed %}
-            {% set next_page = pagination.current_page + 1 %}
-            <a href="projects?page={{ next_page }}" class="btn">
+            <a href="{{ url_for(backstage.projects_panel, page=(pagination.current_page + 1) ) }}"
+               class="btn">
             Older Posts <span class="mx-1">➡️</span></a>
           {% endif %}
         </div>
@@ -93,11 +95,10 @@
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              <a href="/@{{ project.author }}/projects/{{ project.project_uid }}"
-                 style="color: black">{{ project['title'] }}</a>
-              <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ project['created_at'] }}</p>
+              <a href="『" style="color: black">{{ project.title }}</a>
+              <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ project.created_at }}</p>
               <div>
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project['views'] }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project.views }}</span>
               </div>
             </div>
             <div class="col-2">
@@ -108,11 +109,12 @@
                         aria-expanded="false"></button>
                 <ul class="dropdown-menu">
                   <li>
-                    <a class="dropdown-item" href="edit/project/{{ project.project_uid }}">Edit</a>
+                    <a class="dropdown-item"
+                       href="{{ url_for('backstage.edit_project_get', project_uid=project.project_uid) }}">Edit</a>
                   </li>
                   <li>
                     <a class="dropdown-item"
-                       href="edit-archived?type=project&archived=to_true&uid={{ project.project_uid }}">Move to archive</a>
+                       href="{{ url_for('backstage.edit_archived', type='project', uid=project.project_uid, archived='to_true') }}">Move to archive</a>
                   </li>
                 </ul>
               </div>

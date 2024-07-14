@@ -1,7 +1,9 @@
-{% extends 'panel.html' %}
+{% extends 'backstage/panel.html' %}
 {% block head %}
-  <link rel="stylesheet" href="/static/css/panel.css" />
-  <link rel="stylesheet" href="/static/css/settings.css" />
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/panel.css') }}" />
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/settings.css') }}s" />
 {% endblock %}
 {% block panel %}
   <div style="height: 44px; margin-top: 30px">
@@ -176,4 +178,4 @@
     </div>
   </div>
 {% endblock %}
-{% block script %}<script src="/static/js/backstage/settings.js"></script>{% endblock %}
+{% block script %}<script src="{{ url_for('static', filename='js/backstage/settings.js') }}"></script>{% endblock %}

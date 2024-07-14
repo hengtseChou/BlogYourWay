@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}BlogYourWay - Share As You Want{% endblock %}
 {% block meta_tags %}{% endblock %}
-{% block head %}<link rel="stylesheet" href="/static/css/landing-page.css" />{% endblock %}
+{% block head %}
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/landing-page.css') }}" />
+{% endblock %}
 {% block body %}
   <div class="container pt-4">
     <div class="row align-items-center">
       <div class="offset-1 col-auto">
-        <img src="/static/img/logo.png" alt="Logo" width="36" height="36" />
+        <img src="{{ url_for('static', filename='img/logo.png') }}"
+             alt="Logo"
+             width="36"
+             height="36" />
       </div>
       <div class="col-auto">
         <a href="/" style="text-decoration: none; color: black">
@@ -23,10 +29,13 @@
           BlogYourWay is a perfect solution for hosting your content, including
           blogging and work showcases. All come with markdown-support.
         </p>
-        <a class="btn get-started-btn fw-bold" href="/signup">Get Started</a>
+        <a class="btn get-started-btn fw-bold"
+           href="{{ url_for("frontstage.signup_get") }}">Get Started</a>
       </div>
       <div class="col-xl-6 text-center d-none d-xxl-block">
-        <img class="img-fluid" src="/static/img/landing.jpg" alt="" />
+        <img class="img-fluid"
+             src="{{ url_for('static', filename='img/landing.jpg') }}"
+             alt="" />
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-md bg-white shadow sticky-top pt-3 pb-3">
   <div class="container">
     <a class="navbar-brand navbar-brand-ms fs-4 fw-bold"
-       href="/@{{ user.username }}">{{ user.blogname }}</a>
+       href="{{ url_for('frontstage.home', username=user.username) }}">{{ user.blogname }}</a>
     <button class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -11,20 +11,24 @@
     <div class="collapse navbar-collapse justify-content-between" id="navbar">
       <ul class="navbar-nav ms-auto pe-5">
         <li class="nav-item">
-          <a class="nav-link ms-2" href="/@{{ user.username }}/blog">Blog</a>
+          <a class="nav-link ms-2"
+             href="{{ url_for('frontstage.blog', username=user.username) }}">Blog</a>
         </li>
         {% if user.gallery_enabled %}
           <li class="nav-item">
-            <a class="nav-link ms-2" href="/@{{ user.username }}/gallery">Gallery</a>
+            <a class="nav-link ms-2"
+               href="{{ url_for('frontstage.gallery', username=user.username) }}">Gallery</a>
           </li>
         {% endif %}
         {% if user.changelog_enabled %}
           <li class="nav-item">
-            <a class="nav-link ms-2" href="/@{{ user.username }}/changelog">ChangeLog</a>
+            <a class="nav-link ms-2"
+               href="{{ url_for('frontstage.changelog', username=user.username) }}">ChangeLog</a>
           </li>
         {% endif %}
         <li class="nav-item">
-          <a class="nav-link ms-2" href="/@{{ user.username }}/about">About</a>
+          <a class="nav-link ms-2"
+             href="{{ url_for('frontstage.about', username=user.username) }}">About</a>
         </li>
       </ul>
       <ul class="navbar-nav me-5">
@@ -37,16 +41,18 @@
                aria-expanded="false">@{{ user.username }}</a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="/backstage">Backstage</a>
+                <a class="dropdown-item"
+                   href="{{ url_for("backstage.backstage_root") }}">Backstage</a>
               </li>
               <li>
-                <a class="dropdown-item" href="/backstage/logout">Logout</a>
+                <a class="dropdown-item" href="{{ url_for("backstage.logout") }}">Logout</a>
               </li>
             </ul>
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="nav-link ms-2 btk" href="/login">Login</a>
+            <a class="nav-link ms-2 btk"
+               href="{{ url_for("frontstage.login_get") }}">Login</a>
           </li>
         {% endif %}
       </ul>

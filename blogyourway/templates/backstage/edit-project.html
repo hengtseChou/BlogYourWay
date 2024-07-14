@@ -1,11 +1,13 @@
-{% extends 'panel.html' %}
+{% extends 'backstage/panel.html' %}
 {% block head %}
-  <link rel="stylesheet" href="/static/css/panel.css" />
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/panel.css') }}" />
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
           defer></script>
-  <script src="/static/js/backstage/edit-project.js" defer></script>
+  <script src="{{ url_for('static', filename='js/backstage/edit-project.js') }}"
+          defer></script>
 {% endblock %}
 {% block panel %}
   <div style="height: 44px; margin-top: 30px">
@@ -96,7 +98,8 @@
                   placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
       </div>
       <div class="text-end mb-5">
-        <a href="/backstage/posts" class="btn cancel-btn text-center me-2">Cancel</a>
+        <a href="{{ url_for("backstage.projects_panel") }}"
+           class="btn cancel-btn text-center me-2">Cancel</a>
         <button type="submit"
                 class="btn panel-btn text-center"
                 onclick="return validateUpdate()">Save Changes</button>

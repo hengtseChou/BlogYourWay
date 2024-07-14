@@ -16,7 +16,7 @@ from flask import (
 from flask_login import current_user, login_user
 from markdown import Markdown
 
-from blogyourway.config import RECAPTCHA_KEY
+from blogyourway.config import RECAPTCHA_KEY, TEMPLATE_FOLDER
 from blogyourway.helpers.comments import comment_utils, create_comment
 from blogyourway.helpers.common import Paging, sort_dict
 from blogyourway.helpers.posts import html_to_about, html_to_post, post_utils
@@ -24,7 +24,7 @@ from blogyourway.helpers.projects import projects_utils
 from blogyourway.helpers.users import user_utils
 from blogyourway.services import logger, logger_utils, mongodb
 
-frontstage = Blueprint("frontstage", __name__, template_folder="../templates/frontstage/")
+frontstage = Blueprint("frontstage", __name__, template_folder=TEMPLATE_FOLDER)
 
 
 @frontstage.context_processor
@@ -48,7 +48,7 @@ def landing_page():
 
     ###################################################################
 
-    return render_template("landing-page.html")
+    return render_template("frontstage/landing-page.html")
 
 
 @frontstage.route("/login", methods=["GET"])
@@ -78,7 +78,7 @@ def login_get():
 
     ###################################################################
 
-    return render_template("login.html")
+    return render_template("frontstage/login.html")
 
 
 @frontstage.route("/login", methods=["POST"])
@@ -93,7 +93,7 @@ def login_post():
     if not mongodb.user_creds.exists("email", login_form.get("email")):
         flash("Account not found. Please try again.", category="error")
         logger_utils.login_failed(request=request, msg=f"email {login_form.get('email')} not found")
-        return render_template("login.html")
+        return render_template("frontstage/login.html")
 
     # check pw
     user_creds = mongodb.user_creds.find_one({"email": login_form.get("email")})
@@ -106,7 +106,7 @@ def login_post():
             request=request,
             msg=f"invalid password with email {login_form.get('email')}",
         )
-        return render_template("login.html")
+        return render_template("frontstage/login.html")
 
     ###################################################################
 
@@ -145,7 +145,7 @@ def signup_get():
 
     ###################################################################
 
-    return render_template("signup.html")
+    return render_template("frontstage/signup.html")
 
 
 @frontstage.route("/signup", methods=["POST"])
@@ -164,7 +164,7 @@ def signup_post():
         return redirect(url_for("frontstage.home", username=new_user))
 
     else:
-        return render_template("signup.html")
+        return render_template("frontstage/signup.html")
 
 
 @frontstage.route("/@<username>", methods=["GET"])
@@ -203,7 +203,7 @@ def home(username):
 
     ###################################################################
 
-    return render_template("home.html", user=user, posts=featured_posts)
+    return render_template("frontstage/home.html", user=user, posts=featured_posts)
 
 
 @frontstage.route("/@<username>/tags", methods=["GET"])
@@ -259,7 +259,9 @@ def tag(username):
 
     ###################################################################
 
-    return render_template("tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag)
+    return render_template(
+        "frontstage/tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag
+    )
 
 
 def blogpost_main_actions(username, post_uid, request):
@@ -300,7 +302,9 @@ def blogpost_main_actions(username, post_uid, request):
 
     ###################################################################
 
-    return render_template("blogpost.html", user=author_info, post=target_post, comments=comments)
+    return render_template(
+        "frontstage/blogpost.html", user=author_info, post=target_post, comments=comments
+    )
 
 
 @frontstage.route("/@<username>/posts/<post_uid>", methods=["GET", "POST"])
@@ -443,7 +447,7 @@ def about(username):
 
     ###################################################################
 
-    return render_template("about.html", user=user, about=about)
+    return render_template("frontstage/about.html", user=user, about=about)
 
 
 @frontstage.route("/@<username>/blog", methods=["GET"])
@@ -498,7 +502,7 @@ def blog(username):
     ###################################################################
 
     return render_template(
-        "blog.html", user=user_info, posts=posts, tags=tags, pagination=pagination
+        "frontstage/blog.html", user=user_info, posts=posts, tags=tags, pagination=pagination
     )
 
 
@@ -636,12 +640,14 @@ def gallery(username):
 
     ###################################################################
 
-    return render_template("gallery.html", user=user_info, projects=projects, pagination=pagination)
+    return render_template(
+        "frontstage/gallery.html", user=user_info, projects=projects, pagination=pagination
+    )
 
 
 def project_main_actions(username, project_uid):
 
-    return render_template("project.html")
+    return render_template("frontstage/project.html")
 
 
 @frontstage.route("/@<username>/project/<project_uid>", methods=["GET"])
@@ -722,3 +728,8 @@ def project_with_slug(username, project_uid, slug):
     ###################################################################
 
     return project_main_actions(username, project_uid, request)
+
+
+@frontstage.route("/@<username>/changelog", methods=["GET"])
+def changelog(username):
+    pass

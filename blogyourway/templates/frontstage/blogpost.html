@@ -1,28 +1,23 @@
 {% extends 'base.html' %}
 {% block title %}{{ post.title }}{% endblock %}
 {% block meta_tags %}
-  <meta name="description" content="{{ post['subtitle'] }}" />
-  <meta property="og:image" content="{{ post['cover_url'] }}" />
+  <meta name="description" content="{{ post.subtitle }}" />
+  <meta property="og:image" content="{{ post.cover_url }}" />
 {% endblock %}
 {% block head %}
-  <link rel="stylesheet" href="/static/css/blogpost.css">
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/blogpost.css') }}">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <link rel="preconnect" href="https://www.google.com" />
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
   <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
-        integrity="sha512-hasIneQUHlh06VNBe7f6ZcHmeRTLIaQWFd44YriJ0UND19bvYRauxthDg8E4eVNPm9bRUhr5JGeqH7FRFXQu5g=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"
-          integrity="sha512-bgHRAiTjGrzHzLyKOnpFvaEpGzJet3z4tZnXGjpsCcqOnAH6VGUx9frc5bcIhKTVLEiCO6vEhNAgx5jtLUYrfA=="
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script src="{{ url_for('static', filename='js/frontstage/blogpost.js') }}"
           defer></script>
-  <script src="/static/js/frontstage/blogpost.js" defer></script>
 {% endblock %}
 {% block body %}
-  {% include 'navbar.html' %}
+  {% include 'frontstage/navbar.html' %}
   <div class="my-5 row"></div>
   <div class="my-3 row"></div>
   <!-- post starts -->
@@ -35,10 +30,10 @@
         <div class="d-inline-flex">
           <div class="row mt-3">
             <div class="col-1" style="width: 3rem">
-              <a href="/@{{ post.author }}/about">
+              <a href="{{ url_for('frontstage.about', username=user.username) }}">
                 {% if user.profile_img_url|length == 0 %}
                   <img class="profile-md"
-                       src="/static/img/default-profile.png"
+                       src="{{ url_for('static', filename='img/default-profile.png') }}"
                        alt="profile-img" />
                 {% else %}
                   <img class="profile-md" src="{{ user.profile_img_url }}" alt="profile-img" />
@@ -49,7 +44,8 @@
               <div style="line-height: 125%">
                 <span class="grey-text">Updated at {{ post.last_updated }}&nbsp;&nbsp;·&nbsp;&nbsp;{{ post.readtime }}</span>
                 <br />
-                By<a class="author-link ms-1" href="/@{{ post.author }}/about">{{ post.author }}</a>
+                By<a class="author-link ms-1"
+   href="{{ url_for('frontstage.about', username=user.username) }}">{{ post.author }}</a>
               </div>
             </div>
           </div>
@@ -71,9 +67,7 @@
                     font-size: large">
           <span><i class="fa-solid fa-tags"></i></span>
           {% for tag in post.tags %}
-            {% set tag_link = '/@'~ post.author ~
-                        '/tags?tag=' ~ tag %}
-            <a href="{{ tag_link }}">
+            <a href="{{ url_for('frontstage.tag', username=user.username, tags=tag) }}">
               <span class="badge tag ms-2">{{ tag }}</span>
             </a>
           {% endfor %}
@@ -127,37 +121,37 @@
           <div class="mb-5">
             <h5 class="text-start my-4 fw-bold" style="color: #646464">{{ comments|length }} comments</h5>
             {% for comment in comments %}
-              {% if comment['profile_link']| length != 0
+              {% if comment.profile_link | length != 0
                 %}
                 <!-- registered user -->
                 <div class="mb-4 d-flex flex-row">
-                  <a href="{{ comment['profile_link'] }}">
+                  <a href="{{ comment.profile_link }}">
                     <img class="profile-lg ajax-profile-pic"
-                         src="{{ comment['profile_img_url'] }}"
+                         src="{{ comment.profile_img_url }}"
                          alt="profile-img" />
                   </a>
                   <div class="ms-3 mt-1">
                     <div>
-                      <a href="{{ comment['profile_link'] }}" style="color: black">
-                        <span class="fw-bold">{{ comment['name'] }}</span>
+                      <a href="{{ comment.profile_link }}" style="color: black">
+                        <span class="fw-bold">{{ comment.name }}</span>
                       </a>
-                      <span style="color: #646464">on {{ comment['created_at'] }}</span>
+                      <span style="color: #646464">on {{ comment.created_at }}</span>
                     </div>
-                    <div class="mt-2">{{ comment['comment'] }}</div>
+                    <div class="mt-2">{{ comment.comment }}</div>
                   </div>
                 </div>
               {% else %}
                 <!-- visitor -->
                 <div class="mb-4 d-flex flex-row">
                   <img class="profile-lg"
-                       src="{{ comment['profile_img_url'] }}"
+                       src="{{ comment.profile_img_url }}"
                        alt="profile-img" />
                   <div class="ms-3">
                     <div>
-                      <span class="fw-bold">{{ comment['name'] }}</span>
-                      <span style="color: #646464">on {{ comment['created_at'] }}</span>
+                      <span class="fw-bold">{{ comment.name }}</span>
+                      <span style="color: #646464">on {{ comment.created_at }}</span>
                     </div>
-                    <div class="mt-2">{{ comment['comment'] }}</div>
+                    <div class="mt-2">{{ comment.comment }}</div>
                   </div>
                 </div>
               {% endif %}
@@ -167,7 +161,7 @@
       </div>
     </div>
   </div>
-  {% include 'footer.html' %}
+  {% include 'frontstage/footer.html' %}
 {% endblock %}
 {% block script %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"

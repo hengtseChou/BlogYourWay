@@ -1,5 +1,8 @@
-{% extends 'panel.html' %}
-{% block head %}<link rel="stylesheet" href="/static/css/panel.css" />{% endblock %}
+{% extends 'backstage/panel.html' %}
+{% block head %}
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/panel.css') }}" />
+{% endblock %}
 {% block panel %}
   <!-- desktop view -->
   <div class="d-none d-md-block">
@@ -34,12 +37,12 @@
             {% for post in posts %}
               <tr>
                 <!-- to-do: add post's link to post's title -->
-                <td>{{ post['title'] }}</td>
-                <td>{{ post['created_at'] }}</td>
-                <td class="text-center">{{ post['views'] }}</td>
-                <td class="text-center">{{ post['comments'] }}</td>
+                <td>{{ post.title }}</td>
+                <td>{{ post.created_at }}</td>
+                <td class="text-center">{{ post.views }}</td>
+                <td class="text-center">{{ post.comments }}</td>
                 <td class="text-center">
-                  <a href="/backstage/edit-archived?type=post&archived=to_false&uid={{ post.post_uid }}"
+                  <a href="{{ url_for('backstage.edit_archived', type='post', uid=post.post_uid, archived='to_false') }}"
                      style="color: black;
                             font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
                 </td>
@@ -79,12 +82,12 @@
             {% for project in projects %}
               <tr>
                 <!-- to-do: add project's link to project's title -->
-                <td>{{ project['title'] }}</td>
-                <td>{{ project['created_at'] }}</td>
-                <td class="text-center">{{ project['views'] }}</td>
+                <td>{{ project.title }}</td>
+                <td>{{ project.created_at }}</td>
+                <td class="text-center">{{ project.views }}</td>
                 <td class="text-center">/</td>
                 <td class="text-center">
-                  <a href="/backstage/edit-archived?type=project&archived=to_false&uid={{ project.project_uid }}"
+                  <a href="{{ url_for('backstage.edit_archived', type='project', uid=project.project_uid, archived='to_false') }}"
                      style="color: black;
                             font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
                 </td>
@@ -115,11 +118,11 @@
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              <div class="text-truncate">{{ post['title'] }}</div>
-              <p style="font-size: small; font-style: italic" class="grey-text mb-2">Created at {{ post['created_at'] }}</p>
+              <div class="text-truncate">{{ post.title }}</div>
+              <p style="font-size: small; font-style: italic" class="grey-text mb-2">Created at {{ post.created_at }}</p>
               <div>
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post['views'] }}</span>
-                <span><i class="fa-regular fa-comment me-2"></i>{{ post['comments'] }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post.views }}</span>
+                <span><i class="fa-regular fa-comment me-2"></i>{{ post.comments }}</span>
               </div>
             </div>
             <div class="col-2">
@@ -132,7 +135,7 @@
                 <ul class="dropdown-menu">
                   <li>
                     <a class="dropdown-item"
-                       href="/backstage/edit-archived?type=post&archived=to_false&uid={{ post.post_uid }}">Restore</a>
+                       href="{{ url_for('backstage.edit_archived', type='post', uid=post.post_uid, archived='to_false') }}">Restore</a>
                   </li>
                   <li>
                     <a class="dropdown-item delete-post-btn"
@@ -154,10 +157,10 @@
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              <div class="text-truncate">{{ project['title'] }}</div>
-              <p style="font-size: small; font-style: italic" class="grey-text mb-2">Created at {{ project['created_at'] }}</p>
+              <div class="text-truncate">{{ project.title }}</div>
+              <p style="font-size: small; font-style: italic" class="grey-text mb-2">Created at {{ project.created_at }}</p>
               <div>
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project['views'] }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project.views }}</span>
               </div>
             </div>
             <div class="col-2">
@@ -170,7 +173,7 @@
                 <ul class="dropdown-menu">
                   <li>
                     <a class="dropdown-item"
-                       href="/backstage/edit-archived?type=project&archived=to_false&uid={{ project.project_uid }}">Restore</a>
+                       href="{{ url_for('backstage.edit_archived', type='project', uid=project.project_uid, archived='to_false') }}">Restore</a>
                   </li>
                   <li>
                     <a class="dropdown-item delete-project-btn"
@@ -233,4 +236,4 @@
     </div>
   </div>
 {% endblock %}
-{% block script %}<script src="/static/js/backstage/archive.js"></script>{% endblock %}
+{% block script %}<script src="{{ url_for('static', filename='js/backstage/archive.js') }}"></script>{% endblock %}

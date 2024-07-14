@@ -2,6 +2,7 @@ from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
+from blogyourway.config import TEMPLATE_FOLDER
 from blogyourway.helpers.common import Paging, string_truncate, switch_to_bool
 from blogyourway.helpers.posts import create_post, post_utils, update_post
 from blogyourway.helpers.projects import create_project, projects_utils, update_project
@@ -9,7 +10,7 @@ from blogyourway.helpers.users import user_utils
 from blogyourway.services.logging import logger, logger_utils
 from blogyourway.services.mongo import mongodb
 
-backstage = Blueprint("backstage", __name__, template_folder="../templates/backstage/")
+backstage = Blueprint("backstage", __name__, template_folder=TEMPLATE_FOLDER)
 
 
 @backstage.route("/", methods=["GET"])
@@ -71,7 +72,7 @@ def posts_panel():
 
     ###################################################################
 
-    return render_template("posts.html", user=user, posts=posts, pagination=pagination)
+    return render_template("backstage/posts.html", user=user, posts=posts, pagination=pagination)
 
 
 @backstage.route("/edit/post/<post_uid>", methods=["GET"])
@@ -101,7 +102,7 @@ def edit_post_get(post_uid):
 
     ###################################################################
 
-    return render_template("edit-post.html", post=target_post, user=user)
+    return render_template("backstage/edit-post.html", post=target_post, user=user)
 
 
 @backstage.route("/edit/post/<post_uid>", methods=["POST"])
@@ -291,7 +292,7 @@ def edit_about_get():
 
     ###################################################################
 
-    return render_template("edit-about.html", user=user)
+    return render_template("backstage/edit-about.html", user=user)
 
 
 @backstage.route("/about", methods=["POST"])
@@ -325,7 +326,7 @@ def edit_about_post():
 
     ###################################################################
 
-    return render_template("edit-about.html", user=user)
+    return render_template("backstage/edit-about.html", user=user)
 
 
 @backstage.route("/archive", methods=["GET"])
@@ -366,7 +367,7 @@ def archive_panel():
 
     ###################################################################
 
-    return render_template("archive.html", user=user, posts=posts, projects=projects)
+    return render_template("backstage/archive.html", user=user, posts=posts, projects=projects)
 
 
 @backstage.route("/delete/post", methods=["GET"])
@@ -430,7 +431,7 @@ def theme_panel():
 
     ###################################################################
 
-    return render_template("theme.html", user=user)
+    return render_template("backstage/theme.html", user=user)
 
 
 @backstage.route("/settings", methods=["GET"])
@@ -458,7 +459,7 @@ def settings_get():
 
     ###################################################################
 
-    return render_template("settings.html", user=user)
+    return render_template("backstage/settings.html", user=user)
 
 
 @backstage.route("/settings", methods=["POST"])
@@ -558,7 +559,7 @@ def settings_post():
 
     ###################################################################
 
-    return render_template("settings.html", user=user)
+    return render_template("backstage/settings.html", user=user)
 
 
 @backstage.route("/logout", methods=["GET"])
@@ -614,7 +615,9 @@ def projects_panel():
 
     logger_utils.pagination(tab="posts", num=len(projects))
 
-    return render_template("projects.html", user=user, projects=projects, pagination=paging)
+    return render_template(
+        "backstage/projects.html", user=user, projects=projects, pagination=paging
+    )
 
 
 @backstage.route("/delete/project", methods=["GET"])
@@ -650,7 +653,7 @@ def delete_project():
 
     ###################################################################
 
-    return redirect(url_for("backstage.archive_panel"))
+    return redirect(url_for("backstage/backstage.archive_panel"))
 
 
 @backstage.route("/edit/project/<project_uid>", methods=["GET"])
@@ -680,7 +683,7 @@ def edit_project_get(project_uid):
 
     ###################################################################
 
-    return render_template("edit-project.html", project=project, user=user)
+    return render_template("backstage/edit-project.html", project=project, user=user)
 
 
 @backstage.route("/edit/project/<project_uid>", methods=["POST"])

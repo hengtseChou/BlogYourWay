@@ -1,4 +1,4 @@
-{% extends 'panel.html' %}
+{% extends 'backstage/panel.html' %}
 {% block head %}
   <link rel="stylesheet" href="/static/css/panel.css" />
   <link rel="stylesheet"
@@ -43,7 +43,7 @@
                   <td class="align-middle">
                     <!-- leave post stat for future -->
                     <!-- <a href="stats/posts/{{ post.post_uid }}" class="me-1" style="color: black">{{ post['title'] }}</a> -->
-                    <a href="/@{{ post.author }}/posts/{{ post.post_uid }}"
+                    <a href="{{ url_for('frontstage.blogpost', username=post.author, post_uid=post.post_uid) }}"
                        style="color: black">{{ post['title'] }}</a>
                     {% if post['featured'] %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
                   </td>
@@ -69,7 +69,7 @@
                     </td>
                   {% endif %}
                   <td class="text-center">
-                    <a href="edit-archived?type=post&archived=to_true&uid={{ post.post_uid }}"
+                    <a href="{{ url_for('backstage.edit_archived', type='post', uid=post.post_uid, archived='to_true') }}"
                        style="color: black;
                               font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
                   </td>
