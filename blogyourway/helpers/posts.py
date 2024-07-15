@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from flask import Request
 from flask_login import current_user
 
-from blogyourway.config import ENV
 from blogyourway.helpers.common import FormValidator, UIDGenerator
 from blogyourway.services.mongo import Database, mongodb
 

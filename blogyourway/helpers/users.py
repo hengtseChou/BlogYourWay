@@ -6,7 +6,6 @@ import bcrypt
 from flask import Request, flash
 from flask_login import UserMixin
 
-from blogyourway.config import ENV
 from blogyourway.helpers.common import FormValidator
 from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb

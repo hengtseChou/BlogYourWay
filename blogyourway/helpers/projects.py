@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 from flask import Request
 from flask_login import current_user
 
-from blogyourway.config import ENV
 from blogyourway.helpers.common import FormValidator, UIDGenerator
 from blogyourway.helpers.posts import process_tags
 from blogyourway.services.mongo import Database, mongodb

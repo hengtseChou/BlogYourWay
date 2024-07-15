@@ -9,7 +9,7 @@ import requests
 from flask import Request
 from flask_login import current_user
 
-from blogyourway.config import ENV, RECAPTCHA_SECRET
+from blogyourway.config import RECAPTCHA_SECRET
 from blogyourway.helpers.common import FormValidator, UIDGenerator
 from blogyourway.services.mongo import Database, mongodb
 
