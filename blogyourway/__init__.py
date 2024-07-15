@@ -12,7 +12,7 @@ from blogyourway.models.users import UserInfo
 from blogyourway.mongo import mongodb
 from blogyourway.tasks.users import user_utils
 
-from .views import backstage_bp, frontstage_bp
+from .views import backstage_bp, frontstage_bp, main_bp
 
 
 def create_app() -> Flask:
@@ -46,7 +46,7 @@ def create_app() -> Flask:
 
     ## login
     login_manager = LoginManager()
-    login_manager.login_view = "frontstage.login_get"
+    login_manager.login_view = "main.login_get"
     login_manager.login_message = "Please login to proceed."
     login_manager.init_app(app)
     logger.debug("Login manager initialized.")
@@ -77,6 +77,7 @@ def create_app() -> Flask:
     # blueprints
     app.register_blueprint(frontstage_bp, url_prefix="/")
     app.register_blueprint(backstage_bp, url_prefix="/backstage/")
+    app.register_blueprint(main_bp, url_prefix="/")
     logger.debug("Blueprints registered.")
 
     # check connection
