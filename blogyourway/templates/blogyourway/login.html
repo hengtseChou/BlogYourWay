@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block head %}
   <link rel="stylesheet"
-        href="{{ url_for('static', filename='css/login.css') }}">
+        href="{{ url_for('static', filename='css/blogyourway/login.css') }}">
 {% endblock %}
 {% block title %}Login - BlogYourWay{% endblock %}
 {% block body %}
@@ -31,8 +31,7 @@
                        placeholder="Password"
                        name="password" />
               </div>
-              <button type="submit"
-                      class="btn btn-orange w-100 rounded-pill">Login</button>
+              <button type="submit" class="btn btn-orange w-100 rounded-pill">Login</button>
             </form>
             <div class="text-center mt-4">
               Don't have an account? <a href="{{ url_for("frontstage.signup_get") }}">Sign Up</a>

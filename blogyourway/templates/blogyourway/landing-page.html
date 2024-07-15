@@ -3,7 +3,7 @@
 {% block meta_tags %}{% endblock %}
 {% block head %}
   <link rel="stylesheet"
-        href="{{ url_for('static', filename='css/landing-page.css') }}" />
+        href="{{ url_for('static', filename='css/frontstage/landing-page.css') }}" />
 {% endblock %}
 {% block body %}
   <div class="container pt-4">
@@ -15,7 +15,8 @@
              height="36" />
       </div>
       <div class="col-auto">
-        <a href="{{ url_for('frontstage.landing_page') }}" class="text-decoration-none text-black">
+        <a href="{{ url_for("frontstage.landing_page") }}"
+           class="text-decoration-none text-black">
           <h3 class="fw-bold pt-2">BlogYourWay</h3>
         </a>
       </div>
