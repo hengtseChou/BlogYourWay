@@ -48,7 +48,7 @@ def landing_page():
 
     ###################################################################
 
-    return render_template("blogyourway/landing-page.html")
+    return render_template("main/landing-page.html")
 
 
 @frontstage.route("/login", methods=["GET"])
@@ -78,7 +78,7 @@ def login_get():
 
     ###################################################################
 
-    return render_template("blogyourway/login.html")
+    return render_template("main/login.html")
 
 
 @frontstage.route("/login", methods=["POST"])
@@ -93,7 +93,7 @@ def login_post():
     if not mongodb.user_creds.exists("email", login_form.get("email")):
         flash("Account not found. Please try again.", category="error")
         logger_utils.login_failed(request=request, msg=f"email {login_form.get('email')} not found")
-        return render_template("blogyourway/login.html")
+        return render_template("main/login.html")
 
     # check pw
     user_creds = mongodb.user_creds.find_one({"email": login_form.get("email")})
@@ -106,7 +106,7 @@ def login_post():
             request=request,
             msg=f"invalid password with email {login_form.get('email')}",
         )
-        return render_template("blogyourway/login.html")
+        return render_template("main/login.html")
 
     ###################################################################
 
@@ -145,7 +145,7 @@ def signup_get():
 
     ###################################################################
 
-    return render_template("blogyourway/signup.html")
+    return render_template("main/signup.html")
 
 
 @frontstage.route("/signup", methods=["POST"])
@@ -164,7 +164,7 @@ def signup_post():
         return redirect(url_for("frontstage.home", username=new_user))
 
     else:
-        return render_template("blogyourway/signup.html")
+        return render_template("main/signup.html")
 
 
 @frontstage.route("/@<username>", methods=["GET"])
@@ -717,7 +717,7 @@ def sitemap():
         dynamic_urls.append(url)
 
     xml_sitemap = render_template(
-        "blogyourway/sitemap.xml",
+        "main/sitemap.xml",
         static_urls=static_urls,
         dynamic_urls=dynamic_urls,
         host_base=host_base,
@@ -732,4 +732,4 @@ def sitemap():
 @frontstage.route("/500")
 def error_page():
 
-    return render_template("blogyourway/500.html")
+    return render_template("main/500.html")
