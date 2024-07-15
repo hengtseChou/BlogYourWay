@@ -1,8 +1,10 @@
 # BlogYourWay
 
-This is a hobby project, for building a independent blogging engine to **host posts, project showcases at the same place**.
+This is a hobby project, for creating a self-hosted blogging service to **host posts, project showcases at the same place**.
 
 It is built with Flask and Bootstrap 5, along with some useful javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor).
+
+I am also considering migrate to FastAPI.
 
 ## Features
 
@@ -19,7 +21,7 @@ It is built with Flask and Bootstrap 5, along with some useful javascript librar
 
 ### Now
 
-- [ ] Gallery for work showcase.
+- [ ] Gallery for project showcase.
 - [ ] Personal [changelog](https://brianlovin.com/writing/make-a-personal-changelog).
 - [ ] Table of Content for posts.
 
@@ -27,7 +29,7 @@ It is built with Flask and Bootstrap 5, along with some useful javascript librar
 
 - [ ] Post traffic/read ratio statistics.
 - [ ] Automatic logout due to inactive, or jwt session auth.
-- [ ] Support tags for both posts and portfolios.
+- [ ] Support tags for both posts and projects.
 - [ ] Content polishing with ChatGPT api.
 - [ ] Serves images in the database.
 - [ ] Google OAuth for easier access.
