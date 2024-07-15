@@ -6,9 +6,7 @@
 {% block panel %}
   <!-- desktop view -->
   <div class="d-none d-md-block">
-    <div style="height: 44px; margin-top: 30px">
-      <h2 class="ms-2">Archive</h2>
-    </div>
+    <h2 class="ms-2 main-panel-header-offset">Archive</h2>
     <hr />
     <!-- description -->
     <p class="ms-2">Posts and projects archived will not be seen in your website.</p>
@@ -43,16 +41,13 @@
                 </td>
                 <td class="text-center">{{ post.views }}</td>
                 <td class="text-center">{{ post.comments }}</td>
-                <td class="text-center">
-                  <a href="{{ url_for('backstage.toggle_archived', type='post', uid=post.post_uid, archived='to_false') }}"
-                     style="color: black;
-                            font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
+                <td class="text-center text-black">
+                  <a class="backstage-icon"
+                     href="{{ url_for('backstage.toggle_archived', type='post', uid=post.post_uid, archived='to_false') }}"><i class="fa-regular fa-thumbs-up"></i></a>
                 </td>
                 <td class="text-center">
                   <a href="#"
-                     style="color: black;
-                            font-size: 18px"
-                     class="delete-post-btn"
+                     class="delete-post-btn backstage-icon"
                      data-post-uid="{{ post.post_uid }}"
                      data-bs-toggle="modal"
                      data-bs-target="#deletePostModal"><i class="fa-solid fa-trash-can"></i></a>
@@ -91,15 +86,14 @@
                 <td class="text-center">{{ project.views }}</td>
                 <td class="text-center">/</td>
                 <td class="text-center">
-                  <a href="{{ url_for('backstage.toggle_archived', type='project', uid=project.project_uid, archived='to_false') }}"
-                     style="color: black;
-                            font-size: 18px"><i class="fa-regular fa-thumbs-up"></i></a>
+                  <a class="backstage-icon"
+                     href="{{ url_for('backstage.toggle_archived', type='project', uid=project.project_uid, archived='to_false') }}">
+                    <i class="fa-regular fa-thumbs-up"></i>
+                  </a>
                 </td>
                 <td class="text-center">
                   <a href="#"
-                     style="color: black;
-                            font-size: 18px"
-                     class="delete-project-btn"
+                     class="delete-project-btn backstage-icon"
                      data-project-uid="{{ project.project_uid }}"
                      data-bs-toggle="modal"
                      data-bs-target="#deleteProjectModal"><i class="fa-solid fa-trash-can"></i></a>
@@ -123,7 +117,7 @@
           <div class="row">
             <div class="col-10">
               <div class="text-truncate">{{ post.title }}</div>
-              <p style="font-size: small; font-style: italic" class="grey-text mb-2">
+              <p class="text-grey mb-2 backstage-mobile-time">
                 Created at <span class="utc-to-local-long">{{ post.created_at }}</span>
               </p>
               <div>
@@ -164,7 +158,7 @@
           <div class="row">
             <div class="col-10">
               <div class="text-truncate">{{ project.title }}</div>
-              <p style="font-size: small; font-style: italic" class="grey-text mb-2">
+              <p class="text-grey mb-2 backstage-mobile-time">
                 Created at <span class="utc-to-local-long">{{ project.created_at }}</span>
               </p>
               <div>

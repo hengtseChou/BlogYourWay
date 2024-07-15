@@ -6,7 +6,7 @@
 {% block title %}Sign Up - BlogYourWay{% endblock %}
 {%
 block body %}
-<div class="container-fluid" style="margin-top: calc(100vh * 0.2)">
+<div class="container-fluid signup-container">
   <div class="row">
     <form method="post" autocomplete="off" class="col-10 col-md-12 mx-auto">
       <div class="card bg-white shadow" id="step1">
@@ -36,16 +36,14 @@ block body %}
                    name="password"
                    id="password" />
           </div>
-          <small style="color: #6c757d">
+          <small class="text-light-grey">
             <p>
               Password must be 8 characters long, with upper and lower cases
               letters.
             </p>
           </small>
           <button type="button"
-                  class="btn btn-primary w-100 rounded-pill"
-                  style="background-color: #e4622f;
-                         border: 0px"
+                  class="btn btn-orange w-100 rounded-pill"
                   onclick="validateStep1()">Continue</button>
           <div class="text-center mt-4">
             Already have an account? <a href="{{ url_for("frontstage.login_get") }}">Login</a>
@@ -71,7 +69,7 @@ block body %}
                    name="username"
                    id="username" />
           </div>
-          <small class="mb-4" style="color: #6c757d">
+          <small class="mb-4 text-grey">
             <p>Use only letters (lowercase), numbers, and "-".</p>
           </small>
           <div class="input-group mb-1">
@@ -82,7 +80,7 @@ block body %}
                    name="blogname"
                    id="blogname" />
           </div>
-          <small class="mb-4" style="color: #6c757d">
+          <small class="mb-4 text-grey">
             <p>20 characters maximum.</p>
           </small>
           <div class="form-check mb-4">
@@ -93,13 +91,11 @@ block body %}
             </label>
           </div>
           <button type="submit"
-                  class="btn btn-primary w-100 rounded-pill"
-                  style="background-color: #e4622f;
-                         border: 0px">Create</button>
+                  class="btn btn-orange w-100 rounded-pill">Create</button>
         </div>
       </div>
     </form>
   </div>
 </div>
 {% endblock %}
-{% block script %}<script src="{{ url_for('static', filename='js/frontstage/signup.png') }}"></script>{% endblock %}
+{% block script %}<script src="{{ url_for('static', filename='js/blogyourway/signup.js') }}"></script>{% endblock %}

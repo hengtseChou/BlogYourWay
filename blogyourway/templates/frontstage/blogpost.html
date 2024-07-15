@@ -25,11 +25,11 @@
     <div class="row mt-4 mt-md-5">
       <div class="col-lg-8 col-md-10 col-12 mx-auto px-4">
         <h1 class="text-start fw-bold">{{ post.title }}</h1>
-        <h5 class="text-start grey-text mt-3">{{ post.subtitle }}</h5>
+        <h5 class="text-start text-grey mt-3">{{ post.subtitle }}</h5>
         <!-- info row -->
         <div class="d-inline-flex">
           <div class="row mt-3">
-            <div class="col-1" style="width: 3rem">
+            <div class="col-2">
               <a href="{{ url_for('frontstage.about', username=user.username) }}">
                 {% if user.profile_img_url|length == 0 %}
                   <img class="profile-md"
@@ -41,8 +41,8 @@
               </a>
             </div>
             <div class="col mt-1 ms-2">
-              <div style="line-height: 125%">
-                <span class="grey-text">Updated at <span class="utc-to-local-short">{{ post.last_updated }}</span>&nbsp;&nbsp;·&nbsp;&nbsp;{{ post.readtime }}</span>
+              <div class="info-row-line-height">
+                <span class="text-grey">Updated at <span class="utc-to-local-short">{{ post.last_updated }}</span>&nbsp;&nbsp;·&nbsp;&nbsp;{{ post.readtime }}</span>
                 <br />
                 By<a class="author-link ms-1"
    href="{{ url_for('frontstage.about', username=user.username) }}">{{ post.author }}</a>
@@ -62,9 +62,7 @@
         <!-- content start -->
         <div class="my-3 px-2">{{ post.content | safe }}</div>
         <!-- tag start -->
-        <div class="d-flex align-items-center mb-4"
-             style="color: #646464;
-                    font-size: large">
+        <div class="d-flex align-items-center mb-4 text-dark-grey fs-large">
           <span><i class="fa-solid fa-tags"></i></span>
           {% for tag in post.tags %}
             <a href="{{ url_for('frontstage.tag', username=user.username, tags=tag) }}">
@@ -84,7 +82,7 @@
             <div class="row">
               <div class="col-12 col-md-6 mb-3">
                 <label for="comment-name" class="form-label">
-                  Name <span style="color: red">*</span>
+                  Name <span class="text-red">*</span>
                 </label>
                 <input type="text"
                        class="form-control"
@@ -100,16 +98,14 @@
           {% endif %}
           <div class="mb-3">
             <label for="comment-text" class="form-label">
-              Comment <span style="color: red">*</span>
+              Comment <span class="text-red">*</span>
             </label>
             <textarea class="form-control" id="comment-text" rows="3" name="comment"></textarea>
           </div>
           <div class="text-end mb-4">
-            <button class="g-recaptcha btn submit-btn text-center"
+            <button class="g-recaptcha btn submit-btn text-center w-25"
                     data-sitekey="{{ RECAPTCHA_KEY }}"
                     data-callback="onSubmit"
-                    style="width: 25%;
-                           min-width: 150px"
                     onclick="return validateForm()">Submit</button>
           </div>
         </form>
@@ -119,7 +115,7 @@
           <p class="mb-5">Not comments yet!</p>
         {% else %}
           <div class="mb-5">
-            <h5 class="text-start my-4 fw-bold dark-grey-text">{{ comments|length }} comments</h5>
+            <h5 class="text-start my-4 fw-bold text-dark-grey">{{ comments|length }} comments</h5>
             {% for comment in comments %}
               {% if comment.profile_link | length != 0
                 %}
@@ -132,10 +128,10 @@
                   </a>
                   <div class="ms-3 mt-1">
                     <div>
-                      <a href="{{ comment.profile_link }}" style="color: black">
+                      <a href="{{ comment.profile_link }}" class="text-black">
                         <span class="fw-bold">{{ comment.name }}</span>
                       </a>
-                      <span class="dark-grey-text">on <span class="utc-to-local-medium">{{ comment.created_at }}</span></span>
+                      <span class="text-dark-grey">on <span class="utc-to-local-medium">{{ comment.created_at }}</span></span>
                     </div>
                     <div class="mt-2">{{ comment.comment }}</div>
                   </div>
@@ -149,7 +145,7 @@
                   <div class="ms-3">
                     <div>
                       <span class="fw-bold">{{ comment.name }}</span>
-                      <span class="dark-grey-text">on <span class="utc-to-local-medium">{{ comment.created_at }}</span></span>
+                      <span class="text-dark-grey">on <span class="utc-to-local-medium">{{ comment.created_at }}</span></span>
                     </div>
                     <div class="mt-2">{{ comment.comment }}</div>
                   </div>

@@ -62,14 +62,14 @@ def create_app() -> Flask:
     def page_not_found(error):
         client_ip = return_client_ip(request, ENV)
         logger.debug(f"{client_ip} - 404 not found at {request.environ['RAW_URI']}. ")
-        return render_template("404.html"), 404
+        return render_template("blogyourway/404.html"), 404
 
     @app.errorhandler(500)
     def internal_server_error(error):
         client_ip = return_client_ip(request, ENV)
         logger.error(f"{client_ip} - 500 internal error at {request.environ['RAW_URI']}.")
         # flask app itself will show the error occurred
-        return render_template("500.html"), 500
+        return render_template("blogyourway/500.html"), 500
 
     logger.debug("Error handlers registered.")
 

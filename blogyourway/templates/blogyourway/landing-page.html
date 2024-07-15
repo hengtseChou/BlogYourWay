@@ -15,7 +15,7 @@
              height="36" />
       </div>
       <div class="col-auto">
-        <a href="/" style="text-decoration: none; color: black">
+        <a href="{{ url_for('frontstage.landing_page') }}" class="text-decoration-none text-black">
           <h3 class="fw-bold pt-2">BlogYourWay</h3>
         </a>
       </div>
@@ -24,12 +24,12 @@
   <div class="container hero-section">
     <div class="row">
       <div class="col-9 col-xl-5 py-5 mx-auto">
-        <h1 class="display-4 fw-bold" style="padding-top: 20%; line-height: 105%">Share thoughts and works at once</h1>
-        <p class="py-4" style="line-height: 150%">
+        <h1 class="display-4 fw-bold">Share thoughts and works at once</h1>
+        <p class="py-4">
           BlogYourWay is a perfect solution for hosting your content, including
-          blogging and work showcases. All come with markdown-support.
+          blogging and project showcases. All come with markdown-support.
         </p>
-        <a class="btn get-started-btn fw-bold"
+        <a class="btn btn-get-started fw-bold"
            href="{{ url_for("frontstage.signup_get") }}">Get Started</a>
       </div>
       <div class="col-xl-6 text-center d-none d-xxl-block">
@@ -39,15 +39,14 @@
       </div>
     </div>
   </div>
-  <div class="py-5" style="background-color: #f9f9f9">
+  <div class="py-5 bg-light-grey">
     <div class="container">
       <div class="text-center pb-3">
         <h3>Features</h3>
       </div>
       <div class="row">
         <div class="col-md-4 pb-3">
-          <div class="card card-hover rounded-0 border-0 shadow-sm"
-               style="height: 100%">
+          <div class="card card-hover rounded-0 border-0 shadow-sm">
             <div class="card-body">
               <h1 class="ps-3 py-3 icon-orange">
                 <i class="fa-solid fa-pen-to-square"></i>
@@ -65,8 +64,7 @@
           </div>
         </div>
         <div class="col-md-4 pb-3">
-          <div class="card card-hover rounded-0 border-0 shadow-sm"
-               style="height: 100%">
+          <div class="card card-hover rounded-0 border-0 shadow-sm">
             <div class="card-body">
               <h1 class="ps-3 py-3 icon-orange">
                 <i class="fa-solid fa-palette"></i>
@@ -84,8 +82,7 @@
           </div>
         </div>
         <div class="col-md-4 pb-3">
-          <div class="card card-hover rounded-0 border-0 shadow-sm"
-               style="height: 100%">
+          <div class="card card-hover rounded-0 border-0 shadow-sm">
             <div class="card-body">
               <h1 class="ps-3 py-3 icon-orange">
                 <i class="fa-solid fa-font-awesome"></i>

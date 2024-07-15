@@ -1,7 +1,11 @@
-.get-started-btn {
+.btn-get-started {
   background-color: #e4622f;
   color: #ffffff;
   padding: 10px 30px;
+}
+
+.card {
+  height: 100%;
 }
 
 .card-hover {
@@ -34,6 +38,15 @@
 
 .hero-section {
   text-align: start;
+}
+
+.hero-section p {
+  line-height: 150%;
+}
+
+.hero-section h1 {
+  padding-top: 20%;
+  line-height: 105%;
 }
 
 @media (max-width: 1200px) {

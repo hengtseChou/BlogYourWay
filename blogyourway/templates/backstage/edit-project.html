@@ -10,9 +10,7 @@
           defer></script>
 {% endblock %}
 {% block panel %}
-  <div style="height: 44px; margin-top: 30px">
-    <h2 class="ms-2">Edit Project</h2>
-  </div>
+  <h2 class="ms-2 main-panel-header-offset">Edit Project</h2>
   <hr />
   <form method="post" autocomplete="off" id="form" class="row">
     <div class="col-12 col-md-9">
@@ -66,12 +64,12 @@
                      class="form-control project-img"
                      name="url-{{ loop.index + 1 }}"
                      placeholder="url"
-                     value="{{ image['url'] }}">
+                     value="{{ image.url }}">
               <input type="text"
                      class="form-control project-img-caption"
                      name="caption-{{ loop.index + 1 }}"
                      placeholder="caption"
-                     value="{{ image['caption'] }}">
+                     value="{{ image.caption }}">
               <button class="btn btn-remove panel-btn" aria-label="Close">Remove</button>
             </div>
           {% endfor %}
@@ -107,4 +105,4 @@
     </div>
   </form>
 {% endblock %}
-{% block script %}<script>var projectContent = {{ project['content'] | tojson | safe }};</script>{% endblock %}
+{% block script %}<script>var projectContent = {{ project.content | tojson | safe }};</script>{% endblock %}

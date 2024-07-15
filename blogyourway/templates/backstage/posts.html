@@ -11,9 +11,7 @@
 {% block panel %}
   <!-- desktop view -->
   <div class="d-none d-md-block">
-    <div class="d-flex align-items-center"
-         style="height: 44px;
-                margin-top: 30px">
+    <div class="d-flex main-panel-header-offset align-items-center">
       <h2 class="ms-2">Posts</h2>
       <button class="btn panel-btn ms-auto me-3"
               data-bs-toggle="modal"
@@ -55,26 +53,22 @@
                   <td class="text-center">{{ post.comments }}</td>
                   <td class="text-center">
                     <a href="{{ url_for('backstage.edit_post_get', post_uid=post.post_uid) }}"
-                       style="color: black;
-                              font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
+                       class="backstage-icon"><i class="fa-regular fa-pen-to-square"></i></a>
                   </td>
                   {% if post.featured %}
                     <td class="text-center">
                       <a href="{{ url_for('backstage.toggle_featured', uid=post.post_uid, featured='to_false') }}"
-                         style="color: black;
-                                font-size: 18px"><i class="fa-regular fa-square-minus"></i></a>
+                         class="backstage-icon"><i class="fa-regular fa-square-minus"></i></a>
                     </td>
                   {% else %}
                     <td class="text-center">
                       <a href="{{ url_for('backstage.toggle_featured', uid=post.post_uid, featured='to_true') }}"
-                         style="color: black;
-                                font-size: 18px"><i class="fa-regular fa-square-plus"></i></a>
+                         class="backstage-icon"><i class="fa-regular fa-square-plus"></i></a>
                     </td>
                   {% endif %}
                   <td class="text-center">
                     <a href="{{ url_for('backstage.toggle_archived', type='post', uid=post.post_uid, archived='to_true') }}"
-                       style="color: black;
-                              font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
+                       class="backstage-icon"><i class="fa-solid fa-box-archive"></i></a>
                   </td>
                   <td></td>
                 </tr>
@@ -119,8 +113,8 @@
           <div class="row">
             <div class="col-10">
               <a href="{{ url_for('frontstage.blogpost', username=post.author, post_uid=post.post_uid) }}"
-                 style="color: black">{{ post.title }}</a>
-              <p class="grey-text mb-2" style="font-size: small; font-style: italic">
+                 class="text-black">{{ post.title }}</a>
+              <p class="text-grey mb-2 backstage-mobile-time">
                 Created at <span class="utc-to-local-long">{{ post.created_at }}</span>
               </p>
               <div>

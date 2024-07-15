@@ -1,11 +1,4 @@
 {% extends 'base.html' %}
-{% block head %}
-  <style>
-    .hover-pointer:hover {
-      cursor: pointer;
-    }
-  </style>
-{% endblock %}
 {% block title %}404 Not Found - BlogYourWay{% endblock %}
 {% block body %}
   <div class="container pt-4">
@@ -17,7 +10,7 @@
              height="36">
       </div>
       <div class="col-auto">
-        <a href="/" style="text-decoration:none; color: black;">
+        <a href="{{ url_for('frontstage.landing_page') }}"  class="text-decoration-none text-black">
           <h3 class="fw-bold pt-2">BlogYourWay</h3>
         </a>
       </div>

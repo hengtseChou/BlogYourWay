@@ -19,6 +19,10 @@ blockquote p {
   display: inline;
 }
 
+.info-row-line-height {
+  line-height: 125%;
+}
+
 .cover {
   display: flex;
   flex-flow: column;

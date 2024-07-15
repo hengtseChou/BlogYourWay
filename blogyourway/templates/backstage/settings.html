@@ -6,9 +6,7 @@
         href="{{ url_for('static', filename='css/settings.css') }}s" />
 {% endblock %}
 {% block panel %}
-  <div style="height: 44px; margin-top: 30px">
-    <h2 class="ms-2">Settings</h2>
-  </div>
+  <h2 class="ms-2 main-panel-header-offset">Settings</h2>
   <hr />
   <div class="row">
     <div class="col-12 col-lg-9">
@@ -155,7 +153,7 @@
               Do you sure you want to delete account? All your works and posts
               will be deleted!
             </p>
-            <p style="color: #646464">
+            <p class="text-dark-grey">
               Type <span class="fw-bold">your password</span> to proceed.
             </p>
             <div class="mb-4">
@@ -167,11 +165,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-            <button type="submit"
-                    class="btn"
-                    name="delete-account"
-                    style="background-color: #911d21;
-                           color: white">Delete</button>
+            <button type="submit" class="btn btn-delete-account" name="delete-account">Delete</button>
           </div>
         </form>
       </div>

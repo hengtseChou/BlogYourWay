@@ -2,6 +2,10 @@ body {
   background-color: #f5f5f5;
 }
 
+.login-container {
+  margin-top: calc(100vh * 0.2);
+}
+
 .card {
   max-width: 400px;
   margin-left: auto;
@@ -22,4 +26,9 @@ body {
 .logo img {
   max-height: 36px; /* Adjust based on your logo size */
   margin-right: 10px;
+}
+
+.btn-orange {
+  background-color: #e4622f;
+  color: #ffffff;
 }

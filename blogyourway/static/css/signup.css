@@ -2,6 +2,10 @@ body {
   background-color: #f5f5f5;
 }
 
+.signup-container {
+  margin-top: calc(100vh * 0.2);
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -29,4 +33,9 @@ body {
 
 .form-group {
   margin-bottom: 20px;
+}
+
+.btn-orange {
+  background-color: #e4622f;
+  color: #ffffff;
 }

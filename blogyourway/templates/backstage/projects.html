@@ -12,9 +12,7 @@
 {% block panel %}
   <!-- desktop view -->
   <div class="d-none d-md-block">
-    <div class="d-flex align-items-center"
-         style="height: 44px;
-                margin-top: 30px">
+    <div class="d-flex align-items-center main-panel-header-offset">
       <h2 class="ms-2">Projects</h2>
       <button class="btn panel-btn ms-auto me-3"
               data-bs-toggle="modal"
@@ -41,7 +39,7 @@
                 <tr>
                   <td class="align-middle">
                     <a href="{{ url_for('frontstage.project', username=project.author, project_uid=project.project_uid) }}"
-                       style="color: black">{{ project.title }}</a>
+                       class="text-black">{{ project.title }}</a>
                   </td>
                   <td>
                     <span class="utc-to-local-long">{{ project.created_at }}</span>
@@ -49,13 +47,11 @@
                   <td class="text-center">{{ project.views }}</td>
                   <td class="text-center">
                     <a href="{{ url_for('backstage.edit_project_get', project_uid=project.project_uid) }}"
-                       style="color: black;
-                              font-size: 18px"><i class="fa-regular fa-pen-to-square"></i></a>
+                       class="backstage-icon"><i class="fa-regular fa-pen-to-square"></i></a>
                   </td>
                   <td class="text-center">
                     <a href="{{ url_for('backstage.toggle_archived', type='project', uid=project.project_uid, archived='to_true') }}"
-                       style="color: black;
-                              font-size: 18px"><i class="fa-solid fa-box-archive"></i></a>
+                       class="backstage-icon"><i class="fa-solid fa-box-archive"></i></a>
                   </td>
                 </tr>
               {% endfor %}
@@ -97,8 +93,9 @@
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              <a href="『" style="color: black">{{ project.title }}</a>
-              <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ project.created_at }}</p>
+              <a href="{{ url_for('frontstage.project', username=user.username, project_uid=project.project_uid) }}"
+                 class="text-black">{{ project.title }}</a>
+              <p class="text-grey mb-2" class="backstage-mobile-time">Created at {{ project.created_at }}</p>
               <div>
                 <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project.views }}</span>
               </div>

@@ -5,7 +5,7 @@
 {% endblock %}
 {% block title %}Login - BlogYourWay{% endblock %}
 {% block body %}
-  <div class="container-fluid" style="margin-top: calc(100vh * 0.2);">
+  <div class="container-fluid login-container">
     <div class="row">
       <div class="col-10 col-md-12 mx-auto">
         <div class="card bg-white shadow">
@@ -32,9 +32,7 @@
                        name="password" />
               </div>
               <button type="submit"
-                      class="btn btn-primary w-100 rounded-pill"
-                      style="background-color: #e4622f;
-                             border: 0px">Login</button>
+                      class="btn btn-orange w-100 rounded-pill">Login</button>
             </form>
             <div class="text-center mt-4">
               Don't have an account? <a href="{{ url_for("frontstage.signup_get") }}">Sign Up</a>

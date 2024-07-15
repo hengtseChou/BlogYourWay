@@ -4,6 +4,10 @@
   <meta name="description"
         content="Visit '{{ user.blogname }}' on BlogYourWay.">
 {% endblock %}
+{% block head %}
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
 {% block body %}
   {% include 'frontstage/navbar.html' %}
   {% include 'frontstage/cover.html' %}
@@ -14,7 +18,7 @@
           <!-- post-column -->
           <div class="col-lg-8 col-12 mx-auto">
             {% if posts|length != 0 %}
-              <h5 class="text-start mt-4 ms-2 fw-bold dark-grey-text">Featured Posts</h5>
+              <h5 class="text-start mt-4 ms-2 fw-bold text-dark-grey">Featured Posts</h5>
               {% for post in posts %}
                 <div class="ms-lg-2 ms-0 my-4 p-4 border rounded rounded-2">
                   <a href="{{ url_for('frontstage.blogpost', username=post.author, post_uid=post.post_uid) }}"
@@ -22,13 +26,12 @@
                     <h3 class="fw-bold">{{ post.title }}</h3>
                   </a>
                   <div class="d-flex align-items-center my-3">
-                    <div class="grey-text">
+                    <div class="text-grey">
                       on <span class="utc-to-local-short">{{ post.created_at }}</span>
                     </div>
                   </div>
                   <div class="mb-3">{{ post.subtitle }}</div>
-                  <div class="d-flex align-items-center dark-grey-text"
-                       style="font-size: large">
+                  <div class="d-flex align-items-center text-dark-grey fs-large">
                     <span><i class="fa-solid fa-tags"></i></span>
                     {% for tag in post.tags %}
                       <a href="{{ url_for('frontstage.tag', username=post.author, tags=tag) }}"><span class="badge tag ms-2">{{ tag }}</span></a>
@@ -37,12 +40,12 @@
                 </div>
               {% endfor %}
             {% else %}
-              <h5 class="text-start py-5 fw-bold dark-grey-text">No featured posts yet!</h5>
+              <h5 class="text-start py-5 fw-bold text-dark-grey">No featured posts yet!</h5>
             {% endif %}
           </div>
           <!-- bio column -->
-          <div class="d-none d-lg-block col-lg-4">
-            <div class="d-flex justify-content-center" style="margin-top: 6rem;">
+          <div class="d-none d-lg-block col-lg-4 bio-column">
+            <div class="d-flex justify-content-center">
               {% if user.profile_img_url | length == 0 %}
                 <img src="{{ url_for('static', filename='img/default-profile.png') }}"
                      alt="profile-img"
