@@ -6,8 +6,8 @@
     <div class="row">
       <!-- side bar with desktop view portal -->
       <div class="d-none d-md-block col">
-        <div class="sidebar">
-          <div class="d-flex align-items-center" style="height: 50px;">
+        <div class="sidebar bg-sidebar">
+          <div class="d-flex align-items-center sidebar-brand">
             <img src="{{ url_for('static', filename='img/logo.png') }}"
                  alt="logo"
                  width="36"
@@ -56,31 +56,25 @@
         </div>
       </div>
       <!-- mobile view -->
-      <div class="d-block d-md-none container-fluid" style="padding: 0; ">
-        <nav class="navbar navbar-expand-md" style="background-color: #333; ">
+      <div class="d-block d-md-none container-fluid p-0">
+        <nav class="navbar navbar-expand-md bg-sidebar">
           <div class="d-flex align-items-center ms-3">
             <img src="{{ url_for('static', filename='img/logo.png') }}"
                  alt="logo"
                  width="28"
                  height="28">
             <h5 class="ms-3 mt-2">
-              <a href="/backstage/overview"
-                 style="text-decoration: none;
-                        color: white">BlogYourWay</a>
+              <a href="/backstage/overview" class="text-white text-decoration-none">BlogYourWay</a>
             </h5>
           </div>
-          <button class="btn me-2"
+          <button class="btn me-2 text-white border border-1 border-white"
                   data-bs-toggle="offcanvas"
-                  data-bs-target="#mobile-nav"
-                  style="border: 1px white;
-                         color: white">
+                  data-bs-target="#mobile-nav">
             <span><i class="fa-solid fa-bars"></i></span>
           </button>
-          <div class="offcanvas offcanvas-start"
+          <div class="offcanvas offcanvas-start bg-sidebar"
                tabindex="-1"
-               id="mobile-nav"
-               style="max-width: 75vw;
-                      background-color: #333">
+               id="mobile-nav">
             <div class="offcanvas-header">
               <h5 class="offcanvas-title text-white">Navigation</h5>
               <button type="button"
@@ -145,7 +139,7 @@
       </div>
       <!-- main panel -->
       <div class="col">
-        <div class="main-panel" style="overflow: scroll;">
+        <div class="main-panel">
           <div class="container-fluid ps-2">
             {% block panel %}{% endblock %}
           </div>

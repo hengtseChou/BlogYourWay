@@ -3,16 +3,17 @@
   top: 0;
   left: 0;
   bottom: 0;
-  background-color: #333;
   color: #fff;
   width: 250px;
   padding: 20px;
   overflow-y: auto;
 }
+
 .sidebar hr {
   border-top: 1px solid #fff;
   margin: 20px 0;
 }
+
 .sidebar .btn {
   margin-bottom: 10px;
   text-align: left;
@@ -20,8 +21,21 @@
   color: white;
   border: 0px;
 }
+
 .sidebar .btn:hover {
   background-color: #787878;
+}
+
+.bg-sidebar {
+  background-color: #333;
+}
+
+.sidebar-brand {
+  height: 50px;
+}
+
+.offcanvas {
+  max-width: 75vw;
 }
 
 .mobile-nav .btn {
@@ -74,6 +88,7 @@
   margin-top: 0;
   margin-left: 250px;
   width: calc(100vw - 262px);
+  overflow: scroll;
   overflow-y: auto;
   height: 100vh;
 }

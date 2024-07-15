@@ -727,3 +727,9 @@ def sitemap():
     logger.debug("Sitemap generated successfully.")
 
     return response
+
+
+@frontstage.route("/500")
+def error_page():
+
+    return render_template("blogyourway/500.html")

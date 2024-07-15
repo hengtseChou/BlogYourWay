@@ -13,9 +13,8 @@
         <div class="row">
           {% if projects | length != 0 %}
             {% for project in projects %}
-              {% set project_link = 'projects/' ~ project.project_uid %}
               <div class="col-lg-4 col-12 my-4">
-                <a href="{{ project_link }}">
+                <a href="{{ url_for('frontstage.project', username=user.username, project_uid=project.project_uid) }}">
                   <div class="image-card shadow">
                     <img data-src="{{ project.images[0]['url'] }}"
                          alt="project cover"

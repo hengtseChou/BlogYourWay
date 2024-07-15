@@ -87,9 +87,9 @@ function validateStep1() {
     if (isUnique) {
       // Hide Step 1, show Step 2
       document.getElementById("step1").classList.add("hide");
-      document.getElementById("step1").style.display = "none";
+      document.getElementById("step1").classList.add("d-none");
 
-      document.getElementById("step2").style.display = "block";
+      document.getElementById("step2").classList.remove("d-none");
       setTimeout(function () {
         document.getElementById("step2").classList.remove("hide");
       }, 100);

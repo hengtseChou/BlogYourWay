@@ -84,16 +84,16 @@ function toggleCoverUrl() {
   var coverSection = document.getElementById("cover-section");
   var addButton = document.getElementById("add-cover-button");
 
-  coverSection.style.display = "block";
-  addButton.style.display = "none";
+  coverSection.classList.remove("d-none");
+  addButton.classList.add("d-none");
 }
 
 function toggleSlug() {
   var slugSection = document.getElementById("slug-section");
   var addButton = document.getElementById("add-slug-button");
 
-  slugSection.style.display = "block";
-  addButton.style.display = "none";
+  slugSection.classList.remove("d-none");
+  addButton.classList.add("d-none");
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -113,9 +113,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var coverSection = document.getElementById("cover-section");
     var coverAddButton = document.getElementById("add-cover-button");
 
-    slugSection.style.display = "none";
-    slugAddButton.style.display = "block";
-    coverSection.style.display = "none";
-    coverAddButton.style.display = "block";
+    slugSection.classList.add("d-none");
+    slugAddButton.classList.remove("d-none");
+    coverSection.classList.add("d-none");
+    coverAddButton.classList.remove("d-none");
   });
 });

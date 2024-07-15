@@ -34,6 +34,12 @@ body {
   background-position: center; /* This will center the image within the container */
 }
 
+/* error message container (desktop) */
+
+.error-message-container {
+  height: 60vh;
+}
+
 /* footer */
 
 footer {
@@ -152,6 +158,12 @@ img.profile-sm {
 
 .hover-pointer:hover {
   cursor: pointer;
+}
+
+/* baststage text editor */
+
+textarea {
+  white-space: pre-line;
 }
 
 /* backstage input form */

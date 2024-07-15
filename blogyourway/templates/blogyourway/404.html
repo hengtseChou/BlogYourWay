@@ -10,7 +10,8 @@
              height="36">
       </div>
       <div class="col-auto">
-        <a href="{{ url_for('frontstage.landing_page') }}"  class="text-decoration-none text-black">
+        <a href="{{ url_for("frontstage.landing_page") }}"
+           class="text-decoration-none text-black">
           <h3 class="fw-bold pt-2">BlogYourWay</h3>
         </a>
       </div>
@@ -18,14 +19,14 @@
   </div>
   <!-- desktop -->
   <div class="container d-none d-xxl-block">
-    <div class="row pb-5" style="padding-top: 100px">
+    <div class="row d-flex align-items-center error-message-container">
       <div class="col-6">
-        <img class="img-fluid"
+        <img class="img-fluid mt-5"
              src="{{ url_for('static', filename='img/404.jpg') }}"
              alt="404 not found" />
       </div>
-      <div class="offset-1 col-5">
-        <h1 class="display-4 fw-bold" style="padding-top: 30%">404 Not Found!</h1>
+      <div class="mt-5 col-6">
+        <h1 class="display-4 fw-bold">404 Not Found!</h1>
         <p class="mt-4 fs-5">Oops! The page you are looking for could not be found.</p>
         <p onclick="window.history.go(-1); return false;"
            class="fs-5 hover-pointer">

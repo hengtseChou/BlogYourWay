@@ -10,7 +10,8 @@
              height="36">
       </div>
       <div class="col-auto">
-        <a href="{{ url_for('frontstage.landing_page') }}"  class="text-decoration-none text-black">
+        <a href="{{ url_for("frontstage.landing_page") }}"
+           class="text-decoration-none text-black">
           <h3 class="fw-bold pt-2">BlogYourWay</h3>
         </a>
       </div>
@@ -18,15 +19,14 @@
   </div>
   <!-- desktop -->
   <div class="container d-none d-xxl-block">
-    <div class="row" style="padding-top: 5%">
+    <div class="row pt-5 d-flex align-items-center error-message-container">
       <div class="col-6">
         <img class="img-fluid"
              src="{{ url_for('static', filename='img/500.jpg') }}"
-             alt="internal server error"
-             style="padding-top: 10%" />
+             alt="internal server error" />
       </div>
-      <div class="offset-1 col-5">
-        <h1 class="display-4 fw-bold"  style="padding-top: 20%">Internal Server Error</h1>
+      <div class="col-6">
+        <h1 class="display-4 fw-bold">Internal Server Error</h1>
         <p class="mt-4 fs-5">
           Something went wrong. We're looking to see what
           happened.

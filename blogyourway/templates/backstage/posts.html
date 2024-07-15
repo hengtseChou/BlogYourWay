@@ -43,7 +43,7 @@
                     <!-- leave post stat for future -->
                     <!-- <a href="stats/posts/{{ post.post_uid }}" class="me-1" style="color: black">{{ post.title }}</a> -->
                     <a href="{{ url_for('frontstage.blogpost', username=post.author, post_uid=post.post_uid) }}"
-                       style="color: black">{{ post.title }}</a>
+                       class="text-black">{{ post.title }}</a>
                     {% if post.featured %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
                   </td>
                   <td>
@@ -233,7 +233,7 @@
                       id="add-slug-button"
                       onclick="toggleSlug()">+ Custom Slug</button>
             </div>
-            <div class="mb-4" id="cover-section" style="display:none;">
+            <div class="mb-4 d-none" id="cover-section">
               <label for="cover" class="form-label ms-2 backstage-form-label">· Cover Image</label>
               <input type="text"
                      class="form-control border-underline"
@@ -241,7 +241,7 @@
                      name="cover_url"
                      placeholder="Insert image url" />
             </div>
-            <div class="mb-4" id="slug-section" style="display:none;">
+            <div class="mb-4 d-none" id="slug-section">
               <label for="slug" class="form-label ms-2 backstage-form-label">· Custom Slug</label>
               <input type="text"
                      class="form-control border-underline"
@@ -252,7 +252,6 @@
             <div class="mb-4">
               <textarea id="editor"
                         name="content"
-                        style="white-space: pre-line"
                         placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
             </div>
           </div>
