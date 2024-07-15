@@ -4,49 +4,9 @@ from datetime import datetime, timezone
 from flask import Request
 from flask_login import current_user
 
-from blogyourway.helpers.common import FormValidator, UIDGenerator
-from blogyourway.helpers.posts import process_tags
-from blogyourway.services.mongo import Database, mongodb
-
-
-@dataclass
-class ProjectInfo:
-    project_uid: str
-    custom_slug: str
-    title: str
-    short_description: str
-    author: str
-    tags: list[str]
-    images: list[dict[str, str]]
-    created_at: datetime = field(init=False)
-    last_updated: datetime = field(init=False)
-    archived: bool = False
-    views: int = 0
-    reads: int = 0
-
-    def __post_init__(self):
-        self.created_at = datetime.now(timezone.utc)
-        self.last_updated = datetime.now(timezone.utc)
-
-
-@dataclass
-class ProjectContent:
-    project_uid: str
-    author: str
-    content: str
-
-
-def process_form_images(request: Request) -> list[dict[str, str]]:
-
-    images = []
-    num_of_images = len([i for i in request.form.keys() if "url" in i])
-    for i in range(1, num_of_images + 1):
-        image = {
-            "url": request.form.get(f"url-{i}"),
-            "caption": request.form.get(f"caption-{i}"),
-        }
-        images.append(image)
-    return images
+from blogyourway.models.projects import ProjectContent, ProjectInfo
+from blogyourway.mongo import Database, mongodb
+from blogyourway.tasks.utils import FormValidator, UIDGenerator, process_form_images, process_tags
 
 
 class NewProjectSetup:

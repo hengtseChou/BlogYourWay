@@ -17,12 +17,13 @@ from flask_login import current_user, login_user
 from markdown import Markdown
 
 from blogyourway.config import RECAPTCHA_KEY, TEMPLATE_FOLDER
-from blogyourway.helpers.comments import comment_utils, create_comment
-from blogyourway.helpers.common import Paging, sort_dict
-from blogyourway.helpers.posts import html_to_about, html_to_post, post_utils
-from blogyourway.helpers.projects import projects_utils
-from blogyourway.helpers.users import user_utils
-from blogyourway.services import logger, logger_utils, mongodb
+from blogyourway.logging import logger, logger_utils
+from blogyourway.mongo import mongodb
+from blogyourway.tasks.comments import comment_utils, create_comment
+from blogyourway.tasks.posts import html_to_about, html_to_post, post_utils
+from blogyourway.tasks.projects import projects_utils
+from blogyourway.tasks.users import user_utils
+from blogyourway.tasks.utils import Paging, sort_dict
 
 frontstage = Blueprint("frontstage", __name__, template_folder=TEMPLATE_FOLDER)
 

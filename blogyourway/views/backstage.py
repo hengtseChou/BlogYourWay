@@ -3,12 +3,12 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 from flask_login import current_user, login_required, logout_user
 
 from blogyourway.config import TEMPLATE_FOLDER
-from blogyourway.helpers.common import Paging, string_truncate, switch_to_bool
-from blogyourway.helpers.posts import create_post, post_utils, update_post
-from blogyourway.helpers.projects import create_project, projects_utils, update_project
-from blogyourway.helpers.users import user_utils
-from blogyourway.services.logging import logger, logger_utils
-from blogyourway.services.mongo import mongodb
+from blogyourway.logging import logger, logger_utils
+from blogyourway.mongo import mongodb
+from blogyourway.tasks.posts import create_post, post_utils, update_post
+from blogyourway.tasks.projects import create_project, projects_utils, update_project
+from blogyourway.tasks.users import user_utils
+from blogyourway.tasks.utils import Paging, string_truncate, switch_to_bool
 
 backstage = Blueprint("backstage", __name__, template_folder=TEMPLATE_FOLDER)
 

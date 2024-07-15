@@ -5,48 +5,15 @@ from bs4 import BeautifulSoup
 from flask import Request
 from flask_login import current_user
 
-from blogyourway.helpers.common import FormValidator, UIDGenerator
-from blogyourway.services.mongo import Database, mongodb
+from blogyourway.models.posts import PostContent, PostInfo
+from blogyourway.mongo import Database, mongodb
+from blogyourway.tasks.utils import FormValidator, UIDGenerator, process_tags
 
 ###################################################################
 
 # create new post
 
 ###################################################################
-
-
-@dataclass
-class PostInfo:
-    post_uid: str
-    custom_slug: str
-    title: str
-    subtitle: str
-    author: str
-    tags: list[str]
-    cover_url: str
-    created_at: datetime = field(init=False)
-    last_updated: datetime = field(init=False)
-    archived: bool = False
-    featured: bool = False
-    views: int = 0
-    reads: int = 0
-
-    def __post_init__(self):
-        self.created_at = datetime.now(timezone.utc)
-        self.last_updated = datetime.now(timezone.utc)
-
-
-@dataclass
-class PostContent:
-    post_uid: str
-    author: str
-    content: str
-
-
-def process_tags(tag_string: str) -> list[str]:
-    if tag_string == "":
-        return []
-    return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
 
 
 class NewPostSetup:

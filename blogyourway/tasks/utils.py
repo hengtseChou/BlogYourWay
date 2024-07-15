@@ -7,9 +7,9 @@ import re
 import string
 from math import ceil
 
-from flask import abort
+from flask import Request, abort
 
-from blogyourway.services.mongo import Database
+from blogyourway.mongo import Database
 
 ###################################################################
 
@@ -255,3 +255,22 @@ class Paging:
         if not self._has_setup:
             raise AttributeError("pagination has not setup yet.")
         return self._current_page
+
+
+def process_tags(tag_string: str) -> list[str]:
+    if tag_string == "":
+        return []
+    return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
+
+
+def process_form_images(request: Request) -> list[dict[str, str]]:
+
+    images = []
+    num_of_images = len([i for i in request.form.keys() if "url" in i])
+    for i in range(1, num_of_images + 1):
+        image = {
+            "url": request.form.get(f"url-{i}"),
+            "caption": request.form.get(f"caption-{i}"),
+        }
+        images.append(image)
+    return images
