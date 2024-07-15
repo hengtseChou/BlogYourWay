@@ -48,7 +48,9 @@
                        style="color: black">{{ post.title }}</a>
                     {% if post.featured %}<span class="badge rounded-pill bg-success">Featured</span>{% endif %}
                   </td>
-                  <td>{{ post.created_at }}</td>
+                  <td>
+                    <span class="utc-to-local-long">{{ post.created_at }}</span>
+                  </td>
                   <td class="text-center">{{ post.views }}</td>
                   <td class="text-center">{{ post.comments }}</td>
                   <td class="text-center">
@@ -87,14 +89,15 @@
         <div class="col-6 text-start">
           {% if pagination.is_previous_page_allowed %}
             {% set previous_page = pagination.current_page - 1 %}
-            <a href="posts?page={{ previous_page }}" class="btn"><span class="mx-1">⬅️</span> Newer Posts
+            <a href="{{ url_for('backstage.posts_panel', page=(pagination.current_page - 1) ) }}"
+               class="btn"><span class="mx-1">⬅️</span> Newer Posts
             </a>
           {% endif %}
         </div>
         <div class="col-6 text-end">
           {% if pagination.is_next_page_allowed %}
-            {% set next_page = pagination.current_page + 1 %}
-            <a href="posts?page={{ next_page }}" class="btn">
+            <a href="{{ url_for('backstage.posts_panel', page=(pagination.current_page + 1) ) }}"
+               class="btn">
             Older Posts <span class="mx-1">➡️</span></a>
           {% endif %}
         </div>
@@ -117,7 +120,9 @@
             <div class="col-10">
               <a href="{{ url_for('frontstage.blogpost', username=post.author, post_uid=post.post_uid) }}"
                  style="color: black">{{ post.title }}</a>
-              <p class="grey-text mb-2" style="font-size: small; font-style: italic">Created at {{ post.created_at }}</p>
+              <p class="grey-text mb-2" style="font-size: small; font-style: italic">
+                Created at <span class="utc-to-local-long">{{ post.created_at }}</span>
+              </p>
               <div>
                 {% if post.featured %}
                   <button class="btn btn-sm btn-success rounded-4 me-2"
@@ -166,7 +171,6 @@
     <div class="row">
       <div class="col-6 text-start">
         {% if pagination.is_previous_page_allowed %}
-          {% set previous_page = pagination.current_page - 1 %}
           <a href="{{ url_for("backstage.posts_paned, page=(pagination.current_page - 1)") }}"
              class="btn">
             <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Prev
@@ -175,7 +179,6 @@
       </div>
       <div class="col-6 text-end">
         {% if pagination.is_next_page_allowed %}
-          {% set next_page = pagination.current_page + 1 %}
           <a href="{{ url_for("backstage.posts_paned, page=(pagination.current_page + 1)") }}"
              class="btn">
             Next

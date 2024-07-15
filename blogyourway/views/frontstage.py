@@ -234,8 +234,6 @@ def blog(username):
     posts = post_utils.find_posts_with_pagination(
         username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
     )
-    for post in posts:
-        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
 
     # user info
     user_info = user_utils.get_user_info(username)
@@ -269,7 +267,6 @@ def blogpost_main_actions(username, post_uid, request):
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
     target_post["content"] = md.convert(target_post.get("content"))
     target_post["content"] = html_to_post(target_post.get("content"))
-    target_post["last_updated"] = target_post["last_updated"].strftime("%B %d, %Y")
     target_post["readtime"] = str(readtime.of_html(target_post.get("content")))
 
     # add comments
@@ -281,8 +278,6 @@ def blogpost_main_actions(username, post_uid, request):
     # find comments
     # oldest to newest comment
     comments = comment_utils.find_comments_by_post_uid(post_uid)
-    for comment in comments:
-        comment["created_at"] = comment.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
 
     ###################################################################
 
@@ -420,7 +415,6 @@ def tag(username):
     posts_with_desired_tag = []
     for post in posts:
         if tag in post.get("tags"):
-            post["created_at"] = post.get("created_at").strftime("%Y-%m-%d")
             posts_with_desired_tag.append(post)
 
     ###################################################################

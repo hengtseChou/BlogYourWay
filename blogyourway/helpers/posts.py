@@ -1,12 +1,12 @@
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
 from flask import Request
 from flask_login import current_user
 
 from blogyourway.config import ENV
-from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today
+from blogyourway.helpers.common import FormValidator, UIDGenerator
 from blogyourway.services.mongo import Database, mongodb
 
 ###################################################################
@@ -33,8 +33,8 @@ class PostInfo:
     reads: int = 0
 
     def __post_init__(self):
-        self.created_at = get_today(env=ENV)
-        self.last_updated = get_today(env=ENV)
+        self.created_at = datetime.now(timezone.utc)
+        self.last_updated = datetime.now(timezone.utc)
 
 
 @dataclass
@@ -124,7 +124,7 @@ class UpdatedPostInfo:
     last_updated: datetime = field(init=False)
 
     def __post_init__(self):
-        self.last_updated = get_today(env=ENV)
+        self.last_updated = datetime.now(timezone.utc)
 
 
 @dataclass
@@ -328,8 +328,6 @@ class PostUtils:
             .limit(10)
             .as_list()
         )
-        for post in result:
-            post["created_at"] = post.get("created_at").strftime("%B %d, %Y")
         return result
 
     def find_posts_info_by_username(self, username: str) -> list[dict]:

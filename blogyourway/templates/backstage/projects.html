@@ -43,7 +43,9 @@
                     <a href="{{ url_for('frontstage.project', username=project.author, project_uid=project.project_uid) }}"
                        style="color: black">{{ project.title }}</a>
                   </td>
-                  <td>{{ project.created_at }}</td>
+                  <td>
+                    <span class="utc-to-local-long">{{ project.created_at }}</span>
+                  </td>
                   <td class="text-center">{{ project.views }}</td>
                   <td class="text-center">
                     <a href="{{ url_for('backstage.edit_project_get', project_uid=project.project_uid) }}"

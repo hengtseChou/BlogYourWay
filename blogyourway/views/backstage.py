@@ -59,7 +59,6 @@ def posts_panel():
     )
     for post in posts:
         post["title"] = string_truncate(post.get("title"), 30)
-        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
         post["views"] = format(post.get("views"), ",")
         comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
         post["comments"] = format(comment_count, ",")
@@ -101,7 +100,6 @@ def projects_panel():
 
     for project in projects:
         project["title"] = string_truncate(project.get("title"), 40)
-        project["created_at"] = project.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
         project["views"] = format(project.get("views"), ",")
 
     logger_utils.pagination(tab="posts", num=len(projects))
@@ -132,7 +130,6 @@ def archive_panel():
     user = mongodb.user_info.find_one({"username": current_user.username})
     posts = post_utils.find_all_archived_posts_info(current_user.username)
     for post in posts:
-        post["created_at"] = post.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
         post["views"] = format(post.get("views"), ",")
         comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
         post["comments"] = format(comment_count, ",")

@@ -5,7 +5,6 @@ This module collects the common utulity functions from the application.
 import random
 import re
 import string
-from datetime import datetime, timedelta
 from math import ceil
 
 from flask import abort
@@ -152,16 +151,6 @@ class UIDGenerator:
 # some other utility functions
 
 ###################################################################
-
-
-def get_today(env: str) -> datetime:
-    if env == "debug":
-        today = datetime.now()
-    elif env == "prod":
-        today = datetime.now() + timedelta(hours=8)
-    else:
-        raise ValueError("Unknown enviroment argument.")
-    return today
 
 
 def switch_to_bool(switch_value: str | None) -> bool:

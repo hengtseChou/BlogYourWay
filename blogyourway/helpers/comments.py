@@ -3,14 +3,14 @@ This module includes a create comment function, and a comment utility class.
 """
 
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 from flask import Request
 from flask_login import current_user
 
 from blogyourway.config import ENV, RECAPTCHA_SECRET
-from blogyourway.helpers.common import FormValidator, UIDGenerator, get_today
+from blogyourway.helpers.common import FormValidator, UIDGenerator
 from blogyourway.services.mongo import Database, mongodb
 
 ###################################################################
@@ -29,11 +29,12 @@ class Comment:
     post_uid: str
     comment_uid: str
     comment: str
-    created_at: datetime = field(default=get_today(env=ENV))
+    created_at: datetime = field(init=False)
 
     def __post_init__(self):
         self.profile_link = f"/@{self.name}/about"
         self.profile_img_url = f"/@{self.name}/get-profile-img"
+        self.created_at = datetime.now(timezone.utc)
 
 
 @dataclass
@@ -45,11 +46,12 @@ class AnonymousComment:
     comment_uid: str
     comment: str
     profile_img_url: str = "/static/img/visitor.png"
-    created_at: datetime = field(default=get_today(env=ENV))
+    created_at: datetime = field(init=False)
 
     def __post_init__(self):
         if self.email != "":
             self.profile_link = f"mailto:{self.email}"
+        self.created_at = datetime.now(timezone.utc)
 
 
 class NewCommentSetup:

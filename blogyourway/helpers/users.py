@@ -1,13 +1,13 @@
 import logging
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 import bcrypt
 from flask import Request, flash
 from flask_login import UserMixin
 
 from blogyourway.config import ENV
-from blogyourway.helpers.common import FormValidator, get_today
+from blogyourway.helpers.common import FormValidator
 from blogyourway.services.logging import Logger, logger, logger_utils
 from blogyourway.services.mongo import Database, mongodb
 
@@ -29,7 +29,7 @@ class UserInfo(UserMixin):
 
     def __post_init__(self):
         if self.created_at is None:
-            self.created_at = get_today(env=ENV)
+            self.created_at = datetime.now(timezone.utc)
 
     # override the get_id method from UserMixin
     def get_id(self):

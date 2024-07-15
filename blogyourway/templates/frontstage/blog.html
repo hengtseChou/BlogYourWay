@@ -17,15 +17,15 @@
                     <h3 class="fw-bold">{{ post.title }}</h3>
                   </a>
                   <div class="d-flex align-items-center my-3">
-                    <div class="grey-text" style="font-size: large">on {{ post.created_at }}</div>
+                    <div class="grey-text">
+                      on <span class="utc-to-local-short">{{ post.created_at }}</span>
+                    </div>
                   </div>
-                  <div class="mb-3" style="font-size: large">{{ post.subtitle }}</div>
-                  <div class="d-flex align-items-center"
-                       style="color: #646464;
-                              font-size: large">
+                  <div class="mb-3">{{ post.subtitle }}</div>
+                  <div class="d-flex align-items-center dark-grey-text">
                     <span><i class="fa-solid fa-tags"></i></span>
                     {% for tag in post.tags %}
-                      <a href="{{ url_for('frontstage.tag', username=user.username, tags=tag) }}">
+                      <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
                         <span class="badge tag ms-2">{{ tag }}</span>
                       </a>
                     {% endfor %}
@@ -41,7 +41,7 @@
             <div class="text-start pt-5 ps-3">
               <h5 class="fw-bold mb-3 dark-grey-text">Topics in this blog</h5>
               {% for tag, count in tags.items() %}
-                <a href="{{ url_for('frontstage.tag', username=user.username, tags=tag) }}"
+                <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}"
                    style="text-decoration: none">
                   <span class="badge tag me-2 my-1" style="font-size: small">
                     {{ tag }}

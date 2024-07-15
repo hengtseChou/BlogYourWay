@@ -5,7 +5,7 @@
 {% endblock %}
 {% block title %}Gallery - {{ user.blogname }}{% endblock %}
 {% block body %}
-  {% include 'navbar.html' %}
+  {% include 'frontstage/navbar.html' %}
   <div class="container-fluid fill-up-space">
     <div class="row my-5">
       <div class="col-lg-8 col-12 mx-auto">
@@ -16,7 +16,7 @@
               {% set project_link = 'projects/' ~ project.project_uid %}
               <div class="col-lg-4 col-12 my-4">
                 <a href="{{ project_link }}">
-                  <div class="image-card">
+                  <div class="image-card shadow">
                     <img data-src="{{ project.images[0]['url'] }}"
                          alt="project cover"
                          class="cover-image lazyload">
@@ -36,7 +36,7 @@
       </div>
     </div>
   </div>
-  {% include 'footer.html' %}
+  {% include 'frontstage/footer.html' %}
 {% endblock %}
 {% block script %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"
