@@ -44,8 +44,9 @@
               <div class="info-row-line-height">
                 <span class="text-grey">Updated at <span class="utc-to-local-short">{{ post.last_updated }}</span>&nbsp;&nbsp;·&nbsp;&nbsp;{{ post.readtime }}</span>
                 <br />
-                By<a class="author-link ms-1"
-   href="{{ url_for('frontstage.about', username=user.username) }}">{{ post.author }}</a>
+                By
+                <a class="author-link ms-1"
+                   href="{{ url_for('frontstage.about', username=user.username) }}">{{ post.author }}</a>
               </div>
             </div>
           </div>
@@ -72,53 +73,47 @@
         </div>
         <hr class="mb-4" />
         <h3 class="mb-3">Leave a Comment</h3>
-        <form method="POST" id="comment-form" autocomplete="off">
+        <form method="POST" autocomplete="off" id="comment-form">
+          {{ form.hidden_tag() }}
           {% if current_user.is_authenticated %}
             <p>
               You are logged in as
               <span class="fw-bold">{{ current_user.username }}</span>.
             </p>
+            {{ form.name(class="form-control", id="comment-name", hidden=True, value=user.username) }}
           {% else %}
             <div class="row">
               <div class="col-12 col-md-6 mb-3">
                 <label for="comment-name" class="form-label">
                   Name <span class="text-danger">*</span>
                 </label>
-                <input type="text"
-                       class="form-control"
-                       id="comment-name"
-                       name="name"
-                       required />
+                {{ form.name(class="form-control", id="comment-name") }}
               </div>
               <div class="col-12 col-md-6 mb-3">
                 <label for="comment-email" class="form-label">Email Address</label>
-                <input type="email" class="form-control" id="comment-email" name="email" />
+                {{ form.email(class="form-control", id="comment-email") }}
               </div>
             </div>
           {% endif %}
           <div class="mb-3">
-            <label for="comment-text" class="form-label">
-              Comment <span class="text-danger">*</span>
-            </label>
-            <textarea class="form-control" id="comment-text" rows="3" name="comment"></textarea>
+            {{ form.comment.label(class="form-label") }}
+            {{ form.comment(class="form-control", rows=3) }}
           </div>
-          <div class="text-end mb-4">
-            <button class="g-recaptcha btn submit-btn text-center w-25"
-                    data-sitekey="{{ RECAPTCHA_KEY }}"
-                    data-callback="onSubmit"
-                    onclick="return validateForm()">Submit</button>
-          </div>
+          <div class="text-end mb-4">{{ form.submit_(class="g-recaptcha btn submit-btn text-center w-25") }}</div>
         </form>
         <hr class="mb-4" />
         <h3 class="mb-3">Comments</h3>
         {% if comments|length == 0 %}
-          <p class="mb-5">Not comments yet!</p>
+          <p class="mb-5">Not comment yet!</p>
         {% else %}
           <div class="mb-5">
-            <h5 class="text-start my-4 fw-bold text-dark-grey">{{ comments|length }} comments</h5>
+            {% if comments | length == 1 %}
+              <h5 class="text-start my-4 fw-bold text-dark-grey">1 comment</h5>
+            {% else %}
+              <h5 class="text-start my-4 fw-bold text-dark-grey">{{ comments|length }} comments</h5>
+            {% endif %}
             {% for comment in comments %}
-              {% if comment.profile_link | length != 0
-                %}
+              {% if comment.profile_link | length != 0 %}
                 <!-- registered user -->
                 <div class="mb-4 d-flex flex-row">
                   <a href="{{ comment.profile_link }}">
@@ -126,14 +121,12 @@
                          src="{{ comment.profile_img_url }}"
                          alt="profile-img" />
                   </a>
-                  <div class="ms-3 mt-1">
-                    <div>
-                      <a href="{{ comment.profile_link }}" class="text-black">
-                        <span class="fw-bold">{{ comment.name }}</span>
-                      </a>
+                  <div class="ms-3">
+                    <div class="mt-2">
+                      <a href="{{ comment.profile_link }}" class="text-black"><span class="fw-bold">{{ comment.name }}</span></a>
                       <span class="text-dark-grey">on <span class="utc-to-local-medium">{{ comment.created_at }}</span></span>
                     </div>
-                    <div class="mt-2">{{ comment.comment }}</div>
+                    <div>{{ comment.comment }}</div>
                   </div>
                 </div>
               {% else %}
@@ -143,11 +136,11 @@
                        src="{{ comment.profile_img_url }}"
                        alt="profile-img" />
                   <div class="ms-3">
-                    <div>
+                    <div class="mt-2">
                       <span class="fw-bold">{{ comment.name }}</span>
                       <span class="text-dark-grey">on <span class="utc-to-local-medium">{{ comment.created_at }}</span></span>
                     </div>
-                    <div class="mt-2">{{ comment.comment }}</div>
+                    <div>{{ comment.comment }}</div>
                   </div>
                 </div>
               {% endif %}

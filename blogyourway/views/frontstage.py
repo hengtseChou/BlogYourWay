@@ -1,10 +1,21 @@
 from urllib.parse import unquote
 
 import readtime
-from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    Request,
+    abort,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from markdown import Markdown
 
-from blogyourway.config import RECAPTCHA_KEY, TEMPLATE_FOLDER
+from blogyourway.config import TEMPLATE_FOLDER
+from blogyourway.forms.comments import CommentForm
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
 from blogyourway.tasks.comments import comment_utils, create_comment
@@ -14,11 +25,6 @@ from blogyourway.tasks.users import user_utils
 from blogyourway.tasks.utils import Paging, sort_dict
 
 frontstage = Blueprint("frontstage", __name__, template_folder=TEMPLATE_FOLDER)
-
-
-@frontstage.context_processor
-def inject_env_var():
-    return {"RECAPTCHA_KEY": RECAPTCHA_KEY}
 
 
 @frontstage.route("/@<username>", methods=["GET"])
@@ -114,7 +120,7 @@ def blog(username):
     )
 
 
-def blogpost_main_actions(username, post_uid, request):
+def blogpost_main_actions(username: str, post_uid: str, request: Request) -> str:
     author_info = mongodb.user_info.find_one({"username": username})
     target_post = post_utils.get_full_post(post_uid)
 
@@ -123,11 +129,18 @@ def blogpost_main_actions(username, post_uid, request):
     target_post["content"] = html_to_post(target_post.get("content"))
     target_post["readtime"] = str(readtime.of_html(target_post.get("content")))
 
+    form = CommentForm()
     # add comments
-    # this section should be placed before finding comments to show on the postu'1 min read'
-    if request.method == "POST":
-        create_comment(post_uid, request)
+    # this section should be placed before finding comments to show on the post
+    if form.validate_on_submit():
+        create_comment(post_uid, form)
         flash("Comment published!", category="success")
+
+    if form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{field.capitalize()}: {error}", category="error")
+        return redirect(url_for("frontstage.blogpost", username=username, post_uid=post_uid))
 
     # find comments
     # oldest to newest comment
@@ -150,7 +163,7 @@ def blogpost_main_actions(username, post_uid, request):
     ###################################################################
 
     return render_template(
-        "frontstage/blogpost.html", user=author_info, post=target_post, comments=comments
+        "frontstage/blogpost.html", user=author_info, post=target_post, comments=comments, form=form
     )
 
 

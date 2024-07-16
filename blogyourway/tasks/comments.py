@@ -5,13 +5,15 @@ This module includes a create comment function, and a comment utility class.
 from dataclasses import asdict
 
 import requests
-from flask import Request
+from flask import Request, request
 from flask_login import current_user
 
 from blogyourway.config import RECAPTCHA_SECRET
+from blogyourway.forms.comments import CommentForm
+from blogyourway.logging import logger
 from blogyourway.models.comments import AnonymousComment, Comment
 from blogyourway.mongo import Database, mongodb
-from blogyourway.tasks.utils import FormValidator, UIDGenerator
+from blogyourway.tasks.utils import UIDGenerator
 
 ###################################################################
 
@@ -40,10 +42,8 @@ class NewCommentSetup:
         self._db_handler = db_handler
         self._comment_uid = comment_uid_generator.generate_comment_uid()
 
-    def _form_validated(self, request: Request, validator: FormValidator) -> bool:
-        return True
-
-    def _recaptcha_verified(self, request: Request) -> bool:
+    @staticmethod
+    def _recaptcha_verified(request: Request) -> bool:
         token = request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
         resp = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
@@ -53,10 +53,8 @@ class NewCommentSetup:
             return True
         return False
 
-    def create_comment(self, post_uid: str, request: Request) -> None:
-        validator = FormValidator()
-        if not self._form_validated(request, validator):
-            return
+    def create_comment(self, post_uid: str, form: CommentForm) -> None:
+
         if not self._recaptcha_verified(request):
             return
 
@@ -66,22 +64,22 @@ class NewCommentSetup:
                 email=current_user.email,
                 post_uid=post_uid,
                 comment_uid=self._comment_uid,
-                comment=request.form.get("comment"),
+                comment=form.data.get("comment"),
             )
         else:
             new_comment = AnonymousComment(
-                name=f'{request.form.get("name")} (Visitor)',
-                email=request.form.get("email"),
+                name=f'{form.data.get("name")} (Visitor)',
+                email=form.data.get("email"),
                 post_uid=post_uid,
                 comment_uid=self._comment_uid,
-                comment=request.form.get("comment"),
+                comment=form.data.get("comment"),
             )
 
         new_comment = asdict(new_comment)
         self._db_handler.comment.insert_one(new_comment)
 
 
-def create_comment(post_uid: str, request: Request) -> None:
+def create_comment(post_uid: str, form: CommentForm) -> None:
     """initialize a new comment setup instance, process the request and upload new comment.
 
     Args:
@@ -92,7 +90,7 @@ def create_comment(post_uid: str, request: Request) -> None:
     uid_generator = UIDGenerator(db_handler=mongodb)
 
     comment_setup = NewCommentSetup(comment_uid_generator=uid_generator, db_handler=mongodb)
-    comment_setup.create_comment(post_uid=post_uid, request=request)
+    comment_setup.create_comment(post_uid=post_uid, form=form)
 
 
 ###################################################################
