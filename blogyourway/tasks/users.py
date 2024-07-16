@@ -2,12 +2,11 @@ import logging
 from dataclasses import asdict
 
 import bcrypt
-from flask import Request, flash
 
+from blogyourway.forms.users import SignUpForm
 from blogyourway.logging import Logger, logger, logger_utils
 from blogyourway.models.users import UserAbout, UserCreds, UserInfo
 from blogyourway.mongo import Database, mongodb
-from blogyourway.tasks.utils import FormValidator
 
 ###################################################################
 
@@ -17,36 +16,10 @@ from blogyourway.tasks.utils import FormValidator
 
 
 class NewUserSetup:
-    def __init__(self, request: Request, db_handler: Database, logger: Logger) -> None:
-        self._regist_form = request.form.to_dict()
-        self._request = request
+    def __init__(self, form: SignUpForm, db_handler: Database, logger: Logger) -> None:
+        self._regist_form = form
         self._db_handler = db_handler
         self._logger = logger
-
-    def _form_validated(self, validator: FormValidator) -> bool:
-        if not validator.validate_email(self._regist_form.get("email")):
-            return False
-        if not validator.validate_password(self._regist_form.get("password")):
-            return False
-        if not validator.validate_username(self._regist_form.get("username")):
-            return False
-        if not validator.validate_blogname(self._regist_form.get("blogname")):
-            return False
-        return True
-
-    def _no_duplicates(self) -> bool:
-        for field in ["email", "username"]:
-            if self._db_handler.user_info.exists(field, self._regist_form.get(field)):
-                flash(
-                    f"{field.capitalize()} is already used. Please try another one.",
-                    category="error",
-                )
-                logger_utils.registration_failed(
-                    request=self._request,
-                    msg=f"{field} {self._regist_form[field]} already used",
-                )
-                return True
-        return False
 
     def _create_user_creds(self, username: str, email: str, hashed_password: str) -> dict:
         new_user_creds = UserCreds(username=username, email=email, password=hashed_password)
@@ -75,33 +48,26 @@ class NewUserSetup:
         hashed_pw = hashed_pw.decode("utf-8")
         return hashed_pw
 
-    def create_user(self) -> str | None:
-        validator = FormValidator()
+    def create_user(self) -> str:
 
-        if not self._form_validated(validator=validator):
-            return None
-
-        if self._no_duplicates():
-            return None
-
-        hashed_pw = self._hash_password(self._regist_form.get("password"))
+        hashed_pw = self._hash_password(self._regist_form.password.data)
         new_user_creds = self._create_user_creds(
-            self._regist_form.get("username"), self._regist_form.get("email"), hashed_pw
+            self._regist_form.username.data, self._regist_form.email.data, hashed_pw
         )
         new_user_info = self._create_user_info(
-            self._regist_form.get("username"),
-            self._regist_form.get("email"),
-            self._regist_form.get("blogname"),
+            self._regist_form.username.data,
+            self._regist_form.email.data,
+            self._regist_form.blogname.data,
         )
-        new_user_about = self._create_user_about(self._regist_form.get("username"))
+        new_user_about = self._create_user_about(self._regist_form.username.data)
 
         self._db_handler.user_creds.insert_one(new_user_creds)
         self._db_handler.user_info.insert_one(new_user_info)
         self._db_handler.user_about.insert_one(new_user_about)
 
-        logger_utils.registration_succeeded(request=self._request)
+        logger_utils.registration_succeeded(self._regist_form.username.data)
 
-        return new_user_info.get("username")
+        return self._regist_form.username.data
 
 
 ###################################################################
@@ -189,7 +155,7 @@ class UserUtils:
         )
         user_deletion.start_deletion_process()
 
-    def create_user(self, request: Request) -> str:
+    def create_user(self, form: SignUpForm) -> str:
         """_summary_
 
         Args:
@@ -198,7 +164,7 @@ class UserUtils:
         Returns:
             str: username
         """
-        user_registration = NewUserSetup(request, self._db_handler, self._logger)
+        user_registration = NewUserSetup(form, self._db_handler, self._logger)
         return user_registration.create_user()
 
     def total_view_increment(self, username: str) -> None:

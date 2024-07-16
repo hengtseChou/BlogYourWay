@@ -108,11 +108,8 @@ class LoggerUtils:
         client_ip = return_client_ip(request, ENV)
         self._logger.debug(f"{client_ip} - Registration failed. Msg: {msg}.")
 
-    def registration_succeeded(self, request: Request):
-        regist_form = request.form.to_dict()
-        username = regist_form.get("username")
-        client_ip = return_client_ip(request, ENV)
-        self._logger.info(f"{client_ip} - New user {username} has been created.")
+    def registration_succeeded(self, username):
+        self._logger.info(f"New user {username} has been created.")
 
     def backstage(self, username: str, tab: str):
         self._logger.debug(f"User {username} switched to {tab} tab.")

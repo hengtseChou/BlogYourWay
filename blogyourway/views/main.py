@@ -5,6 +5,7 @@ from flask import Blueprint, flash, make_response, redirect, render_template, re
 from flask_login import current_user, login_user
 
 from blogyourway.config import TEMPLATE_FOLDER
+from blogyourway.forms.users import LoginForm, SignUpForm
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
 from blogyourway.tasks.posts import post_utils
@@ -32,8 +33,8 @@ def landing_page():
     return render_template("main/landing-page.html")
 
 
-@main.route("/login", methods=["GET"])
-def login_get():
+@main.route("/login", methods=["GET", "POST"])
+def login():
     ###################################################################
 
     # early returns
@@ -47,110 +48,88 @@ def login_get():
 
     ###################################################################
 
-    # logging / metrics
-
-    ###################################################################
-
-    logger_utils.page_visited(request)
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("main/login.html")
-
-
-@main.route("/login", methods=["POST"])
-def login_post():
-    ###################################################################
-
-    # early returns
-
-    ###################################################################
-
-    login_form = request.form.to_dict()
-    if not mongodb.user_creds.exists("email", login_form.get("email")):
-        flash("Account not found. Please try again.", category="error")
-        logger_utils.login_failed(request=request, msg=f"email {login_form.get('email')} not found")
-        return render_template("main/login.html")
-
-    # check pw
-    user_creds = mongodb.user_creds.find_one({"email": login_form.get("email")})
-    encoded_input_pw = login_form.get("password").encode("utf8")
-    encoded_valid_user_pw = user_creds.get("password").encode("utf8")
-
-    if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
-        flash("Invalid password. Please try again.", category="error")
-        logger_utils.login_failed(
-            request=request,
-            msg=f"invalid password with email {login_form.get('email')}",
-        )
-        return render_template("main/login.html")
-
-    ###################################################################
-
     # main actions
 
     ###################################################################
 
-    username = user_creds.get("username")
-    user_info = user_utils.get_user_info(username)
-    login_user(user_info)
-    logger_utils.login_succeeded(request=request, username=username)
-    flash("Login Succeeded.", category="success")
+    form = LoginForm()
 
-    ###################################################################
+    if form.validate_on_submit():
 
-    # return page content
+        if not mongodb.user_creds.exists("email", form.email.data):
+            flash("Account not found. Please try again.", category="error")
+            logger_utils.login_failed(request=request, msg=f"email {form.email.data} not found")
+            return render_template("main/login.html", form=form)
 
-    ###################################################################
+        # check pw
+        user_creds = mongodb.user_creds.find_one({"email": form.email.data})
+        encoded_input_pw = form.password.data.encode("utf8")
+        encoded_valid_user_pw = user_creds.get("password").encode("utf8")
 
-    return redirect(url_for("frontstage.home", username=username))
+        if not bcrypt.checkpw(encoded_input_pw, encoded_valid_user_pw):
+            flash("Invalid password. Please try again.", category="error")
+            logger_utils.login_failed(
+                request=request,
+                msg=f"invalid password with email {form.email.data}",
+            )
+            return render_template("main/login.html", form=form)
 
-
-@main.route("/signup", methods=["GET"])
-def signup_get():
-    ###################################################################
-
-    # logging / metrics
-
-    ###################################################################
-
-    logger_utils.page_visited(request)
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("main/signup.html")
-
-
-@main.route("/signup", methods=["POST"])
-def signup_post():
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    new_user = user_utils.create_user(request=request)
-    if new_user is not None:
-        flash("Sign up succeeded.", category="success")
-        user_info = user_utils.get_user_info(new_user)
+        username = user_creds.get("username")
+        user_info = user_utils.get_user_info(username)
         login_user(user_info)
-        return redirect(url_for("frontstage.home", username=new_user))
+        logger_utils.login_succeeded(request=request, username=username)
+        flash("Login Succeeded.", category="success")
+        return redirect(url_for("frontstage.home", username=username))
 
-    else:
-        return render_template("main/signup.html")
+    if form.errors:
+        for _, errors in form.errors.items():
+            for error in errors:
+                flash(error, category="error")
+        return render_template("main/login.html", form=form)
+
+    logger_utils.page_visited(request)
+    return render_template("main/login.html", form=form)
+
+
+@main.route("/signup", methods=["GET", "POST"])
+def signup():
+    ###################################################################
+
+    # logging / metrics
+
+    ###################################################################
+
+    logger_utils.page_visited(request)
+    form = SignUpForm()
+
+    if form.validate_on_submit():
+        user_utils.create_user(form)
+        flash("Sign up succeeded.", category="success")
+        return redirect(url_for("main.login"))
+
+    if form.errors:
+        for _, errors in form.errors.items():
+            for error in errors:
+                flash(error, category="error")
+        return render_template("main/signup.html", form=form)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("main/signup.html", form=form)
+
+
+@main.route("/raise-exception", methods=["GET"])
+def error_simulator():
+    raise Exception("this is a simulation error.")
 
 
 @main.route("/error", methods=["GET"])
-def error_simulator():
-    raise Exception("this is a simulation error.")
+def error_page():
+    return render_template("main/500.html")
 
 
 @main.route("/robots.txt", methods=["GET"])
@@ -207,9 +186,3 @@ def sitemap():
     logger.debug("Sitemap generated successfully.")
 
     return response
-
-
-@main.route("/500")
-def error_page():
-
-    return render_template("main/500.html")

@@ -20,21 +20,19 @@
             </div>
             <h5 class="text-center my-4">Login</h5>
             <form method="post">
+              {{ form.hidden_tag() }}
               <div class="input-group mb-4">
                 <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-                <input type="email" class="form-control" placeholder="Email" name="email" />
+                {{ form.email(class_="form-control", placeholder="Email") }}
               </div>
               <div class="input-group mb-4">
                 <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-                <input type="password"
-                       class="form-control"
-                       placeholder="Password"
-                       name="password" />
+                {{ form.password(class_="form-control", placeholder="Password") }}
               </div>
-              <button type="submit" class="btn btn-orange w-100 rounded-pill">Login</button>
+              {{ form.submit(class_="btn btn-orange w-100 rounded-pill") }}
             </form>
             <div class="text-center mt-4">
-              Don't have an account? <a href="{{ url_for("frontstage.signup_get") }}">Sign Up</a>
+              Don't have an account? <a href="{{ url_for("main.signup") }}">Sign Up</a>
             </div>
           </div>
         </div>
