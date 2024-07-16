@@ -82,9 +82,9 @@ def login():
         return redirect(url_for("frontstage.home", username=username))
 
     if form.errors:
-        for _, errors in form.errors.items():
+        for field, errors in form.errors.items():
             for error in errors:
-                flash(error, category="error")
+                flash(f"{field.capitalize()}: {error}", category="error")
         return render_template("main/login.html", form=form)
 
     logger_utils.page_visited(request)
@@ -108,9 +108,9 @@ def signup():
         return redirect(url_for("main.login"))
 
     if form.errors:
-        for _, errors in form.errors.items():
+        for field, errors in form.errors.items():
             for error in errors:
-                flash(error, category="error")
+                flash(f"{field.capitalize()}: {error}", category="error")
         return render_template("main/signup.html", form=form)
 
     ###################################################################

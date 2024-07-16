@@ -71,7 +71,8 @@ block body %}
           <div class="form-check mb-4">
             {{ form.terms(class="form-check-input") }} {{ form.terms.label(class="form-check-label") }}
           </div>
-          <button type="submit" class="btn btn-orange w-100 rounded-pill">Create</button>
+          <!-- <button type="submit" class="btn btn-orange w-100 rounded-pill">Create</button> -->
+          {{ form.submit_(class="btn btn-orange w-100 rounded-pill") }}
         </div>
       </div>
     </form>

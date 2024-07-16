@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Email, Length, Regexp
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
-    submit = SubmitField("Login")
+    submit_ = SubmitField("Login")
 
 
 class SignUpForm(FlaskForm):
@@ -35,4 +35,4 @@ class SignUpForm(FlaskForm):
         "I understand this is a fully experimental project, there is no guarantee of complete data preservation.",
         validators=[DataRequired()],
     )
-    submit = SubmitField("Create")
+    submit_ = SubmitField("Create")
