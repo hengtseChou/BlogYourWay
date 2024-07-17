@@ -33,8 +33,7 @@
               <span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Change Log
             </a>
           {% endif %}
-          <a class="btn w-100 px-2"
-             href="{{ url_for("backstage.edit_about_get") }}">
+          <a class="btn w-100 px-2" href="{{ url_for("backstage.edit_about") }}">
             <span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About
           </a>
           <!-- <a class="btn w-100 px-2" href="/backstage/social-links">
@@ -106,7 +105,7 @@
                 </a>
               {% endif %}
               <a class="btn w-100 px-2"
-                 href="{{ url_for("backstage.edit_about_get") }}"
+                 href="{{ url_for("backstage.edit_about") }}"
                  id="mobile-nav-about">
                 <span class="ms-2 me-3"><i class="fa-solid fa-user"></i></span>About
               </a>

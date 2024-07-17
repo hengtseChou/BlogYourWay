@@ -13,34 +13,21 @@
   <h2 class="ms-2 main-panel-header-offset">About</h2>
   <hr />
   <form method="post" autocomplete="off" id="form" class="row">
+    {{ form.hidden_tag() }}
     <div class="col-12 col-md-9">
       <div class="mb-4">
-        <label for="title" class="form-label ms-2 backstage-form-label">· Add/update profile image</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="profile_img_url"
-               name="profile_img_url"
-               value="{{ user.profile_img_url }}"
-               placeholder="Insert image url" />
+        <label for="title" class="form-label ms-2 backstage-form-label">· Change profile image</label>
+        {{ form.profile_img_url(class="form-control border-underline", value=user.profile_img_url) }}
       </div>
       <div class="mb-4">
-        <label for="short_bio" class="form-label ms-2 backstage-form-label">· Short bio</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="short_bio"
-               name="short_bio"
-               placeholder="Bio on your home page"
-               value="{{ user.short_bio }}" />
+        <label for="short_bio" class="form-label ms-2 backstage-form-label">· Edit short bio</label>
+        {{ form.short_bio(class="form-control border-underline", value=user.short_bio) }}
       </div>
       <div class="mb-4">
-        <label for="editor" class="mb-3 ms-2 backstage-form-label">· Edit your About page</label>
-        <textarea id="editor"
-                  name="about"
-                  placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
+        <label for="editor" class="mb-3 ms-2 backstage-form-label">· Edit About page</label>
+        {{ form.editor }}
       </div>
-      <div class="text-end mb-5">
-        <button type="submit" class="btn panel-btn text-center">Save Changes</button>
-      </div>
+      <div class="text-end mb-5">{{ form.submit_(class="btn panel-btn text-center") }}</div>
     </div>
   </form>
 {% endblock %}

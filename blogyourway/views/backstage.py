@@ -3,6 +3,7 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 from flask_login import current_user, login_required, logout_user
 
 from blogyourway.config import TEMPLATE_FOLDER
+from blogyourway.forms.users import EditAboutForm
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
 from blogyourway.tasks.posts import create_post, post_utils, update_post
@@ -360,9 +361,9 @@ def edit_post_post(post_uid):
     return redirect(url_for("backstage.posts_panel"))
 
 
-@backstage.route("/about", methods=["GET"])
+@backstage.route("/about", methods=["GET", "POST"])
 @login_required
-def edit_about_get():
+def edit_about():
     ###################################################################
 
     # status control / early returns
@@ -381,39 +382,23 @@ def edit_about_get():
     user_about = mongodb.user_about.find_one({"username": current_user.username})
     user = user_info | user_about
 
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("backstage/edit-about.html", user=user)
-
-
-@backstage.route("/about", methods=["POST"])
-@login_required
-def edit_about_post():
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    user_info = mongodb.user_info.find_one({"username": current_user.username})
-    user_about = mongodb.user_about.find_one({"username": current_user.username})
-    user = user_info | user_about
-
-    form = request.form.to_dict()
-    updated_info = {"profile_img_url": form.get("profile_img_url"), "short_bio": form["short_bio"]}
-    updated_about = {"about": form.get("about")}
-    mongodb.user_info.update_values(filter={"username": user.get("username")}, update=updated_info)
-    mongodb.user_about.update_values(
-        filter={"username": user.get("username")}, update=updated_about
-    )
-    user.update(updated_info)
-    user.update(updated_about)
-    logger.debug(f"information for user {current_user.username} has been updated")
-    flash("Information updated!", category="success")
+    form = EditAboutForm()
+    if form.validate_on_submit():
+        updated_info = {
+            "profile_img_url": form.profile_img_url.data,
+            "short_bio": form.short_bio.data,
+        }
+        updated_about = {"about": form.editor.data}
+        mongodb.user_info.update_values(
+            filter={"username": user.get("username")}, update=updated_info
+        )
+        mongodb.user_about.update_values(
+            filter={"username": user.get("username")}, update=updated_about
+        )
+        user.update(updated_info)
+        user.update(updated_about)
+        logger.debug(f"information for user {current_user.username} has been updated")
+        flash("Information updated!", category="success")
 
     ###################################################################
 
@@ -421,7 +406,7 @@ def edit_about_post():
 
     ###################################################################
 
-    return render_template("backstage/edit-about.html", user=user)
+    return render_template("backstage/edit-about.html", user=user, form=form)
 
 
 @backstage.route("/edit/project/<project_uid>", methods=["GET"])
