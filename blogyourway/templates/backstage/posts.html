@@ -52,7 +52,7 @@
                   <td class="text-center">{{ post.views }}</td>
                   <td class="text-center">{{ post.comments }}</td>
                   <td class="text-center">
-                    <a href="{{ url_for('backstage.edit_post_get', post_uid=post.post_uid) }}"
+                    <a href="{{ url_for('backstage.edit_post', post_uid=post.post_uid) }}"
                        class="backstage-icon"><i class="fa-regular fa-pen-to-square"></i></a>
                   </td>
                   {% if post.featured %}
@@ -137,7 +137,7 @@
                 <ul class="dropdown-menu">
                   <li>
                     <a class="dropdown-item"
-                       href="{{ url_for('backstage.edit_post_get', post_uid=post.post_uid) }}">Edit</a>
+                       href="{{ url_for('backstage.edit_post', post_uid=post.post_uid) }}">Edit</a>
                   </li>
                   {% if post.featured %}
                     <li>

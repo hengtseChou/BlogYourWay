@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from flask import Request
 from flask_login import current_user
 
+from blogyourway.forms.posts import EditPostForm
 from blogyourway.models.posts import PostContent, PostInfo
 from blogyourway.mongo import Database, mongodb
 from blogyourway.tasks.utils import FormValidator, UIDGenerator, process_tags
@@ -102,9 +103,6 @@ class PostUpdateSetup:
     def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
-    def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
-        return True
-
     def _update_tags_for_user(self, post_uid: str, new_tags: dict) -> None:
         post_info = self._db_handler.post_info.find_one({"post_uid": post_uid})
         author = post_info.get("author")
@@ -118,27 +116,24 @@ class PostUpdateSetup:
             filter={"username": author}, increments=tags_increment, upsert=True
         )
 
-    def _updated_post_info(self, request: Request) -> dict:
+    def _updated_post_info(self, form: EditPostForm) -> dict:
         updated_post_info = UpdatedPostInfo(
-            title=request.form.get("title"),
-            subtitle=request.form.get("subtitle"),
-            tags=process_tags(request.form.get("tags")),
-            cover_url=request.form.get("cover_url"),
-            custom_slug=request.form.get("custom_slug"),
+            title=form.title.data,
+            subtitle=form.subtitle.data,
+            tags=process_tags(form.tags.data),
+            cover_url=form.cover_url.data,
+            custom_slug=form.custom_slug.data,
         )
         return asdict(updated_post_info)
 
-    def _updated_post_content(self, request: Request) -> dict:
-        updated_post_content = UpdatedPostContent(content=request.form.get("content"))
+    def _updated_post_content(self, form: EditPostForm) -> dict:
+        updated_post_content = UpdatedPostContent(content=form.editor.data)
         return asdict(updated_post_content)
 
-    def update_post(self, post_uid: str, request: Request) -> None:
-        validator = FormValidator()
-        if not self._form_validatd(request=request, validator=validator):
-            return
-        # validated
-        updated_post_info = self._updated_post_info(request=request)
-        updated_post_content = self._updated_post_content(request=request)
+    def update_post(self, post_uid: str, form: EditPostForm) -> None:
+
+        updated_post_info = self._updated_post_info(form)
+        updated_post_content = self._updated_post_content(form)
 
         self._update_tags_for_user(post_uid, updated_post_info.get("tags"))
         self._db_handler.post_info.update_values(
@@ -149,9 +144,9 @@ class PostUpdateSetup:
         )
 
 
-def update_post(post_uid: str, request: Request) -> None:
+def update_post(post_uid: str, form: EditPostForm) -> None:
     post_update_setup = PostUpdateSetup(db_handler=mongodb)
-    post_update_setup.update_post(post_uid=post_uid, request=request)
+    post_update_setup.update_post(post_uid=post_uid, form=form)
 
 
 ###################################################################

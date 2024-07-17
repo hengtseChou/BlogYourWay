@@ -3,6 +3,7 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 from flask_login import current_user, login_required, logout_user
 
 from blogyourway.config import TEMPLATE_FOLDER
+from blogyourway.forms.posts import EditPostForm
 from blogyourway.forms.users import EditAboutForm
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
@@ -247,7 +248,8 @@ def settings_panel_post():
         for i in range(0, len(form_values) - 1, 2):
             updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
         mongodb.user_info.update_values(
-            filter={"username": current_user.username}, update={"social_links": updated_links}
+            filter={"username": current_user.username},
+            update={"social_links": updated_links},
         )
         logger.debug(f"social links for {current_user.username} has been updated.")
         flash("Social Links updated!", category="success")
@@ -270,7 +272,8 @@ def settings_panel_post():
         # update new password
         hashed_new_pw = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
         mongodb.user_creds.update_values(
-            filter={"username": current_user.username}, update={"password": hashed_new_pw}
+            filter={"username": current_user.username},
+            update={"password": hashed_new_pw},
         )
         logger.debug(f"password for user {current_user.username} has been updated.")
         flash("Password update succeeded!", category="success")
@@ -306,9 +309,9 @@ def settings_panel_post():
     return render_template("backstage/settings.html", user=user)
 
 
-@backstage.route("/edit/post/<post_uid>", methods=["GET"])
+@backstage.route("/edit/post/<post_uid>", methods=["GET", "POST"])
 @login_required
-def edit_post_get(post_uid):
+def edit_post(post_uid):
     ###################################################################
 
     # status control / early returns
@@ -323,9 +326,23 @@ def edit_post_get(post_uid):
 
     ###################################################################
 
+    form = EditPostForm()
+
+    if form.validate_on_submit():
+
+        update_post(post_uid, form)
+        logger.debug(f"post {post_uid} is updated.")
+        title = mongodb.post_info.find_one({"post_uid": post_uid}).get("title")
+        title_truncated = string_truncate(title, max_len=20)
+        flash(f'Your post "{title_truncated}" has been updated!', category="success")
+
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(f"{field.capitalize()}: {error}", category="error")
+
     user = mongodb.user_info.find_one({"username": current_user.username})
-    target_post = post_utils.get_full_post(post_uid)
-    target_post["tags"] = ", ".join(target_post.get("tags"))
+    post = post_utils.get_full_post(post_uid)
+    post["tags"] = ", ".join(post.get("tags"))
 
     ###################################################################
 
@@ -333,32 +350,7 @@ def edit_post_get(post_uid):
 
     ###################################################################
 
-    return render_template("backstage/edit-post.html", post=target_post, user=user)
-
-
-@backstage.route("/edit/post/<post_uid>", methods=["POST"])
-@login_required
-def edit_post_post(post_uid):
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    update_post(post_uid, request)
-    logger.debug(f"post {post_uid} is updated.")
-    title_truncated = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
-    )
-    flash(f'Your post "{title_truncated}" has been updated!', category="success")
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return redirect(url_for("backstage.posts_panel"))
+    return render_template("backstage/edit-post.html", post=post, user=user, form=form)
 
 
 @backstage.route("/about", methods=["GET", "POST"])
@@ -399,6 +391,10 @@ def edit_about():
         user.update(updated_about)
         logger.debug(f"information for user {current_user.username} has been updated")
         flash("Information updated!", category="success")
+
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(f"{field.capitalize()}: {error}", category="error")
 
     ###################################################################
 
@@ -451,7 +447,8 @@ def edit_project_post(project_uid):
     update_project(project_uid, request)
     logger.debug(f"project {project_uid} is updated.")
     title_truncated = string_truncate(
-        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"), max_len=20
+        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"),
+        max_len=20,
     )
     flash(f'Your project "{title_truncated}" has been updated!', category="success")
 
@@ -577,7 +574,8 @@ def toggle_archived():
             )
 
         mongodb.project_info.update_values(
-            filter={"project_uid": project_uid}, update={"archived": updated_archived_status}
+            filter={"project_uid": project_uid},
+            update={"archived": updated_archived_status},
         )
         logger.debug(
             f"archive status for project {project_uid} is now set to {updated_archived_status}"
@@ -653,7 +651,8 @@ def delete_project():
     ###################################################################
 
     title_truncated = string_truncate(
-        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"), max_len=20
+        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"),
+        max_len=20,
     )
     mongodb.project_info.delete_one({"project_uid": project_uid})
     mongodb.project_content.delete_one({"project_uid": project_uid})

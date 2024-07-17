@@ -47,7 +47,7 @@
 }
 
 .panel-btn {
-  text-align: left;
+  text-align: center;
   background-color: #333;
   color: white;
   border: 1.5px solid #333;
@@ -55,7 +55,6 @@
 
 .panel-btn:hover {
   background-color: #787878;
-  color: white;
   border: 1.5px solid #787878;
 }
 
@@ -67,7 +66,6 @@
 
 .cancel-btn:hover {
   background-color: #f5f5f5;
-  color: black;
   border: 1.5px solid #333;
 }
 

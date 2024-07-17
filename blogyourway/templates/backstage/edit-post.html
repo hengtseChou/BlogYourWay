@@ -13,61 +13,33 @@
   <h2 class="ms-2 main-panel-header-offset">Edit Post</h2>
   <hr />
   <form method="post" autocomplete="off" id="form" class="row">
+    {{ form.hidden_tag() }}
     <div class="col-12 col-md-9">
       <div class="mb-4">
         <label for="title" class="form-label ms-2 backstage-form-label">· Title</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="title"
-               name="title"
-               value="{{ post.title }}" />
+        {{ form.title(class="form-control border-underline", value=post.title) }}
       </div>
       <div class="mb-4">
         <label for="subtitle" class="form-label ms-2 backstage-form-label">· Subtitle</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="subtitle"
-               name="subtitle"
-               value="{{ post.subtitle }}" />
+        {{ form.subtitle(class="form-control border-underline", value=post.subtitle) }}
       </div>
       <div class="mb-4">
         <label for="tags" class="form-label ms-2 backstage-form-label">· Tags</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="tags"
-               name="tags"
-               placeholder="Separate your tags with ','"
-               value="{{ post.tags }}" />
+        {{ form.tags(class="form-control border-underline", value=post.tags) }}
       </div>
       <div class="mb-4">
         <label for="cover" class="form-label ms-2 backstage-form-label">· Cover image</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="cover"
-               name="cover_url"
-               placeholder="insert image url here."
-               value="{{ post.cover_url }}" />
+        {{ form.cover_url(class="form-control border-underline", value=post.cover_url) }}
       </div>
       <div class="mb-4">
         <label for="custom-slug" class="form-label ms-2 backstage-form-label">· Custom slug</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="custom-slug"
-               name="custom_slug"
-               placeholder="must be an url-friendly string."
-               value="{{ post.custom_slug }}" />
+        {{ form.custom_slug(class="form-control border-underline", value=post.custom_slug) }}
       </div>
-      <div class="mb-4">
-        <textarea id="editor"
-                  name="content"
-                  placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
-      </div>
+      <div class="mb-4">{{ form.editor }}</div>
       <div class="text-end mb-5">
         <a href="{{ url_for("backstage.posts_panel") }}"
            class="btn cancel-btn text-center me-2">Cancel</a>
-        <button type="submit"
-                class="btn panel-btn text-center"
-                onclick="return validateUpdate()">Save Changes</button>
+        {{ form.submit_(class="btn panel-btn w-25") }}
       </div>
     </div>
   </form>
