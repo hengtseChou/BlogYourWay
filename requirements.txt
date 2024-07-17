@@ -6,8 +6,10 @@ charset-normalizer==3.3.2
 click==8.1.7
 cssselect==1.2.0
 dnspython==2.6.1
+email_validator==2.2.0
 Flask==3.0.3
 Flask-Login==0.6.3
+Flask-WTF==1.2.1
 gunicorn==22.0.0
 idna==3.7
 itsdangerous==2.2.0
@@ -26,3 +28,4 @@ requests==2.32.3
 soupsieve==2.5
 urllib3==2.2.2
 Werkzeug==3.0.3
+WTForms==3.1.2
