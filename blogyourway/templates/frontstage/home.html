@@ -40,7 +40,7 @@
                 </div>
               {% endfor %}
             {% else %}
-              <h5 class="text-start py-5 fw-bold text-dark-grey">No featured posts yet!</h5>
+              <h5 class="text-start mt-4 ms-2 fw-bold text-dark-grey">No featured posts yet!</h5>
             {% endif %}
           </div>
           <!-- bio column -->
@@ -68,7 +68,7 @@
               <div class="row mb-5">
                 <div class="col-8 mx-auto text-center">
                   {% if user.short_bio|length == 0 %}
-                    <p>Edit your short bio in the 'About' tab at the backstage.</p>
+                    <p>Edit your short bio in the 'About' panel over the backstage.</p>
                   {% else %}
                     <p>{{ user.short_bio }}</p>
                   {% endif %}

@@ -23,11 +23,11 @@ block body %}
           <h5 class="text-center my-4">Sign Up</h5>
           <div class="input-group mb-4">
             <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-            {{ form.email(class="form-control", placeholder="Email") }}
+            {{ form.email(class="form-control") }}
           </div>
           <div class="input-group mb-2">
             <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-            {{ form.password(class="form-control", placeholder="Password") }}
+            {{ form.password(class="form-control") }}
           </div>
           <small class="text-grey">
             <p>
@@ -56,14 +56,14 @@ block body %}
           <h5 class="text-center my-4">Almost Done...</h5>
           <div class="input-group mb-1">
             <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-            {{ form.username(class="form-control", placeholder="Username") }}
+            {{ form.username(class="form-control") }}
           </div>
           <small class="mb-4 text-grey">
             <p>Use only letters (lowercase), numbers, and "-".</p>
           </small>
           <div class="input-group mb-1">
             <span class="input-group-text"><i class="fa-solid fa-house"></i></span>
-            {{ form.blogname(class="form-control", placeholder="Blog's name") }}
+            {{ form.blogname(class="form-control") }}
           </div>
           <small class="mb-4 text-grey">
             <p>20 characters maximum.</p>
