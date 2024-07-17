@@ -1,13 +1,8 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-lg-8 col-12 mx-auto">
-      {% if user.cover_url|length != 0 %}
-        <div class="cover-container rounded-2 border border-1"
-             style="background-image: url('{{ user.cover_url }}')"></div>
-      {% else %}
-        <div class="cover-container rounded-2 border border-1"
-             style="background-image: url('{{ url_for('static', filename='img/default-cover.jpg') }}')"></div>
-      {% endif %}
+      <div class="cover-container rounded-2 border border-1"
+           style="background-image: url('{{ user.cover_url }}')"></div>
     </div>
   </div>
 </div>
