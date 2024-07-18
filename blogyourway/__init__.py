@@ -46,7 +46,7 @@ def create_app() -> Flask:
 
     ## login
     login_manager = LoginManager()
-    login_manager.login_view = "main.login_get"
+    login_manager.login_view = "main.login"
     login_manager.login_message = "Please login to proceed."
     login_manager.init_app(app)
     logger.debug("Login manager initialized.")
