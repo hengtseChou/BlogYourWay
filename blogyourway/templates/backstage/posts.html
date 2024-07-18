@@ -13,7 +13,7 @@
   <div class="d-none d-md-block">
     <div class="d-flex main-panel-header-offset align-items-center">
       <h2 class="ms-2">Posts</h2>
-      <button class="btn panel-btn ms-auto me-3"
+      <button class="btn btn-panel ms-auto me-3"
               data-bs-toggle="modal"
               data-bs-target="#newPostModal">+ New Post</button>
     </div>
@@ -102,7 +102,7 @@
   <div class="d-block d-md-none mt-2">
     <div class="d-flex align-items-center mb-3">
       <h2 class="ms-2 mt-3">Posts</h2>
-      <button class="btn panel-btn ms-auto me-3"
+      <button class="btn btn-panel ms-auto me-3"
               data-bs-toggle="modal"
               data-bs-target="#newPostModal">+ New Post</button>
     </div>
@@ -219,11 +219,11 @@
             </div>
             <div class="mb-4 d-flex justify-content-start">
               <button type="button"
-                      class="btn panel-btn text-center me-2"
+                      class="btn btn-panel text-center me-2"
                       id="add-cover-button"
                       onclick="toggleCoverUrl()">+ Cover Image</button>
               <button type="button"
-                      class="btn panel-btn text-center"
+                      class="btn btn-panel text-center"
                       id="add-slug-button"
                       onclick="toggleSlug()">+ Custom Slug</button>
             </div>
@@ -241,7 +241,7 @@
             <button type="button"
                     class="btn cancel-btn text-center me-2"
                     data-bs-dismiss="modal">Cancel</button>
-            {{ form.submit_(class="btn panel-btn") }}
+            {{ form.submit_(class="btn btn-panel") }}
           </div>
         </form>
       </div>

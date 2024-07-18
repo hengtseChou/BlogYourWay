@@ -71,14 +71,14 @@
                      name="caption-{{ loop.index + 1 }}"
                      placeholder="caption"
                      value="{{ image.caption }}">
-              <button class="btn btn-remove panel-btn" aria-label="Close">Remove</button>
+              <button class="btn btn-remove btn-panel" aria-label="Close">Remove</button>
             </div>
           {% endfor %}
         </div>
       </div>
       <div class="mb-4 d-flex justify-content-start">
         <button type="button"
-                class="btn panel-btn text-center me-2"
+                class="btn btn-panel text-center me-2"
                 id="add-more-image">+ More Image</button>
       </div>
       <div class="mb-4">
@@ -99,7 +99,7 @@
         <a href="{{ url_for("backstage.projects_panel") }}"
            class="btn cancel-btn text-center me-2">Cancel</a>
         <button type="submit"
-                class="btn panel-btn text-center"
+                class="btn btn-panel text-center"
                 onclick="return validateUpdate()">Save Changes</button>
       </div>
     </div>

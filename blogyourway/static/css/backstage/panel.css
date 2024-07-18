@@ -46,14 +46,14 @@
   border: 0px;
 }
 
-.panel-btn {
+.btn-panel {
   text-align: center;
   background-color: #333;
   color: white;
   border: 1.5px solid #333;
 }
 
-.panel-btn:hover {
+.btn-panel:hover {
   background-color: #787878;
   border: 1.5px solid #787878;
 }

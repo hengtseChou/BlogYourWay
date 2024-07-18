@@ -73,7 +73,7 @@ function createCaption(orderNumber) {
 
 function createRemoveButton() {
   const button = document.createElement("button");
-  button.className = "btn btn-remove panel-btn";
+  button.className = "btn btn-remove btn-panel";
   button.setAttribute("aria-label", "Close");
   button.textContent = "Remove";
   button.addEventListener("click", handleRemove);
