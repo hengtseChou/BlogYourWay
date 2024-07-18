@@ -3,7 +3,7 @@ from flask import Blueprint, flash, redirect, render_template, request, session,
 from flask_login import current_user, login_required, logout_user
 
 from blogyourway.config import TEMPLATE_FOLDER
-from blogyourway.forms.posts import EditPostForm
+from blogyourway.forms.posts import EditPostForm, NewPostForm
 from blogyourway.forms.users import EditAboutForm
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
@@ -42,12 +42,18 @@ def posts_panel():
     current_page = request.args.get("page", default=1, type=int)
     user = mongodb.user_info.find_one({"username": current_user.username})
 
-    if request.method == "POST":
+    form = NewPostForm()
+
+    if form.validate_on_submit():
         # logging for this is inside the create post function
-        post_uid = create_post(request)
+        post_uid = create_post(form)
         if post_uid is not None:
             logger.debug(f"post {post_uid} has been created.")
             flash("New post published successfully!", category="success")
+
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(f"{field.capitalize()}: {error}", category="error")
 
     # query through posts
     # 20 posts for each page
@@ -73,7 +79,9 @@ def posts_panel():
 
     ###################################################################
 
-    return render_template("backstage/posts.html", user=user, posts=posts, pagination=pagination)
+    return render_template(
+        "backstage/posts.html", user=user, posts=posts, pagination=pagination, form=form
+    )
 
 
 @backstage.route("/projects", methods=["GET", "POST"])

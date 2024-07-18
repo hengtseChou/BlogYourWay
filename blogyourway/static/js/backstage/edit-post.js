@@ -1,6 +1,3 @@
-const mobileNavBtn = document.getElementById("mobile-nav-posts");
-mobileNavBtn.style.color = "white";
-
 const easyMDE = new EasyMDE({
   element: document.getElementById("editor"),
   autofocus: true,
@@ -54,8 +51,31 @@ function validateUpdate() {
     return false;
   }
 
+  var coverUrl = document.getElementById("cover_url").value;
+  if (coverUrl.trim() !== "") {
+    // Only validate non-empty URLs
+    const urlRegex =
+      /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    if (!urlRegex.test(coverUrl)) {
+      alert("Please enter a valid URL for the cover image.");
+      return false;
+    }
+  }
+
+  var slug = document.getElementById("custom_slug").value;
+  if (slug.trim() !== "") {
+    // Only validate non-empty slugs
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+    if (!slugRegex.test(slug)) {
+      alert(
+        "Your custom slug is invalid. Use only lowercase letters, numbers, and hyphens. Must start and end with a letter or number.",
+      );
+      return false;
+    }
+  }
+
   if (easyMDE.value().trim() === "") {
-    alert("You did not write anything!");
+    alert("Your post cannot be empty!");
     return false;
   }
 

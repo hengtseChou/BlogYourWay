@@ -1,13 +1,6 @@
 const mobileNavBtn = document.getElementById("mobile-nav-posts");
 mobileNavBtn.style.color = "white";
 
-const tooltipTriggerList = document.querySelectorAll(
-  '[data-bs-toggle="tooltip"]',
-);
-const tooltipList = [...tooltipTriggerList].map(
-  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
-);
-
 const easyMDE = new EasyMDE({
   element: document.getElementById("editor"),
   autofocus: true,
@@ -59,23 +52,34 @@ function validateNewPost() {
     return false;
   }
 
-  var slug = document.getElementById("slug").value;
-  const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-  if (!slugRegex.test(slug)) {
-    alert("Your custom slug is not a URL-friendly string.");
-    return false;
+  var coverUrl = document.getElementById("cover_url").value;
+  if (coverUrl.trim() !== "") {
+    // Only validate non-empty URLs
+    const urlRegex =
+      /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    if (!urlRegex.test(coverUrl)) {
+      alert("Please enter a valid URL for the cover image.");
+      return false;
+    }
   }
 
-  // var cover = document.getElementById("cover").value;
-  // if (cover.trim() === "") {
-  //   alert("You must add a cover image for the post.");
-  //   return false;
-  // }
+  var slug = document.getElementById("custom_slug").value;
+  if (slug.trim() !== "") {
+    // Only validate non-empty slugs
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+    if (!slugRegex.test(slug)) {
+      alert(
+        "Your custom slug is invalid. Use only lowercase letters, numbers, and hyphens. Must start and end with a letter or number.",
+      );
+      return false;
+    }
+  }
 
   if (easyMDE.value().trim() === "") {
-    alert("Write something for your post!");
+    alert("Your post cannot be empty!");
     return false;
   }
+  console.log("Validation passed");
 
   return true;
 }

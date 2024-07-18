@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from flask import Request
 from flask_login import current_user
 
-from blogyourway.forms.posts import EditPostForm
+from blogyourway.forms.posts import EditPostForm, NewPostForm
 from blogyourway.models.posts import PostContent, PostInfo
 from blogyourway.mongo import Database, mongodb
 from blogyourway.tasks.utils import FormValidator, UIDGenerator, process_tags
@@ -22,24 +22,21 @@ class NewPostSetup:
         self._post_uid = post_uid_generator.generate_post_uid()
         self._db_handler = db_handler
 
-    def _form_validatd(self, request: Request, validator: FormValidator) -> bool:
-        return True
-
-    def _create_post_info(self, request: Request, author_name: str) -> dict:
+    def _create_post_info(self, form: NewPostForm, author_name: str) -> dict:
         new_post_info = PostInfo(
             post_uid=self._post_uid,
-            title=request.form.get("title"),
-            subtitle=request.form.get("subtitle"),
+            title=form.title.data,
+            subtitle=form.subtitle.data,
             author=author_name,
-            tags=process_tags(request.form.get("tags")),
-            custom_slug=request.form.get("custom-slug"),
-            cover_url=request.form.get("cover_url"),
+            tags=process_tags(form.tags.data),
+            custom_slug=form.custom_slug.data,
+            cover_url=form.cover_url.data,
         )
         return asdict(new_post_info)
 
-    def _create_post_content(self, request: Request, author_name: str) -> dict:
+    def _create_post_content(self, form: NewPostForm, author_name: str) -> dict:
         new_post_content = PostContent(
-            post_uid=self._post_uid, author=author_name, content=request.form.get("content")
+            post_uid=self._post_uid, author=author_name, content=form.editor.data
         )
         return asdict(new_post_content)
 
@@ -51,13 +48,10 @@ class NewPostSetup:
             filter={"username": username}, increments=tags_increments, upsert=True
         )
 
-    def create_post(self, author_name: str, request: Request) -> str | None:
-        validator = FormValidator()
-        if not self._form_validatd(request=request, validator=validator):
-            return None
-        # validated
-        new_post_info = self._create_post_info(author_name=author_name, request=request)
-        new_post_content = self._create_post_content(author_name=author_name, request=request)
+    def create_post(self, author_name: str, form: NewPostForm) -> str | None:
+
+        new_post_info = self._create_post_info(author_name=author_name, form=form)
+        new_post_content = self._create_post_content(author_name=author_name, form=form)
 
         self._db_handler.post_info.insert_one(new_post_info)
         self._db_handler.post_content.insert_one(new_post_content)
@@ -66,11 +60,11 @@ class NewPostSetup:
         return self._post_uid
 
 
-def create_post(request: Request) -> str:
+def create_post(form: NewPostForm) -> str:
     uid_generator = UIDGenerator(db_handler=mongodb)
 
     new_post_setup = NewPostSetup(post_uid_generator=uid_generator, db_handler=mongodb)
-    new_post_uid = new_post_setup.create_post(author_name=current_user.username, request=request)
+    new_post_uid = new_post_setup.create_post(author_name=current_user.username, form=form)
     return new_post_uid
 
 
