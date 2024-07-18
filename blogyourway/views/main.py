@@ -14,6 +14,13 @@ from blogyourway.tasks.users import user_utils
 main = Blueprint("main", __name__, template_folder=TEMPLATE_FOLDER)
 
 
+def flashing_if_errors(form_errors: dict) -> None:
+    if form_errors:
+        for field, errors in form_errors.items():
+            for error in errors:
+                flash(f"{field.capitalize()}: {error}", category="error")
+
+
 @main.route("/", methods=["GET"])
 def landing_page():
     ###################################################################
@@ -81,12 +88,7 @@ def login():
         flash("Login Succeeded.", category="success")
         return redirect(url_for("frontstage.home", username=username))
 
-    if form.errors:
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(f"{field.capitalize()}: {error}", category="error")
-        return render_template("main/login.html", form=form)
-
+    flashing_if_errors(form.errors)
     logger_utils.page_visited(request)
     return render_template("main/login.html", form=form)
 
@@ -107,11 +109,7 @@ def signup():
         flash("Sign up succeeded.", category="success")
         return redirect(url_for("main.login"))
 
-    if form.errors:
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(f"{field.capitalize()}: {error}", category="error")
-        return render_template("main/signup.html", form=form)
+    flashing_if_errors(form.errors)
 
     ###################################################################
 

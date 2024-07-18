@@ -4,13 +4,20 @@ from flask_login import current_user, login_required, logout_user
 
 from blogyourway.config import TEMPLATE_FOLDER
 from blogyourway.forms.posts import EditPostForm, NewPostForm
-from blogyourway.forms.users import EditAboutForm
+from blogyourway.forms.users import (
+    EditAboutForm,
+    GeneralSettingsForm,
+    UpdatePasswordForm,
+    UpdateSocialLinksForm,
+    UserDeletionForm,
+)
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
 from blogyourway.tasks.posts import create_post, post_utils, update_post
 from blogyourway.tasks.projects import create_project, projects_utils, update_project
 from blogyourway.tasks.users import user_utils
 from blogyourway.tasks.utils import Paging, string_truncate, switch_to_bool
+from blogyourway.views.main import flashing_if_errors
 
 backstage = Blueprint("backstage", __name__, template_folder=TEMPLATE_FOLDER)
 
@@ -51,9 +58,7 @@ def posts_panel():
             logger.debug(f"post {post_uid} has been created.")
             flash("New post published successfully!", category="success")
 
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash(f"{field.capitalize()}: {error}", category="error")
+    flashing_if_errors(form.errors)
 
     # query through posts
     # 20 posts for each page
@@ -187,9 +192,9 @@ def theme_panel():
     return render_template("backstage/theme.html", user=user)
 
 
-@backstage.route("/settings", methods=["GET"])
+@backstage.route("/settings", methods=["GET", "POST"])
 @login_required
-def settings_panel_get():
+def settings_panel():
     ###################################################################
 
     # status control / early returns
@@ -205,6 +210,107 @@ def settings_panel_get():
     ###################################################################
 
     user = mongodb.user_info.find_one({"username": current_user.username})
+    form_general = GeneralSettingsForm(prefix="general")
+    form_social = UpdateSocialLinksForm(prefix="social")
+    form_update_pw = UpdatePasswordForm(prefix="pw")
+    form_deletion = UserDeletionForm(prefix="deletion")
+
+    if form_general.submit_settings.data and form_general.validate_on_submit():
+        cover_url = form_general.cover_url.data
+        blogname = form_general.blogname.data
+        enable_gallery = switch_to_bool(form_general.gallery_enabled)
+        enable_changelog = switch_to_bool(form_general.changelog_enabled)
+
+        mongodb.user_info.update_values(
+            filter={"username": current_user.username},
+            update={
+                "cover_url": cover_url,
+                "blogname": blogname,
+                "gallery_enabled": enable_gallery,
+                "changelog_enabled": enable_changelog,
+            },
+        )
+        logger.debug(f"general settings for {current_user.username} has been updated")
+        flash("Update succeeded!", category="success")
+        user = mongodb.user_info.find_one({"username": current_user.username})
+
+    if form_social.submit_links.data and form_social.validate_on_submit():
+
+        updated_links = []
+        for i in range(5):
+            url = form_social.data.get(f"url{i}", "")
+            platform = form_social.data.get(f"platform{i}", "")
+            if url and platform:
+                updated_links.append((url, platform))
+        while len(updated_links) < 5:
+            updated_links.append(tuple())
+
+        mongodb.user_info.update_values(
+            filter={"username": current_user.username},
+            update={"social_links": updated_links},
+        )
+        logger.debug(f"social links for {current_user.username} has been updated.")
+        flash("Social Links updated!", category="success")
+        user = mongodb.user_info.find_one({"username": current_user.username})
+
+    if form_update_pw.submit_pw.data and form_update_pw.validate_on_submit():
+
+        current_pw = form_update_pw.current_pw.data
+        current_pw_encoded = current_pw.encode("utf-8")
+        user_creds = mongodb.user_creds.find_one({"username": current_user.username})
+        real_pw_encoded = user_creds.get("password").encode("utf-8")
+        if not checkpw(current_pw_encoded, real_pw_encoded):
+            logger.debug("invalid old password when changing password.")
+            flash("Invalid current password. Please try again.", category="error")
+            return render_template(
+                "backstage/settings.html",
+                user=user,
+                form_general=form_general,
+                form_social=form_social,
+                form_update_pw=form_update_pw,
+                form_deletion=form_deletion,
+            )
+
+        new_pw = form_update_pw.new_pw.data
+        new_pw_hashed = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
+        mongodb.user_creds.update_values(
+            filter={"username": current_user.username},
+            update={"password": new_pw_hashed},
+        )
+        logger.debug(f"password for user {current_user.username} has been updated.")
+        flash("Password update succeeded!", category="success")
+
+    if form_deletion.submit_delete.data and form_deletion.validate_on_submit():
+
+        pw = form_deletion.password.data
+        pw_encoded = pw.encode("utf-8")
+        user_creds = mongodb.user_creds.find_one({"username": current_user.username})
+        real_pw_encoded = user_creds.get("password").encode("utf-8")
+
+        if not checkpw(pw_encoded, real_pw_encoded):
+            flash("Invalid password. Access denied.", category="error")
+            return render_template(
+                "backstage/settings.html",
+                user=user,
+                form_general=form_general,
+                form_social=form_social,
+                form_update_pw=form_update_pw,
+                form_deletion=form_deletion,
+            )
+
+        # deletion procedure
+        username = current_user.username
+        logout_user()
+        logger_utils.logout(request=request, username=username)
+        user_utils.delete_user(username)
+        flash("Account deleted successfully!", category="success")
+        logger.debug(f"User {username} has been deleted.")
+        return redirect(url_for("main.signup"))
+
+    flashing_if_errors(form_general.errors)
+    flashing_if_errors(form_social.errors)
+    flashing_if_errors(form_update_pw.errors)
+    flashing_if_errors(form_deletion.errors)
 
     ###################################################################
 
@@ -212,109 +318,14 @@ def settings_panel_get():
 
     ###################################################################
 
-    return render_template("backstage/settings.html", user=user)
-
-
-@backstage.route("/settings", methods=["POST"])
-@login_required
-def settings_panel_post():
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    general = request.form.get("general")
-    change_pw = request.form.get("changepw")
-    social_links = request.form.get("social-links")
-    delete_account = request.form.get("delete-account")
-
-    if general is not None:
-        cover_url = request.form.get("cover_url")
-        blogname = request.form.get("blogname")
-        enable_changelog = switch_to_bool(request.form.get("changelog_enabled"))
-        enable_portfolio = switch_to_bool(request.form.get("gallery_enabled"))
-
-        mongodb.user_info.update_values(
-            filter={"username": current_user.username},
-            update={
-                "cover_url": cover_url,
-                "blogname": blogname,
-                "changelog_enabled": enable_changelog,
-                "gallery_enabled": enable_portfolio,
-            },
-        )
-        logger.debug(f"general settings for {current_user.username} has been updated")
-        flash("Update succeeded!", category="success")
-
-    elif social_links is not None:
-        user = mongodb.user_info.find_one({"username": current_user.username})
-        form = request.form.to_dict()
-        form_values = list(form.values())
-
-        updated_links = []
-        for i in range(0, len(form_values) - 1, 2):
-            updated_links.append({"platform": form_values[i + 1], "url": form_values[i]})
-        mongodb.user_info.update_values(
-            filter={"username": current_user.username},
-            update={"social_links": updated_links},
-        )
-        logger.debug(f"social links for {current_user.username} has been updated.")
-        flash("Social Links updated!", category="success")
-
-    elif change_pw is not None:
-        current_pw_input = request.form.get("current")
-        encoded_current_pw_input = current_pw_input.encode("utf8")
-        new_pw = request.form.get("new")
-
-        user_creds = mongodb.user_creds.find_one({"username": current_user.username})
-        user = mongodb.user_info.find_one({"username": current_user.username})
-        encoded_valid_user_pw = user_creds.get("password").encode("utf8")
-
-        # check pw
-        if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
-            logger.debug("invalid old password when changing password.")
-            flash("Current password is invalid. Please try again.", category="error")
-            return render_template("settings.html", user=user)
-
-        # update new password
-        hashed_new_pw = hashpw(new_pw.encode("utf-8"), gensalt(12)).decode("utf-8")
-        mongodb.user_creds.update_values(
-            filter={"username": current_user.username},
-            update={"password": hashed_new_pw},
-        )
-        logger.debug(f"password for user {current_user.username} has been updated.")
-        flash("Password update succeeded!", category="success")
-
-    elif delete_account is not None:
-        current_pw_input = request.form.get("delete-confirm-pw")
-        encoded_current_pw_input = current_pw_input.encode("utf8")
-        username = current_user.username
-        user = mongodb.user_info.find_one({"username": username})
-        user_creds = mongodb.user_creds.find_one({"username": username})
-        encoded_valid_user_pw = user_creds.get("password").encode("utf8")
-
-        if not checkpw(encoded_current_pw_input, encoded_valid_user_pw):
-            flash("Access denied, bacause password is invalid.", category="error")
-            return render_template("settings.html", user=user)
-
-        # deletion procedure
-        logout_user()
-        logger_utils.logout(request=request, username=username)
-        user_utils.delete_user(username)
-        flash("Account deleted successfully!", category="success")
-        logger.debug(f"User {username} has been deleted.")
-        return redirect(url_for("frontstage.register_get"))
-
-    user = mongodb.user_info.find_one({"username": current_user.username})
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return render_template("backstage/settings.html", user=user)
+    return render_template(
+        "backstage/settings.html",
+        user=user,
+        form_general=form_general,
+        form_social=form_social,
+        form_update_pw=form_update_pw,
+        form_deletion=form_deletion,
+    )
 
 
 @backstage.route("/edit/post/<post_uid>", methods=["GET", "POST"])
@@ -344,9 +355,7 @@ def edit_post(post_uid):
         title_truncated = string_truncate(title, max_len=20)
         flash(f'Your post "{title_truncated}" has been updated!', category="success")
 
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash(f"{field.capitalize()}: {error}", category="error")
+    flashing_if_errors(form.errors)
 
     user = mongodb.user_info.find_one({"username": current_user.username})
     post = post_utils.get_full_post(post_uid)
@@ -400,9 +409,7 @@ def edit_about():
         logger.debug(f"information for user {current_user.username} has been updated")
         flash("Information updated!", category="success")
 
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash(f"{field.capitalize()}: {error}", category="error")
+    flashing_if_errors(form.errors)
 
     ###################################################################
 

@@ -4,6 +4,8 @@
         href="{{ url_for('static', filename='css/backstage/panel.css') }}" />
   <link rel="stylesheet"
         href="{{ url_for('static', filename='css/backstage/settings.css') }}" />
+  <script src="{{ url_for('static', filename='js/backstage/settings.js') }}"
+          defer></script>
   <script src="{{ url_for('static', filename='js/backstage/mobile-nav-btn.js') }}"
           defer></script>
 {% endblock %}
@@ -15,113 +17,124 @@
     <div class="col-12 col-lg-9">
       <!-- General -->
       <h4 class="ms-2 mb-3">General</h4>
-      <form method="post" autocomplete="off" id="general-form">
+      <form method="post" autocomplete="off">
+        {{ form_general.hidden_tag() }}
         <div class="mb-4">
           <label for="cover_url" class="form-label ms-2 backstage-form-label">· Change blog cover image</label>
-          <input type="text"
-                 class="form-control border-underline"
-                 id="cover_url"
-                 name="cover_url"
-                 value="{{ user.cover_url }}"
-                 placeholder="Insert image url" />
+          {{ form_general.cover_url(class="form-control border-underline", value=user.cover_url) }}
         </div>
         <div class="mb-4">
           <label for="blogname" class="form-label ms-2 backstage-form-label">· Change blog name</label>
-          <input type="text"
-                 class="form-control border-underline"
-                 id="blogname"
-                 name="blogname"
-                 value="{{ user.blogname }}" />
+          {{ form_general.blogname(class="form-control border-underline", value=user.blogname) }}
         </div>
         <div class="mb-4 form-check form-switch ms-2">
-          <input type="checkbox"
-                 class="form-check-input custom-control-input card-checkbox"
-                 id="changelog_enabled"
-                 name="changelog_enabled"
-                 {% if user.changelog_enabled %}checked{% endif %} />
-          <label for="changelog_enabled"
-                 class="form-check-label ms-2 custom-control-label">Enable changelog for your blog</label>
+          {{ form_general.gallery_enabled(class="form-check-input", default=user.changelog_enabled) }}
+          <label for="gallery_enabled" class="form-check-label ms-2">Enable gallery for your blog</label>
         </div>
         <div class="mb-4 form-check form-switch ms-2">
-          <input type="checkbox"
-                 class="form-check-input custom-control-input card-checkbox"
-                 id="gallery_enabled"
-                 name="gallery_enabled"
-                 {% if user.gallery_enabled %}checked{% endif %} />
-          <label for="gallery_enabled"
-                 class="form-check-label ms-2 custom-control-label">Enable gallery for your blog</label>
+          {{ form_general.changelog_enabled(class="form-check-input", default=user.gallery_enabled) }}
+          <label for="changelog_enabled" class="form-check-label ms-2">Enable changelog for your blog</label>
         </div>
         <div class="row">
-          <div class="col-md-3 col-6 text-end mb-5 ms-auto">
-            <button type="submit" class="btn panel-btn text-center w-100" name="general">Save Changes</button>
-          </div>
+          <div class="col-md-3 col-6 text-end mb-5 ms-auto">{{ form_general.submit_settings(class="btn panel-btn w-100") }}</div>
         </div>
       </form>
       <!-- social links -->
       <h4 class="ms-2 mb-4">Social Links</h4>
-      <form method="post" autocomplete="off" id="social-links-form">
-        <div id="inputContainer" class="mb-4">
-          {% for i in range(user.social_links|length) %}
-            {% set platform = user.social_links[i]['platform'] %}
-            {% set url = user.social_links[i]['url'] %}
-            <div class="input-group mb-2">
-              <span class="input-group-text">Link {{ i + 1 }}</span>
-              <input type="text"
-                     class="form-control"
-                     name="url-{{ i + 1 }}"
-                     placeholder="Url goes here"
-                     value="{{ url }}" />
-              <select class="form-select" name="platform-{{ i + 1 }}">
-                <option value="facebook" {% if platform=="facebook" %}selected{% endif %}>Facebook</option>
-                <option value="instagram" {% if platform=="instagram" %}selected{% endif %}>Instagram</option>
-                <option value="twitter" {% if platform=="twitter" %}selected{% endif %}>X (Twitter)</option>
-                <option value="medium" {% if platform=="medium" %}selected{% endif %}>Medium</option>
-                <option value="linkedin" {% if platform=="linkedin" %}selected{% endif %}>Linkedin</option>
-                <option value="github" {% if platform=="github" %}selected{% endif %}>Github</option>
-              </select>
-              <button class="btn panel-btn btn-remove" aria-label="Close">Remove</button>
-            </div>
-          {% endfor %}
+      <form method="post" autocomplete="off">
+        {{ form_social.hidden_tag() }}
+        <div id="input-container" class="mb-4">
+          <div class="input-group mb-2 {% if not user.social_links[0] %}d-none{% endif %}">
+            <span class="input-group-text">Link</span>
+            {% if not user.social_links[0] %}
+              {{ form_social.url0(class="form-control") }}
+              {{ form_social.platform0(class="form-select") }}
+            {% else %}
+              {{ form_social.url0(class="form-control", value=user.social_links[0][0]) }}
+              {{ form_social.platform0(class="form-select", default=user.social_links[0][1]) }}
+            {% endif %}
+            <button class="btn panel-btn"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
+          <div class="input-group mb-2 {% if not user.social_links[1] %}d-none{% endif %}">
+            <span class="input-group-text">Link</span>
+            {% if not user.social_links[1] %}
+              {{ form_social.url1(class="form-control") }}
+              {{ form_social.platform1(class="form-select") }}
+            {% else %}
+              {{ form_social.url1(class="form-control", value=user.social_links[1][0]) }}
+              {{ form_social.platform1(class="form-select", default=user.social_links[1][1]) }}
+            {% endif %}
+            <button class="btn panel-btn"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
+          <div class="input-group mb-2 {% if not user.social_links[2] %}d-none{% endif %}">
+            <span class="input-group-text">Link</span>
+            {% if not user.social_links[2] %}
+              {{ form_social.url2(class="form-control") }}
+              {{ form_social.platform2(class="form-select") }}
+            {% else %}
+              {{ form_social.url2(class="form-control", value=user.social_links[2][0]) }}
+              {{ form_social.platform2(class="form-select", default=user.social_links[2][1]) }}
+            {% endif %}
+            <button class="btn panel-btn"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
+          <div class="input-group mb-2 {% if not user.social_links[3] %}d-none{% endif %}">
+            <span class="input-group-text">Link</span>
+            {% if not user.social_links[3] %}
+              {{ form_social.url3(class="form-control") }}
+              {{ form_social.platform3(class="form-select") }}
+            {% else %}
+              {{ form_social.url3(class="form-control", value=user.social_links[3][0]) }}
+              {{ form_social.platform3(class="form-select", default=user.social_links[3][1]) }}
+            {% endif %}
+            <button class="btn panel-btn"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
+          <div class="input-group mb-2 {% if not user.social_links[4] %}d-none{% endif %}">
+            <span class="input-group-text">Link</span>
+            {% if not user.social_links[4] %}
+              {{ form_social.url4(class="form-control") }}
+              {{ form_social.platform4(class="form-select") }}
+            {% else %}
+              {{ form_social.ur4(class="form-control", value=user.social_links[4][0]) }}
+              {{ form_social.platform4(class="form-select", default=user.social_links[4][1]) }}
+            {% endif %}
+            <button class="btn panel-btn"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
         </div>
         <div class="row g-3">
-          <div class="col-md-2 col-4 text-end ms-auto">
-            <button type="button" class="btn panel-btn text-center w-100" id="add">Add</button>
+          <div class="col-md-2 col-4 ms-auto">
+            <button type="button" class="btn panel-btn w-100" onclick="showInputGroup()">Add</button>
           </div>
-          <div class="col-md-3 col-6 text-end mb-5">
-            <button type="submit"
-                    class="btn panel-btn text-center w-100"
-                    name="social-links">Save Changes</button>
-          </div>
+          <div class="col-md-3 col-6 text-end mb-5">{{ form_social.submit_links(class="btn panel-btn w-100") }}</div>
         </div>
       </form>
       <!-- update pw -->
       <h4 class="ms-2 mb-4">Update Password</h4>
       <form method="post" autocomplete="off" id="changepw-form">
+        {{ form_update_pw.hidden_tag() }}
         <div class="ms-2 mb-3 row">
           <label for="current" class="col-4 form-label">Current Password</label>
-          <div class="col-8">
-            <input type="password" class="form-control" id="current" name="current" />
-          </div>
+          <div class="col-8">{{ form_update_pw.current_pw(class="form-control") }}</div>
         </div>
         <div class="ms-2 mb-3 row">
           <label for="new" class="col-4 form-label">New Password</label>
-          <div class="col-8">
-            <input type="password" class="form-control" id="new" name="new" />
-          </div>
+          <div class="col-8">{{ form_update_pw.new_pw(class="form-control") }}</div>
         </div>
         <div class="ms-2 mb-4 row">
           <label for="confirm" class="col-4 form-label">Confirm New Password</label>
-          <div class="col-8">
-            <input type="password" class="form-control" id="confirm" name="confirm" />
-          </div>
+          <div class="col-8">{{ form_update_pw.new_pw_repeat(class="form-control") }}</div>
         </div>
         <div class="row">
-          <div class="col-md-3 col-6 text-end mb-4 ms-auto">
-            <button type="submit"
-                    class="btn panel-btn text-center w-100"
-                    name="changepw"
-                    onclick="return validatePasswords()">Save Changes</button>
-          </div>
+          <div class="col-md-3 col-6 text-end mb-4 ms-auto">{{ form_update_pw.submit_pw(class="btn panel-btn w-100") }}</div>
         </div>
       </form>
       <hr />
@@ -151,24 +164,20 @@
                   aria-label="Close"></button>
         </div>
         <form method="post" autocomplete="off" id="delete-form">
+          {{ form_deletion.hidden_tag() }}
           <div class="modal-body">
             <p>
-              Do you sure you want to delete account? All your works and posts
+              Do you sure you want to delete account? All of your projects and posts
               will be deleted!
             </p>
             <p class="text-dark-grey">
               Type <span class="fw-bold">your password</span> to proceed.
             </p>
-            <div class="mb-4">
-              <input type="password"
-                     class="form-control"
-                     id="delete-confirm-pw"
-                     name="delete-confirm-pw" />
-            </div>
+            <div class="mb-4">{{ form_deletion.password(class="form-control") }}</div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-delete-account" name="delete-account">Delete</button>
+            {{ form_deletion.submit_delete(class="btn btn-delete-account") }}
           </div>
         </form>
       </div>

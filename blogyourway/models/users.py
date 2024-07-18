@@ -21,7 +21,7 @@ class UserInfo(UserMixin):
     cover_url: str = ""
     created_at: datetime = None
     short_bio: str = ""
-    social_links: list[dict[str, str]] = field(default_factory=list)
+    social_links: list[tuple[str, str]] = None
     changelog_enabled: bool = False
     gallery_enabled: bool = False
     total_views: int = 0
@@ -34,6 +34,8 @@ class UserInfo(UserMixin):
             self.cover_url = url_for("static", filename="img/default-cover.jpg")
         if self.created_at is None:
             self.created_at = datetime.now(timezone.utc)
+        if self.social_links is None:
+            self.social_links = [(), (), (), (), ()]
 
     # override the get_id method from UserMixin
     def get_id(self):
