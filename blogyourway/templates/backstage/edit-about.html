@@ -8,8 +8,11 @@
           defer></script>
   <script src="{{ url_for('static', filename='js/backstage/edit-about.js') }}"
           defer></script>
+  <script src="{{ url_for('static', filename='js/backstage/mobile-nav-btn.js') }}"
+          defer></script>
 {% endblock %}
 {% block panel %}
+  <div id="current-panel" class="d-none">about</div>
   <h2 class="ms-2 main-panel-header-offset">About</h2>
   <hr />
   <form method="post" autocomplete="off" id="form" class="row">
@@ -27,7 +30,7 @@
         <label for="editor" class="mb-3 ms-2 backstage-form-label">· Edit About page</label>
         {{ form.editor }}
       </div>
-      <div class="text-end mb-5">{{ form.submit_(class="btn panel-btn w-25") }}</div>
+      <div class="text-end mb-5">{{ form.submit_(class="btn panel-btn") }}</div>
     </div>
   </form>
 {% endblock %}

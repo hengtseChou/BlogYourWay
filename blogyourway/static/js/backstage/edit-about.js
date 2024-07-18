@@ -1,6 +1,3 @@
-const mobileNavBtn = document.getElementById("mobile-nav-about");
-mobileNavBtn.style.color = "white";
-
 const easyMDE = new EasyMDE({
   element: document.getElementById("editor"),
   autofocus: true,

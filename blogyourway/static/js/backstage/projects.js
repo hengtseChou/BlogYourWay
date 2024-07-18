@@ -1,13 +1,3 @@
-const mobileNavBtn = document.getElementById("mobile-nav-projects");
-mobileNavBtn.style.color = "white";
-
-const tooltipTriggerList = document.querySelectorAll(
-  '[data-bs-toggle="tooltip"]',
-);
-const tooltipList = [...tooltipTriggerList].map(
-  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
-);
-
 const easyMDE = new EasyMDE({
   element: document.getElementById("editor"),
   autofocus: true,

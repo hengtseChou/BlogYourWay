@@ -2,9 +2,12 @@
 {% block head %}
   <link rel="stylesheet"
         href="{{ url_for('static', filename='css/backstage/panel.css') }}" />
+  <script src="{{ url_for('static', filename='js/backstage/mobile-nav-btn.js') }}"
+          defer></script>
 {% endblock %}
 {% block panel %}
   <!-- desktop view -->
+  <div id="current-panel" class="d-none">archive</div>
   <div class="d-none d-md-block">
     <h2 class="ms-2 main-panel-header-offset">Archive</h2>
     <hr />

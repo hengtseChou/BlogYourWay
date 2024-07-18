@@ -1,6 +1,3 @@
-const mobileNavBtn = document.getElementById("mobile-nav-archive");
-mobileNavBtn.style.color = "white";
-
 document.addEventListener("DOMContentLoaded", function () {
   const deletePostBtn = document.querySelectorAll(".delete-post-btn");
   const deletePostModal = document.getElementById("deletePostBtn");

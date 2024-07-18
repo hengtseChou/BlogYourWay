@@ -1,6 +1,3 @@
-const mobileNavBtn = document.getElementById("mobile-nav-settings");
-mobileNavBtn.style.color = "white";
-
 function validatePasswords() {
   // Get the input values
   var currentPassword = document.getElementById("current").value;

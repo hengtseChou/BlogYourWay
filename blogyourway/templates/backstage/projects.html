@@ -8,8 +8,11 @@
           defer></script>
   <script src="{{ url_for('static', filename='js/backstage/projects.js') }}"
           defer></script>
+  <script src="{{ url_for('static', filename='js/backstage/mobile-nav-btn.js') }}"
+          defer></script>
 {% endblock %}
 {% block panel %}
+  <div id="current-panel" class="d-none">projects</div>
   <!-- desktop view -->
   <div class="d-none d-md-block">
     <div class="d-flex align-items-center main-panel-header-offset">
