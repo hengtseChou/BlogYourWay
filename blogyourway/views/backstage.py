@@ -216,18 +216,14 @@ def settings_panel():
     form_deletion = UserDeletionForm(prefix="deletion")
 
     if form_general.submit_settings.data and form_general.validate_on_submit():
-        cover_url = form_general.cover_url.data
-        blogname = form_general.blogname.data
-        enable_gallery = switch_to_bool(form_general.gallery_enabled)
-        enable_changelog = switch_to_bool(form_general.changelog_enabled)
 
         mongodb.user_info.update_values(
             filter={"username": current_user.username},
             update={
-                "cover_url": cover_url,
-                "blogname": blogname,
-                "gallery_enabled": enable_gallery,
-                "changelog_enabled": enable_changelog,
+                "cover_url": form_general.cover_url.data,
+                "blogname": form_general.blogname.data,
+                "gallery_enabled": form_general.gallery_enabled.data,
+                "changelog_enabled": form_general.changelog_enabled.data,
             },
         )
         logger.debug(f"general settings for {current_user.username} has been updated")

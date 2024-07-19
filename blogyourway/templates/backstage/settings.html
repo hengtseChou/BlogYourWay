@@ -17,7 +17,7 @@
     <div class="col-12 col-lg-9">
       <!-- General -->
       <h4 class="ms-2 mb-3">General</h4>
-      <form method="post" autocomplete="off">
+      <form method="post" autocomplete="off" id="form-general">
         {{ form_general.hidden_tag() }}
         <div class="mb-4">
           <label for="cover_url" class="form-label ms-2 backstage-form-label">· Change blog cover image</label>
@@ -28,11 +28,11 @@
           {{ form_general.blogname(class="form-control border-underline", value=user.blogname) }}
         </div>
         <div class="mb-4 form-check form-switch ms-2">
-          {{ form_general.gallery_enabled(class="form-check-input", default=user.changelog_enabled) }}
+          {{ form_general.gallery_enabled(class="form-check-input", checked=user.gallery_enabled) }}
           <label for="gallery_enabled" class="form-check-label ms-2">Enable gallery for your blog</label>
         </div>
         <div class="mb-4 form-check form-switch ms-2">
-          {{ form_general.changelog_enabled(class="form-check-input", default=user.gallery_enabled) }}
+          {{ form_general.changelog_enabled(class="form-check-input", checked=user.changelog_enabled) }}
           <label for="changelog_enabled" class="form-check-label ms-2">Enable changelog for your blog</label>
         </div>
         <div class="row">
@@ -41,7 +41,7 @@
       </form>
       <!-- social links -->
       <h4 class="ms-2 mb-4">Social Links</h4>
-      <form method="post" autocomplete="off">
+      <form method="post" autocomplete="off" id="form-social-links">
         {{ form_social.hidden_tag() }}
         <div id="input-container" class="mb-4">
           <div class="input-group mb-2 {% if not user.social_links[0] %}d-none{% endif %}">
@@ -119,7 +119,7 @@
       </form>
       <!-- update pw -->
       <h4 class="ms-2 mb-4">Update Password</h4>
-      <form method="post" autocomplete="off" id="changepw-form">
+      <form method="post" autocomplete="off" id="form-update-pw">
         {{ form_update_pw.hidden_tag() }}
         <div class="ms-2 mb-3 row">
           <label for="current" class="col-4 form-label">Current Password</label>
@@ -163,7 +163,7 @@
                   data-bs-dismiss="modal"
                   aria-label="Close"></button>
         </div>
-        <form method="post" autocomplete="off" id="delete-form">
+        <form method="post" autocomplete="off" id="form-deletion">
           {{ form_deletion.hidden_tag() }}
           <div class="modal-body">
             <p>
