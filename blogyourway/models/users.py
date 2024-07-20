@@ -28,6 +28,7 @@ class UserInfo(UserMixin):
     tags: dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
+        # these value are only provided when creating new user
         if not self.profile_img_url:
             self.profile_img_url = select_profile_img()
         if not self.cover_url:

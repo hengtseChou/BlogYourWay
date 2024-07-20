@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 
 
@@ -11,16 +11,12 @@ class PostInfo:
     author: str
     tags: list[str]
     cover_url: str
-    created_at: datetime = field(init=False)
-    last_updated: datetime = field(init=False)
+    created_at: datetime = datetime.now(timezone.utc)
+    last_updated: datetime = datetime.now(timezone.utc)
     archived: bool = False
     featured: bool = False
     views: int = 0
     reads: int = 0
-
-    def __post_init__(self):
-        self.created_at = datetime.now(timezone.utc)
-        self.last_updated = datetime.now(timezone.utc)
 
 
 @dataclass
