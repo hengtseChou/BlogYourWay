@@ -1,14 +1,13 @@
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict
 from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
-from flask import Request
 from flask_login import current_user
 
 from blogyourway.forms.posts import EditPostForm, NewPostForm
 from blogyourway.models.posts import PostContent, PostInfo
 from blogyourway.mongo import Database, mongodb
-from blogyourway.tasks.utils import FormValidator, UIDGenerator, process_tags
+from blogyourway.tasks.utils import UIDGenerator, process_tags
 
 ###################################################################
 
@@ -75,24 +74,6 @@ def create_post(form: NewPostForm) -> str:
 ###################################################################
 
 
-@dataclass
-class UpdatedPostInfo:
-    title: str
-    subtitle: str
-    tags: list[str]
-    cover_url: str
-    custom_slug: str
-    last_updated: datetime = field(init=False)
-
-    def __post_init__(self):
-        self.last_updated = datetime.now(timezone.utc)
-
-
-@dataclass
-class UpdatedPostContent:
-    content: str
-
-
 class PostUpdateSetup:
     def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
@@ -110,24 +91,17 @@ class PostUpdateSetup:
             filter={"username": author}, increments=tags_increment, upsert=True
         )
 
-    def _updated_post_info(self, form: EditPostForm) -> dict:
-        updated_post_info = UpdatedPostInfo(
-            title=form.title.data,
-            subtitle=form.subtitle.data,
-            tags=process_tags(form.tags.data),
-            cover_url=form.cover_url.data,
-            custom_slug=form.custom_slug.data,
-        )
-        return asdict(updated_post_info)
-
-    def _updated_post_content(self, form: EditPostForm) -> dict:
-        updated_post_content = UpdatedPostContent(content=form.editor.data)
-        return asdict(updated_post_content)
-
     def update_post(self, post_uid: str, form: EditPostForm) -> None:
 
-        updated_post_info = self._updated_post_info(form)
-        updated_post_content = self._updated_post_content(form)
+        updated_post_info = {
+            "title": form.title.data,
+            "subtitle": form.subtitle.data,
+            "tags": process_tags(form.tags.data),
+            "cover_url": form.cover_url.data,
+            "custom_slug": form.custom_slug.data,
+            "last_updated": datetime.now(timezone.utc),
+        }
+        updated_post_content = {"content": form.editor.data}
 
         self._update_tags_for_user(post_uid, updated_post_info.get("tags"))
         self._db_handler.post_info.update_values(

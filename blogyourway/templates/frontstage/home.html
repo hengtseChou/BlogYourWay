@@ -16,9 +16,9 @@
       <div class="col-lg-8 col-12 mx-auto">
         <div class="row fill-up-space">
           <!-- post-column -->
-          <div class="col-lg-8 col-12 mx-auto">
+          <div class="col-lg-8 col-12 mx-auto mt-4">
             {% if posts|length != 0 %}
-              <h5 class="text-start mt-4 ms-2 fw-bold text-dark-grey">Featured Posts</h5>
+              <h5 class="mt-4 ms-2 fw-bold text-dark-grey">Featured Posts</h5>
               {% for post in posts %}
                 <div class="ms-lg-2 ms-0 my-4 p-4 border rounded rounded-2">
                   <a href="{{ url_for('frontstage.blogpost', username=post.author, post_uid=post.post_uid) }}"
@@ -40,7 +40,7 @@
                 </div>
               {% endfor %}
             {% else %}
-              <h5 class="text-start mt-4 ms-2 fw-bold text-dark-grey">No featured posts yet!</h5>
+              <h5 class="mt-4 ms-2 fw-bold text-dark-grey">No featured posts yet!</h5>
             {% endif %}
           </div>
           <!-- bio column -->

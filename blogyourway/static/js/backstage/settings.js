@@ -1,9 +1,11 @@
 function showInputGroup() {
   const inputGroups = document.querySelectorAll(
-    "#input-container .input-group.d-none",
+    "#link-container .input-group.d-none",
   );
   if (inputGroups.length > 0) {
     inputGroups[0].classList.remove("d-none");
+  } else {
+    alert("You can have at most 5 social links.");
   }
 }
 

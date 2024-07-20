@@ -10,7 +10,6 @@ from flask_login import current_user
 
 from blogyourway.config import RECAPTCHA_SECRET
 from blogyourway.forms.comments import CommentForm
-from blogyourway.logging import logger
 from blogyourway.models.comments import AnonymousComment, Comment
 from blogyourway.mongo import Database, mongodb
 from blogyourway.tasks.utils import UIDGenerator
