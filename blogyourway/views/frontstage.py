@@ -12,17 +12,23 @@ from flask import (
     request,
     url_for,
 )
-from markdown import Markdown
 
 from blogyourway.config import TEMPLATE_FOLDER
 from blogyourway.forms.comments import CommentForm
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
 from blogyourway.tasks.comments import comment_utils, create_comment
-from blogyourway.tasks.posts import html_to_about, html_to_post, post_utils
+from blogyourway.tasks.posts import post_utils
 from blogyourway.tasks.projects import projects_utils
 from blogyourway.tasks.users import user_utils
-from blogyourway.tasks.utils import Paging, sort_dict
+from blogyourway.tasks.utils import (
+    Paging,
+    convert_about,
+    convert_post_content,
+    convert_project_content,
+    sort_dict,
+)
+from blogyourway.views.main import flashing_if_errors
 
 frontstage = Blueprint("frontstage", __name__, template_folder=TEMPLATE_FOLDER)
 
@@ -96,8 +102,8 @@ def blog(username):
     )
 
     # user info
-    user_info = user_utils.get_user_info(username)
-    tags = sort_dict(user_info.tags)
+    user = user_utils.get_user_info(username)
+    tags = sort_dict(user.tags)
     tags = {tag: count for tag, count in tags.items() if count > 0}
 
     ###################################################################
@@ -116,18 +122,17 @@ def blog(username):
     ###################################################################
 
     return render_template(
-        "frontstage/blog.html", user=user_info, posts=posts, tags=tags, pagination=pagination
+        "frontstage/blog.html", user=user, posts=posts, tags=tags, pagination=pagination
     )
 
 
 def blogpost_main_actions(username: str, post_uid: str, request: Request) -> str:
-    author_info = mongodb.user_info.find_one({"username": username})
-    target_post = post_utils.get_full_post(post_uid)
 
-    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
-    target_post["content"] = md.convert(target_post.get("content"))
-    target_post["content"] = html_to_post(target_post.get("content"))
-    target_post["readtime"] = str(readtime.of_html(target_post.get("content")))
+    author = mongodb.user_info.find_one({"username": username})
+    post = post_utils.get_full_post(post_uid)
+
+    post["content"] = convert_post_content(post.get("content"))
+    post["readtime"] = str(readtime.of_html(post.get("content")))
 
     form = CommentForm()
     # add comments
@@ -135,12 +140,7 @@ def blogpost_main_actions(username: str, post_uid: str, request: Request) -> str
     if form.validate_on_submit():
         create_comment(post_uid, form)
         flash("Comment published!", category="success")
-
-    if form.errors:
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(f"{field.capitalize()}: {error}", category="error")
-        return redirect(url_for("frontstage.blogpost", username=username, post_uid=post_uid))
+    flashing_if_errors(form.errors)
 
     # find comments
     # oldest to newest comment
@@ -163,7 +163,7 @@ def blogpost_main_actions(username: str, post_uid: str, request: Request) -> str
     ###################################################################
 
     return render_template(
-        "frontstage/blogpost.html", user=author_info, post=target_post, comments=comments, form=form
+        "frontstage/blogpost.html", user=author, post=post, comments=comments, form=form
     )
 
 
@@ -338,7 +338,7 @@ def gallery(username):
         project["created_at"] = project.get("created_at").strftime("%Y-%m-%d")
 
     # user info
-    user_info = user_utils.get_user_info(username)
+    user = user_utils.get_user_info(username)
 
     ###################################################################
 
@@ -356,13 +356,39 @@ def gallery(username):
     ###################################################################
 
     return render_template(
-        "frontstage/gallery.html", user=user_info, projects=projects, pagination=pagination
+        "frontstage/gallery.html", user=user, projects=projects, pagination=pagination
     )
 
 
 def project_main_actions(username, project_uid, request):
 
-    return render_template("frontstage/project.html")
+    ###################################################################
+
+    # main actions
+
+    ###################################################################
+
+    author = mongodb.user_info.find_one({"username": username})
+    project = projects_utils.get_full_project(project_uid)
+    project["content"] = convert_project_content(project.get("content"))
+
+    ###################################################################
+
+    # logging / metrics
+
+    ###################################################################
+
+    logger_utils.page_visited(request)
+    user_utils.total_view_increment(username)
+    projects_utils.view_increment(project_uid)
+
+    ###################################################################
+
+    # return page content
+
+    ###################################################################
+
+    return render_template("frontstage/project.html", user=author, project=project)
 
 
 @frontstage.route("/@<username>/project/<project_uid>", methods=["GET"])
@@ -469,11 +495,9 @@ def about(username):
     ###################################################################
 
     user = mongodb.user_info.find_one({"username": username})
-    user_about = mongodb.user_about.find_one({"username": username})["about"]
+    about = mongodb.user_about.find_one({"username": username})["about"]
 
-    md = Markdown(extensions=["markdown_captions", "fenced_code"])
-    about = md.convert(user_about)
-    about = html_to_about(about)
+    about = convert_about(about)
 
     ###################################################################
 
@@ -495,6 +519,7 @@ def about(username):
 
 @frontstage.route("/@<username>/get-profile-img", methods=["GET"])
 def get_profile_img(username):
+
     user = mongodb.user_info.find_one({"username": username})
 
     if user.get("profile_img_url"):
@@ -507,6 +532,7 @@ def get_profile_img(username):
 
 @frontstage.route("/is-unique", methods=["GET"])
 def is_unique():
+
     email = request.args.get("email", default=None, type=str)
     username = request.args.get("username", default=None, type=str)
     if email is not None:

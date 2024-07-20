@@ -58,7 +58,6 @@ def posts_panel():
         if post_uid is not None:
             logger.debug(f"post {post_uid} has been created.")
             flash("New post published successfully!", category="success")
-
     flashing_if_errors(form.errors)
 
     # query through posts
@@ -105,6 +104,7 @@ def projects_panel():
         if project_uid is not None:
             logger.debug(f"project {project_uid} has been created.")
             flash("New project published successfully!", category="success")
+    flashing_if_errors(form.errors)
 
     user = mongodb.user_info.find_one({"username": current_user.username})
     PROJECTS_PER_PAGE = 10
@@ -345,13 +345,11 @@ def edit_post(post_uid):
     form = EditPostForm()
 
     if form.validate_on_submit():
-
         update_post(post_uid, form)
         logger.debug(f"post {post_uid} is updated.")
         title = mongodb.post_info.find_one({"post_uid": post_uid}).get("title")
         title_truncated = string_truncate(title, max_len=20)
         flash(f'Your post "{title_truncated}" has been updated!', category="success")
-
     flashing_if_errors(form.errors)
 
     user = mongodb.user_info.find_one({"username": current_user.username})
@@ -405,7 +403,6 @@ def edit_about():
         user.update(updated_about)
         logger.debug(f"information for user {current_user.username} has been updated")
         flash("Information updated!", category="success")
-
     flashing_if_errors(form.errors)
 
     ###################################################################
@@ -449,6 +446,7 @@ def edit_project(project_uid):
         flash(f'Your project "{title_truncated}" has been updated!', category="success")
         project = projects_utils.get_full_project(project_uid)
         project["tags"] = ", ".join(project.get("tags"))
+    flashing_if_errors(form.errors)
 
     ###################################################################
 
@@ -459,41 +457,9 @@ def edit_project(project_uid):
     return render_template("backstage/edit-project.html", project=project, user=user, form=form)
 
 
-@backstage.route("/edit/project/<project_uid>", methods=["POST"])
-@login_required
-def edit_project_post(project_uid):
-    ###################################################################
-
-    # main actions
-
-    ###################################################################
-
-    update_project(project_uid, request)
-    logger.debug(f"project {project_uid} is updated.")
-    title_truncated = string_truncate(
-        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"),
-        max_len=20,
-    )
-    flash(f'Your project "{title_truncated}" has been updated!', category="success")
-
-    ###################################################################
-
-    # return page content
-
-    ###################################################################
-
-    return redirect(url_for("backstage.projects_panel"))
-
-
 @backstage.route("/edit-featured", methods=["GET"])
 @login_required
 def toggle_featured():
-    ###################################################################
-
-    # status control / early returns
-
-    ###################################################################
-
     ###################################################################
 
     # main actions
@@ -501,9 +467,8 @@ def toggle_featured():
     ###################################################################
 
     post_uid = request.args.get("uid")
-    truncated_post_title = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
-    )
+    post_info = mongodb.post_info.find_one({"post_uid": post_uid})
+    truncated_post_title = string_truncate(post_info.get("title"), max_len=20)
 
     if request.args.get("featured") == "to_true":
         updated_featured_status = True
@@ -536,12 +501,6 @@ def toggle_featured():
 @backstage.route("/edit-archived", methods=["GET"])
 @login_required
 def toggle_archived():
-    ###################################################################
-
-    # status control / early returns
-
-    ###################################################################
-
     ###################################################################
 
     # main actions
@@ -626,21 +585,13 @@ def toggle_archived():
 def delete_post():
     ###################################################################
 
-    # status control / early returns
-
-    ###################################################################
-
-    post_uid = request.args.get("uid")
-
-    ###################################################################
-
     # main actions
 
     ###################################################################
 
-    title_truncated = string_truncate(
-        mongodb.post_info.find_one({"post_uid": post_uid}).get("title"), max_len=20
-    )
+    post_uid = request.args.get("uid")
+    post_info = mongodb.post_info.find_one({"post_uid": post_uid})
+    title_truncated = string_truncate(post_info.get("title"), max_len=20)
     mongodb.post_info.delete_one({"post_uid": post_uid})
     mongodb.post_content.delete_one({"post_uid": post_uid})
     logger.debug(f"post {post_uid} has been deleted")
@@ -662,20 +613,14 @@ def delete_post():
 def delete_project():
     ###################################################################
 
-    # status control / early returns
-
-    ###################################################################
-
-    project_uid = request.args.get("uid")
-
-    ###################################################################
-
     # main actions
 
     ###################################################################
 
+    project_uid = request.args.get("uid")
+    project_info = mongodb.project_info.find_one({"project_uid": project_uid})
     title_truncated = string_truncate(
-        mongodb.project_info.find_one({"project_uid": project_uid}).get("title"),
+        project_info.get("title"),
         max_len=20,
     )
     mongodb.project_info.delete_one({"project_uid": project_uid})

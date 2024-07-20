@@ -1,7 +1,6 @@
 from dataclasses import asdict
 from datetime import datetime, timezone
 
-from bs4 import BeautifulSoup
 from flask_login import current_user
 
 from blogyourway.forms.posts import EditPostForm, NewPostForm
@@ -119,98 +118,6 @@ def update_post(post_uid: str, form: EditPostForm) -> None:
 
 ###################################################################
 
-# formatter for posts that are saved as markdown
-
-###################################################################
-
-
-class HTMLFormatter:
-    def __init__(self, html: str):
-        """Format markdown strings for additional styles for different pages.
-
-        Args:
-            html (str): a string that is already html.
-        """
-
-        self.__soup = BeautifulSoup(html, "html.parser")
-
-    def add_padding(self):
-        blocks = self.__soup.find_all(
-            lambda tag: tag.name not in ["figure", "img"], recursive=False
-        )
-        for block in blocks:
-            current_class = block.get("class", [])
-            current_class.append("py-2")
-            block["class"] = current_class
-
-        return self
-
-    def change_headings(self):
-        small_headings = self.__soup.find_all("h3")
-        for head in small_headings:
-            head.name = "h5"
-
-        medium_headings = self.__soup.find_all("h2")
-        for head in medium_headings:
-            head.name = "h3"
-
-        big_headings = self.__soup.find_all("h1")
-        for head in big_headings:
-            head.name = "h2"
-            current_class = head.get("class", [])
-            # current_class.append("fw-bold")
-            # current_class.append("border-bottom")
-            head["class"] = current_class
-
-        return self
-
-    def modify_figure(self, max_width="100%"):
-        # center image and modify size
-        imgs = self.__soup.find_all(["img"])
-        for img in imgs:
-            current_style = img.get("style", "")
-            new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30%; height: auto;"
-            img["style"] = new_style
-            # img["loading"] = "lazy"
-            img_src = img["src"]
-            img["src"] = ""
-            img["data-src"] = img_src
-            current_class = img.get("class", [])
-            current_class.append("lazyload")
-            img["class"] = current_class
-
-        # center caption
-        captions = self.__soup.find_all(["figcaption"])
-        for caption in captions:
-            current_style = caption.get("style", "")
-            new_style = f"{current_style} text-align: center"
-            caption["style"] = new_style
-            current_class = img.get("class", [])
-            current_class.append("my-2")
-            img["class"] = current_class
-
-        return self
-
-    def to_string(self) -> str:
-        return str(self.__soup)
-
-
-def html_to_post(html: str) -> str:
-    formatter = HTMLFormatter(html)
-    post = formatter.add_padding().change_headings().modify_figure().to_string()
-
-    return post
-
-
-def html_to_about(html: str) -> str:
-    formatter = HTMLFormatter(html)
-    about = formatter.add_padding().change_headings().modify_figure().to_string()
-
-    return about
-
-
-###################################################################
-
 # post utilities
 
 ###################################################################
@@ -277,13 +184,11 @@ class PostUtils:
         return result
 
     def get_full_post(self, post_uid: str) -> dict:
-        target_post = self._db_handler.post_info.find_one({"post_uid": post_uid})
-        target_post_content = self._db_handler.post_content.find_one({"post_uid": post_uid}).get(
-            "content"
-        )
-        target_post["content"] = target_post_content
+        post = self._db_handler.post_info.find_one({"post_uid": post_uid})
+        post_content = self._db_handler.post_content.find_one({"post_uid": post_uid}).get("content")
+        post["content"] = post_content
 
-        return target_post
+        return post
 
     def read_increment(self, post_uid: str) -> None:
         self._db_handler.post_info.make_increments(

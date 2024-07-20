@@ -167,5 +167,15 @@ class ProjectsUtils:
 
         return project
 
+    def read_increment(self, project_uid: str) -> None:
+        self._db_handler.project_info.make_increments(
+            filter={"project_uid": project_uid}, increments={"reads": 1}
+        )
+
+    def view_increment(self, project_uid: str) -> None:
+        self._db_handler.project_info.make_increments(
+            filter={"project_uid": project_uid}, increments={"views": 1}
+        )
+
 
 projects_utils = ProjectsUtils(mongodb)

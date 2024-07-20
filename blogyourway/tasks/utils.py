@@ -6,7 +6,9 @@ import random
 import string
 from math import ceil
 
+from bs4 import BeautifulSoup
 from flask import abort
+from markdown import Markdown
 
 from blogyourway.mongo import Database
 
@@ -27,7 +29,6 @@ class UIDGenerator:
         Returns:
             str: an unique comment uid string
         """
-
         alphabet = string.ascii_lowercase + string.digits
         while True:
             comment_uid = "".join(random.choices(alphabet, k=8))
@@ -47,6 +48,7 @@ class UIDGenerator:
                 return post_uid
 
     def generate_project_uid(self) -> str:
+
         alphabet = string.ascii_lowercase + string.digits
         while True:
             project_uid = "".join(random.choices(alphabet, k=8))
@@ -56,42 +58,121 @@ class UIDGenerator:
 
 ###################################################################
 
-# some other utility functions
+# formatter tool
 
 ###################################################################
 
 
-def string_truncate(text: str, max_len: int) -> str:
-    """Truncate the input string to the given max len, with the trailing dot dot dot.
+class HTMLFormatter:
+    def __init__(self, html: str):
+        """Format markdown strings for additional styles for different pages.
 
-    If the input is shorter, nothing will be changed.
+        Args:
+            html (str): a string that is already html.
+        """
+        self.__soup = BeautifulSoup(html, "html.parser")
 
-    Args:
-        text (str): string to be truncated.
-        max_len (int): shorten the string to this length at maximum (dot dot dot not included).
+    def add_padding(self):
 
-    Returns:
-        str: truncated string.
-    """
-    if len(text) <= max_len:
-        return text
-    return f"{text[:max_len]}..."
+        blocks = self.__soup.find_all(
+            lambda tag: tag.name not in ["figure", "img"], recursive=False
+        )
+        for block in blocks:
+            current_class = block.get("class", [])
+            current_class.append("py-2")
+            block["class"] = current_class
+
+        return self
+
+    def change_headings(self):
+
+        small_headings = self.__soup.find_all("h3")
+        for head in small_headings:
+            head.name = "h5"
+
+        medium_headings = self.__soup.find_all("h2")
+        for head in medium_headings:
+            head.name = "h3"
+
+        big_headings = self.__soup.find_all("h1")
+        for head in big_headings:
+            head.name = "h2"
+            current_class = head.get("class", [])
+            # current_class.append("fw-bold")
+            # current_class.append("border-bottom")
+            head["class"] = current_class
+
+        return self
+
+    def modify_figure(self, max_width="100%"):
+        # center image and modify size
+        imgs = self.__soup.find_all(["img"])
+        for img in imgs:
+            current_style = img.get("style", "")
+            new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30%; height: auto;"
+            img["style"] = new_style
+            # img["loading"] = "lazy"
+            img_src = img["src"]
+            img["src"] = ""
+            img["data-src"] = img_src
+            current_class = img.get("class", [])
+            current_class.append("lazyload")
+            img["class"] = current_class
+
+        # center caption
+        captions = self.__soup.find_all(["figcaption"])
+        for caption in captions:
+            current_style = caption.get("style", "")
+            new_style = f"{current_style} text-align: center"
+            caption["style"] = new_style
+            current_class = img.get("class", [])
+            current_class.append("my-2")
+            img["class"] = current_class
+
+        return self
+
+    def to_string(self) -> str:
+        return str(self.__soup)
 
 
-def sort_dict(_dict: dict[str, int]) -> dict[str, int]:
-    """Sort the dictionary by value
+def convert_post_content(content: str) -> str:
+    """convert the original text to the html text to be displayed in the blogpost page"""
 
-    Args:
-        _dict (dict): unsorted dict
+    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
+    converted = md.convert(content)
+    formatter = HTMLFormatter(converted)
+    converted = formatter.add_padding().change_headings().modify_figure().to_string()
 
-    Returns:
-        dict: sorted dict
-    """
-    sorted_dict_key = sorted(_dict, key=_dict.get, reverse=True)
-    sorted_dict = {}
-    for key in sorted_dict_key:
-        sorted_dict[key] = _dict[key]
-    return sorted_dict
+    return converted
+
+
+def convert_about(about: str) -> str:
+    """convert the original text to the html text to be displayed in the about page"""
+
+    md = Markdown(extensions=["markdown_captions", "fenced_code"])
+    converted = md.convert(about)
+    formatter = HTMLFormatter(about)
+    converted = formatter.add_padding().change_headings().modify_figure().to_string()
+
+    return converted
+
+
+def convert_project_content(content: str) -> str:
+    """convert the original text to the html text to be displayed in the project page"""
+
+    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
+    converted = md.convert(content)
+    formatter = HTMLFormatter(converted)
+    converted = formatter.add_padding().change_headings().modify_figure().to_string()
+
+    return converted
+
+
+###################################################################
+
+# pagination tool
+
+###################################################################
 
 
 class Paging:
@@ -141,37 +222,68 @@ class Paging:
 
     @property
     def is_previous_page_allowed(self):
+
         if not self._has_setup:
             raise AttributeError("pagination has not setup yet.")
         return self._allow_previous_page
 
     @property
     def is_next_page_allowed(self):
+
         if not self._has_setup:
             raise AttributeError("pagination has not setup yet.")
         return self._allow_next_page
 
     @property
     def current_page(self):
+
         if not self._has_setup:
             raise AttributeError("pagination has not setup yet.")
         return self._current_page
 
 
+###################################################################
+
+# some other utility functions
+
+###################################################################
+
+
+def string_truncate(text: str, max_len: int) -> str:
+    """Truncate the input string to the given max len, with the trailing dot dot dot.
+
+    If the input is shorter, nothing will be changed.
+
+    Args:
+        text (str): string to be truncated.
+        max_len (int): shorten the string to this length at maximum (dot dot dot not included).
+
+    Returns:
+        str: truncated string.
+    """
+    if len(text) <= max_len:
+        return text
+    return f"{text[:max_len]}..."
+
+
+def sort_dict(_dict: dict[str, int]) -> dict[str, int]:
+    """Sort the dictionary by value
+
+    Args:
+        _dict (dict): unsorted dict
+
+    Returns:
+        dict: sorted dict
+    """
+    sorted_dict_key = sorted(_dict, key=_dict.get, reverse=True)
+    sorted_dict = {}
+    for key in sorted_dict_key:
+        sorted_dict[key] = _dict[key]
+    return sorted_dict
+
+
 def process_tags(tag_string: str) -> list[str]:
+
     if tag_string == "":
         return []
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
-
-
-# def process_form_images(request: Request) -> list[dict[str, str]]:
-
-#     images = []
-#     num_of_images = len([i for i in request.form.keys() if "url" in i])
-#     for i in range(1, num_of_images + 1):
-#         image = {
-#             "url": request.form.get(f"url-{i}"),
-#             "caption": request.form.get(f"caption-{i}"),
-#         }
-#         images.append(image)
-#     return images
