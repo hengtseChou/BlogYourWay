@@ -100,7 +100,7 @@ function validateStep1() {
   });
 }
 
-function validateStep2() {
+async function validateStep2() {
   // Perform input validation for Step 2
   var username = document.getElementById("username").value;
   var blogname = document.getElementById("blogname").value;
@@ -146,15 +146,16 @@ function validateStep2() {
       return false;
     });
 }
-// Update the form submission logic to use the validateStep2 function
-document.querySelector("form").addEventListener("submit", function (event) {
-  event.preventDefault(); // Prevent default form submission
-  validateStep2().then((isValid) => {
+
+document
+  .querySelector("form")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault(); // Prevent default form submission
+    const isValid = await validateStep2();
     if (isValid) {
       this.submit(); // Proceed with form submission if validation passes
     }
   });
-});
 
 document.getElementById("step1").addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
