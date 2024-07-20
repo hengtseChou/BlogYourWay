@@ -2,7 +2,7 @@ import logging
 
 from flask import Request
 
-from blogyourway.config import ENV
+from app.config import ENV
 
 
 def return_client_ip(request: Request, env: str):

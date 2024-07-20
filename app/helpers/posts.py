@@ -3,17 +3,16 @@ from datetime import datetime, timezone
 
 from flask_login import current_user
 
-from blogyourway.forms.posts import EditPostForm, NewPostForm
-from blogyourway.models.posts import PostContent, PostInfo
-from blogyourway.mongo import Database, mongodb
-from blogyourway.helpers.utils import UIDGenerator, process_tags
+from app.forms.posts import EditPostForm, NewPostForm
+from app.models.posts import PostContent, PostInfo
+from app.mongo import Database, mongodb
+from app.helpers.utils import UIDGenerator, process_tags
 
-###################################################################
+##################################################################################################
 
 # create new post
 
-###################################################################
-
+##################################################################################################
 
 class NewPostSetup:
     def __init__(self, post_uid_generator: UIDGenerator, db_handler: Database) -> None:
@@ -66,12 +65,11 @@ def create_post(form: NewPostForm) -> str:
     return new_post_uid
 
 
-###################################################################
+##################################################################################################
 
 # updating a post
 
-###################################################################
-
+##################################################################################################
 
 class PostUpdateSetup:
     def __init__(self, db_handler: Database) -> None:
@@ -116,12 +114,11 @@ def update_post(post_uid: str, form: EditPostForm) -> None:
     post_update_setup.update_post(post_uid=post_uid, form=form)
 
 
-###################################################################
+##################################################################################################
 
 # post utilities
 
-###################################################################
-
+##################################################################################################
 
 class PostUtils:
     def __init__(self, db_handler: Database):

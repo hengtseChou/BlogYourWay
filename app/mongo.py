@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.cursor import Cursor
 
-from blogyourway.config import MONGO_URL
+from app.config import MONGO_URL
 
 
 class ExtendedCollection:
@@ -93,12 +93,12 @@ class ExtendedCursor(Cursor):
         return list(self)
 
 
-###################################################################
+##################################################################################################
 
 # my database handler
 # the "interface" for mongo db
 
-###################################################################
+##################################################################################################
 
 
 class Database:

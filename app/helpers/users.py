@@ -3,16 +3,16 @@ from dataclasses import asdict
 
 import bcrypt
 
-from blogyourway.forms.users import SignUpForm
-from blogyourway.logging import Logger, logger, logger_utils
-from blogyourway.models.users import UserAbout, UserCreds, UserInfo
-from blogyourway.mongo import Database, mongodb
+from app.forms.users import SignUpForm
+from app.logging import Logger, logger, logger_utils
+from app.models.users import UserAbout, UserCreds, UserInfo
+from app.mongo import Database, mongodb
 
-###################################################################
+##################################################################################################
 
 # user registration
 
-###################################################################
+##################################################################################################
 
 
 class NewUserSetup:
@@ -70,11 +70,11 @@ class NewUserSetup:
         return self._regist_form.username.data
 
 
-###################################################################
+##################################################################################################
 
 # deleting user
 
-###################################################################
+##################################################################################################
 
 
 class UserDeletionSetup:
@@ -114,11 +114,11 @@ class UserDeletionSetup:
         self._remove_all_user_data()
 
 
-###################################################################
+##################################################################################################
 
 # user utils
 
-###################################################################
+##################################################################################################
 
 
 class UserUtils:

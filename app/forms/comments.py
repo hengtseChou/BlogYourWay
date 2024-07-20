@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import Email, InputRequired, Optional
 
-from blogyourway.config import RECAPTCHA_KEY
+from app.config import RECAPTCHA_KEY
 
 
 class CommentForm(FlaskForm):

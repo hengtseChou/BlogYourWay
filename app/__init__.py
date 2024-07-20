@@ -2,17 +2,18 @@
 Configure little-blog application in create_app() with a factory pattern.
 """
 
+import time
+
 from flask import Flask, render_template, request
 from flask_login import LoginManager
 from pymongo.errors import ServerSelectionTimeoutError
 
-from blogyourway.config import APP_SECRET, ENV
-from blogyourway.helpers.users import user_utils
-from blogyourway.logging import logger, return_client_ip
-from blogyourway.models.users import UserInfo
-from blogyourway.mongo import mongodb
-
-from .views import backstage_bp, frontstage_bp, main_bp
+from app.config import APP_SECRET, ENV
+from app.helpers.users import user_utils
+from app.logging import logger, return_client_ip
+from app.models.users import UserInfo
+from app.mongo import mongodb
+from app.views import backstage_bp, frontstage_bp, main_bp
 
 
 def create_app() -> Flask:
@@ -24,10 +25,7 @@ def create_app() -> Flask:
     - 404 error handler page
     - 500 error handler page
     - register blueprints (blog, backstage)
-    - cache
-    - socketio
-    - server-side session
-    - check connections for redis and mongo
+    - check connections for mongo
     """
 
     app = Flask(__name__)
@@ -54,6 +52,7 @@ def create_app() -> Flask:
     @login_manager.user_loader
     def user_loader(username: str) -> UserInfo:
         """register user loader for current_user to access"""
+        logger.debug("user loader was called.")
         user_info = user_utils.get_user_info(username)
         # return none if the ID is not valid
         return user_info
@@ -81,12 +80,15 @@ def create_app() -> Flask:
     logger.debug("Blueprints registered.")
 
     # check connection
-    try:
-        mongodb.client.server_info()
-        logger.debug("MongoDB connected.")
-    except ServerSelectionTimeoutError as error:
-        logger.error(error)
-        exit("MongoDB is NOT connected. App initializaion failed.")
+    # use a while loop to keep app from breaking
+    while True:
+        try:
+            mongodb.client.server_info()
+            logger.debug("MongoDB connected.")
+            break
+        except ServerSelectionTimeoutError:
+            logger.error("MongoDB is NOT connected. Retry in 60 secs.")
+            time.sleep(60)
 
     logger.info("App initialization completed.")
 

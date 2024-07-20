@@ -2,23 +2,23 @@ from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
-from blogyourway.config import TEMPLATE_FOLDER
-from blogyourway.forms.posts import EditPostForm, NewPostForm
-from blogyourway.forms.projects import EditProjectForm, NewProjectForm
-from blogyourway.forms.users import (
+from app.config import TEMPLATE_FOLDER
+from app.forms.posts import EditPostForm, NewPostForm
+from app.forms.projects import EditProjectForm, NewProjectForm
+from app.forms.users import (
     EditAboutForm,
     GeneralSettingsForm,
     UpdatePasswordForm,
     UpdateSocialLinksForm,
     UserDeletionForm,
 )
-from blogyourway.helpers.posts import create_post, post_utils, update_post
-from blogyourway.helpers.projects import create_project, projects_utils, update_project
-from blogyourway.helpers.users import user_utils
-from blogyourway.helpers.utils import Paging, string_truncate
-from blogyourway.logging import logger, logger_utils
-from blogyourway.mongo import mongodb
-from blogyourway.views.main import flashing_if_errors
+from app.helpers.posts import create_post, post_utils, update_post
+from app.helpers.projects import create_project, projects_utils, update_project
+from app.helpers.users import user_utils
+from app.helpers.utils import Paging, string_truncate
+from app.logging import logger, logger_utils
+from app.mongo import mongodb
+from app.views.main import flashing_if_errors
 
 backstage = Blueprint("backstage", __name__, template_folder=TEMPLATE_FOLDER)
 
@@ -32,20 +32,20 @@ def backstage_root():
 @backstage.route("/posts", methods=["GET", "POST"])
 @login_required
 def posts_panel():
-    ###################################################################
+    ##################################################################################################
 
     # status control / early returns
 
-    ###################################################################
+    ##################################################################################################
 
     session["user_current_tab"] = "posts"
     logger_utils.backstage(username=current_user.username, tab="posts")
 
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     current_page = request.args.get("page", default=1, type=int)
     user = mongodb.user_info.find_one({"username": current_user.username})
@@ -78,11 +78,11 @@ def posts_panel():
 
     logger_utils.pagination(tab="posts", num=len(posts))
 
-    ###################################################################
+    ##################################################################################################
 
     # return page content
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template(
         "backstage/posts.html", user=user, posts=posts, pagination=pagination, form=form
@@ -128,20 +128,20 @@ def projects_panel():
 @backstage.route("/archive", methods=["GET"])
 @login_required
 def archive_panel():
-    ###################################################################
+    ##################################################################################################
 
     # status control / early returns
 
-    ###################################################################
+    ##################################################################################################
 
     session["user_current_tab"] = "archive"
     logger_utils.backstage(username=current_user.username, tab="archive")
 
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     user = mongodb.user_info.find_one({"username": current_user.username})
     posts = post_utils.get_archived_posts_info(current_user.username)
@@ -156,11 +156,11 @@ def archive_panel():
 
     logger_utils.pagination(tab="archive", num=(len(posts) + len(projects)))
 
-    ###################################################################
+    ##################################################################################################
 
     # return page contents
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template("backstage/archive.html", user=user, posts=posts, projects=projects)
 
@@ -168,27 +168,27 @@ def archive_panel():
 @backstage.route("/theme", methods=["GET", "POST"])
 @login_required
 def theme_panel():
-    ###################################################################
+    ##################################################################################################
 
     # status control / early returns
 
-    ###################################################################
+    ##################################################################################################
 
     logger_utils.backstage(username=current_user.username, tab="theme")
 
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     user = mongodb.user_info.find_one({"username": current_user.username})
 
-    ###################################################################
+    ##################################################################################################
 
     # return page contents
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template("backstage/theme.html", user=user)
 
@@ -196,19 +196,19 @@ def theme_panel():
 @backstage.route("/settings", methods=["GET", "POST"])
 @login_required
 def settings_panel():
-    ###################################################################
+    ##################################################################################################
 
     # status control / early returns
 
-    ###################################################################
+    ##################################################################################################
 
     logger_utils.backstage(username=current_user.username, tab="settings")
 
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     user = mongodb.user_info.find_one({"username": current_user.username})
     form_general = GeneralSettingsForm(prefix="general")
@@ -309,11 +309,11 @@ def settings_panel():
     flashing_if_errors(form_update_pw.errors)
     flashing_if_errors(form_deletion.errors)
 
-    ###################################################################
+    ##################################################################################################
 
     # return page contents
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template(
         "backstage/settings.html",
@@ -328,19 +328,19 @@ def settings_panel():
 @backstage.route("/edit/post/<post_uid>", methods=["GET", "POST"])
 @login_required
 def edit_post(post_uid):
-    ###################################################################
+    ##################################################################################################
 
     # status control / early returns
 
-    ###################################################################
+    ##################################################################################################
 
     logger_utils.backstage(username=current_user.username, tab="edit_post")
 
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     form = EditPostForm()
 
@@ -356,11 +356,11 @@ def edit_post(post_uid):
     post = post_utils.get_full_post(post_uid)
     post["tags"] = ", ".join(post.get("tags"))
 
-    ###################################################################
+    ##################################################################################################
 
     # return page content
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template("backstage/edit-post.html", post=post, user=user, form=form)
 
@@ -368,19 +368,19 @@ def edit_post(post_uid):
 @backstage.route("/about", methods=["GET", "POST"])
 @login_required
 def edit_about():
-    ###################################################################
+    ##################################################################################################
 
     # status control / early returns
 
-    ###################################################################
+    ##################################################################################################
 
     logger_utils.backstage(username=current_user.username, tab="about")
 
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     user_info = mongodb.user_info.find_one({"username": current_user.username})
     user_about = mongodb.user_about.find_one({"username": current_user.username})
@@ -405,11 +405,11 @@ def edit_about():
         flash("Information updated!", category="success")
     flashing_if_errors(form.errors)
 
-    ###################################################################
+    ##################################################################################################
 
     # return page content
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template("backstage/edit-about.html", user=user, form=form)
 
@@ -417,19 +417,19 @@ def edit_about():
 @backstage.route("/edit/project/<project_uid>", methods=["GET", "POST"])
 @login_required
 def edit_project(project_uid):
-    ###################################################################
+    ##################################################################################################
 
     # status control / early returns
 
-    ###################################################################
+    ##################################################################################################
 
     logger_utils.backstage(username=current_user.username, tab="edit_project")
 
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     user = mongodb.user_info.find_one({"username": current_user.username})
     project = projects_utils.get_full_project(project_uid)
@@ -448,11 +448,11 @@ def edit_project(project_uid):
         project["tags"] = ", ".join(project.get("tags"))
     flashing_if_errors(form.errors)
 
-    ###################################################################
+    ##################################################################################################
 
     # return page content
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template("backstage/edit-project.html", project=project, user=user, form=form)
 
@@ -460,11 +460,11 @@ def edit_project(project_uid):
 @backstage.route("/edit-featured", methods=["GET"])
 @login_required
 def toggle_featured():
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     post_uid = request.args.get("uid")
     post_info = mongodb.post_info.find_one({"post_uid": post_uid})
@@ -489,11 +489,11 @@ def toggle_featured():
     )
     logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}")
 
-    ###################################################################
+    ##################################################################################################
 
     # return page content
 
-    ###################################################################
+    ##################################################################################################
 
     return redirect(url_for("backstage.posts_panel"))
 
@@ -501,11 +501,11 @@ def toggle_featured():
 @backstage.route("/edit-archived", methods=["GET"])
 @login_required
 def toggle_archived():
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     content_type = request.args.get("type")
 
@@ -564,11 +564,11 @@ def toggle_archived():
             f"archive status for project {project_uid} is now set to {updated_archived_status}"
         )
 
-    ###################################################################
+    ##################################################################################################
 
     # return page contents
 
-    ###################################################################
+    ##################################################################################################
 
     if session["user_current_tab"] == "posts":
         return redirect(url_for("backstage.posts_panel"))
@@ -583,11 +583,11 @@ def toggle_archived():
 @backstage.route("/delete/post", methods=["GET"])
 @login_required
 def delete_post():
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     post_uid = request.args.get("uid")
     post_info = mongodb.post_info.find_one({"post_uid": post_uid})
@@ -599,11 +599,11 @@ def delete_post():
     # post must be archived before deletion
     # so no need to increment over tags here
 
-    ###################################################################
+    ##################################################################################################
 
     # return page contents
 
-    ###################################################################
+    ##################################################################################################
 
     return redirect(url_for("backstage.archive_panel"))
 
@@ -611,11 +611,11 @@ def delete_post():
 @backstage.route("/delete/project", methods=["GET"])
 @login_required
 def delete_project():
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     project_uid = request.args.get("uid")
     project_info = mongodb.project_info.find_one({"project_uid": project_uid})
@@ -630,11 +630,11 @@ def delete_project():
     # post must be archived before deletion
     # so no need to increment over tags here
 
-    ###################################################################
+    ##################################################################################################
 
     # return page contents
 
-    ###################################################################
+    ##################################################################################################
 
     return redirect(url_for("backstage/backstage.archive_panel"))
 
@@ -642,20 +642,20 @@ def delete_project():
 @backstage.route("/logout", methods=["GET"])
 @login_required
 def logout():
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     username = current_user.username
     logout_user()
     logger_utils.logout(request=request, username=username)
 
-    ###################################################################
+    ##################################################################################################
 
     # return page contents
 
-    ###################################################################
+    ##################################################################################################
 
     return redirect(url_for("frontstage.home", username=username))

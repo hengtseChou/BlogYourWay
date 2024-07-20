@@ -4,13 +4,13 @@ import bcrypt
 from flask import Blueprint, flash, make_response, redirect, render_template, request, url_for
 from flask_login import current_user, login_user
 
-from blogyourway.config import TEMPLATE_FOLDER
-from blogyourway.forms.users import LoginForm, SignUpForm
-from blogyourway.helpers.posts import post_utils
-from blogyourway.helpers.projects import projects_utils
-from blogyourway.helpers.users import user_utils
-from blogyourway.logging import logger, logger_utils
-from blogyourway.mongo import mongodb
+from app.config import TEMPLATE_FOLDER
+from app.forms.users import LoginForm, SignUpForm
+from app.helpers.posts import post_utils
+from app.helpers.projects import projects_utils
+from app.helpers.users import user_utils
+from app.logging import logger, logger_utils
+from app.mongo import mongodb
 
 main = Blueprint("main", __name__, template_folder=TEMPLATE_FOLDER)
 
@@ -24,41 +24,41 @@ def flashing_if_errors(form_errors: dict) -> None:
 
 @main.route("/", methods=["GET"])
 def landing_page():
-    ###################################################################
+    ##################################################################################################
 
     # logging / metrics
 
-    ###################################################################
+    ##################################################################################################
 
     logger_utils.page_visited(request)
 
-    ###################################################################
+    ##################################################################################################
 
     # return page content
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template("main/landing-page.html")
 
 
 @main.route("/login", methods=["GET", "POST"])
 def login():
-    ###################################################################
+    ##################################################################################################
 
     # early returns
 
-    ###################################################################
+    ##################################################################################################
 
     if current_user.is_authenticated:
         flash("You are already logged in.")
         logger.debug(f"Attempt to duplicate logging from user {current_user.username}.")
         return redirect(url_for("frontstage.home", username=current_user.username))
 
-    ###################################################################
+    ##################################################################################################
 
     # main actions
 
-    ###################################################################
+    ##################################################################################################
 
     form = LoginForm()
 
@@ -96,11 +96,11 @@ def login():
 
 @main.route("/signup", methods=["GET", "POST"])
 def signup():
-    ###################################################################
+    ##################################################################################################
 
     # logging / metrics
 
-    ###################################################################
+    ##################################################################################################
 
     logger_utils.page_visited(request)
     form = SignUpForm()
@@ -112,11 +112,11 @@ def signup():
 
     flashing_if_errors(form.errors)
 
-    ###################################################################
+    ##################################################################################################
 
     # return page content
 
-    ###################################################################
+    ##################################################################################################
 
     return render_template("main/signup.html", form=form)
 

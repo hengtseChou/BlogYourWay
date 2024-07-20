@@ -8,18 +8,18 @@ import requests
 from flask import Request, request
 from flask_login import current_user
 
-from blogyourway.config import RECAPTCHA_SECRET
-from blogyourway.forms.comments import CommentForm
-from blogyourway.models.comments import AnonymousComment, Comment
-from blogyourway.mongo import Database, mongodb
-from blogyourway.helpers.utils import UIDGenerator
+from app.config import RECAPTCHA_SECRET
+from app.forms.comments import CommentForm
+from app.models.comments import AnonymousComment, Comment
+from app.mongo import Database, mongodb
+from app.helpers.utils import UIDGenerator
 
-###################################################################
+##################################################################################################
 
 # new comment setup
 
+##################################################################################################
 
-###################################################################
 class NewCommentSetup:
     """Setup a new instance for uploading a new comment.
 
@@ -92,11 +92,11 @@ def create_comment(post_uid: str, form: CommentForm) -> None:
     comment_setup.create_comment(post_uid=post_uid, form=form)
 
 
-###################################################################
+##################################################################################################
 
 # comment utilities
 
-###################################################################
+##################################################################################################
 
 
 class CommentUtils:

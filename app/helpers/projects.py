@@ -3,10 +3,10 @@ from datetime import datetime, timezone
 
 from flask_login import current_user
 
-from blogyourway.forms.projects import EditProjectForm, NewProjectForm
-from blogyourway.models.projects import ProjectContent, ProjectInfo
-from blogyourway.mongo import Database, mongodb
-from blogyourway.helpers.utils import UIDGenerator, process_tags
+from app.forms.projects import EditProjectForm, NewProjectForm
+from app.models.projects import ProjectContent, ProjectInfo
+from app.mongo import Database, mongodb
+from app.helpers.utils import UIDGenerator, process_tags
 
 
 def process_form_images(
@@ -67,11 +67,11 @@ def create_project(form: NewProjectForm) -> str:
     return new_project_uid
 
 
-###################################################################
+##################################################################################################
 
 # updating a project
 
-###################################################################
+##################################################################################################
 
 
 class ProjectUpdateSetup:
@@ -102,11 +102,11 @@ def update_project(project_uid: str, form: EditProjectForm) -> None:
     project_update_setup.update_project(project_uid=project_uid, form=form)
 
 
-###################################################################
+##################################################################################################
 
 # project utilities
 
-###################################################################
+##################################################################################################
 
 
 class ProjectsUtils:
