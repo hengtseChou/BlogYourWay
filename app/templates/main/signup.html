@@ -4,79 +4,77 @@
         href="{{ url_for('static', filename='css/main/signup.css') }}" />
 {% endblock %}
 {% block title %}Sign Up - BlogYourWay{% endblock %}
-{%
-block body %}
-<div class="container-fluid signup-container">
-  <div class="row">
-    <form method="post" autocomplete="off" class="col-10 col-md-12 mx-auto">
-      {{ form.hidden_tag() }}
-      <div class="card bg-white shadow" id="step1">
-        <div class="card-body">
-          <div class="container mb-4">
-            <div class="row justify-content-center">
-              <div class="me-auto col-auto logo">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" />
-                <h3 class="fw-bold pt-2">BlogYourWay</h3>
+{% block body %}
+  <div class="container-fluid signup-container">
+    <div class="row">
+      <form method="post" autocomplete="off" class="col-10 col-md-12 mx-auto">
+        {{ form.hidden_tag() }}
+        <div class="card bg-white shadow" id="step1">
+          <div class="card-body">
+            <div class="container mb-4">
+              <div class="row justify-content-center">
+                <div class="me-auto col-auto logo">
+                  <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" />
+                  <h3 class="fw-bold pt-2">BlogYourWay</h3>
+                </div>
               </div>
             </div>
-          </div>
-          <h5 class="text-center my-4">Sign Up</h5>
-          <div class="input-group mb-4">
-            <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-            {{ form.email(class="form-control") }}
-          </div>
-          <div class="input-group mb-2">
-            <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-            {{ form.password(class="form-control") }}
-          </div>
-          <small class="text-grey">
-            <p>
-              Password must be 8 characters long, with upper and lower cases
-              letters.
-            </p>
-          </small>
-          <button type="button"
-                  class="btn btn-orange w-100 rounded-pill"
-                  onclick="validateStep1()">Continue</button>
-          <div class="text-center mt-4">
-            Already have an account? <a href="{{ url_for("main.login") }}">Login</a>
-          </div>
-        </div>
-      </div>
-      <div class="card hide bg-white shadow d-none" id="step2">
-        <div class="card-body">
-          <div class="container mb-4">
-            <div class="row justify-content-center">
-              <div class="me-auto col-auto logo">
-                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" />
-                <h3 class="fw-bold pt-2">BlogYourWay</h3>
-              </div>
+            <h5 class="text-center my-4">Sign Up</h5>
+            <div class="input-group mb-4">
+              <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+              {{ form.email(class="form-control") }}
+            </div>
+            <div class="input-group mb-2">
+              <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+              {{ form.password(class="form-control") }}
+            </div>
+            <small class="text-grey">
+              <p>
+                Password must be 8 characters long, with upper and lower cases
+                letters.
+              </p>
+            </small>
+            <button type="button"
+                    class="btn btn-orange w-100 rounded-pill"
+                    onclick="validateStep1()">Continue</button>
+            <div class="text-center mt-4">
+              Already have an account? <a href="{{ url_for("main.login") }}">Login</a>
             </div>
           </div>
-          <h5 class="text-center my-4">Almost Done...</h5>
-          <div class="input-group mb-1">
-            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-            {{ form.username(class="form-control") }}
-          </div>
-          <small class="mb-4 text-grey">
-            <p>Use only letters (lowercase), numbers, and "-".</p>
-          </small>
-          <div class="input-group mb-1">
-            <span class="input-group-text"><i class="fa-solid fa-house"></i></span>
-            {{ form.blogname(class="form-control") }}
-          </div>
-          <small class="mb-4 text-grey">
-            <p>20 characters maximum.</p>
-          </small>
-          <div class="form-check mb-4">
-            {{ form.terms(class="form-check-input") }} {{ form.terms.label(class="form-check-label") }}
-          </div>
-          <!-- <button type="submit" class="btn btn-orange w-100 rounded-pill">Create</button> -->
-          {{ form.submit_(class="btn btn-orange w-100 rounded-pill") }}
         </div>
-      </div>
-    </form>
+        <div class="card hide bg-white shadow d-none" id="step2">
+          <div class="card-body">
+            <div class="container mb-4">
+              <div class="row justify-content-center">
+                <div class="me-auto col-auto logo">
+                  <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" />
+                  <h3 class="fw-bold pt-2">BlogYourWay</h3>
+                </div>
+              </div>
+            </div>
+            <h5 class="text-center my-4">Almost Done...</h5>
+            <div class="input-group mb-1">
+              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+              {{ form.username(class="form-control") }}
+            </div>
+            <small class="mb-4 text-grey">
+              <p>Use only letters (lowercase), numbers, and "-".</p>
+            </small>
+            <div class="input-group mb-1">
+              <span class="input-group-text"><i class="fa-solid fa-house"></i></span>
+              {{ form.blogname(class="form-control") }}
+            </div>
+            <small class="mb-4 text-grey">
+              <p>20 characters maximum.</p>
+            </small>
+            <div class="form-check mb-4">
+              {{ form.terms(class="form-check-input") }} {{ form.terms.label(class="form-check-label") }}
+            </div>
+            {{ form.submit_(class="btn btn-orange w-100 rounded-pill") }}
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 {% endblock %}
 {% block script %}<script src="{{ url_for('static', filename='js/main/signup.js') }}"></script>{% endblock %}
