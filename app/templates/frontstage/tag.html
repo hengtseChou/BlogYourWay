@@ -1,44 +1,42 @@
 {% extends 'base.html' %}
-{% block title %}
-  {{ tag }} - {{ user.blogname }}{%
-  endblock %}
-  {% block body %}
-    {% include 'frontstage/navbar.html' %}
-    {% include 'frontstage/cover.html' %}
-    <div class="container" style="min-height: 60vh">
-      <div class="row">
-        <div class="col-md-8 col-11 mx-auto px-4">
-          <h1 class="fw-bold text-center py-5"># {{ tag }}</h1>
-          <hr />
-          {% if posts | length == 1 %}
-            <h5 class="px-2 pt-3 fw-bold text-dark-grey">Found 1 post</h5>
-          {% else %}
-            <h5 class="px-2 pt-3 fw-bold text-dark-grey">Found {{ posts|length }} posts</h5>
-          {% endif %}
-          {% for post in posts %}
-            <div class="ms-lg-2 ms-0 my-4 p-4 border rounded rounded-2">
-              <a href="{{ url_for('frontstage.blogpost', username=user.username, post_uid=post.post_uid) }}"
-                 class="header-link">
-                <h3 class="fw-bold">{{ post.title }}</h3>
-              </a>
-              <div class="d-flex align-items-center my-3">
-                <div class="text-grey">
-                  on <span class="utc-to-local-short">{{ post.created_at }}</span>
-                </div>
-              </div>
-              <div class="mb-3">{{ post.subtitle }}</div>
-              <div class="d-flex align-items-center text-dark-grey">
-                <span><i class="fa-solid fa-tags"></i></span>
-                {% for tag in post.tags %}
-                  <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-                    <span class="badge tag ms-2">{{ tag }}</span>
-                  </a>
-                {% endfor %}
+{% block title %}{{ tag }} - {{ user.blogname }}{% endblock %}
+{% block body %}
+  {% include 'frontstage/navbar.html' %}
+  {% include 'frontstage/cover.html' %}
+  <div class="container fill-up-space">
+    <div class="row">
+      <div class="col-md-8 col-11 mx-auto px-4">
+        <h1 class="fw-bold text-center py-5"># {{ tag }}</h1>
+        <hr />
+        {% if posts | length == 1 %}
+          <h5 class="px-2 pt-3 fw-bold text-dark-grey">Found 1 post</h5>
+        {% else %}
+          <h5 class="px-2 pt-3 fw-bold text-dark-grey">Found {{ posts|length }} posts</h5>
+        {% endif %}
+        {% for post in posts %}
+          <div class="ms-lg-2 ms-0 my-4 p-4 border rounded rounded-2">
+            <a href="{{ url_for('frontstage.blogpost', username=user.username, post_uid=post.post_uid) }}"
+               class="header-link">
+              <h3 class="fw-bold">{{ post.title }}</h3>
+            </a>
+            <div class="d-flex align-items-center my-3">
+              <div class="text-grey">
+                on <span class="utc-to-local-short">{{ post.created_at }}</span>
               </div>
             </div>
-          {% endfor %}
-        </div>
+            <div class="mb-3">{{ post.subtitle }}</div>
+            <div class="d-flex align-items-center text-dark-grey">
+              <span><i class="fa-solid fa-tags"></i></span>
+              {% for tag in post.tags %}
+                <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
+                  <span class="badge tag ms-2">{{ tag }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
       </div>
     </div>
-    {% include 'frontstage/footer.html' %}
-  {% endblock %}
+  </div>
+  {% include 'frontstage/footer.html' %}
+{% endblock %}

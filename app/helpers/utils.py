@@ -97,37 +97,31 @@ class HTMLFormatter:
         big_headings = self.__soup.find_all("h1")
         for head in big_headings:
             head.name = "h2"
-            current_class = head.get("class", [])
-            # current_class.append("fw-bold")
-            # current_class.append("border-bottom")
-            head["class"] = current_class
 
         return self
 
-    def modify_figure(self, max_width="100%"):
+    def modify_figure(self):
         # center image and modify size
+        figures = self.__soup.find_all(["figure"])
+        for figure in figures:
+            current_class = figure.get("class", [])
+            current_class.extend(["figure"])
+            figure["class"] = current_class
+
         imgs = self.__soup.find_all(["img"])
         for img in imgs:
-            current_style = img.get("style", "")
-            new_style = f"{current_style} display: block; margin: 0 auto; max-width: {max_width}; min-width: 30%; height: auto;"
-            img["style"] = new_style
-            # img["loading"] = "lazy"
             img_src = img["src"]
             img["src"] = ""
             img["data-src"] = img_src
             current_class = img.get("class", [])
-            current_class.append("lazyload")
+            current_class.extend(["lazyload", "figure-img", "img-fluid", "rounded"])
             img["class"] = current_class
 
-        # center caption
         captions = self.__soup.find_all(["figcaption"])
         for caption in captions:
-            current_style = caption.get("style", "")
-            new_style = f"{current_style} text-align: center"
-            caption["style"] = new_style
-            current_class = img.get("class", [])
-            current_class.append("my-2")
-            img["class"] = current_class
+            current_class = caption.get("class", [])
+            current_class.extend(["figure-caption", "text-center", "py-2"])
+            caption["class"] = current_class
 
         return self
 

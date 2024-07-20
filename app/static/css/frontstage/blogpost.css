@@ -23,7 +23,7 @@ blockquote p {
   line-height: 125%;
 }
 
-.cover {
+/* .cover {
   display: flex;
   flex-flow: column;
   padding: 5px;
@@ -38,11 +38,11 @@ blockquote p {
     sans-serif;
   padding: 3px;
   text-align: center;
-}
+} */
 
 .submit-btn {
   text-align: left;
-  background-color: black;
+  background-color: #212529;
   color: white;
   border: 0px;
 }

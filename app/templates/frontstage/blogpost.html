@@ -18,50 +18,37 @@
 {% endblock %}
 {% block body %}
   {% include 'frontstage/navbar.html' %}
-  <div class="my-5 row"></div>
-  <div class="my-3 row"></div>
   <!-- post starts -->
   <div class="container">
-    <div class="row mt-4 mt-md-5">
-      <div class="col-lg-8 col-md-10 col-12 mx-auto px-4">
+    <div class="row mt-5">
+      <div class="col-lg-8 col-md-10 col-12 mx-auto">
         <h1 class="text-start fw-bold">{{ post.title }}</h1>
         <h5 class="text-start text-grey mt-3">{{ post.subtitle }}</h5>
         <!-- info row -->
-        <div class="d-inline-flex">
-          <div class="row mt-3">
-            <div class="col-2">
-              <a href="{{ url_for('frontstage.about', username=user.username) }}">
-                {% if user.profile_img_url|length == 0 %}
-                  <img class="profile-md"
-                       src="{{ url_for('static', filename='img/default-profile.png') }}"
-                       alt="profile-img" />
-                {% else %}
-                  <img class="profile-md" src="{{ user.profile_img_url }}" alt="profile-img" />
-                {% endif %}
-              </a>
-            </div>
-            <div class="col mt-1 ms-2">
-              <div class="info-row-line-height">
-                <span class="text-grey">Updated at <span class="utc-to-local-short">{{ post.last_updated }}</span>&nbsp;&nbsp;·&nbsp;&nbsp;{{ post.readtime }}</span>
-                <br />
-                By
-                <a class="author-link ms-1"
-                   href="{{ url_for('frontstage.about', username=user.username) }}">{{ post.author }}</a>
-              </div>
+        <div class="row mt-3 align-items-center gx-3">
+          <div class="col-auto">
+            <a href="{{ url_for('frontstage.about', username=user.username) }}">
+              <img class="profile-md" src="{{ user.profile_img_url }}" alt="profile-img" />
+            </a>
+          </div>
+          <div class="col me-auto">
+            <div class="info-row-line-height">
+              <span class="text-grey"><span class="utc-to-local-short">{{ post.last_updated }}</span>&nbsp;&nbsp;·&nbsp;&nbsp;{{ post.readtime }}</span>
+              <br />
+              By
+              <a class="author-link"
+                 href="{{ url_for('frontstage.about', username=user.username) }}">{{ post.author }}</a>
             </div>
           </div>
         </div>
         <!-- cover -->
         {% if post.cover_url != "" %}
-          <figure class="figure cover mt-3">
-            <img src="{{ post.cover_url }}"
-                 class="figure-img img-fluid rounded"
-                 alt="" />
-            <!-- <figcaption class="cover-caption">{{ post.title }}</figcaption> -->
-          </figure>
+          <img src="{{ post.cover_url }}"
+               class="img-fluid rounded mt-4 ms-auto me-auto"
+               alt="cover_url" />
         {% endif %}
         <!-- content start -->
-        <div class="my-3 px-2">{{ post.content | safe }}</div>
+        <div class="my-3">{{ post.content | safe }}</div>
         <!-- tag start -->
         <div class="d-flex align-items-center mb-4 text-dark-grey fs-large">
           <span><i class="fa-solid fa-tags"></i></span>
