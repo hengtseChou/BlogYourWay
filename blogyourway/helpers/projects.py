@@ -6,7 +6,7 @@ from flask_login import current_user
 from blogyourway.forms.projects import EditProjectForm, NewProjectForm
 from blogyourway.models.projects import ProjectContent, ProjectInfo
 from blogyourway.mongo import Database, mongodb
-from blogyourway.tasks.utils import UIDGenerator, process_tags
+from blogyourway.helpers.utils import UIDGenerator, process_tags
 
 
 def process_form_images(

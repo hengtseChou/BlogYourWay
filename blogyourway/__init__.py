@@ -7,10 +7,10 @@ from flask_login import LoginManager
 from pymongo.errors import ServerSelectionTimeoutError
 
 from blogyourway.config import APP_SECRET, ENV
+from blogyourway.helpers.users import user_utils
 from blogyourway.logging import logger, return_client_ip
 from blogyourway.models.users import UserInfo
 from blogyourway.mongo import mongodb
-from blogyourway.tasks.users import user_utils
 
 from .views import backstage_bp, frontstage_bp, main_bp
 

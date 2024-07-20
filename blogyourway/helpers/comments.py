@@ -12,7 +12,7 @@ from blogyourway.config import RECAPTCHA_SECRET
 from blogyourway.forms.comments import CommentForm
 from blogyourway.models.comments import AnonymousComment, Comment
 from blogyourway.mongo import Database, mongodb
-from blogyourway.tasks.utils import UIDGenerator
+from blogyourway.helpers.utils import UIDGenerator
 
 ###################################################################
 

@@ -12,12 +12,12 @@ from blogyourway.forms.users import (
     UpdateSocialLinksForm,
     UserDeletionForm,
 )
+from blogyourway.helpers.posts import create_post, post_utils, update_post
+from blogyourway.helpers.projects import create_project, projects_utils, update_project
+from blogyourway.helpers.users import user_utils
+from blogyourway.helpers.utils import Paging, string_truncate
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
-from blogyourway.tasks.posts import create_post, post_utils, update_post
-from blogyourway.tasks.projects import create_project, projects_utils, update_project
-from blogyourway.tasks.users import user_utils
-from blogyourway.tasks.utils import Paging, string_truncate
 from blogyourway.views.main import flashing_if_errors
 
 backstage = Blueprint("backstage", __name__, template_folder=TEMPLATE_FOLDER)

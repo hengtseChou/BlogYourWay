@@ -6,7 +6,7 @@ from flask_login import current_user
 from blogyourway.forms.posts import EditPostForm, NewPostForm
 from blogyourway.models.posts import PostContent, PostInfo
 from blogyourway.mongo import Database, mongodb
-from blogyourway.tasks.utils import UIDGenerator, process_tags
+from blogyourway.helpers.utils import UIDGenerator, process_tags
 
 ###################################################################
 

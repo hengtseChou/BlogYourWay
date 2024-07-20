@@ -6,11 +6,11 @@ from flask_login import current_user, login_user
 
 from blogyourway.config import TEMPLATE_FOLDER
 from blogyourway.forms.users import LoginForm, SignUpForm
+from blogyourway.helpers.posts import post_utils
+from blogyourway.helpers.projects import projects_utils
+from blogyourway.helpers.users import user_utils
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
-from blogyourway.tasks.posts import post_utils
-from blogyourway.tasks.projects import projects_utils
-from blogyourway.tasks.users import user_utils
 
 main = Blueprint("main", __name__, template_folder=TEMPLATE_FOLDER)
 

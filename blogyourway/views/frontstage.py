@@ -15,19 +15,19 @@ from flask import (
 
 from blogyourway.config import TEMPLATE_FOLDER
 from blogyourway.forms.comments import CommentForm
-from blogyourway.logging import logger, logger_utils
-from blogyourway.mongo import mongodb
-from blogyourway.tasks.comments import comment_utils, create_comment
-from blogyourway.tasks.posts import post_utils
-from blogyourway.tasks.projects import projects_utils
-from blogyourway.tasks.users import user_utils
-from blogyourway.tasks.utils import (
+from blogyourway.helpers.comments import comment_utils, create_comment
+from blogyourway.helpers.posts import post_utils
+from blogyourway.helpers.projects import projects_utils
+from blogyourway.helpers.users import user_utils
+from blogyourway.helpers.utils import (
     Paging,
     convert_about,
     convert_post_content,
     convert_project_content,
     sort_dict,
 )
+from blogyourway.logging import logger, logger_utils
+from blogyourway.mongo import mongodb
 from blogyourway.views.main import flashing_if_errors
 
 frontstage = Blueprint("frontstage", __name__, template_folder=TEMPLATE_FOLDER)
