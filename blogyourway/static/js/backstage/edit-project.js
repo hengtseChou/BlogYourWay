@@ -29,68 +29,24 @@ const easyMDE = new EasyMDE({
 });
 easyMDE.value(projectContent);
 
-function createInputGroup(orderNumber) {
-  const div = document.createElement("div");
-  div.className = "input-group mb-2";
-
-  const span = createSpan(orderNumber);
-  const input = createInput(orderNumber);
-  const select = createCaption(orderNumber);
-  const button = createRemoveButton();
-
-  div.append(span, input, select, button);
-  return div;
+function showInputGroup() {
+  const inputGroups = document.querySelectorAll(
+    "#image-container .additional-image.d-none",
+  );
+  if (inputGroups.length > 0) {
+    inputGroups[0].classList.remove("d-none");
+  }
 }
 
-function createSpan(orderNumber) {
-  const span = document.createElement("span");
-  span.className = "input-group-text";
-  span.textContent = "Image " + orderNumber;
-  return span;
-}
-
-function createInput(orderNumber) {
-  const input = document.createElement("input");
-  input.type = "text";
-  input.className = "form-control project-img";
-  input.name = "url-" + orderNumber;
-  input.placeholder = "url";
-  return input;
-}
-
-function createCaption(orderNumber) {
-  const input = document.createElement("input");
-  input.type = "text";
-  input.className = "form-control project-img-caption";
-  input.name = "caption-" + orderNumber;
-  input.placeholder = "caption";
-  return input;
-}
-
-function createRemoveButton() {
-  const button = document.createElement("button");
-  button.className = "btn btn-remove btn-panel";
-  button.setAttribute("aria-label", "Close");
-  button.textContent = "Remove";
-  button.addEventListener("click", handleRemove);
-  return button;
-}
-
-function handleRemove(event) {
-  event.preventDefault();
-  event.target.closest(".input-group").remove();
-  updateOrderNumbers();
-}
-
-function updateOrderNumbers() {
-  const inputGroups = document.querySelectorAll(".input-group");
-  inputGroups.forEach((group, index) => {
-    const orderNumber = index + 1;
-    group.querySelector(".input-group-text").textContent =
-      "Image " + orderNumber;
-    group.querySelector(".project-img").name = "url-" + orderNumber;
-    group.querySelector(".project-img-caption").name = "caption-" + orderNumber;
-  });
+function clearInputGroupThenHide(button) {
+  const inputGroup = button.closest(".input-group");
+  if (inputGroup) {
+    inputGroup.classList.add("d-none");
+    const inputs = inputGroup.querySelectorAll("input");
+    const selects = inputGroup.querySelectorAll("select");
+    inputs.forEach((input) => (input.value = ""));
+    selects.forEach((select) => (select.value = select.options[0].value));
+  }
 }
 
 function validateUpdate() {

@@ -4,6 +4,7 @@ from flask_login import current_user, login_required, logout_user
 
 from blogyourway.config import TEMPLATE_FOLDER
 from blogyourway.forms.posts import EditPostForm, NewPostForm
+from blogyourway.forms.projects import EditProjectForm, NewProjectForm
 from blogyourway.forms.users import (
     EditAboutForm,
     GeneralSettingsForm,
@@ -16,7 +17,7 @@ from blogyourway.mongo import mongodb
 from blogyourway.tasks.posts import create_post, post_utils, update_post
 from blogyourway.tasks.projects import create_project, projects_utils, update_project
 from blogyourway.tasks.users import user_utils
-from blogyourway.tasks.utils import Paging, string_truncate, switch_to_bool
+from blogyourway.tasks.utils import Paging, string_truncate
 from blogyourway.views.main import flashing_if_errors
 
 backstage = Blueprint("backstage", __name__, template_folder=TEMPLATE_FOLDER)
@@ -97,10 +98,10 @@ def projects_panel():
     logger_utils.backstage(username=current_user.username, tab="projects")
 
     current_page = request.args.get("page", default=1, type=int)
+    form = NewProjectForm()
 
-    if request.method == "POST":
-
-        project_uid = create_project(request)
+    if form.validate_on_submit():
+        project_uid = create_project(form)
         if project_uid is not None:
             logger.debug(f"project {project_uid} has been created.")
             flash("New project published successfully!", category="success")
@@ -120,7 +121,7 @@ def projects_panel():
     logger_utils.pagination(tab="posts", num=len(projects))
 
     return render_template(
-        "backstage/projects.html", user=user, projects=projects, pagination=paging
+        "backstage/projects.html", user=user, projects=projects, pagination=paging, form=form
     )
 
 
@@ -416,9 +417,9 @@ def edit_about():
     return render_template("backstage/edit-about.html", user=user, form=form)
 
 
-@backstage.route("/edit/project/<project_uid>", methods=["GET"])
+@backstage.route("/edit/project/<project_uid>", methods=["GET", "POST"])
 @login_required
-def edit_project_get(project_uid):
+def edit_project(project_uid):
     ###################################################################
 
     # status control / early returns
@@ -436,6 +437,18 @@ def edit_project_get(project_uid):
     user = mongodb.user_info.find_one({"username": current_user.username})
     project = projects_utils.get_full_project(project_uid)
     project["tags"] = ", ".join(project.get("tags"))
+    form = EditProjectForm()
+
+    if form.validate_on_submit():
+        update_project(project_uid, form)
+        logger.debug(f"project {project_uid} is updated.")
+        title_truncated = string_truncate(
+            mongodb.project_info.find_one({"project_uid": project_uid}).get("title"),
+            max_len=20,
+        )
+        flash(f'Your project "{title_truncated}" has been updated!', category="success")
+        project = projects_utils.get_full_project(project_uid)
+        project["tags"] = ", ".join(project.get("tags"))
 
     ###################################################################
 
@@ -443,7 +456,7 @@ def edit_project_get(project_uid):
 
     ###################################################################
 
-    return render_template("backstage/edit-project.html", project=project, user=user)
+    return render_template("backstage/edit-project.html", project=project, user=user, form=form)
 
 
 @backstage.route("/edit/project/<project_uid>", methods=["POST"])

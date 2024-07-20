@@ -33,70 +33,27 @@ function toggleSlug() {
   addButton.style.display = "none";
 }
 
-function createInputGroup(orderNumber) {
-  const div = document.createElement("div");
-  div.className = "input-group mb-2";
-
-  const span = createSpan(orderNumber);
-  const input = createInput(orderNumber);
-  const select = createCaption(orderNumber);
-  const button = createRemoveButton();
-
-  div.append(span, input, select, button);
-  return div;
+function showInputGroup() {
+  const inputGroups = document.querySelectorAll(
+    "#image-container .additional-image.d-none",
+  );
+  if (inputGroups.length > 0) {
+    inputGroups[0].classList.remove("d-none");
+  } else {
+    alert("You can have at most 5 images in your project cover.");
+  }
 }
 
-function createSpan(orderNumber) {
-  const span = document.createElement("span");
-  span.className = "input-group-text";
-  span.textContent = "Image " + orderNumber;
-  return span;
+function clearInputGroupThenHide(button) {
+  const inputGroup = button.closest(".input-group");
+  if (inputGroup) {
+    inputGroup.classList.add("d-none");
+    const inputs = inputGroup.querySelectorAll("input");
+    const selects = inputGroup.querySelectorAll("select");
+    inputs.forEach((input) => (input.value = ""));
+    selects.forEach((select) => (select.value = select.options[0].value));
+  }
 }
-
-function createInput(orderNumber) {
-  const input = document.createElement("input");
-  input.type = "text";
-  input.className = "form-control project-img";
-  input.name = "url-" + orderNumber;
-  input.placeholder = "url";
-  return input;
-}
-
-function createCaption(orderNumber) {
-  const input = document.createElement("input");
-  input.type = "text";
-  input.className = "form-control project-img-caption";
-  input.name = "caption-" + orderNumber;
-  input.placeholder = "caption";
-  return input;
-}
-
-function createRemoveButton() {
-  const button = document.createElement("button");
-  button.className = "btn btn-remove btn-panel";
-  button.setAttribute("aria-label", "Close");
-  button.textContent = "Remove";
-  button.addEventListener("click", handleRemove);
-  return button;
-}
-
-function handleRemove(event) {
-  event.preventDefault();
-  event.target.closest(".input-group").remove();
-  updateOrderNumbers();
-}
-
-function updateOrderNumbers() {
-  const inputGroups = document.querySelectorAll(".input-group");
-  inputGroups.forEach((group, index) => {
-    const orderNumber = index + 1;
-    group.querySelector(".input-group-text").textContent =
-      "Image " + orderNumber;
-    group.querySelector(".project-img").name = "url-" + orderNumber;
-    group.querySelector(".project-img-caption").name = "caption-" + orderNumber;
-  });
-}
-
 function validateNewProject() {
   var title = document.getElementById("title").value;
   if (title.trim() === "") {
@@ -121,32 +78,38 @@ function validateNewProject() {
     return false;
   }
 
-  var slug = document.getElementById("slug").value;
-  const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-  if (!slugRegex.test(slug)) {
-    alert("Your custom slug is not a URL-friendly string.");
+  var url0 = document.getElementById("url0").value;
+  if (url0.trim() === "") {
+    alert("You must insert at least 1 image for the project.");
     return false;
+  }
+
+  const urlRegex =
+    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+  var projectImgs = document.querySelectorAll(".project-img");
+  for (var i = 0; i < projectImgs.length; i++) {
+    let url = projectImgs[i].value.trim();
+    if (url !== "" && !urlRegex.test(url)) {
+      alert("Invalid URL for image " + (i + 1));
+      return false;
+    }
+  }
+
+  var slug = document.getElementById("custom_slug").value;
+  if (slug.trim() !== "") {
+    // Only validate non-empty slugs
+    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+    if (!slugRegex.test(slug)) {
+      alert(
+        "Your custom slug is invalid. Use only lowercase letters, numbers, and hyphens. Must start and end with a letter or number.",
+      );
+      return false;
+    }
   }
 
   if (easyMDE.value().trim() === "") {
     alert("Write something for your project!");
     return false;
-  }
-
-  var url1 = document.getElementById("url-1").value;
-  if (url1.trim() === "") {
-    alert("You must insert an image for the project.");
-    return false;
-  }
-
-  const urlRegex =
-    /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-  var projectImgs = document.querySelectorAll(".project-img");
-  for (var i = 0; i < projectImgs.length; i++) {
-    if (!urlRegex.test(projectImgs[i].value.trim())) {
-      alert("Invalid url for image " + (i + 1));
-      return false;
-    }
   }
 
   return true;
@@ -168,34 +131,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
     slugSection.style.display = "none";
     slugAddButton.style.display = "block";
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const maxInputs = 5;
-  const inputWrapper = document.querySelector("#inputContainer");
-  const addButton = document.querySelector("#add-more-image");
-  let inputCount = 1;
-
-  function addInputField(orderNumber) {
-    const inputGroup = createInputGroup(orderNumber);
-    inputWrapper.appendChild(inputGroup);
-    updateOrderNumbers();
-  }
-
-  addButton.addEventListener("click", function (e) {
-    e.preventDefault();
-    if (inputCount < maxInputs) {
-      addInputField(++inputCount);
-    }
-  });
-
-  inputWrapper.addEventListener("click", function (e) {
-    if (e.target.classList.contains("btn-remove")) {
-      e.preventDefault();
-      e.target.closest(".input-group").remove();
-      inputCount--;
-      updateOrderNumbers();
-    }
   });
 });

@@ -14,93 +14,76 @@
   <h2 class="ms-2 main-panel-header-offset">Edit Project</h2>
   <hr />
   <form method="post" autocomplete="off" id="form" class="row">
+    {{ form.hidden_tag() }}
     <div class="col-12 col-md-9">
       <div class="mb-4">
         <label for="title" class="form-label ms-2 backstage-form-label">· Title</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="title"
-               name="title"
-               value="{{ project.title }}" />
+        {{ form.title(class="form-control border-underline", value=project.title) }}
       </div>
       <div class="mb-4">
         <label for="subtitle" class="form-label ms-2 backstage-form-label">· Short Description</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="desc"
-               name="desc"
-               value="{{ project.short_description }}" />
+        {{ form.desc(class="form-control border-underline", value=project.short_description) }}
       </div>
       <div class="mb-4">
         <label for="tags" class="form-label ms-2 backstage-form-label">· Tags</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="tags"
-               name="tags"
-               placeholder="Separate your tags with ','"
-               value="{{ project.tags }}" />
+        {{ form.tags(class="form-control border-underline", value=project.tags) }}
       </div>
       <div class="mb-4">
-        <label for="images" class="form-label ms-2 backstage-form-label">· Images</label>
-        <div id="inputContainer">
+        <label class="form-label ms-2 backstage-form-label">· Images</label>
+        <div id="image-container">
           <div class="input-group mb-2">
-            <span class="input-group-text">Image 1</span>
-            <input class="form-control project-img"
-                   type="text"
-                   name="url-1"
-                   id="url-1"
-                   placeholder="url"
-                   value="{{ project.images[0]['url'] }}">
-            <input class="form-control project-img-caption"
-                   type="text"
-                   name="caption-1"
-                   id="caption-1"
-                   placeholder="caption"
-                   value="{{ project.images[0]['caption'] }}">
+            <span class="input-group-text">Image</span>
+            {{ form.url0(class="form-control project-img", value=project.images[0][0]) }}
+            {{ form.caption0(class="form-control", value=project.images[0][1]) }}
           </div>
-          {% for image in project.images[1:] %}
-            <div class="input-group mb-2">
-              <span class="input-group-text">Image {{ loop.index + 1 }}</span>
-              <input type="text"
-                     class="form-control project-img"
-                     name="url-{{ loop.index + 1 }}"
-                     placeholder="url"
-                     value="{{ image.url }}">
-              <input type="text"
-                     class="form-control project-img-caption"
-                     name="caption-{{ loop.index + 1 }}"
-                     placeholder="caption"
-                     value="{{ image.caption }}">
-              <button class="btn btn-remove btn-panel" aria-label="Close">Remove</button>
-            </div>
-          {% endfor %}
+          <div class="input-group mb-2 additional-image d-none">
+            <span class="input-group-text">Image</span>
+            {{ form.url1(class="form-control project-img", value=project.images[1][0]) }}
+            {{ form.caption1(class="form-control", value=project.images[1][1]) }}
+            <button class="btn btn-panel"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
+          <div class="input-group mb-2 additional-image d-none">
+            <span class="input-group-text">Image</span>
+            {{ form.url2(class="form-control project-img", value=project.images[2][0]) }}
+            {{ form.caption2(class="form-control", value=project.images[2][1]) }}
+            <button class="btn btn-panel"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
+          <div class="input-group mb-2 additional-image d-none">
+            <span class="input-group-text">Image</span>
+            {{ form.url3(class="form-control project-img", value=project.images[3][0]) }}
+            {{ form.caption3(class="form-control", value=project.images[3][1]) }}
+            <button class="btn btn-panel"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
+          <div class="input-group mb-2 additional-image d-none">
+            <span class="input-group-text">Image</span>
+            {{ form.url4(class="form-control project-img", value=project.images[4][0]) }}
+            {{ form.caption4(class="form-control", value=project.images[4][1]) }}
+            <button class="btn btn-panel"
+                    type="button"
+                    onclick="clearInputGroupThenHide(this)">Remove</button>
+          </div>
         </div>
       </div>
       <div class="mb-4 d-flex justify-content-start">
         <button type="button"
                 class="btn btn-panel text-center me-2"
-                id="add-more-image">+ More Image</button>
+                onclick="showInputGroup()">+ More Image</button>
       </div>
       <div class="mb-4">
-        <label for="custom-slug" class="form-label ms-2 backstage-form-label">· Custom slug</label>
-        <input type="text"
-               class="form-control border-underline"
-               id="custom-slug"
-               name="custom_slug"
-               placeholder=""
-               value="{{ project.custom_slug }}" />
+        <label for="custom_slug" class="form-label ms-2 backstage-form-label">· Custom slug</label>
+        {{ form.custom_slug(class="form-control border-underline", value=project.custom_slug) }}
       </div>
-      <div class="mb-4">
-        <textarea id="editor"
-                  name="content"
-                  placeholder="Note: If you want to include images in your post, you can upload them on [imgur.com](https://imgur.com/)."></textarea>
-      </div>
+      <div class="mb-4">{{ form.editor }}</div>
       <div class="text-end mb-5">
         <a href="{{ url_for("backstage.projects_panel") }}"
-           class="btn cancel-btn text-center me-2">Cancel</a>
-        <button type="submit"
-                class="btn btn-panel text-center"
-                onclick="return validateUpdate()">Save Changes</button>
+           class="btn cancel-btn me-2">Cancel</a>
+        {{ form.submit_(class="btn btn-panel") }}
       </div>
     </div>
   </form>

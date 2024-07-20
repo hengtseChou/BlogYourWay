@@ -360,7 +360,7 @@ def gallery(username):
     )
 
 
-def project_main_actions(username, project_uid):
+def project_main_actions(username, project_uid, request):
 
     return render_template("frontstage/project.html")
 
