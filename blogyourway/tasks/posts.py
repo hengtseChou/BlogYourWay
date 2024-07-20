@@ -211,13 +211,6 @@ def html_to_about(html: str) -> str:
 
 ###################################################################
 
-# blogpost pagination
-
-###################################################################
-
-
-###################################################################
-
 # post utilities
 
 ###################################################################
@@ -227,20 +220,6 @@ class PostUtils:
     def __init__(self, db_handler: Database):
         self._db_handler = db_handler
 
-    # def get_all_post_uid(self) -> list[str]:
-    #     all_post_info = self._db_handler.post_info.find({})
-    #     all_post_uid = [post_info.get("post_uid") for post_info in all_post_info]
-    #     return all_post_uid
-
-    # def get_all_author(self) -> list[str]:
-    #     all_post_info = self._db_handler.post_info.find({})
-    #     all_author = [post_info.get("author") for post_info in all_post_info]
-    #     return all_author
-
-    # def get_all_last_update(self) -> list[str]:
-    #     all_post_info = self._db_handler.post_info.find({})
-    #     all_last_updated = [post_info.get("last_updated") for post_info in all_post_info]
-    #     return all_last_updated
     def get_all_posts_info(self, include_archive=False) -> list[dict]:
         if include_archive:
             result = self._db_handler.post_info.find({}).as_list()
@@ -248,7 +227,7 @@ class PostUtils:
             result = (self._db_handler.post_info.find({"archived": False})).as_list()
         return result
 
-    def find_featured_posts_info(self, username: str) -> list[dict]:
+    def get_featured_posts_info(self, username: str) -> list[dict]:
         result = (
             self._db_handler.post_info.find(
                 {"author": username, "featured": True, "archived": False}
@@ -259,7 +238,7 @@ class PostUtils:
         )
         return result
 
-    def find_posts_info_by_username(self, username: str) -> list[dict]:
+    def get_posts_info(self, username: str) -> list[dict]:
         result = (
             self._db_handler.post_info.find({"author": username, "archived": False})
             .sort("created_at", -1)
@@ -267,7 +246,7 @@ class PostUtils:
         )
         return result
 
-    def find_all_archived_posts_info(self, username: str) -> list[dict]:
+    def get_archived_posts_info(self, username: str) -> list[dict]:
         result = (
             self._db_handler.post_info.find({"author": username, "archived": True})
             .sort("created_at", -1)
@@ -275,7 +254,7 @@ class PostUtils:
         )
         return result
 
-    def find_posts_with_pagination(
+    def get_posts_info_with_pagination(
         self, username: str, page_number: int, posts_per_page: int
     ) -> list[dict]:
         if page_number == 1:

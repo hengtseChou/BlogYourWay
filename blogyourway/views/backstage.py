@@ -66,7 +66,7 @@ def posts_panel():
     POSTS_EACH_PAGE = 20
     paging = Paging(db_handler=mongodb)
     pagination = paging.setup(current_user.username, "post_info", current_page, POSTS_EACH_PAGE)
-    posts = post_utils.find_posts_with_pagination(
+    posts = post_utils.get_posts_info_with_pagination(
         username=current_user.username,
         page_number=current_page,
         posts_per_page=POSTS_EACH_PAGE,
@@ -108,7 +108,7 @@ def projects_panel():
 
     user = mongodb.user_info.find_one({"username": current_user.username})
     PROJECTS_PER_PAGE = 10
-    projects = projects_utils.find_projects_with_pagination(
+    projects = projects_utils.get_projects_info_with_pagination(
         current_user.username, current_page, PROJECTS_PER_PAGE
     )
     paging = Paging(mongodb)
@@ -144,12 +144,12 @@ def archive_panel():
     ###################################################################
 
     user = mongodb.user_info.find_one({"username": current_user.username})
-    posts = post_utils.find_all_archived_posts_info(current_user.username)
+    posts = post_utils.get_archived_posts_info(current_user.username)
     for post in posts:
         post["views"] = format(post.get("views"), ",")
         comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
         post["comments"] = format(comment_count, ",")
-    projects = projects_utils.find_all_archived_project_info(current_user.username)
+    projects = projects_utils.get_archived_projects_info(current_user.username)
     for project in projects:
         project["created_at"] = project.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
         project["views"] = format(project.get("views"), ",")

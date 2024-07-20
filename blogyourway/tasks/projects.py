@@ -1,6 +1,6 @@
 from dataclasses import asdict
+from datetime import datetime, timezone
 
-from flask import Request
 from flask_login import current_user
 
 from blogyourway.forms.projects import EditProjectForm, NewProjectForm
@@ -67,11 +67,60 @@ def create_project(form: NewProjectForm) -> str:
     return new_project_uid
 
 
+###################################################################
+
+# updating a project
+
+###################################################################
+
+
+class ProjectUpdateSetup:
+    def __init__(self, db_handler: Database) -> None:
+        self._db_handler = db_handler
+
+    def update_project(self, project_uid: str, form: EditProjectForm) -> None:
+        updated_project_info = {
+            "title": form.title.data,
+            "short_description": form.desc.data,
+            "tags": process_tags(form.tags.data),
+            "images": process_form_images(form),
+            "custom_slug": form.custom_slug.data,
+            "last_updated": datetime.now(timezone.utc),
+        }
+        updated_project_content = {"content": form.editor.data}
+
+        self._db_handler.project_info.update_values(
+            filter={"project_uid": project_uid}, update=updated_project_info
+        )
+        self._db_handler.project_content.update_values(
+            filter={"project_uid": project_uid}, update=updated_project_content
+        )
+
+
+def update_project(project_uid: str, form: EditProjectForm) -> None:
+    project_update_setup = ProjectUpdateSetup(db_handler=mongodb)
+    project_update_setup.update_project(project_uid=project_uid, form=form)
+
+
+###################################################################
+
+# project utilities
+
+###################################################################
+
+
 class ProjectsUtils:
     def __init__(self, db_handler: Database):
         self._db_handler = db_handler
 
-    def find_projects_info_by_username(self, username: str) -> list[dict]:
+    def get_all_projects_info(self, include_archive=False) -> list[dict]:
+        if include_archive:
+            result = self._db_handler.project_info.find({}).as_list()
+        else:
+            result = (self._db_handler.project_info.find({"archived": False})).as_list()
+        return result
+
+    def get_projects_info(self, username: str) -> list[dict]:
         result = (
             self._db_handler.project_info.find({"author": username, "archived": False})
             .sort("created_at", -1)
@@ -79,7 +128,7 @@ class ProjectsUtils:
         )
         return result
 
-    def find_projects_with_pagination(
+    def get_projects_info_with_pagination(
         self, username: str, page_number: int, projects_per_page: int
     ) -> list[dict]:
         if page_number == 1:
@@ -101,7 +150,7 @@ class ProjectsUtils:
 
         return result
 
-    def find_all_archived_project_info(self, username) -> list[dict]:
+    def get_archived_projects_info(self, username) -> list[dict]:
         result = (
             self._db_handler.project_info.find({"author": username, "archived": True})
             .sort("created_at", -1)
@@ -120,30 +169,3 @@ class ProjectsUtils:
 
 
 projects_utils = ProjectsUtils(mongodb)
-
-
-class ProjectUpdateSetup:
-    def __init__(self, db_handler: Database) -> None:
-        self._db_handler = db_handler
-
-    def update_project(self, project_uid: str, form: EditProjectForm) -> None:
-        updated_project_info = {
-            "title": form.title.data,
-            "short_description": form.desc.data,
-            "tags": process_tags(form.tags.data),
-            "images": process_form_images(form),
-            "custom_slug": form.custom_slug.data,
-        }
-        updated_project_content = {"content": form.editor.data}
-
-        self._db_handler.project_info.update_values(
-            filter={"project_uid": project_uid}, update=updated_project_info
-        )
-        self._db_handler.project_content.update_values(
-            filter={"project_uid": project_uid}, update=updated_project_content
-        )
-
-
-def update_project(project_uid: str, form: EditProjectForm) -> None:
-    project_update_setup = ProjectUpdateSetup(db_handler=mongodb)
-    project_update_setup.update_project(project_uid=project_uid, form=form)

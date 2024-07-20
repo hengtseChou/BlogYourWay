@@ -9,6 +9,7 @@ from blogyourway.forms.users import LoginForm, SignUpForm
 from blogyourway.logging import logger, logger_utils
 from blogyourway.mongo import mongodb
 from blogyourway.tasks.posts import post_utils
+from blogyourway.tasks.projects import projects_utils
 from blogyourway.tasks.users import user_utils
 
 main = Blueprint("main", __name__, template_folder=TEMPLATE_FOLDER)
@@ -159,8 +160,9 @@ def sitemap():
         dynamic_urls.append({"loc": f"{host_base}/@{username}"})
         dynamic_urls.append({"loc": f"{host_base}/@{username}/blog"})
         dynamic_urls.append({"loc": f"{host_base}/@{username}/about"})
+
     for post in post_utils.get_all_posts_info():
-        slug = post.get("slug")
+        slug = post.get("custom_slug")
         if slug:
             url = {
                 "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug}",
@@ -170,6 +172,20 @@ def sitemap():
             url = {
                 "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}",
                 "lastmod": post.get("last_updated"),
+            }
+        dynamic_urls.append(url)
+
+    for project in projects_utils.get_all_projects_info():
+        slug = project.get("custom_slug")
+        if slug:
+            url = {
+                "loc": f"{host_base}/@{project.get('author')}/projects/{project.get('project_uid')}/{slug}",
+                "lastmod": project.get("last_updated"),
+            }
+        else:
+            url = {
+                "loc": f"{host_base}/@{project.get('author')}/projects/{project.get('project_uid')}",
+                "lastmod": project.get("last_updated"),
             }
         dynamic_urls.append(url)
 

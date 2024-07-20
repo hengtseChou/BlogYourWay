@@ -46,7 +46,7 @@ def home(username):
     ###################################################################
 
     user = mongodb.user_info.find_one({"username": username})
-    featured_posts = post_utils.find_featured_posts_info(username)
+    featured_posts = post_utils.get_featured_posts_info(username)
 
     ###################################################################
 
@@ -91,7 +91,7 @@ def blog(username):
     pagination = paging.setup(username, "post_info", current_page, POSTS_EACH_PAGE)
 
     # skip and limit posts with given page
-    posts = post_utils.find_posts_with_pagination(
+    posts = post_utils.get_posts_info_with_pagination(
         username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
     )
 
@@ -277,7 +277,7 @@ def tag(username):
 
     ###################################################################
 
-    posts = post_utils.find_posts_info_by_username(username)
+    posts = post_utils.get_posts_info(username)
 
     posts_with_desired_tag = []
     for post in posts:
@@ -329,7 +329,7 @@ def gallery(username):
     pagination = paging.setup(username, "project_info", current_page, PROJECTS_EACH_PAGE)
 
     # skip and limit posts with given page
-    projects = projects_utils.find_projects_with_pagination(
+    projects = projects_utils.get_projects_info_with_pagination(
         username=username,
         page_number=current_page,
         projects_per_page=PROJECTS_EACH_PAGE,
