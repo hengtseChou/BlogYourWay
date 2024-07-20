@@ -22,32 +22,3 @@ blockquote p {
 .info-row-line-height {
   line-height: 125%;
 }
-
-/* .cover {
-  display: flex;
-  flex-flow: column;
-  padding: 5px;
-  margin: auto;
-}
-
-.cover-caption {
-  background-color: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  font:
-    italic smaller "Ubuntu",
-    sans-serif;
-  padding: 3px;
-  text-align: center;
-} */
-
-.submit-btn {
-  text-align: left;
-  background-color: #212529;
-  color: white;
-  border: 0px;
-}
-
-.submit-btn:hover {
-  background-color: rgb(150, 150, 150);
-  color: white;
-}

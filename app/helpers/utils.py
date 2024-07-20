@@ -105,7 +105,7 @@ class HTMLFormatter:
         figures = self.__soup.find_all(["figure"])
         for figure in figures:
             current_class = figure.get("class", [])
-            current_class.extend(["figure"])
+            current_class.extend(["figure", "w-100", "mx-auto"])
             figure["class"] = current_class
 
         imgs = self.__soup.find_all(["img"])
@@ -114,7 +114,7 @@ class HTMLFormatter:
             img["src"] = ""
             img["data-src"] = img_src
             current_class = img.get("class", [])
-            current_class.extend(["lazyload", "figure-img", "img-fluid", "rounded"])
+            current_class.extend(["lazyload", "figure-img", "img-fluid", "rounded", "w-100"])
             img["class"] = current_class
 
         captions = self.__soup.find_all(["figcaption"])

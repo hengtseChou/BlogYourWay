@@ -16,7 +16,7 @@
               <div class="col-lg-4 col-12 my-4">
                 <a href="{{ url_for('frontstage.project', username=user.username, project_uid=project.project_uid) }}">
                   <div class="image-card shadow">
-                    <img data-src="{{ project.images[0]['url'] }}"
+                    <img data-src="{{ project.images[0][0] }}"
                          alt="project cover"
                          class="cover-image lazyload">
                     <div class="overlay"></div>

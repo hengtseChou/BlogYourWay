@@ -78,23 +78,22 @@
         </div>
       </div>
     {% endif %}
-    <div class="container">
-      <div class="row">
-        <div class="col-6 text-start">
-          {% if pagination.is_previous_page_allowed %}
-            {% set previous_page = pagination.current_page - 1 %}
-            <a href="{{ url_for('backstage.posts_panel', page=(pagination.current_page - 1) ) }}"
-               class="btn"><span class="mx-1">⬅️</span> Newer Posts
-            </a>
-          {% endif %}
-        </div>
-        <div class="col-6 text-end">
-          {% if pagination.is_next_page_allowed %}
-            <a href="{{ url_for('backstage.posts_panel', page=(pagination.current_page + 1) ) }}"
-               class="btn">
-            Older Posts <span class="mx-1">➡️</span></a>
-          {% endif %}
-        </div>
+    <div class="row">
+      <div class="col-6 text-start">
+        {% if pagination.is_previous_page_allowed %}
+          <a href="{{ url_for('backstage.posts_panel', page=(pagination.current_page - 1) ) }}"
+             class="btn">
+            <small class="mx-1"><i class="fa-solid fa-angles-left"></i></small> Prev
+          </a>
+        {% endif %}
+      </div>
+      <div class="col-5 me-auto text-end">
+        {% if pagination.is_next_page_allowed %}
+          <a href="{{ url_for('backstage.posts_panel', page=(pagination.current_page + 1) ) }}"
+             class="btn">
+            Next <small class="mx-1"><i class="fa-solid fa-angles-right"></i></small>
+          </a>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -165,7 +164,7 @@
     <div class="row">
       <div class="col-6 text-start">
         {% if pagination.is_previous_page_allowed %}
-          <a href="{{ url_for("backstage.posts_paned, page=(pagination.current_page - 1)") }}"
+          <a href="{{ url_for("backstage.posts_panel", page=(pagination.current_page - 1) ) }}"
              class="btn">
             <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Prev
           </a>
@@ -173,10 +172,10 @@
       </div>
       <div class="col-6 text-end">
         {% if pagination.is_next_page_allowed %}
-          <a href="{{ url_for("backstage.posts_paned, page=(pagination.current_page + 1)") }}"
+          <a href="{{ url_for("backstage.posts_panel", page=(pagination.current_page + 1) ) }}"
              class="btn">
             Next
-            <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
+            <small class="mx-1"><i class="fa-solid fa-angles-right"></i></small>
           </a>
         {% endif %}
       </div>

@@ -3,9 +3,9 @@
 {% block body %}
   {% include 'frontstage/navbar.html' %}
   {% include 'frontstage/cover.html' %}
-  <div class="container fill-up-space">
+  <div class="container-fluid fill-up-space">
     <div class="row">
-      <div class="col-md-8 col-11 mx-auto px-4">
+      <div class="col-xl-5 col-lg-7 col-md-8 col-11 mx-auto">
         <h1 class="fw-bold text-center py-5"># {{ tag }}</h1>
         <hr />
         {% if posts | length == 1 %}
