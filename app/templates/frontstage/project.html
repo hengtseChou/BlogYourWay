@@ -19,7 +19,8 @@
           <h1>{{ project.title }}</h1>
         </div>
         <div class="text-grey fst-italic my-3">
-          Last Updated: <span class="utc-to-local-short">{{ project.last_updated }}</span> by <a class="text-grey"
+          Last Updated: <span class="utc-to-local-short">{{ project.last_updated }}</span>
+          by <a class="text-grey"
     href="{{ url_for('frontstage.about', username=project.author) }}">{{ project.author }}</a>
         </div>
         <div id="carousel" class="carousel slide">
@@ -96,7 +97,7 @@
         <div class="d-flex align-items-center mb-5 text-dark-grey fs-large">
           <span><i class="fa-solid fa-tags"></i></span>
           {% for tag in project.tags %}
-            <a href="{{ url_for('frontstage.tag', username=user.username, tags=tag) }}">
+            <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
               <span class="badge tag ms-2">{{ tag }}</span>
             </a>
           {% endfor %}
