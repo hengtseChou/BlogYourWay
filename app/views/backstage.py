@@ -40,7 +40,7 @@ def posts_panel():
     ##################################################################################################
 
     session["user_current_tab"] = "posts"
-    logger_utils.backstage(username=current_user.username, tab="posts")
+    logger_utils.backstage(username=current_user.username, panel="posts")
 
     ##################################################################################################
 
@@ -77,7 +77,7 @@ def posts_panel():
         comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
         post["comments"] = format(comment_count, ",")
 
-    logger_utils.pagination(tab="posts", num=len(posts))
+    logger_utils.pagination(panel="posts", num=len(posts))
 
     ##################################################################################################
 
@@ -95,7 +95,7 @@ def posts_panel():
 def projects_panel():
 
     session["user_current_tab"] = "projects"
-    logger_utils.backstage(username=current_user.username, tab="projects")
+    logger_utils.backstage(username=current_user.username, panel="projects")
 
     current_page = request.args.get("page", default=1, type=int)
     form = NewProjectForm()
@@ -119,7 +119,7 @@ def projects_panel():
         project["title"] = string_truncate(project.get("title"), 40)
         project["views"] = format(project.get("views"), ",")
 
-    logger_utils.pagination(tab="posts", num=len(projects))
+    logger_utils.pagination(panel="posts", num=len(projects))
 
     return render_template(
         "backstage/projects.html", user=user, projects=projects, pagination=paging, form=form
@@ -136,7 +136,7 @@ def archive_panel():
     ##################################################################################################
 
     session["user_current_tab"] = "archive"
-    logger_utils.backstage(username=current_user.username, tab="archive")
+    logger_utils.backstage(username=current_user.username, panel="archive")
 
     ##################################################################################################
 
@@ -155,7 +155,7 @@ def archive_panel():
         project["created_at"] = project.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
         project["views"] = format(project.get("views"), ",")
 
-    logger_utils.pagination(tab="archive", num=(len(posts) + len(projects)))
+    logger_utils.pagination(panel="archive", num=(len(posts) + len(projects)))
 
     ##################################################################################################
 
@@ -175,7 +175,7 @@ def theme_panel():
 
     ##################################################################################################
 
-    logger_utils.backstage(username=current_user.username, tab="theme")
+    logger_utils.backstage(username=current_user.username, panel="theme")
 
     ##################################################################################################
 
@@ -203,7 +203,7 @@ def settings_panel():
 
     ##################################################################################################
 
-    logger_utils.backstage(username=current_user.username, tab="settings")
+    logger_utils.backstage(username=current_user.username, panel="settings")
 
     ##################################################################################################
 
@@ -336,7 +336,7 @@ def edit_post(post_uid):
 
     ##################################################################################################
 
-    logger_utils.backstage(username=current_user.username, tab="edit_post")
+    logger_utils.backstage(username=current_user.username, panel="edit_post")
 
     ##################################################################################################
 
@@ -379,7 +379,7 @@ def edit_about():
 
     ##################################################################################################
 
-    logger_utils.backstage(username=current_user.username, tab="about")
+    logger_utils.backstage(username=current_user.username, panel="about")
 
     ##################################################################################################
 
@@ -428,7 +428,7 @@ def edit_project(project_uid):
 
     ##################################################################################################
 
-    logger_utils.backstage(username=current_user.username, tab="edit_project")
+    logger_utils.backstage(username=current_user.username, panel="edit_project")
 
     ##################################################################################################
 

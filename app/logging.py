@@ -111,11 +111,11 @@ class LoggerUtils:
     def registration_succeeded(self, username):
         self._logger.info(f"New user {username} has been created.")
 
-    def backstage(self, username: str, tab: str):
-        self._logger.debug(f"User {username} switched to {tab} tab.")
+    def backstage(self, username: str, panel: str):
+        self._logger.debug(f"User {username} switched to {panel} panel.")
 
-    def pagination(self, tab: str, num: int):
-        self._logger.debug(f"Showing {num} records at {tab} tab.")
+    def pagination(self, panel: str, num: int):
+        self._logger.debug(f"Showing {num} records at {panel} panel.")
 
 
 logger = Logger(env=ENV)
