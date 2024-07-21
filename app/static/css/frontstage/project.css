@@ -1,0 +1,14 @@
+.carousel-caption {
+  background-color: rgba(0, 0, 0, 0.35);
+  max-width: 100%;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  padding-top: 5px;
+  padding-bottom: 0px;
+}
+
+.carousel-item img {
+  object-fit: cover; /* This will maintain the aspect ratio and crop the image */
+  background-position: center;
+}

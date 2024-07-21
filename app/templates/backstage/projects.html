@@ -166,19 +166,20 @@
           {{ form.hidden_tag() }}
           <div class="modal-body">
             <div class="mb-4">
-              <label for="title" class="form-label ms-2 backstage-form-label">· Title</label>
+              <label for="title" class="form-label ms-2 fst-italic text-black">· Title</label>
               {{ form.title(class="form-control border-underline") }}
             </div>
             <div class="mb-4">
-              <label for="desc" class="form-label ms-2 backstage-form-label">· Short Description</label>
+              <label for="desc" class="form-label ms-2 fst-italic text-black">· Short Description</label>
               {{ form.desc(class="form-control border-underline") }}
             </div>
             <div class="mb-4">
-              <label for="tags" class="form-label ms-2 backstage-form-label">· Tags</label>
+              <label for="tags" class="form-label ms-2 fst-italic text-black">· Tags</label>
               {{ form.tags(class="form-control border-underline") }}
             </div>
             <div class="mb-4">
-              <label class="form-label ms-2 backstage-form-label">· Images</label>
+              <label class="form-label ms-2 fst-italic text-black">· Images</label>
+              <div class="ms-2 my-2 text-grey fw-light">We recommend using 16:9 images, as they will be automatically cropped.</div>
               <div id="image-container">
                 <div class="input-group mb-2">
                   <span class="input-group-text">Image</span>
@@ -229,7 +230,7 @@
                       onclick="toggleSlug()">+ Custom Slug</button>
             </div>
             <div class="mb-4" id="slug-section" style="display:none;">
-              <label for="custom_slug" class="form-label ms-2 backstage-form-label">· Custom slug</label>
+              <label for="custom_slug" class="form-label ms-2 fst-italic text-black">· Custom slug</label>
               {{ form.custom_slug(class="form-control border-underline") }}
             </div>
             <div class="mb-4">{{ form.editor }}</div>

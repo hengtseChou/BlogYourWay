@@ -5,44 +5,108 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/default.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/frontstage/project.css') }}">
+  <script src="{{ url_for('static', filename='js/frontstage/project.js') }}"
+          defer></script>
 {% endblock %}
 {% block body %}
   {% include 'frontstage/navbar.html' %}
-  {% include 'frontstage/cover.html' %}
-  <div class="container" style="min-height: 60vh">
-    <div class="row">
-      <div class="col-md-8 col-11 mx-auto px-4">
-        <h1 class="fw-bold text-center py-5"># {{ tag }}</h1>
-        <hr />
-        {% if posts | length == 1 %}
-          <h5 class="px-2 pt-3 fw-bold text-dark-grey">Found 1 post</h5>
-        {% else %}
-          <h5 class="px-2 pt-3 fw-bold text-dark-grey">Found {{ posts|length }} posts</h5>
-        {% endif %}
-        {% for post in posts %}
-          <div class="ms-lg-2 ms-0 my-4 p-4 border rounded rounded-2">
-            <a href="{{ url_for('frontstage.blogpost', username=user.username, post_uid=post.post_uid) }}"
-               class="header-link">
-              <h3 class="fw-bold">{{ post.title }}</h3>
-            </a>
-            <div class="d-flex align-items-center my-3">
-              <div class="text-grey">
-                on <span class="utc-to-local-short">{{ post.created_at }}</span>
+  <div class="container-fluid">
+    <div class="row fill-up-space">
+      <div class="col-lg-6 col-11 mx-auto">
+        <div class="border-bottom mt-5">
+          <h1>{{ project.title }}</h1>
+        </div>
+        <div class="text-grey fst-italic my-3">
+          Last Updated: <span class="utc-to-local-short">{{ project.last_updated }}</span> by <a class="text-grey"
+    href="{{ url_for('frontstage.about', username=project.author) }}">{{ project.author }}</a>
+        </div>
+        <div id="carousel" class="carousel slide">
+          <div class="carousel-inner" id="carousel">
+            <div class="carousel-item active w-100 rounded-2">
+              <img src="{{ project.images[0][0] }}"
+                   class="img-fluid d-block rounded-2 w-100"
+                   alt="project-img1">
+              {% if project.images[0][1] %}
+                <div class="carousel-caption d-none d-md-block rounded-bottom-2">
+                  <h5>{{ project.images[0][1] }}</h5>
+                </div>
+              {% endif %}
+            </div>
+            {% if project.images[1] %}
+              <div class="carousel-item w-100 rounded-2">
+                <img src="{{ project.images[1][0] }}"
+                     class="img-fluid d-block rounded-2 w-100"
+                     alt="project-img2">
+                {% if project.images[1][1] %}
+                  <div class="carousel-caption d-none d-md-block rounded-bottom">
+                    <h5>{{ project.images[1][1] }}</h5>
+                  </div>
+                {% endif %}
               </div>
-            </div>
-            <div class="mb-3">{{ post.subtitle }}</div>
-            <div class="d-flex align-items-center text-dark-grey">
-              <span><i class="fa-solid fa-tags"></i></span>
-              {% for tag in post.tags %}
-                <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-                  <span class="badge tag ms-2">{{ tag }}</span>
-                </a>
-              {% endfor %}
-            </div>
+            {% endif %}
+            {% if project.images[2] %}
+              <div class="carousel-item w-100 rounded-2">
+                <img src="{{ project.images[2][0] }}"
+                     class="img-fluid d-block rounded-2 w-100"
+                     alt="project-img3">
+                <div class="carousel-caption d-none d-md-block rounded-bottom">
+                  <h5>{{ project.images[2][1] }}</h5>
+                </div>
+              </div>
+            {% endif %}
+            {% if project.images[3] %}
+              <div class="carousel-item w-100 rounded-2">
+                <img src="{{ project.images[3][0] }}"
+                     class="img-fluid d-block rounded-2 w-100"
+                     alt="project-img4">
+                <div class="carousel-caption d-none d-md-block rounded-bottom">
+                  <h5>{{ project.images[3][1] }}</h5>
+                </div>
+              </div>
+            {% endif %}
+            {% if project.images[4] %}
+              <div class="carousel-item w-100 rounded-2">
+                <img src="{{ project.images[4][0] }}"
+                     class="img-fluid d-block rounded-2 w-100"
+                     alt="project-img5">
+                <div class="carousel-caption d-none d-md-block rounded-bottom">
+                  <h5>{{ project.images[4][1] }}</h5>
+                </div>
+              </div>
+            {% endif %}
           </div>
-        {% endfor %}
+          <button class="carousel-control-prev"
+                  type="button"
+                  data-bs-target="#carousel"
+                  data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next"
+                  type="button"
+                  data-bs-target="#carousel"
+                  data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <div class="my-3">{{ project.content|safe }}</div>
+        <div class="d-flex align-items-center mb-5 text-dark-grey fs-large">
+          <span><i class="fa-solid fa-tags"></i></span>
+          {% for tag in project.tags %}
+            <a href="{{ url_for('frontstage.tag', username=user.username, tags=tag) }}">
+              <span class="badge tag ms-2">{{ tag }}</span>
+            </a>
+          {% endfor %}
+        </div>
       </div>
     </div>
   </div>
   {% include 'frontstage/footer.html' %}
+{% endblock %}
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"
+          async=""></script>
 {% endblock %}
