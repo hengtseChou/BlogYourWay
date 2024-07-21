@@ -266,10 +266,10 @@ def tag(username):
 
     # abort for unknown tag
     tag = unquote(tag_url_encoded)
-    user_info = user_utils.get_user_info(username)
-    if tag not in user_info.tags.keys():
-        logger.debug(f"invalid tag {tag}")
-        abort(404)
+    user = user_utils.get_user_info(username)
+    # if tag not in user.tags.keys():
+    #     logger.debug(f"invalid tag {tag}")
+    #     abort(404)
 
     ##################################################################################################
 
@@ -278,11 +278,16 @@ def tag(username):
     ##################################################################################################
 
     posts = post_utils.get_posts_info(username)
-
     posts_with_desired_tag = []
     for post in posts:
         if tag in post.get("tags"):
             posts_with_desired_tag.append(post)
+
+    projects = projects_utils.get_projects_info(username)
+    projects_with_desired_tag = []
+    for project in projects:
+        if tag in project.get("tags"):
+            projects_with_desired_tag.append(project)
 
     ##################################################################################################
 
@@ -300,7 +305,11 @@ def tag(username):
     ##################################################################################################
 
     return render_template(
-        "frontstage/tag.html", user=user_info, posts=posts_with_desired_tag, tag=tag
+        "frontstage/tag.html",
+        user=user,
+        posts=posts_with_desired_tag,
+        projects=projects_with_desired_tag,
+        tag=tag,
     )
 
 
