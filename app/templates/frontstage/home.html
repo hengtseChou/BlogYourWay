@@ -4,10 +4,6 @@
   <meta name="description"
         content="Visit '{{ user.blogname }}' on BlogYourWay.">
 {% endblock %}
-{% block head %}
-  <link rel="stylesheet"
-        href="{{ url_for('static', filename='css/frontstage/home.css') }}">
-{% endblock %}
 {% block body %}
   {% include 'frontstage/navbar.html' %}
   {% include 'frontstage/cover.html' %}
@@ -44,35 +40,27 @@
             {% endif %}
           </div>
           <!-- bio column -->
-          <div class="d-none d-lg-block col-lg-4 bio-column">
+          <div class="d-none d-lg-block col-lg-4 mt-16">
             <div class="d-flex justify-content-center">
-              {% if user.profile_img_url | length == 0 %}
-                <img src="{{ url_for('static', filename='img/default-profile.png') }}"
-                     alt="profile-img"
-                     class="profile-xxl img-thumbnail">
-              {% else %}
-                <img src="{{ user.profile_img_url }}"
-                     alt="profile-img"
-                     class="profile-xxl img-thumbnail">
-              {% endif %}
+              <img src="{{ user.profile_img_url }}"
+                   alt="profile-img"
+                   class="profile-xxl img-thumbnail">
             </div>
             <div class="text-center mt-4">
               <h3>{{ user.blogname }}</h3>
             </div>
-            <div class="container">
-              <div class="row">
-                <div class="col-4 mx-auto">
-                  <hr>
-                </div>
+            <div class="row">
+              <div class="col-4 mx-auto">
+                <hr>
               </div>
-              <div class="row mb-5">
-                <div class="col-8 mx-auto text-center">
-                  {% if user.short_bio|length == 0 %}
-                    <p>Edit your short bio in the 'About' panel over the backstage.</p>
-                  {% else %}
-                    <p>{{ user.short_bio }}</p>
-                  {% endif %}
-                </div>
+            </div>
+            <div class="row mb-5">
+              <div class="col-8 mx-auto text-center">
+                {% if user.short_bio|length == 0 %}
+                  <p>Edit your short bio in the 'About' panel over the backstage.</p>
+                {% else %}
+                  <p>{{ user.short_bio }}</p>
+                {% endif %}
               </div>
             </div>
           </div>

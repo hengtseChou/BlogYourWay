@@ -34,6 +34,12 @@ body {
   background-position: center; /* This will center the image within the container */
 }
 
+/* special margin top */
+
+.mt-16 {
+  margin-top: 6rem;
+}
+
 /* error message container (desktop) */
 
 .error-message-container {

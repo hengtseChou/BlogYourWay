@@ -4,20 +4,45 @@
 {% block body %}
   {% include 'frontstage/navbar.html' %}
   {% include 'frontstage/cover.html' %}
-  <div class="container-fluid fill-up-space">
+  <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-5 col-11 mx-auto">
-        <div class="mt-5 border-bottom">
-          <h1>About Me</h1>
+      <div class="col-lg-8 col-12 mx-auto mt-16">
+        <div class="row">
+          <div class="col-lg-6 col-10 mx-auto">
+            <div class="display-2 fw-bold">about.</div>
+            {% if about | length == 0 %}
+              <div class="mt-5 mb-3">Well... Looks like there's nothing here yet.</div>
+            {% else %}
+              <div class="mt-5 mb-3">{{ about | safe }}</div>
+            {% endif %}
+          </div>
+          <!-- bio column -->
+          <div class="col-4 d-none d-lg-block">
+            <div class="d-flex justify-content-center">
+              <img src="{{ user.profile_img_url }}"
+                   alt="profile-img"
+                   class="profile-xxl img-thumbnail">
+            </div>
+            <div class="text-center mt-4">
+              <h3>{{ user.blogname }}</h3>
+            </div>
+            <div class="row">
+              <div class="col-4 mx-auto">
+                <hr>
+              </div>
+            </div>
+            <div class="row mb-5">
+              <div class="col-8 mx-auto text-center">
+                {% if user.short_bio|length == 0 %}
+                  <p>Edit your short bio in the 'About' panel over the backstage.</p>
+                {% else %}
+                  <p>{{ user.short_bio }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="mt-5 border-bottom">
-          {% if about|length == 0 %}
-            <p>Well... it seems there's nothing here yet.</p>
-          {% else %}
-            {{ about|safe }}
-          {% endif %}
-        </div>
-        <div class="mt-5">
+        <div class="text-center border-top my-5 pt-3">
           <p>
             Total views since <span class="utc-to-local-medium">{{ user.created_at }}</span>:
             <span class="count">{{ user.total_views }}</span>.
