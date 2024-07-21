@@ -504,7 +504,7 @@ def about(username):
     ##################################################################################################
 
     user = mongodb.user_info.find_one({"username": username})
-    about = mongodb.user_about.find_one({"username": username})["about"]
+    about = mongodb.user_about.find_one({"username": username}).get("about")
 
     about = convert_about(about)
 

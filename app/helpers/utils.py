@@ -145,7 +145,7 @@ def convert_about(about: str) -> str:
 
     md = Markdown(extensions=["markdown_captions", "fenced_code"])
     converted = md.convert(about)
-    formatter = HTMLFormatter(about)
+    formatter = HTMLFormatter(converted)
     converted = formatter.add_padding().change_headings().modify_figure().to_string()
 
     return converted
