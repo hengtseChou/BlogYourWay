@@ -14,7 +14,7 @@
           <h5 class="px-2 pt-3 fw-bold text-dark-grey">Found {{ posts|length }} posts</h5>
         {% endif %}
         {% for post in posts %}
-          <div class="ms-lg-2 ms-0 my-4 p-4 border rounded rounded-2">
+          <div class="ms-lg-2 ms-0 my-4 p-4 border rounded-2">
             <a href="{{ url_for('frontstage.blogpost', username=user.username, post_uid=post.post_uid) }}"
                class="header-link">
               <h3 class="fw-bold">{{ post.title }}</h3>

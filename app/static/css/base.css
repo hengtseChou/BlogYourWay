@@ -198,11 +198,6 @@ textarea::-ms-input-placeholder {
 
 /* backstage text style */
 
-.backstage-form-label {
-  font-style: italic;
-  color: black;
-}
-
 .backstage-icon {
   font-size: 18px;
   color: #000000;

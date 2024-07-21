@@ -19,15 +19,15 @@
     {{ form.hidden_tag() }}
     <div class="col-12 col-md-9">
       <div class="mb-4">
-        <label for="title" class="form-label ms-2 backstage-form-label">· Change profile image</label>
+        <label for="title" class="form-label ms-2 fst-italic text-black">· Change profile image</label>
         {{ form.profile_img_url(class="form-control border-underline", value=user.profile_img_url) }}
       </div>
       <div class="mb-4">
-        <label for="short_bio" class="form-label ms-2 backstage-form-label">· Edit short bio</label>
+        <label for="short_bio" class="form-label ms-2 fst-italic text-black">· Edit short bio</label>
         {{ form.short_bio(class="form-control border-underline", value=user.short_bio) }}
       </div>
       <div class="mb-4">
-        <label for="editor" class="mb-3 ms-2 backstage-form-label">· Edit About page</label>
+        <label for="editor" class="mb-3 ms-2 fst-italic text-black">· Edit About page</label>
         {{ form.editor }}
       </div>
       <div class="text-end mb-5">{{ form.submit_(class="btn btn-panel") }}</div>

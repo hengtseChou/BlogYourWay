@@ -20,11 +20,11 @@
       <form method="post" autocomplete="off" id="form-general">
         {{ form_general.hidden_tag() }}
         <div class="mb-4">
-          <label for="cover_url" class="form-label ms-2 backstage-form-label">· Change blog cover image</label>
+          <label for="cover_url" class="form-label ms-2 fst-italic text-black">· Change blog cover image</label>
           {{ form_general.cover_url(class="form-control border-underline", value=user.cover_url) }}
         </div>
         <div class="mb-4">
-          <label for="blogname" class="form-label ms-2 backstage-form-label">· Change blog name</label>
+          <label for="blogname" class="form-label ms-2 fst-italic text-black">· Change blog name</label>
           {{ form_general.blogname(class="form-control border-underline", value=user.blogname) }}
         </div>
         <div class="mb-4 form-check form-switch ms-2">

@@ -40,13 +40,8 @@
   text-align: start;
 }
 
-.hero-section p {
-  line-height: 150%;
-}
-
 .hero-section h1 {
   padding-top: 20%;
-  line-height: 105%;
 }
 
 @media (max-width: 1200px) {

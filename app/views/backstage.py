@@ -362,6 +362,9 @@ def edit_post(post_uid):
 
     ##################################################################################################
 
+    if request.method == "POST":
+        return redirect(url_for("backstage.posts_panel"))
+
     return render_template("backstage/edit-post.html", post=post, user=user, form=form)
 
 
@@ -453,6 +456,9 @@ def edit_project(project_uid):
     # return page content
 
     ##################################################################################################
+
+    if request.method == "POST":
+        return redirect(url_for("backstage.projects_panel"))
 
     return render_template("backstage/edit-project.html", project=project, user=user, form=form)
 
