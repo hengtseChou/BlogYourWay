@@ -19,7 +19,8 @@
         </div>
         <div class="mt-5">
           <p>
-            Total Views since <span class="utc-to-local-medium">{{ user.created_at }}</span>: {{ '{:,}'.format(user.total_views) }}
+            Total views since <span class="utc-to-local-medium">{{ user.created_at }}</span>:
+            <span class="count">{{ user.total_views }}</span>.
           </p>
         </div>
       </div>

@@ -52,8 +52,8 @@
                   <td>
                     <span class="utc-to-local-long">{{ project.last_updated }}</span>
                   </td>
-                  <td class="text-center">{{ project.views }}</td>
-                  <td class="text-center">{{ project.reads }}</td>
+                  <td class="text-center count">{{ project.views }}</td>
+                  <td class="text-center count">{{ project.reads }}</td>
                   <td class="text-center">
                     <a href="{{ url_for('backstage.edit_project', project_uid=project.project_uid) }}"
                        class="backstage-icon"><i class="fa-regular fa-pen-to-square"></i></a>
@@ -107,7 +107,8 @@
                 Created at <span class="utc-to-local-long">{{ project.created_at }}</span>
               </p>
               <div>
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project.views }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i></span>
+                <span class="count">{{ project.views }}</span>
               </div>
             </div>
             <div class="col-2">

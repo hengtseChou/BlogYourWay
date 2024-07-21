@@ -87,5 +87,18 @@ function convertUTCToLocal() {
   });
 }
 
+function formatCounts() {
+  const elements = document.querySelectorAll(".count");
+
+  elements.forEach((element) => {
+    const number = parseFloat(element.innerHTML);
+
+    if (!isNaN(number)) {
+      element.innerHTML = number.toLocaleString();
+    }
+  });
+}
+
 updateCurrentYear();
 convertUTCToLocal();
+formatCounts();

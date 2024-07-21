@@ -54,9 +54,9 @@
                   <td>
                     <span class="utc-to-local-long">{{ post.last_updated }}</span>
                   </td>
-                  <td class="text-center">{{ post.views }}</td>
-                  <td class="text-center">{{ post.reads }}</td>
-                  <td class="text-center">{{ post.comments }}</td>
+                  <td class="text-center count">{{ post.views }}</td>
+                  <td class="text-center count">{{ post.reads }}</td>
+                  <td class="text-center count">{{ post.comments }}</td>
                   <td class="text-center">
                     <a href="{{ url_for('backstage.edit_post', post_uid=post.post_uid) }}"
                        class="backstage-icon"><i class="fa-regular fa-pen-to-square"></i></a>
@@ -129,8 +129,10 @@
                           data-bs-placement="top"
                           data-bs-title="Featured posts will be on your home page">Featured</button>
                 {% endif %}
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ post.views }}</span>
-                <span><i class="fa-regular fa-comment me-2"></i>{{ post.comments }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i></span>
+                <span class="count">{{ post.views }}</span>
+                <span><i class="fa-regular fa-comment me-2"></i></span>
+                <span class="count">{{ post.comments }}</span>
               </div>
             </div>
             <div class="col-2">
