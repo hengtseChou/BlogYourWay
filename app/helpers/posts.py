@@ -3,16 +3,19 @@ from datetime import datetime, timezone
 
 from flask_login import current_user
 
+from app.cache import cache, update_user_cache
 from app.forms.posts import EditPostForm, NewPostForm
+from app.helpers.users import user_utils
+from app.helpers.utils import UIDGenerator, process_tags
 from app.models.posts import PostContent, PostInfo
 from app.mongo import Database, mongodb
-from app.helpers.utils import UIDGenerator, process_tags
 
 ##################################################################################################
 
 # create new post
 
 ##################################################################################################
+
 
 class NewPostSetup:
     def __init__(self, post_uid_generator: UIDGenerator, db_handler: Database) -> None:
@@ -44,6 +47,7 @@ class NewPostSetup:
         self._db_handler.user_info.make_increments(
             filter={"username": username}, increments=tags_increments, upsert=True
         )
+        update_user_cache(cache, username)
 
     def create_post(self, author_name: str, form: NewPostForm) -> str | None:
 
@@ -71,22 +75,24 @@ def create_post(form: NewPostForm) -> str:
 
 ##################################################################################################
 
+
 class PostUpdateSetup:
     def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
     def _update_tags_for_user(self, post_uid: str, new_tags: dict) -> None:
         post_info = self._db_handler.post_info.find_one({"post_uid": post_uid})
-        author = post_info.get("author")
+        username = post_info.get("author")
         old_tags = post_info.get("tags")
         tags_reduction = {f"tags.{tag}": -1 for tag in old_tags}
         self._db_handler.user_info.make_increments(
-            filter={"username": author}, increments=tags_reduction
+            filter={"username": username}, increments=tags_reduction
         )
         tags_increment = {f"tags.{tag}": 1 for tag in new_tags}
         self._db_handler.user_info.make_increments(
-            filter={"username": author}, increments=tags_increment, upsert=True
+            filter={"username": username}, increments=tags_increment, upsert=True
         )
+        update_user_cache(cache, username)
 
     def update_post(self, post_uid: str, form: EditPostForm) -> None:
 
@@ -119,6 +125,7 @@ def update_post(post_uid: str, form: EditPostForm) -> None:
 # post utilities
 
 ##################################################################################################
+
 
 class PostUtils:
     def __init__(self, db_handler: Database):

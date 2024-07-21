@@ -4,9 +4,9 @@ from datetime import datetime, timezone
 from flask_login import current_user
 
 from app.forms.projects import EditProjectForm, NewProjectForm
+from app.helpers.utils import UIDGenerator, process_tags
 from app.models.projects import ProjectContent, ProjectInfo
 from app.mongo import Database, mongodb
-from app.helpers.utils import UIDGenerator, process_tags
 
 
 def process_form_images(

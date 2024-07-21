@@ -2,6 +2,7 @@ from bcrypt import checkpw, gensalt, hashpw
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
+from app.cache import cache, update_user_cache
 from app.config import TEMPLATE_FOLDER
 from app.forms.posts import EditPostForm, NewPostForm
 from app.forms.projects import EditProjectForm, NewProjectForm
@@ -229,7 +230,7 @@ def settings_panel():
         )
         logger.debug(f"general settings for {current_user.username} has been updated")
         flash("Update succeeded!", category="success")
-        user = mongodb.user_info.find_one({"username": current_user.username})
+        update_user_cache(cache, current_user.username)
 
     if form_social.submit_links.data and form_social.validate_on_submit():
 
@@ -248,7 +249,7 @@ def settings_panel():
         )
         logger.debug(f"social links for {current_user.username} has been updated.")
         flash("Social Links updated!", category="success")
-        user = mongodb.user_info.find_one({"username": current_user.username})
+        update_user_cache(cache, current_user.username)
 
     if form_update_pw.submit_pw.data and form_update_pw.validate_on_submit():
 
@@ -300,6 +301,7 @@ def settings_panel():
         logout_user()
         logger_utils.logout(request=request, username=username)
         user_utils.delete_user(username)
+        cache.delete(username)
         flash("Account deleted successfully!", category="success")
         logger.debug(f"User {username} has been deleted.")
         return redirect(url_for("main.signup"))
@@ -385,9 +387,9 @@ def edit_about():
 
     ##################################################################################################
 
-    user_info = mongodb.user_info.find_one({"username": current_user.username})
-    user_about = mongodb.user_about.find_one({"username": current_user.username})
-    user = user_info | user_about
+    user = mongodb.user_info.find_one({"username": current_user.username})
+    about = mongodb.user_about.find_one({"username": current_user.username}).get("about")
+    # user = user_info | user_about
 
     form = EditAboutForm()
     if form.validate_on_submit():
@@ -402,8 +404,8 @@ def edit_about():
         mongodb.user_about.update_values(
             filter={"username": user.get("username")}, update=updated_about
         )
-        user.update(updated_info)
-        user.update(updated_about)
+        update_user_cache(cache, current_user.username)
+        about = updated_about.get("about")
         logger.debug(f"information for user {current_user.username} has been updated")
         flash("Information updated!", category="success")
     flashing_if_errors(form.errors)
@@ -414,7 +416,7 @@ def edit_about():
 
     ##################################################################################################
 
-    return render_template("backstage/edit-about.html", user=user, form=form)
+    return render_template("backstage/edit-about.html", user=user, about=about, form=form)
 
 
 @backstage.route("/edit/project/<project_uid>", methods=["GET", "POST"])
@@ -542,6 +544,7 @@ def toggle_archived():
         mongodb.user_info.make_increments(
             filter={"username": author}, increments=tags_increment, upsert=True
         )
+        update_user_cache(cache, current_user.username)
         logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
 
     elif content_type == "project":

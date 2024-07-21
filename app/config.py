@@ -16,3 +16,4 @@ RECAPTCHA_KEY = os.getenv("RECAPTCHA_KEY")
 RECAPTCHA_SECRET = os.getenv("RECAPTCHA_SECRET")
 
 TEMPLATE_FOLDER = (pathlib.Path(__file__).parent / "template").resolve()
+CACHE_TIMEOUT = 5 * 60

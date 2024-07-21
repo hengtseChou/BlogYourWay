@@ -10,15 +10,16 @@ from flask_login import current_user
 
 from app.config import RECAPTCHA_SECRET
 from app.forms.comments import CommentForm
+from app.helpers.utils import UIDGenerator
 from app.models.comments import AnonymousComment, Comment
 from app.mongo import Database, mongodb
-from app.helpers.utils import UIDGenerator
 
 ##################################################################################################
 
 # new comment setup
 
 ##################################################################################################
+
 
 class NewCommentSetup:
     """Setup a new instance for uploading a new comment.

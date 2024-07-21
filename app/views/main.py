@@ -49,10 +49,10 @@ def login():
 
     ##################################################################################################
 
-    if current_user.is_authenticated:
-        flash("You are already logged in.")
-        logger.debug(f"Attempt to duplicate logging from user {current_user.username}.")
-        return redirect(url_for("frontstage.home", username=current_user.username))
+    # if current_user.is_authenticated:
+    #     flash("You are already logged in.")
+    #     logger.debug(f"Attempt to duplicate logging from user {current_user.username}.")
+    #     return redirect(url_for("frontstage.home", username=current_user.username))
 
     ##################################################################################################
 

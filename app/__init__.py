@@ -8,7 +8,8 @@ from flask import Flask, render_template, request
 from flask_login import LoginManager
 from pymongo.errors import ServerSelectionTimeoutError
 
-from app.config import APP_SECRET, ENV
+from app.cache import cache
+from app.config import APP_SECRET, CACHE_TIMEOUT, ENV
 from app.helpers.users import user_utils
 from app.logging import logger, return_client_ip
 from app.models.users import UserInfo
@@ -20,6 +21,7 @@ def create_app() -> Flask:
     """
     Defines:
     - secret key of application
+    - In-memory simple cache
     - login manager (login view, login message)
     - user loader
     - 404 error handler page
@@ -42,6 +44,12 @@ def create_app() -> Flask:
         # app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
         # logger.debug("Debugtoolbar initialized.")
 
+    # cache
+    app.config["CACHE_TYPE"] = "SimpleCache"
+    app.config["CACHE_DEFAULT_TIMEOUT"] = CACHE_TIMEOUT
+    cache.init_app(app)
+    logger.debug(f"{app.config['CACHE_TYPE']} initialized.")
+
     ## login
     login_manager = LoginManager()
     login_manager.login_view = "main.login"
@@ -52,10 +60,13 @@ def create_app() -> Flask:
     @login_manager.user_loader
     def user_loader(username: str) -> UserInfo:
         """register user loader for current_user to access"""
-        logger.debug("user loader was called.")
-        user_info = user_utils.get_user_info(username)
-        # return none if the ID is not valid
-        return user_info
+        user = cache.get(username)
+        if not user:
+            user = user_utils.get_user_info(username)
+            if user:
+                logger.debug("Updating user cache from user loader.")
+                cache.set(username, user, timeout=5 * 60)
+        return user
 
     # Register the custom error page
     @app.errorhandler(404)
