@@ -27,10 +27,12 @@
           <table class="table">
             <thead>
               <tr>
-                <th style="width: 40%">Title</th>
-                <th style="width: 16%">Created At</th>
-                <th style="width: 10%" class="text-center">Views</th>
-                <th style="width: 10%" class="text-center">Comments</th>
+                <th style="width: 32%">Title</th>
+                <th style="width: 14%">Created At</th>
+                <th style="width: 14%">Last Updated</th>
+                <th style="width: 8%" class="text-center">Views</th>
+                <th style="width: 8%" class="text-center">Reads</th>
+                <th style="width: 8%" class="text-center">Comments</th>
                 <th style="width: 8%" class="text-center">Edit</th>
                 <th style="width: 8%" class="text-center">Feature</th>
                 <th style="width: 8%" class="text-center">Archive</th>
@@ -49,7 +51,11 @@
                   <td>
                     <span class="utc-to-local-long">{{ post.created_at }}</span>
                   </td>
+                  <td>
+                    <span class="utc-to-local-long">{{ post.last_updated }}</span>
+                  </td>
                   <td class="text-center">{{ post.views }}</td>
+                  <td class="text-center">{{ post.reads }}</td>
                   <td class="text-center">{{ post.comments }}</td>
                   <td class="text-center">
                     <a href="{{ url_for('backstage.edit_post', post_uid=post.post_uid) }}"

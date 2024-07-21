@@ -30,9 +30,11 @@
           <table class="table">
             <thead>
               <tr>
-                <th style="width: 50%">Title</th>
-                <th style="width: 16%">Created At</th>
-                <th style="width: 10%" class="text-center">Views</th>
+                <th style="width: 42%">Title</th>
+                <th style="width: 14%">Created At</th>
+                <th style="width: 14%">Last Updated</th>
+                <th style="width: 8%" class="text-center">Views</th>
+                <th style="width: 8%" class="text-center">Reads</th>
                 <th style="width: 8%" class="text-center">Edit</th>
                 <th style="width: 8%" class="text-center">Archive</th>
               </tr>
@@ -47,7 +49,11 @@
                   <td>
                     <span class="utc-to-local-long">{{ project.created_at }}</span>
                   </td>
+                  <td>
+                    <span class="utc-to-local-long">{{ project.last_updated }}</span>
+                  </td>
                   <td class="text-center">{{ project.views }}</td>
+                  <td class="text-center">{{ project.reads }}</td>
                   <td class="text-center">
                     <a href="{{ url_for('backstage.edit_project', project_uid=project.project_uid) }}"
                        class="backstage-icon"><i class="fa-regular fa-pen-to-square"></i></a>
@@ -97,7 +103,9 @@
             <div class="col-10">
               <a href="{{ url_for('frontstage.project', username=user.username, project_uid=project.project_uid) }}"
                  class="text-black">{{ project.title }}</a>
-              <p class="text-grey mb-2" class="backstage-mobile-time">Created at {{ project.created_at }}</p>
+              <p class="text-grey mb-2" class="backstage-mobile-time">
+                Created at <span class="utc-to-local-long">{{ project.created_at }}</span>
+              </p>
               <div>
                 <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i>{{ project.views }}</span>
               </div>
