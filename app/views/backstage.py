@@ -57,7 +57,7 @@ def posts_panel():
         # logging for this is inside the create post function
         post_uid = create_post(form)
         if post_uid is not None:
-            logger.debug(f"post {post_uid} has been created.")
+            logger.debug(f"Post {post_uid} has been created.")
             flash("New post published successfully!", category="success")
     flashing_if_errors(form.errors)
 
@@ -103,7 +103,7 @@ def projects_panel():
     if form.validate_on_submit():
         project_uid = create_project(form)
         if project_uid is not None:
-            logger.debug(f"project {project_uid} has been created.")
+            logger.debug(f"Project {project_uid} has been created.")
             flash("New project published successfully!", category="success")
     flashing_if_errors(form.errors)
 
@@ -228,7 +228,7 @@ def settings_panel():
                 "changelog_enabled": form_general.changelog_enabled.data,
             },
         )
-        logger.debug(f"general settings for {current_user.username} has been updated")
+        logger.debug(f"General settings for {current_user.username} has been updated.")
         flash("Update succeeded!", category="success")
         update_user_cache(cache, current_user.username)
 
@@ -406,7 +406,7 @@ def edit_about():
         )
         update_user_cache(cache, current_user.username)
         about = updated_about.get("about")
-        logger.debug(f"information for user {current_user.username} has been updated")
+        logger.debug(f"information for user {current_user.username} has been updated.")
         flash("Information updated!", category="success")
     flashing_if_errors(form.errors)
 
@@ -495,7 +495,7 @@ def toggle_featured():
     mongodb.post_info.update_values(
         filter={"post_uid": post_uid}, update={"featured": updated_featured_status}
     )
-    logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}")
+    logger.debug(f"featuring status for post {post_uid} is now set to {updated_featured_status}.")
 
     ##################################################################################################
 
@@ -545,7 +545,7 @@ def toggle_archived():
             filter={"username": author}, increments=tags_increment, upsert=True
         )
         update_user_cache(cache, current_user.username)
-        logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}")
+        logger.debug(f"archive status for post {post_uid} is now set to {updated_archived_status}.")
 
     elif content_type == "project":
 
@@ -570,7 +570,7 @@ def toggle_archived():
             update={"archived": updated_archived_status},
         )
         logger.debug(
-            f"archive status for project {project_uid} is now set to {updated_archived_status}"
+            f"archive status for project {project_uid} is now set to {updated_archived_status}."
         )
 
     ##################################################################################################
@@ -634,7 +634,7 @@ def delete_project():
     )
     mongodb.project_info.delete_one({"project_uid": project_uid})
     mongodb.project_content.delete_one({"project_uid": project_uid})
-    logger.debug(f"project {project_uid} has been deleted")
+    logger.debug(f"Project {project_uid} has been deleted.")
     flash(f'Your project "{title_truncated}" has been deleted!', category="success")
     # post must be archived before deletion
     # so no need to increment over tags here

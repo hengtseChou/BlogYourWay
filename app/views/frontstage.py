@@ -42,7 +42,7 @@ def home(username):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
         abort(404)
 
     ##################################################################################################
@@ -81,7 +81,7 @@ def blog(username):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
         abort(404)
 
     ##################################################################################################
@@ -176,15 +176,15 @@ def blogpost(username, post_uid):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
         abort(404)
     if not mongodb.post_info.exists("post_uid", post_uid):
-        logger.debug(f"invalid post uid {post_uid}")
+        logger.debug(f"Invalid post uid {post_uid}.")
         abort(404)
 
     post_info = mongodb.post_info.find_one({"post_uid": post_uid})
     if username != post_info.get("author"):
-        logger.debug(f"User {username} does not own post {post_uid}")
+        logger.debug(f"User {username} does not own post {post_uid}.")
         abort(404)
 
     custom_slug = post_info.get("custom_slug")
@@ -216,15 +216,15 @@ def blogpost_with_slug(username, post_uid, slug):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
         abort(404)
     if not mongodb.post_info.exists("post_uid", post_uid):
-        logger.debug(f"invalid post uid {post_uid}")
+        logger.debug(f"Invalid post uid {post_uid}.")
         abort(404)
 
     post_info = mongodb.post_info.find_one({"post_uid": post_uid})
     if username != post_info.get("author"):
-        logger.debug(f"User {username} does not own post {post_uid}")
+        logger.debug(f"User {username} does not own post {post_uid}.")
         abort(404)
 
     custom_slug = post_info.get("custom_slug")
@@ -256,7 +256,7 @@ def tag(username):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
         abort(404)
 
     # if no tag specified, show blog page
@@ -268,7 +268,7 @@ def tag(username):
     tag = unquote(tag_url_encoded)
     user = user_utils.get_user_info(username)
     # if tag not in user.tags.keys():
-    #     logger.debug(f"invalid tag {tag}")
+    #     logger.debug(f"Invalid tag {tag}")
     #     abort(404)
 
     ##################################################################################################
@@ -322,7 +322,11 @@ def gallery(username):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
+        abort(404)
+    user = user_utils.get_user_info(username)
+    if not user.gallery_enabled:
+        logger.debug(f"User {username} did not enable gallery feature.")
         abort(404)
 
     ##################################################################################################
@@ -409,15 +413,15 @@ def project(username, project_uid):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
         abort(404)
     if not mongodb.project_info.exists("project_uid", project_uid):
-        logger.debug(f"invalid post uid {project_uid}")
+        logger.debug(f"Invalid post uid {project_uid}.")
         abort(404)
 
     project_info = mongodb.project_info.find_one({"project_uid": project_uid})
     if username != project_info.get("author"):
-        logger.debug(f"User {username} does not own project {project_uid}")
+        logger.debug(f"User {username} does not own project {project_uid}.")
         abort(404)
 
     custom_slug = project_info.get("custom_slug")
@@ -449,15 +453,15 @@ def project_with_slug(username, project_uid, slug):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
         abort(404)
     if not mongodb.project_info.exists("project_uid", project_uid):
-        logger.debug(f"invalid post uid {project_uid}")
+        logger.debug(f"Invalid post uid {project_uid}.")
         abort(404)
 
     project_info = mongodb.project_info.find_one({"project_uid": project_uid})
     if username != project_info.get("author"):
-        logger.debug(f"User {username} does not own project {project_uid}")
+        logger.debug(f"User {username} does not own project {project_uid}.")
         abort(404)
 
     custom_slug = project_info.get("custom_slug")
@@ -482,7 +486,39 @@ def project_with_slug(username, project_uid, slug):
 
 @frontstage.route("/@<username>/changelog", methods=["GET"])
 def changelog(username):
-    pass
+    ##################################################################################################
+
+    # early returns
+
+    ##################################################################################################
+
+    if not mongodb.user_info.exists("username", username):
+        logger.debug(f"Invalid username {username}.")
+        abort(404)
+    user = user_utils.get_user_info(username)
+    if not user.changelog_enabled:
+        logger.debug(f"User {username} did not enable changelog feature.")
+        abort(404)
+
+    ##################################################################################################
+
+    # main actions
+
+    ##################################################################################################
+
+    ##################################################################################################
+
+    # logging / metrics
+
+    ##################################################################################################
+
+    ##################################################################################################
+
+    # return page content
+
+    ##################################################################################################
+
+    return render_template("frontstage/gallery.html", user=user)
 
 
 @frontstage.route("/@<username>/about", methods=["GET"])
@@ -494,7 +530,7 @@ def about(username):
     ##################################################################################################
 
     if not mongodb.user_info.exists("username", username):
-        logger.debug(f"invalid username {username}")
+        logger.debug(f"Invalid username {username}.")
         abort(404)
 
     ##################################################################################################
@@ -529,14 +565,8 @@ def about(username):
 @frontstage.route("/@<username>/get-profile-img", methods=["GET"])
 def get_profile_img(username):
 
-    user = mongodb.user_info.find_one({"username": username})
-
-    if user.get("profile_img_url"):
-        profile_img_url = user["profile_img_url"]
-    else:
-        profile_img_url = "/static/img/default-profile.png"
-
-    return jsonify({"imageUrl": profile_img_url})
+    user = user_utils.get_user_info(username)
+    return jsonify({"imageUrl": user.profile_img_url})
 
 
 @frontstage.route("/is-unique", methods=["GET"])
