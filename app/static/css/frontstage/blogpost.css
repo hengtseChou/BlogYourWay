@@ -18,3 +18,67 @@ blockquote:before {
 blockquote p {
   display: inline;
 }
+
+/* TOC container */
+.toc {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 5px;
+}
+
+/* TOC title */
+.toc h3 {
+  border-bottom: 1px solid #ddd;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+/* TOC list */
+.toc ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.toc ul li {
+  margin: 5px 0;
+  padding-left: 5px; /* Add padding to the left */
+}
+
+/* TOC links */
+.toc ul li a {
+  text-decoration: none;
+  color: #0073e6;
+  display: block;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.toc ul li a:hover {
+  text-decoration: underline;
+  background-color: #e6f2ff;
+}
+
+/* Nested lists */
+.toc ul ul {
+  margin-left: 15px;
+  padding-left: 10px;
+  border-left: 1px solid #ddd;
+}
+
+/* Custom styles for different heading levels */
+.toc ul li.toclevel-1 > a {
+  font-weight: bold;
+}
+
+.toc ul li.toclevel-2 > a {
+  font-weight: normal;
+}
+
+.toc ul li.toclevel-3 > a {
+  font-weight: lighter;
+}

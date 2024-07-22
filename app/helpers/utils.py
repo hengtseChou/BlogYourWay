@@ -79,7 +79,7 @@ class HTMLFormatter:
         )
         for block in blocks:
             current_class = block.get("class", [])
-            current_class.append("py-2")
+            current_class.append("py-1")
             block["class"] = current_class
 
         return self
@@ -87,16 +87,17 @@ class HTMLFormatter:
     def change_headings(self):
 
         small_headings = self.__soup.find_all("h3")
-        for head in small_headings:
-            head.name = "h5"
+        for heading in small_headings:
+            heading.name = "h5"
 
         medium_headings = self.__soup.find_all("h2")
-        for head in medium_headings:
-            head.name = "h3"
+        for heading in medium_headings:
+            heading.name = "h3"
 
         big_headings = self.__soup.find_all("h1")
-        for head in big_headings:
-            head.name = "h2"
+        for heading in big_headings:
+            heading.name = "h2"
+            heading["class"] = "py-3"
 
         return self
 
@@ -132,34 +133,34 @@ class HTMLFormatter:
 def convert_post_content(content: str) -> str:
     """convert the original text to the html text to be displayed in the blogpost page"""
 
-    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
-    converted = md.convert(content)
-    formatter = HTMLFormatter(converted)
-    converted = formatter.add_padding().change_headings().modify_figure().to_string()
+    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes", "toc"])
+    html = md.convert("[TOC]\r\n" + content)
+    formatter = HTMLFormatter(html)
+    html = formatter.add_padding().change_headings().modify_figure().to_string()
 
-    return converted
+    return html
 
 
 def convert_about(about: str) -> str:
     """convert the original text to the html text to be displayed in the about page"""
 
     md = Markdown(extensions=["markdown_captions", "fenced_code"])
-    converted = md.convert(about)
-    formatter = HTMLFormatter(converted)
-    converted = formatter.add_padding().change_headings().modify_figure().to_string()
+    html = md.convert(about)
+    formatter = HTMLFormatter(html)
+    html = formatter.add_padding().change_headings().modify_figure().to_string()
 
-    return converted
+    return html
 
 
 def convert_project_content(content: str) -> str:
     """convert the original text to the html text to be displayed in the project page"""
 
-    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
-    converted = md.convert(content)
-    formatter = HTMLFormatter(converted)
-    converted = formatter.add_padding().change_headings().modify_figure().to_string()
+    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes", "toc"])
+    html = md.convert(content)
+    formatter = HTMLFormatter(html)
+    html = formatter.add_padding().change_headings().modify_figure().to_string()
 
-    return converted
+    return html
 
 
 ##################################################################################################

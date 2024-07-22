@@ -11,17 +11,17 @@ I am also considering migrate to FastAPI.
 ### Done
 
 - [x] Posts formatted with markdown.
-- [x] Support tags for posts.
+- [x] Support tags for posts and projects
 - [x] Comment section (with google reCAPCHA).
 - [x] Personalized blog cover and profile picture.
 - [x] Personalized user autobiography.
 - [x] Minimal design for front stage and back stage.
 - [x] RWD support.
 - [x] Well defined event logging.
+- [x] Gallery for project showcase.
 
 ### Now
 
-- [ ] Gallery for project showcase.
 - [ ] Personal [changelog](https://brianlovin.com/writing/make-a-personal-changelog).
 - [ ] Table of Content for posts.
 
