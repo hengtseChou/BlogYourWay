@@ -131,6 +131,16 @@ class UserUtils:
         all_username = [user_info.get("username") for user_info in all_user_info]
         return all_username
 
+    def get_all_username_gallery_enabled(self) -> list[str]:
+        all_user_info = self._db_handler.user_info.find({"gallery_enabled": True})
+        all_username = [user_info.get("username") for user_info in all_user_info]
+        return all_username
+
+    def get_all_username_changelog_enabled(self) -> list[str]:
+        all_user_info = self._db_handler.user_info.find({"changelog_enabled": True})
+        all_username = [user_info.get("username") for user_info in all_user_info]
+        return all_username
+
     def get_user_info(self, username: str) -> UserInfo:
         user_info = self._db_handler.user_info.find_one({"username": username})
         if user_info is None:
