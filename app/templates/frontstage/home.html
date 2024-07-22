@@ -10,7 +10,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-lg-8 col-12 mx-auto">
-        <div class="row fill-up-space">
+        <div class="row content-min-height">
           <!-- post-column -->
           <div class="col-lg-8 col-12 mx-auto mt-4">
             {% if posts|length != 0 %}
@@ -65,7 +65,7 @@
             </div>
           </div>
         </div>
-        <div class="border border-1 text-center py-2 my-3 bg-light-grey">
+        <div class="border border-1 text-center py-2 my-3 bg-light-grey bottom-nav">
           <a href="{{ url_for('frontstage.blog', username=user.username) }}"
              class="btn">View more posts</a>
         </div>

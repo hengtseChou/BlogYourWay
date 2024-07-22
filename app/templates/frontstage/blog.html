@@ -4,9 +4,9 @@
   {% include 'frontstage/navbar.html' %}
   {% include 'frontstage/cover.html' %}
   <div class="container-fluid">
-    <div class="row">
+    <div class="row content-min-height">
       <div class="col-lg-8 col-12 mx-auto">
-        <div class="row fill-up-space">
+        <div class="row mb-5">
           <!-- post column -->
           <div class="col-lg-8 col-12 mx-auto mt-4">
             {% if posts | length != 0 %}
@@ -20,6 +20,7 @@
                     <div class="text-grey">
                       on <span class="utc-to-local-short">{{ post.created_at }}</span>
                     </div>
+                    row
                   </div>
                   <div class="mb-3">{{ post.subtitle }}</div>
                   <div class="d-flex align-items-center text-dark-grey">
@@ -53,7 +54,7 @@
           </div>
         </div>
         {% if pagination.is_previous_page_allowed or pagination.is_next_page_allowed %}
-          <div class="border border-1 py-2 my-3 bg-light-grey">
+          <div class="border border-1 py-2 my-3 bg-light-grey bottom-nav">
             <div class="row">
               <div class="col-6 text-start">
                 {% if pagination.is_previous_page_allowed %}

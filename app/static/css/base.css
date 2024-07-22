@@ -1,8 +1,20 @@
 /* base template */
 
+html {
+  height: 100vh;
+}
+
 body {
   font-family: "Ubuntu", "Noto Sans TC", sans-serif;
-  min-height: 100vh;
+  min-height: 100%;
+}
+
+.content-min-height {
+  flex: 1; /* This will make the content area grow to fill the available space */
+  min-height: calc(
+    100vh - var(--navbar-height, 0px) - var(--cover-height, 0px) -
+      var(--bottom-nav-height, 0px) - var(--footer-height, 0px)
+  );
 }
 
 .toast {
@@ -20,10 +32,6 @@ body {
 }
 
 /* cover */
-
-.fill-up-space {
-  min-height: calc(100vh - 312px);
-}
 
 .cover-container {
   width: 100%;

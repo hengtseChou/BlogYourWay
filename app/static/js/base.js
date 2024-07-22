@@ -99,6 +99,51 @@ function formatCounts() {
   });
 }
 
+function setDynamicHeights() {
+  const navbar = document.querySelector(".navbar");
+  const cover = document.querySelector(".cover");
+  const bottomNav = document.querySelector(".bottom-nav");
+  const footer = document.querySelector(".footer");
+
+  if (navbar) {
+    document.documentElement.style.setProperty(
+      "--navbar-height",
+      `${navbar.offsetHeight}px`,
+    );
+  } else {
+    document.documentElement.style.setProperty("--navbar-height", "0px");
+  }
+
+  if (cover) {
+    document.documentElement.style.setProperty(
+      "--cover-height",
+      `${cover.offsetHeight}px`,
+    );
+  } else {
+    document.documentElement.style.setProperty("--cover-height", "0px");
+  }
+
+  if (bottomNav) {
+    document.documentElement.style.setProperty(
+      "--bottom-nav-height",
+      `${bottomNav.offsetHeight}px`,
+    );
+  } else {
+    document.documentElement.style.setProperty("--bottom-nav-height", "0px");
+  }
+
+  if (footer) {
+    document.documentElement.style.setProperty(
+      "--footer-height",
+      `${footer.offsetHeight}px`,
+    );
+  } else {
+    document.documentElement.style.setProperty("--footer-height", "0px");
+  }
+}
+
 updateCurrentYear();
 convertUTCToLocal();
 formatCounts();
+window.addEventListener("load", setDynamicHeights);
+window.addEventListener("resize", setDynamicHeights);

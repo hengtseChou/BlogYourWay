@@ -6,9 +6,9 @@
   {% include 'frontstage/cover.html' %}
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-8 col-12 mx-auto mt-16">
-        <div class="row">
-          <div class="col-lg-6 col-10 mx-auto">
+      <div class="col-lg-6 col-10 mx-auto mt-16">
+        <div class="row content-min-height">
+          <div class="col-lg-8 col-10">
             <div class="display-2 fw-bold">about.</div>
             {% if about | length == 0 %}
               <div class="mt-5 mb-3">Well... Looks like there's nothing here yet.</div>
@@ -42,6 +42,10 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-8 col-12 mx-auto">
         <div class="text-center border-top my-5 pt-3">
           <p>
             Total views since <span class="utc-to-local-medium">{{ user.created_at }}</span>:
