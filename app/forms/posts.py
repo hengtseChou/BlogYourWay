@@ -30,7 +30,9 @@ class EditPostForm(FlaskForm):
     tags = StringField(
         render_kw={"placeholder": "Separate tags with ','"}, validators=[InputRequired()]
     )
-    cover_url = StringField(render_kw={"placeholder": "Insert image url"}, validators=[URL()])
+    cover_url = StringField(
+        render_kw={"placeholder": "Insert image url"}, validators=[Optional(), URL()]
+    )
     custom_slug = StringField(
         render_kw={"placeholder": "Must be an url-friendly string"},
         validators=[Optional(), Regexp(slug_pattern)],
