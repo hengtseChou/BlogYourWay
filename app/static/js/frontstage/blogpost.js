@@ -44,31 +44,42 @@ document.addEventListener("DOMContentLoaded", function () {
   // Select the TOC container
   var tocContainer = document.querySelector(".toc");
 
-  // Add the Table of Contents heading
-  var tocHeading = document.createElement("h3");
-  tocHeading.textContent = "Table of Contents";
-  tocContainer.insertBefore(tocHeading, tocContainer.firstChild);
+  if (tocContainer) {
+    // Add the Table of Contents heading
+    var tocHeading = document.createElement("h3");
+    tocHeading.textContent = "Table of Contents";
+    tocContainer.insertBefore(tocHeading, tocContainer.firstChild);
 
-  // Function to add class based on depth
-  function addTocLevelClass(ulElement, level) {
-    var items = ulElement.children;
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      if (item.tagName.toLowerCase() === "li") {
-        item.classList.add("toclevel-" + level);
+    // Function to add class based on depth
+    function addTocLevelClass(ulElement, level) {
+      var items = ulElement.children;
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (item.tagName.toLowerCase() === "li") {
+          item.classList.add("toclevel-" + level);
 
-        // Check for nested UL and apply classes recursively
-        var nestedUl = item.querySelector("ul");
-        if (nestedUl) {
-          addTocLevelClass(nestedUl, level + 1);
+          // Check for nested UL and apply classes recursively
+          var nestedUl = item.querySelector("ul");
+          if (nestedUl) {
+            addTocLevelClass(nestedUl, level + 1);
+          }
         }
       }
     }
-  }
 
-  // Start the process from the top level UL
-  var topLevelUl = tocContainer.querySelector("ul");
-  if (topLevelUl) {
-    addTocLevelClass(topLevelUl, 1);
+    // Start the process from the top level UL
+    var topLevelUl = tocContainer.querySelector("ul");
+    if (topLevelUl) {
+      addTocLevelClass(topLevelUl, 1);
+    }
+  } else {
+    // Modify the first paragraph tag in the div with class 'blogpost-content'
+    var blogPostContent = document.querySelector(".blogpost-content");
+    if (blogPostContent) {
+      var firstParagraph = blogPostContent.querySelector("p");
+      if (firstParagraph && firstParagraph.textContent.length > 5) {
+        firstParagraph.textContent = firstParagraph.textContent.slice(5);
+      }
+    }
   }
 });
