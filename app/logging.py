@@ -43,11 +43,11 @@ def _setup_prod_logger() -> logging.Logger:
     return logger
 
 
-def _setup_debug_logger() -> logging.Logger:
-    """Sets up the debug logger.
+def _setup_dev_logger() -> logging.Logger:
+    """Sets up the development logger.
 
     Returns:
-        logging.Logger: Configured debug logger.
+        logging.Logger: Configured development logger.
     """
     # To stop showing CLF in the logger
     werkzeug_logger = logging.getLogger("werkzeug")
@@ -83,10 +83,10 @@ class Logger:
         """
         if env == "prod":
             self._logger = _setup_prod_logger()
-        elif env == "debug":
-            self._logger = _setup_debug_logger()
+        elif env == "dev":
+            self._logger = _setup_dev_logger()
         else:
-            raise ValueError("Invalid environment specified. Use 'debug' or 'prod'.")
+            raise ValueError("Invalid environment specified. Use 'dev' or 'prod'.")
 
     def debug(self, msg: str) -> None:
         """Logs a debug message.
