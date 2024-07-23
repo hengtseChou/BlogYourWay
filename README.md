@@ -27,10 +27,14 @@ It is built with Flask and Bootstrap 5, along with some useful javascript librar
 
 - [ ] Post traffic/read ratio statistics.
 - [ ] Automatic logout due to inactive, or jwt session auth.
-- [ ] Content polishing with ChatGPT api.
+- [ ] Content polishing with OPENAI API calls.
 - [ ] Google OAuth for easier access.
 
 ### Future
 
 - [ ] Serves images in the database.
 - [ ] Migrate to modern frond-end framework/FastAPI.
+
+## Deployment
+
+BlogYourWay is deployed on [Railway.app](https://railway.app).
