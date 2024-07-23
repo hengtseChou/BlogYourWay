@@ -9,7 +9,7 @@ It is built with Flask and Bootstrap 5, along with some useful javascript librar
 ### Done
 
 - [x] Posts formatted with markdown.
-- [x] Auto-generated tablee of contents.
+- [x] Auto-generated table of contents.
 - [x] Gallery for project showcase.
 - [x] Support tags for posts and projects
 - [x] Comment section (with google reCAPCHA).
