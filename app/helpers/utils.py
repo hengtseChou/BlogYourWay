@@ -1,7 +1,3 @@
-"""
-This module collects the common utulity functions from the application.
-"""
-
 import random
 import string
 from math import ceil
@@ -9,6 +5,7 @@ from math import ceil
 from bs4 import BeautifulSoup
 from flask import abort
 from markdown import Markdown
+from typing_extensions import Self
 
 from app.mongo import Database
 
@@ -21,13 +18,20 @@ from app.mongo import Database
 
 class UIDGenerator:
     def __init__(self, db_handler: Database) -> None:
+        """
+        Initialize the UIDGenerator with a database handler.
+
+        Args:
+            db_handler (Database): The database handler.
+        """
         self._db_handler = db_handler
 
     def generate_comment_uid(self) -> str:
-        """look into the comment database and give a unique id for new comment
+        """
+        Look into the comment database and generate a unique ID for a new comment.
 
         Returns:
-            str: an unique comment uid string
+            str: A unique comment UID string.
         """
         alphabet = string.ascii_lowercase + string.digits
         while True:
@@ -36,10 +40,11 @@ class UIDGenerator:
                 return comment_uid
 
     def generate_post_uid(self) -> str:
-        """look into the post database and give a unique id for new post
+        """
+        Look into the post database and generate a unique ID for a new post.
 
         Returns:
-            str: an unique post uid string
+            str: A unique post UID string.
         """
         alphabet = string.ascii_lowercase + string.digits
         while True:
@@ -48,7 +53,12 @@ class UIDGenerator:
                 return post_uid
 
     def generate_project_uid(self) -> str:
+        """
+        Look into the project database and generate a unique ID for a new project.
 
+        Returns:
+            str: A unique project UID string.
+        """
         alphabet = string.ascii_lowercase + string.digits
         while True:
             project_uid = "".join(random.choices(alphabet, k=8))
@@ -64,16 +74,22 @@ class UIDGenerator:
 
 
 class HTMLFormatter:
-    def __init__(self, html: str):
-        """Format markdown strings for additional styles for different pages.
+    def __init__(self, html: str) -> None:
+        """
+        Initialize the HTMLFormatter.
 
         Args:
-            html (str): a string that is already html.
+            html (str): A string that is already HTML.
         """
         self.__soup = BeautifulSoup(html, "html.parser")
 
-    def add_padding(self):
+    def add_padding(self) -> Self:
+        """
+        Add padding to HTML elements except 'figure' and 'img'.
 
+        Returns:
+            HTMLFormatter: The formatter instance.
+        """
         blocks = self.__soup.find_all(
             lambda tag: tag.name not in ["figure", "img"], recursive=False
         )
@@ -84,8 +100,13 @@ class HTMLFormatter:
 
         return self
 
-    def change_headings(self):
+    def change_headings(self) -> Self:
+        """
+        Change the heading levels in the HTML.
 
+        Returns:
+            HTMLFormatter: The formatter instance.
+        """
         small_headings = self.__soup.find_all("h3")
         for heading in small_headings:
             heading.name = "h5"
@@ -101,8 +122,13 @@ class HTMLFormatter:
 
         return self
 
-    def modify_figure(self):
-        # center image and modify size
+    def modify_figure(self) -> Self:
+        """
+        Modify figure and image elements to center them and adjust their sizes.
+
+        Returns:
+            HTMLFormatter: The formatter instance.
+        """
         figures = self.__soup.find_all(["figure"])
         for figure in figures:
             current_class = figure.get("class", [])
@@ -127,12 +153,25 @@ class HTMLFormatter:
         return self
 
     def to_string(self) -> str:
+        """
+        Convert the formatted HTML back to a string.
+
+        Returns:
+            str: The formatted HTML string.
+        """
         return str(self.__soup)
 
 
 def convert_post_content(content: str) -> str:
-    """convert the original text to the html text to be displayed in the blogpost page"""
+    """
+    Convert the original text to HTML for display on the blog post page.
 
+    Args:
+        content (str): The original markdown content.
+
+    Returns:
+        str: The converted HTML content.
+    """
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes", "toc"])
     html = md.convert("[TOC]\r\n" + content)
     formatter = HTMLFormatter(html)
@@ -142,8 +181,15 @@ def convert_post_content(content: str) -> str:
 
 
 def convert_about(about: str) -> str:
-    """convert the original text to the html text to be displayed in the about page"""
+    """
+    Convert the original text to HTML for display on the about page.
 
+    Args:
+        about (str): The original markdown content.
+
+    Returns:
+        str: The converted HTML content.
+    """
     md = Markdown(extensions=["markdown_captions", "fenced_code"])
     html = md.convert(about)
     formatter = HTMLFormatter(html)
@@ -153,8 +199,15 @@ def convert_about(about: str) -> str:
 
 
 def convert_project_content(content: str) -> str:
-    """convert the original text to the html text to be displayed in the project page"""
+    """
+    Convert the original text to HTML for display on the project page.
 
+    Args:
+        content (str): The original markdown content.
+
+    Returns:
+        str: The converted HTML content.
+    """
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes", "toc"])
     html = md.convert(content)
     formatter = HTMLFormatter(html)
@@ -172,13 +225,35 @@ def convert_project_content(content: str) -> str:
 
 class Paging:
     def __init__(self, db_handler: Database) -> None:
+        """
+        Initialize the Paging class with a database handler.
+
+        Args:
+            db_handler (Database): The database handler.
+        """
         self._db_handler = db_handler
         self._has_setup = False
         self._allow_previous_page = None
         self._allow_next_page = None
         self._current_page = None
 
-    def setup(self, username, database, current_page, num_per_page):
+    def setup(self, username: str, database: str, current_page: int, num_per_page: int) -> "Paging":
+        """
+        Set up pagination for a user and database.
+
+        Args:
+            username (str): The username.
+            database (str): The name of the database.
+            current_page (int): The current page number.
+            num_per_page (int): The number of items per page.
+
+        Returns:
+            Paging: The paging instance.
+
+        Raises:
+            Exception: If the database option is unknown.
+            abort: If the current page is not a legal page number.
+        """
         self._has_setup = True
         self._database = database
         self._allow_previous_page = False
@@ -188,26 +263,26 @@ class Paging:
         # set up for pagination
         # factory mode
         if self._database == "post_info":
-            num_not_archieved = self._db_handler.post_info.count_documents(
+            num_not_archived = self._db_handler.post_info.count_documents(
                 {"author": username, "archived": False}
             )
         elif self._database == "project_info":
-            num_not_archieved = self._db_handler.project_info.count_documents(
+            num_not_archived = self._db_handler.project_info.count_documents(
                 {"author": username, "archived": False}
             )
         else:
             raise Exception("Unknown database option for paging class.")
 
-        if num_not_archieved == 0:
+        if num_not_archived == 0:
             max_page = 1
         else:
-            max_page = ceil(num_not_archieved / num_per_page)
+            max_page = ceil(num_not_archived / num_per_page)
 
         if current_page > max_page or current_page < 1:
             # not a legal page number
             abort(404)
 
-        if current_page * num_per_page < num_not_archieved:
+        if current_page * num_per_page < num_not_archived:
             self._allow_next_page = True
 
         if current_page > 1:
@@ -216,24 +291,48 @@ class Paging:
         return self
 
     @property
-    def is_previous_page_allowed(self):
+    def is_previous_page_allowed(self) -> bool:
+        """
+        Check if the previous page is allowed.
 
+        Returns:
+            bool: True if the previous page is allowed, False otherwise.
+
+        Raises:
+            AttributeError: If pagination has not been set up yet.
+        """
         if not self._has_setup:
-            raise AttributeError("pagination has not setup yet.")
+            raise AttributeError("Pagination has not been set up yet.")
         return self._allow_previous_page
 
     @property
-    def is_next_page_allowed(self):
+    def is_next_page_allowed(self) -> bool:
+        """
+        Check if the next page is allowed.
 
+        Returns:
+            bool: True if the next page is allowed, False otherwise.
+
+        Raises:
+            AttributeError: If pagination has not been set up yet.
+        """
         if not self._has_setup:
-            raise AttributeError("pagination has not setup yet.")
+            raise AttributeError("Pagination has not been set up yet.")
         return self._allow_next_page
 
     @property
-    def current_page(self):
+    def current_page(self) -> int:
+        """
+        Get the current page number.
 
+        Returns:
+            int: The current page number.
+
+        Raises:
+            AttributeError: If pagination has not been set up yet.
+        """
         if not self._has_setup:
-            raise AttributeError("pagination has not setup yet.")
+            raise AttributeError("Pagination has not been set up yet.")
         return self._current_page
 
 
@@ -245,16 +344,15 @@ class Paging:
 
 
 def string_truncate(text: str, max_len: int) -> str:
-    """Truncate the input string to the given max len, with the trailing dot dot dot.
-
-    If the input is shorter, nothing will be changed.
+    """
+    Truncate the input string to the given max length, with trailing ellipsis if truncated.
 
     Args:
-        text (str): string to be truncated.
-        max_len (int): shorten the string to this length at maximum (dot dot dot not included).
+        text (str): The string to be truncated.
+        max_len (int): The maximum length of the string (excluding ellipsis).
 
     Returns:
-        str: truncated string.
+        str: The truncated string.
     """
     if len(text) <= max_len:
         return text
@@ -262,13 +360,14 @@ def string_truncate(text: str, max_len: int) -> str:
 
 
 def sort_dict(_dict: dict[str, int]) -> dict[str, int]:
-    """Sort the dictionary by value
+    """
+    Sort the dictionary by value in descending order.
 
     Args:
-        _dict (dict): unsorted dict
+        _dict (dict): The unsorted dictionary.
 
     Returns:
-        dict: sorted dict
+        dict: The sorted dictionary.
     """
     sorted_dict_key = sorted(_dict, key=_dict.get, reverse=True)
     sorted_dict = {}
@@ -278,7 +377,15 @@ def sort_dict(_dict: dict[str, int]) -> dict[str, int]:
 
 
 def process_tags(tag_string: str) -> list[str]:
+    """
+    Process a comma-separated tag string into a list of tags.
 
+    Args:
+        tag_string (str): The comma-separated tag string.
+
+    Returns:
+        list[str]: The list of processed tags.
+    """
     if tag_string == "":
         return []
     return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]

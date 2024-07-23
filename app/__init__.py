@@ -1,8 +1,5 @@
-"""
-Configure little-blog application in create_app() with a factory pattern.
-"""
-
 import time
+from typing import Tuple
 
 from flask import Flask, render_template, request
 from flask_login import LoginManager
@@ -18,39 +15,40 @@ from app.views import backstage_bp, frontstage_bp, main_bp
 
 
 def create_app() -> Flask:
-    """
-    Defines:
-    - secret key of application
-    - In-memory simple cache
-    - login manager (login view, login message)
-    - user loader
-    - 404 error handler page
-    - 500 error handler page
-    - register blueprints (blog, backstage)
-    - check connections for mongo
-    """
+    """Create and configure the Flask application.
 
+    This function sets up the application with the following:
+    - Secret key for session management
+    - In-memory caching configuration
+    - Login manager for user authentication
+    - Error handlers for 404 and 500 errors
+    - Registration of blueprints
+    - MongoDB connection check
+
+    Returns:
+        Flask: The configured Flask application instance.
+    """
     app = Flask(__name__)
     logger.info("App initialization started.")
     app.secret_key = APP_SECRET
 
-    # debug mode
+    # Debug mode configuration
     if ENV == "debug":
         app.config["DEBUG"] = True
+        # Uncomment the following lines to enable Flask Debug Toolbar
         # from flask_debugtoolbar import DebugToolbarExtension
-
         # toolbar = DebugToolbarExtension()
         # toolbar.init_app(app)
         # app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
         # logger.debug("Debugtoolbar initialized.")
 
-    # cache
+    # Cache configuration
     app.config["CACHE_TYPE"] = "SimpleCache"
     app.config["CACHE_DEFAULT_TIMEOUT"] = CACHE_TIMEOUT
     cache.init_app(app)
     logger.debug(f"{app.config['CACHE_TYPE']} initialized.")
 
-    ## login
+    # Login manager configuration
     login_manager = LoginManager()
     login_manager.login_view = "main.login"
     login_manager.login_message = "Please login to proceed."
@@ -59,7 +57,14 @@ def create_app() -> Flask:
 
     @login_manager.user_loader
     def user_loader(username: str) -> UserInfo:
-        """register user loader for current_user to access"""
+        """Load a user by username from the cache or fetch from the database.
+
+        Args:
+            username (str): The username of the user to load.
+
+        Returns:
+            UserInfo: The user information object.
+        """
         user = cache.get(username)
         if not user:
             user = user_utils.get_user_info(username)
@@ -68,30 +73,44 @@ def create_app() -> Flask:
                 cache.set(username, user, timeout=5 * 60)
         return user
 
-    # Register the custom error page
+    # Error handlers
     @app.errorhandler(404)
-    def page_not_found(error):
+    def page_not_found(error) -> Tuple[str, int]:
+        """Handle 404 errors.
+
+        Args:
+            error: The error that caused the 404 response.
+
+        Returns:
+            Tuple[str, int]: The rendered template and HTTP status code.
+        """
         client_ip = return_client_ip(request, ENV)
         logger.debug(f"{client_ip} - 404 not found at {request.environ['RAW_URI']}. ")
         return render_template("main/404.html"), 404
 
     @app.errorhandler(500)
-    def internal_server_error(error):
+    def internal_server_error(error) -> Tuple[str, int]:
+        """Handle 500 errors.
+
+        Args:
+            error: The error that caused the 500 response.
+
+        Returns:
+            Tuple[str, int]: The rendered template and HTTP status code.
+        """
         client_ip = return_client_ip(request, ENV)
         logger.error(f"{client_ip} - 500 internal error at {request.environ['RAW_URI']}.")
-        # flask app itself will show the error occurred
         return render_template("main/500.html"), 500
 
     logger.debug("Error handlers registered.")
 
-    # blueprints
+    # Register blueprints
     app.register_blueprint(frontstage_bp, url_prefix="/")
     app.register_blueprint(backstage_bp, url_prefix="/backstage/")
     app.register_blueprint(main_bp, url_prefix="/")
     logger.debug("Blueprints registered.")
 
-    # check connection
-    # use a while loop to keep app from breaking
+    # Check MongoDB connection
     while True:
         try:
             mongodb.client.server_info()

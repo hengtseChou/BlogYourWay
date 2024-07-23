@@ -1,7 +1,3 @@
-"""
-This module includes a create comment function, and a comment utility class.
-"""
-
 from dataclasses import asdict
 
 import requests
@@ -16,45 +12,62 @@ from app.mongo import Database, mongodb
 
 ##################################################################################################
 
-# new comment setup
+# New Comment Setup
 
 ##################################################################################################
 
 
 class NewCommentSetup:
-    """Setup a new instance for uploading a new comment.
+    """
+    Handles the setup and creation of a new comment.
 
     Args:
-    - request_ (Request): the https request received.
-    - post_uid (str): the post uid which the comment is associated with.
-    - comment_uid_generator (UIDGenerator): the dependent uid generator.
-    - db_handler (MyDatabase): database.
-    - commenter_name (str): pass the plain text commenter name.
+        comment_uid_generator (UIDGenerator): The UID generator for comments.
+        db_handler (Database): The database handler.
 
-    Procedure:
-    1. Validate the request form.
-    2. Validate the Recaptcha response.
-    3. Process the form into comment dict, based on if the user is authenticated.
-    4. Upload via the database handler.
+    Methods:
+        _recaptcha_verified(request: Request) -> bool:
+            Verifies the Recaptcha response.
+        create_comment(post_uid: str, form: CommentForm) -> None:
+            Creates and uploads a new comment based on the provided form data.
     """
 
     def __init__(self, comment_uid_generator: UIDGenerator, db_handler: Database) -> None:
+        """
+        Initializes a NewCommentSetup instance.
+
+        Args:
+            comment_uid_generator (UIDGenerator): The UID generator for comments.
+            db_handler (Database): The database handler.
+        """
         self._db_handler = db_handler
         self._comment_uid = comment_uid_generator.generate_comment_uid()
 
     @staticmethod
     def _recaptcha_verified(request: Request) -> bool:
+        """
+        Verifies the Recaptcha response to ensure it's valid.
+
+        Args:
+            request (Request): The HTTP request containing the Recaptcha token.
+
+        Returns:
+            bool: True if Recaptcha verification is successful, otherwise False.
+        """
         token = request.form.get("g-recaptcha-response")
         payload = {"secret": RECAPTCHA_SECRET, "response": token}
         resp = requests.post("https://www.google.com/recaptcha/api/siteverify", params=payload)
         resp = resp.json()
-
-        if resp["success"]:
-            return True
-        return False
+        return resp.get("success", False)
 
     def create_comment(self, post_uid: str, form: CommentForm) -> None:
+        """
+        Creates and uploads a new comment based on the form data and user's authentication status.
 
+        Args:
+            post_uid (str): The UID of the post the comment is associated with.
+            form (CommentForm): The form containing comment data.
+        """
         if not self._recaptcha_verified(request):
             return
 
@@ -75,36 +88,61 @@ class NewCommentSetup:
                 comment=form.data.get("comment"),
             )
 
-        new_comment = asdict(new_comment)
-        self._db_handler.comment.insert_one(new_comment)
+        new_comment_data = asdict(new_comment)
+        self._db_handler.comment.insert_one(new_comment_data)
 
 
 def create_comment(post_uid: str, form: CommentForm) -> None:
-    """initialize a new comment setup instance, process the request and upload new comment.
+    """
+    Initializes a NewCommentSetup instance and creates a new comment.
 
     Args:
-        post_uid (str): the post uid which the comment is associated with.
-        request (Request): the request with form sent.
+        post_uid (str): The UID of the post the comment is associated with.
+        form (CommentForm): The form containing comment data.
     """
-
     uid_generator = UIDGenerator(db_handler=mongodb)
-
     comment_setup = NewCommentSetup(comment_uid_generator=uid_generator, db_handler=mongodb)
     comment_setup.create_comment(post_uid=post_uid, form=form)
 
 
 ##################################################################################################
 
-# comment utilities
+# Comment Utilities
 
 ##################################################################################################
 
 
 class CommentUtils:
+    """
+    Provides utility methods for handling comments.
+
+    Args:
+        db_handler (Database): The database handler.
+
+    Methods:
+        find_comments_by_post_uid(post_uid: str) -> list[dict]:
+            Retrieves comments associated with a specific post UID.
+    """
+
     def __init__(self, db_handler: Database) -> None:
+        """
+        Initializes a CommentUtils instance.
+
+        Args:
+            db_handler (Database): The database handler.
+        """
         self._db_handler = db_handler
 
     def find_comments_by_post_uid(self, post_uid: str) -> list[dict]:
+        """
+        Retrieves comments associated with a specific post UID.
+
+        Args:
+            post_uid (str): The UID of the post.
+
+        Returns:
+            list[dict]: A list of dictionaries containing comment information.
+        """
         result = (
             self._db_handler.comment.find({"post_uid": post_uid}).sort("created_at", 1).as_list()
         )

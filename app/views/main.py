@@ -1,3 +1,4 @@
+from typing import Dict
 from urllib.parse import urlparse
 
 import bcrypt
@@ -15,7 +16,12 @@ from app.mongo import mongodb
 main = Blueprint("main", __name__, template_folder=TEMPLATE_FOLDER)
 
 
-def flashing_if_errors(form_errors: dict) -> None:
+def flashing_if_errors(form_errors: Dict[str, list[str]]) -> None:
+    """Flash error messages if form validation errors exist.
+
+    Args:
+        form_errors (Dict[str, list[str]]): Pass in a form.errors from a wtform class.
+    """
     if form_errors:
         for field, errors in form_errors.items():
             for error in errors:
@@ -23,53 +29,39 @@ def flashing_if_errors(form_errors: dict) -> None:
 
 
 @main.route("/", methods=["GET"])
-def landing_page():
-    ##################################################################################################
+def landing_page() -> str:
+    """Render the landing page.
 
-    # logging / metrics
-
-    ##################################################################################################
-
+    Returns:
+        str: Rendered HTML of the landing page.
+    """
     logger_utils.page_visited(request)
-
-    ##################################################################################################
-
-    # return page content
-
-    ##################################################################################################
-
     return render_template("main/landing-page.html")
 
 
 @main.route("/login", methods=["GET", "POST"])
-def login():
-    ##################################################################################################
+def login() -> str:
+    """Handle user login.
 
-    # early returns
+    Handles both GET and POST requests. If the user is already authenticated, redirects to the home page.
+    On POST request, validates login form, checks credentials, and logs in the user.
 
-    ##################################################################################################
-
+    Returns:
+        str: Rendered HTML of the login page or redirect to the home page on success.
+    """
     if current_user.is_authenticated:
         flash("You are already logged in.")
         logger.debug(f"Attempt to duplicate logging from user {current_user.username}.")
         return redirect(url_for("frontstage.home", username=current_user.username))
 
-    ##################################################################################################
-
-    # main actions
-
-    ##################################################################################################
-
     form = LoginForm()
 
     if form.validate_on_submit():
-
         if not mongodb.user_creds.exists("email", form.email.data):
             flash("Account not found. Please try again.", category="error")
             logger_utils.login_failed(request=request, msg=f"email {form.email.data} not found")
             return render_template("main/login.html", form=form)
 
-        # check pw
         user_creds = mongodb.user_creds.find_one({"email": form.email.data})
         encoded_input_pw = form.password.data.encode("utf8")
         encoded_valid_user_pw = user_creds.get("password").encode("utf8")
@@ -95,13 +87,14 @@ def login():
 
 
 @main.route("/signup", methods=["GET", "POST"])
-def signup():
-    ##################################################################################################
+def signup() -> str:
+    """Handle user sign-up.
 
-    # logging / metrics
+    Handles both GET and POST requests. On POST request, validates sign-up form and creates a new user.
 
-    ##################################################################################################
-
+    Returns:
+        str: Rendered HTML of the sign-up page or redirect to the login page on success.
+    """
     logger_utils.page_visited(request)
     form = SignUpForm()
 
@@ -111,55 +104,64 @@ def signup():
         return redirect(url_for("main.login"))
 
     flashing_if_errors(form.errors)
-
-    ##################################################################################################
-
-    # return page content
-
-    ##################################################################################################
-
     return render_template("main/signup.html", form=form)
 
 
 @main.route("/raise-exception", methods=["GET"])
-def error_simulator():
+def error_simulator() -> None:
+    """Simulate an error by raising an exception.
+
+    Raises:
+        Exception: Always raised to simulate an error.
+    """
     raise Exception("this is a simulation error.")
 
 
 @main.route("/error", methods=["GET"])
-def error_page():
+def error_page() -> str:
+    """Render the error page.
+
+    Returns:
+        str: Rendered HTML of the error page.
+    """
     return render_template("main/500.html")
 
 
 @main.route("/robots.txt", methods=["GET"])
-def robotstxt():
-    return open("robots.txt", "r")
+def robotstxt() -> str:
+    """Serve the robots.txt file.
+
+    Returns:
+        str: Content of the robots.txt file.
+    """
+    return open("robots.txt", "r").read()
 
 
 @main.route("/sitemap")
 @main.route("/sitemap/")
 @main.route("/sitemap.xml")
-def sitemap():
-    """
-    Route to dynamically generate a sitemap of your website/application.
-    lastmod and priority tags omitted on static pages.
-    lastmod included on dynamic content such as blog posts.
-    """
+def sitemap() -> str:
+    """Generate and serve a sitemap of the website/application.
 
+    Returns:
+        str: XML content of the sitemap.
+    """
     host_components = urlparse(request.host_url)
-    host_base = host_components.scheme + "://" + host_components.netloc
+    host_base = f"{host_components.scheme}://{host_components.netloc}"
 
-    # Static routes with static content
-    static_urls = []
-    for route in ["/", "/login", "/register"]:
-        static_urls.append({"loc": f"{host_base}{route}"})
+    # Static routes
+    static_urls = [{"loc": f"{host_base}{route}"} for route in ["/", "/login", "/register"]]
 
-    # Dynamic routes with dynamic content
+    # Dynamic routes
     dynamic_urls = []
     for username in user_utils.get_all_username():
-        dynamic_urls.append({"loc": f"{host_base}/@{username}"})
-        dynamic_urls.append({"loc": f"{host_base}/@{username}/blog"})
-        dynamic_urls.append({"loc": f"{host_base}/@{username}/about"})
+        dynamic_urls.extend(
+            [
+                {"loc": f"{host_base}/@{username}"},
+                {"loc": f"{host_base}/@{username}/blog"},
+                {"loc": f"{host_base}/@{username}/about"},
+            ]
+        )
     for username in user_utils.get_all_username_gallery_enabled():
         dynamic_urls.append({"loc": f"{host_base}/@{username}/gallery"})
     for username in user_utils.get_all_username_changelog_enabled():
@@ -167,30 +169,18 @@ def sitemap():
 
     for post in post_utils.get_all_posts_info():
         slug = post.get("custom_slug")
-        if slug:
-            url = {
-                "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug}",
-                "lastmod": post.get("last_updated"),
-            }
-        else:
-            url = {
-                "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}",
-                "lastmod": post.get("last_updated"),
-            }
+        url = {
+            "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug if slug else ''}",
+            "lastmod": post.get("last_updated"),
+        }
         dynamic_urls.append(url)
 
     for project in projects_utils.get_all_projects_info():
         slug = project.get("custom_slug")
-        if slug:
-            url = {
-                "loc": f"{host_base}/@{project.get('author')}/projects/{project.get('project_uid')}/{slug}",
-                "lastmod": project.get("last_updated"),
-            }
-        else:
-            url = {
-                "loc": f"{host_base}/@{project.get('author')}/projects/{project.get('project_uid')}",
-                "lastmod": project.get("last_updated"),
-            }
+        url = {
+            "loc": f"{host_base}/@{project.get('author')}/projects/{project.get('project_uid')}/{slug if slug else ''}",
+            "lastmod": project.get("last_updated"),
+        }
         dynamic_urls.append(url)
 
     xml_sitemap = render_template(
