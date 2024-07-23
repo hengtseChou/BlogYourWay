@@ -122,7 +122,7 @@ class ExtendedCollection:
 
 
 class ExtendedCursor(Cursor):
-    def __init__(self, collection: Collection, filter: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, collection: ExtendedCollection, filter: Optional[Dict[str, Any]] = None) -> None:
         """Initialize the ExtendedCursor with a MongoDB collection and filter.
 
         Args:
@@ -176,10 +176,10 @@ class ExtendedCursor(Cursor):
         """
         self.__check_okay_to_chain()
         return list(self)
-
+    
     def __check_okay_to_chain(self) -> None:
         """Check if chaining operations is allowed."""
-        return super(Cursor, self)._Cursor__check_okay_to_chain()
+        return super(ExtendedCursor, self)._Cursor__check_okay_to_chain()
 
 
 class Database:
