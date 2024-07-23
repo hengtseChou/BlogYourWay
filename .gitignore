@@ -4,6 +4,7 @@
 *.log
 dev_requirements.txt
 db-reset.sh
+add_field_to_existing_mongodb.py
 # folder
 __pycache__/
 .venv/
