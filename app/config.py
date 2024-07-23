@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Environment variables
-ENV: str = os.getenv("ENV")  # Environment mode (debug or prod)
+ENV: str = os.getenv("ENV")  # Environment mode (dev or prod)
 APP_SECRET: str = os.getenv("APP_SECRET")  # Application secret key
 MONGO_URL: str = os.getenv("MONGO_URL")  # MongoDB connection URL
 RECAPTCHA_KEY: str = os.getenv("RECAPTCHA_KEY")  # reCAPTCHA public key

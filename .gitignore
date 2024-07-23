@@ -2,10 +2,9 @@
 *.env
 *.pyc
 *.log
-requirements_debug.txt
+dev_requirements.txt
 db-reset.sh
 # folder
 __pycache__/
 .venv/
 .ruff_cache/
-.pytest_cache/

@@ -32,15 +32,15 @@ def create_app() -> Flask:
     logger.info("App initialization started.")
     app.secret_key = APP_SECRET
 
-    # Debug mode configuration
-    if ENV == "debug":
+    # develop environment configuration
+    if ENV == "dev":
         app.config["DEBUG"] = True
-        # Uncomment the following lines to enable Flask Debug Toolbar
-        # from flask_debugtoolbar import DebugToolbarExtension
-        # toolbar = DebugToolbarExtension()
-        # toolbar.init_app(app)
-        # app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
-        # logger.debug("Debugtoolbar initialized.")
+
+        from flask_debugtoolbar import DebugToolbarExtension
+        toolbar = DebugToolbarExtension()
+        toolbar.init_app(app)
+        app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
+        logger.debug("Debugtoolbar initialized.")
 
     # Cache configuration
     app.config["CACHE_TYPE"] = "SimpleCache"
