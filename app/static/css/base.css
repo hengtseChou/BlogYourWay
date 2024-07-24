@@ -13,7 +13,7 @@ body {
   flex: 1; /* This will make the content area grow to fill the available space */
   min-height: calc(
     100vh - var(--navbar-height, 0px) - var(--cover-height, 0px) -
-      var(--bottom-nav-height, 0px) - var(--footer-height, 0px)
+      var(--bottom-nav-height, 0px) - var(--footer-height, 0px) + 400px
   );
 }
 
@@ -35,8 +35,6 @@ body {
 
 .cover-container {
   width: 100%;
-  height: calc(100vw / 3.5);
-  min-height: 250px;
   margin-top: -10px;
   background-size: cover; /* This will maintain the aspect ratio and crop the image */
   background-position: center; /* This will center the image within the container */

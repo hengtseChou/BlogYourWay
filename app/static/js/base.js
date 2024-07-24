@@ -99,7 +99,7 @@ function formatCounts() {
   });
 }
 
-function setDynamicHeights() {
+function setContentContainerHeight() {
   const navbar = document.querySelector(".navbar");
   const cover = document.querySelector(".cover");
   const bottomNav = document.querySelector(".bottom-nav");
@@ -142,8 +142,21 @@ function setDynamicHeights() {
   }
 }
 
+function setCoverContainerHeight() {
+  const coverContainers = document.querySelectorAll(".cover-container");
+
+  coverContainers.forEach((container) => {
+    const width = container.clientWidth;
+    const height = (9 / 21) * width;
+    container.style.height = `${height}px`;
+  });
+}
+
 updateCurrentYear();
 convertUTCToLocal();
 formatCounts();
-window.addEventListener("load", setDynamicHeights);
-window.addEventListener("resize", setDynamicHeights);
+setCoverContainerHeight();
+setContentContainerHeight();
+
+window.addEventListener("resize", setContentContainerHeight);
+window.addEventListener("resize", setCoverContainerHeight);

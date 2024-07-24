@@ -21,6 +21,7 @@
         {{ form_general.hidden_tag() }}
         <div class="mb-4">
           <label for="cover_url" class="form-label ms-2 fst-italic text-black">· Change blog cover image</label>
+        <div class="ms-2 my-2 text-grey fw-light">We recommend using 21:9 image, as cover will be automatically cropped.</div>
           {{ form_general.cover_url(class="form-control border-underline", value=user.cover_url) }}
         </div>
         <div class="mb-4">
