@@ -16,7 +16,7 @@ def return_client_ip(request: Request, env: str) -> Optional[str]:
     Returns:
         Optional[str]: The client's IP address or None if not found.
     """
-    if env == "debug":
+    if env == "dev":
         return request.remote_addr
     elif env == "prod":
         return request.headers.get("X-Forwarded-For")
