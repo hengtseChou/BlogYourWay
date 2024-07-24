@@ -18,7 +18,7 @@
               {% for post in posts %}
                 <div class="ms-lg-2 ms-0 my-4 p-4 border rounded-2">
                   <a href="{{ url_for('frontstage.blogpost', username=post.author, post_uid=post.post_uid) }}"
-                     class="header-link">
+                     class="main-theme-link">
                     <h3 class="fw-bold">{{ post.title }}</h3>
                   </a>
                   <div class="d-flex align-items-center my-3">

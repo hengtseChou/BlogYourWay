@@ -81,7 +81,7 @@ class HTMLFormatter:
         Args:
             html (str): A string that is already HTML.
         """
-        self.__soup = BeautifulSoup(html, "html.parser")
+        self._soup = BeautifulSoup(html, "html.parser")
 
     def add_padding(self) -> Self:
         """
@@ -90,7 +90,7 @@ class HTMLFormatter:
         Returns:
             HTMLFormatter: The formatter instance.
         """
-        blocks = self.__soup.find_all(
+        blocks = self._soup.find_all(
             lambda tag: tag.name not in ["figure", "img"], recursive=False
         )
         for block in blocks:
@@ -107,15 +107,15 @@ class HTMLFormatter:
         Returns:
             HTMLFormatter: The formatter instance.
         """
-        small_headings = self.__soup.find_all("h3")
+        small_headings = self._soup.find_all("h3")
         for heading in small_headings:
             heading.name = "h5"
 
-        medium_headings = self.__soup.find_all("h2")
+        medium_headings = self._soup.find_all("h2")
         for heading in medium_headings:
             heading.name = "h3"
 
-        big_headings = self.__soup.find_all("h1")
+        big_headings = self._soup.find_all("h1")
         for heading in big_headings:
             heading.name = "h2"
             heading["class"] = "py-3"
@@ -129,13 +129,13 @@ class HTMLFormatter:
         Returns:
             HTMLFormatter: The formatter instance.
         """
-        figures = self.__soup.find_all(["figure"])
+        figures = self._soup.find_all("figure")
         for figure in figures:
             current_class = figure.get("class", [])
             current_class.extend(["figure", "w-100", "mx-auto"])
             figure["class"] = current_class
 
-        imgs = self.__soup.find_all(["img"])
+        imgs = self._soup.find_all(["img"])
         for img in imgs:
             img_src = img["src"]
             img["src"] = ""
@@ -144,13 +144,29 @@ class HTMLFormatter:
             current_class.extend(["lazyload", "figure-img", "img-fluid", "rounded", "w-100"])
             img["class"] = current_class
 
-        captions = self.__soup.find_all(["figcaption"])
+        captions = self._soup.find_all(["figcaption"])
         for caption in captions:
             current_class = caption.get("class", [])
             current_class.extend(["figure-caption", "text-center", "py-2"])
             caption["class"] = current_class
 
         return self
+    
+    def modify_hyperlink(self) -> Self:
+        """
+        Apply color theme to hyperlinks in the post.
+
+        Returns:
+            HTMLFormatter: The formatter instance.
+        """
+        links = self._soup.find_all("a")
+        for link in links:
+            current_class = link.get("class", [])
+            current_class.extend(["main-theme-link"])
+            link["class"] = current_class
+
+        return self
+        
 
     def to_string(self) -> str:
         """
@@ -159,7 +175,7 @@ class HTMLFormatter:
         Returns:
             str: The formatted HTML string.
         """
-        return str(self.__soup)
+        return str(self._soup)
 
 
 def convert_post_content(content: str) -> str:
@@ -175,7 +191,7 @@ def convert_post_content(content: str) -> str:
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes", "toc"])
     html = md.convert("[TOC]\r\n" + content)
     formatter = HTMLFormatter(html)
-    html = formatter.add_padding().change_headings().modify_figure().to_string()
+    html = formatter.add_padding().change_headings().modify_figure().modify_hyperlink().to_string()
 
     return html
 

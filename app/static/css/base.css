@@ -110,24 +110,24 @@ img.profile-sm {
 
 /* blogpost */
 
-.header-link {
+.main-theme-link {
   text-decoration: none;
-  color: #333;
+  color: #000000;
 }
 
-.header-link:hover {
+.main-theme-link:hover {
   text-decoration: underline;
   color: #f7966b;
 }
 
 .author-link {
   text-decoration: none;
-  color: #333;
+  color: #000000;
 }
 
 .author-link:hover {
   text-decoration: underline;
-  color: #333;
+  color: #000000;
 }
 
 .tag {
