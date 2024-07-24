@@ -9,12 +9,12 @@ class PostInfo:
 
     Attributes:
         post_uid (str): Unique identifier for the post.
-        custom_slug (str): Custom URL slug for the post.
         title (str): Title of the post.
         subtitle (str): Subtitle of the post.
         author (str): Author of the post.
         tags (List[str]): List of tags associated with the post.
         cover_url (str): URL of the cover image for the post.
+        custom_slug (str): Custom URL slug for the post.
         created_at (datetime): Timestamp when the post was created. Defaults to the current UTC time.
         last_updated (datetime): Timestamp when the post was last updated. Defaults to the current UTC time.
         archived (bool): Flag indicating if the post is archived. Defaults to False.
@@ -24,12 +24,12 @@ class PostInfo:
     """
 
     post_uid: str
-    custom_slug: str
     title: str
     subtitle: str
     author: str
     tags: List[str]
     cover_url: str
+    custom_slug: str
     created_at: datetime = datetime.now(timezone.utc)
     last_updated: datetime = datetime.now(timezone.utc)
     archived: bool = False
