@@ -194,6 +194,7 @@ class Database:
         posts_db = client["posts"]
         comments_db = client["comments"]
         project_db = client["projects"]
+        changelog_db = client["changelog"]
 
         self._user_creds = ExtendedCollection(users_db["user-creds"])
         self._user_info = ExtendedCollection(users_db["user-info"])
@@ -203,6 +204,7 @@ class Database:
         self._comment = ExtendedCollection(comments_db["comment"])
         self._project_info = ExtendedCollection(project_db["project-info"])
         self._project_content = ExtendedCollection(project_db["project-content"])
+        self._changelog = ExtendedCollection(changelog_db["changelog-entry"])
 
     @property
     def client(self) -> MongoClient:
@@ -284,6 +286,10 @@ class Database:
             ExtendedCollection: The collection for project content.
         """
         return self._project_content
+    
+    @property
+    def changelog(self) -> ExtendedCollection:
+        return self._changelog
 
 
 client = MongoClient(MONGO_URL, connect=False)

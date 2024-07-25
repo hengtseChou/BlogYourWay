@@ -29,8 +29,8 @@ function toggleSlug() {
   var slugSection = document.getElementById("slug-section");
   var addButton = document.getElementById("add-slug-button");
 
-  slugSection.style.display = "block";
-  addButton.style.display = "none";
+  slugSection.classList.remove("d-none");
+  addButton.classList.add("d-none");
 }
 
 function showInputGroup() {
@@ -127,9 +127,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Listen for the 'hidden.bs.modal' event, which is fired after the modal has been hidden
   modal.addEventListener("hidden.bs.modal", function () {
     var slugSection = document.getElementById("slug-section");
-    var slugAddButton = document.getElementById("add-slug-button");
+    var addButton = document.getElementById("add-slug-button");
 
-    slugSection.style.display = "none";
-    slugAddButton.style.display = "block";
+    slugSection.classList.add("d-none");
+    addButton.classList.remove("d-none");
   });
 });

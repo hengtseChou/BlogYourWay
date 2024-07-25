@@ -29,8 +29,9 @@
             </a>
           {% endif %}
           {% if user.changelog_enabled %}
-            <a class="btn w-100 px-2">
-              <span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Change Log
+            <a class="btn w-100 px-2"
+               href="{{ url_for("backstage.changelog_panel") }}">
+              <span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Changelog
             </a>
           {% endif %}
           <a class="btn w-100 px-2" href="{{ url_for("backstage.edit_about") }}">
@@ -95,8 +96,10 @@
                 </a>
               {% endif %}
               {% if user.changelog_enabled %}
-                <a class="btn w-100 px-2"id="mobile-nav-changelog">
-                  <span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Change Log
+                <a class="btn w-100 px-2"
+                   href="{{ url_for("backstage.changelog_panel") }}"
+                   id="mobile-nav-changelog">
+                  <span class="ms-2 me-3"><i class="fa-solid fa-clock"></i></span>Changelog
                 </a>
               {% endif %}
               <a class="btn w-100 px-2"

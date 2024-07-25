@@ -9,6 +9,7 @@ from typing_extensions import Self
 
 from app.mongo import Database
 
+
 ##################################################################################################
 
 # uid generator
@@ -64,6 +65,14 @@ class UIDGenerator:
             project_uid = "".join(random.choices(alphabet, k=8))
             if not self._db_handler.project_info.exists("project_uid", project_uid):
                 return project_uid
+    
+    def generate_changelog_uid(self) -> str:
+        alphabet = string.ascii_lowercase + string.digits
+        while True:
+            changelog_uid = "".join(random.choices(alphabet, k=8))
+            if not self._db_handler.changelog.exists("changelog_uid", changelog_uid):
+                return changelog_uid
+
 
 
 ##################################################################################################
@@ -253,7 +262,7 @@ class Paging:
         self._allow_next_page = None
         self._current_page = None
 
-    def setup(self, username: str, database: str, current_page: int, num_per_page: int) -> "Paging":
+    def setup(self, username: str, database: str, current_page: int, num_per_page: int) -> Self:
         """
         Set up pagination for a user and database.
 
@@ -284,6 +293,10 @@ class Paging:
             )
         elif self._database == "project_info":
             num_not_archived = self._db_handler.project_info.count_documents(
+                {"author": username, "archived": False}
+            )
+        elif self._database == "changelog":
+            num_not_archived = self._db_handler.changelog.count_documents(
                 {"author": username, "archived": False}
             )
         else:
@@ -359,7 +372,7 @@ class Paging:
 ##################################################################################################
 
 
-def string_truncate(text: str, max_len: int) -> str:
+def slicing_title(text: str, max_len: int) -> str:
     """
     Truncate the input string to the given max length, with trailing ellipsis if truncated.
 

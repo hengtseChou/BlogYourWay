@@ -30,7 +30,7 @@
           <table class="table">
             <thead>
               <tr>
-                <th style="width: 42%">Title</th>
+                <th style="width: 32%">Title</th>
                 <th style="width: 14%">Created At</th>
                 <th style="width: 14%">Last Updated</th>
                 <th style="width: 8%" class="text-center">Views</th>
@@ -42,7 +42,7 @@
             <tbody>
               {% for project in projects %}
                 <tr>
-                  <td class="align-middle">
+                  <td>
                     <a href="{{ url_for('frontstage.project', username=project.author, project_uid=project.project_uid) }}"
                        class="text-black">{{ project.title }}</a>
                   </td>
@@ -137,16 +137,16 @@
     <div class="row">
       <div class="col-6 text-start">
         {% if pagination.is_previous_page_allowed %}
-          {% set previous_page = pagination.current_page - 1 %}
-          <a href="projects?page={{ previous_page }}" class="btn">
+          <a href="{{ url_for(backstage.projects_panel, page=(pagination.current_page - 1) ) }}"
+             class="btn">
             <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Prev
           </a>
         {% endif %}
       </div>
       <div class="col-6 text-end">
         {% if pagination.is_next_page_allowed %}
-          {% set next_page = pagination.current_page + 1 %}
-          <a href="projects?page={{ next_page }}" class="btn">
+          <a href="{{ url_for(backstage.projects_panel, page=(pagination.current_page + 1) ) }}"
+             class="btn">
             Next
             <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
           </a>
@@ -238,7 +238,7 @@
                       id="add-slug-button"
                       onclick="toggleSlug()">+ Custom Slug</button>
             </div>
-            <div class="mb-4" id="slug-section" style="display:none;">
+            <div class="mb-4 d-none" id="slug-section">
               <label for="custom_slug" class="form-label ms-2 fst-italic text-black">· Custom slug</label>
               {{ form.custom_slug(class="form-control border-underline") }}
             </div>

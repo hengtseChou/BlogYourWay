@@ -16,4 +16,13 @@ document.addEventListener("DOMContentLoaded", function () {
       deleteProjectModal.href = `/backstage/delete/project?&uid=${projectUid}`; // Update the modal's delete link
     });
   });
+
+  const deleteChangelogBtn = document.querySelectorAll(".delete-changelog-btn");
+  const deleteChangelogModal = document.getElementById("deleteChangelogBtn");
+  deleteChangelogBtn.forEach((button) => {
+    button.addEventListener("click", function () {
+      const changelogUid = this.dataset.changelogUid;
+      deleteChangelogModal.href = `/backstage/delete/changelog?&uid=${changelogUid}`; // Update the modal's delete link
+    });
+  });
 });

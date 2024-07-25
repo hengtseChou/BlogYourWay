@@ -1,0 +1,155 @@
+{% extends 'backstage/panel.html' %}
+{% block head %}
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/backstage/panel.css') }}" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker.min.js"
+          defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
+          defer></script>
+  <script src="{{ url_for('static', filename='js/backstage/changelog.js') }}"
+          defer></script>
+  <script src="{{ url_for('static', filename='js/backstage/mobile-nav-btn.js') }}"
+          defer></script>
+{% endblock %}
+{% block panel %}
+  <div id="current-panel" class="d-none">changelog</div>
+  <!-- desktop view -->
+  <div class="d-none d-md-block">
+    <div class="d-flex align-items-center main-panel-header-offset">
+      <h2 class="ms-2">Changelog</h2>
+      <button class="btn btn-panel ms-auto me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#newChangelogModal">+ New Changelog</button>
+    </div>
+    <hr />
+    {% if changelogs | length == 0 %}
+      <p class="ms-2">Now you can update yourself just like a product! Read more about <a href="https://brianlovin.com/writing/make-a-personal-changelog">personal changelog</a>.</p>
+    {% else %}
+      <div class="col-11">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 32%">Title</th>
+                <th style="width: 14%">Date</th>
+                <th style="width: 14%">Created At</th>
+                <th style="width: 14%">Last Updated</th>
+                <th style="width: 8%" class="text-center">Category</th>
+                <th style="width: 8%" class="text-center">Edit</th>
+                <th style="width: 8%" class="text-center">Archive</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for changelog in changelogs %}
+                <tr>
+                  <td class="align-middle">
+                    {{ changelog.title }}
+                  </td>
+                  <td>
+                    <span class="utc-to-local-short">{{ changelog.date }}</span>
+                  </td>
+                  <td>
+                    <span class="utc-to-local-long">{{ changelog.created_at }}</span>
+                  </td>
+                  <td>
+                    <span class="utc-to-local-long">{{ changelog.last_updated }}</span>
+                  </td>
+                  <td class="text-center">{{ changelog.category }}</td>
+                  <td class="text-center">
+                    <a href="{{ url_for('backstage.edit_changelog', changelog_uid=changelog.changelog_uid) }}"
+                       class="backstage-icon"><i class="fa-regular fa-pen-to-square"></i></a>
+                  </td>
+                  <td class="text-center">
+                    <a href="{{ url_for('backstage.toggle_archived', type='changelog', uid=changelog.changelog_uid, archived='to_true') }}"
+                       class="backstage-icon"><i class="fa-solid fa-box-archive"></i></a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  <!-- mobile view -->
+  <div class="d-block d-md-none mt-2">
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="ms-2 mt-3">Projects</h2>
+      <button class="btn btn-panel ms-auto me-3"
+              data-bs-toggle="modal"
+              data-bs-target="#newChangelogModal">+ New changelog</button>
+    </div>
+    <hr />
+  </div>
+  <!-- Modal -->
+  <div class="modal fade"
+       id="newChangelogModal"
+       data-bs-backdrop="static"
+       data-bs-keyboard="false"
+       tabindex="-1"
+       aria-labelledby="myModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Write About Your Update...</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <form method="post" autocomplete="off" id="form">
+          {{ form.hidden_tag() }}
+          <div class="modal-body">
+            <div class="mb-4">
+              <label for="title" class="form-label ms-2 fst-italic text-black">· Title</label>
+              {{ form.title(class="form-control border-underline") }}
+            </div>
+            <div class="mb-4">
+              <div class="row">
+                <div class="col-6">
+                  <label class="form-label ms-2 fst-italic text-black">· Date</label>
+                  <div class="d-flex">
+                    {{ form.date(class="form-control border-underline") }}
+                    <button type="button" class="btn btn-panel ms-2" id="today">Today</button>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label ms-2 fst-italic text-black">· Category</label>
+                  {{ form.category(class="form-select") }}
+                </div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label for="tags" class="form-label ms-2 fst-italic text-black">· Tags</label>
+              {{ form.tags(class="form-control border-underline") }}
+            </div>
+            <div class="mb-4">
+              <button type="button"
+                      class="btn btn-panel me-2"
+                      id="add-link-button"
+                      onclick="toggleLink()">+ External Link</button>
+            </div>
+            <div class="mb-4 d-none" id="link-section">
+              <label class="form-label ms-2 fst-italic text-black">· External Link</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-link"></i></span>
+                {{ form.link(class="form-control") }}
+                {{ form.link_description(class="form-control") }}
+              </div>
+            </div>
+            <div class="mb-4">{{ form.editor }}</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn cancel-btn me-2" data-bs-dismiss="modal">Cancel</button>
+            {{ form.submit_(class="btn btn-panel") }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

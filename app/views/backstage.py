@@ -1,9 +1,11 @@
 from bcrypt import checkpw, gensalt, hashpw
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from datetime import datetime
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for, Response
 from flask_login import current_user, login_required, logout_user
 
 from app.cache import cache, update_user_cache
 from app.config import TEMPLATE_FOLDER
+from app.forms.changelog import NewChangelogForm, EditChangelogForm
 from app.forms.posts import EditPostForm, NewPostForm
 from app.forms.projects import EditProjectForm, NewProjectForm
 from app.forms.users import (
@@ -13,10 +15,11 @@ from app.forms.users import (
     UpdateSocialLinksForm,
     UserDeletionForm,
 )
+from app.helpers.changelog import create_changelog, changelog_utils, update_changelog
 from app.helpers.posts import create_post, post_utils, update_post
 from app.helpers.projects import create_project, projects_utils, update_project
 from app.helpers.users import user_utils
-from app.helpers.utils import Paging, string_truncate
+from app.helpers.utils import Paging, slicing_title
 from app.logging import logger, logger_utils
 from app.mongo import mongodb
 from app.views.main import flashing_if_errors
@@ -26,11 +29,11 @@ backstage = Blueprint("backstage", __name__, template_folder=TEMPLATE_FOLDER)
 
 @backstage.route("/", methods=["GET"])
 @login_required
-def backstage_root() -> str:
+def backstage_root() -> Response:
     """Redirects to the posts panel.
 
     Returns:
-        str: URL to the posts panel.
+        Response: URL to the posts panel.
 
     """
     return redirect(url_for("backstage.posts_panel"))
@@ -48,7 +51,7 @@ def posts_panel() -> str:
         str: Rendered template of the posts panel with context.
 
     """
-    session["user_current_tab"] = "posts"
+    session["user_current_panel"] = "posts"
     logger_utils.backstage(username=current_user.username, panel="posts")
 
     current_page = request.args.get("page", default=1, type=int)
@@ -72,10 +75,8 @@ def posts_panel() -> str:
         posts_per_page=POSTS_EACH_PAGE,
     )
     for post in posts:
-        post["title"] = string_truncate(post.get("title"), 30)
-        post["views"] = format(post.get("views"), ",")
-        comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
-        post["comments"] = format(comment_count, ",")
+        post["title"] = slicing_title(post.get("title"), 25)
+        post["comments"] = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
 
     logger_utils.pagination(panel="posts", num=len(posts))
 
@@ -96,7 +97,7 @@ def projects_panel() -> str:
         str: Rendered template of the projects panel with context.
 
     """
-    session["user_current_tab"] = "projects"
+    session["user_current_panel"] = "projects"
     logger_utils.backstage(username=current_user.username, panel="projects")
 
     current_page = request.args.get("page", default=1, type=int)
@@ -118,7 +119,7 @@ def projects_panel() -> str:
     paging.setup(current_user.username, "project_info", current_page, PROJECTS_PER_PAGE)
 
     for project in projects:
-        project["title"] = string_truncate(project.get("title"), 40)
+        project["title"] = slicing_title(project.get("title"), 40)
 
     logger_utils.pagination(panel="posts", num=len(projects))
 
@@ -140,23 +141,52 @@ def archive_panel() -> str:
         str: Rendered template of the archive panel with context.
 
     """
-    session["user_current_tab"] = "archive"
+    session["user_current_panel"] = "archive"
     logger_utils.backstage(username=current_user.username, panel="archive")
 
     user = mongodb.user_info.find_one({"username": current_user.username})
     posts = post_utils.get_archived_posts_info(current_user.username)
     for post in posts:
         post["views"] = format(post.get("views"), ",")
-        comment_count = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
-        post["comments"] = format(comment_count, ",")
+        post["comments"] = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
     projects = projects_utils.get_archived_projects_info(current_user.username)
-    for project in projects:
-        project["created_at"] = project.get("created_at").strftime("%Y-%m-%d %H:%M:%S")
-        project["views"] = format(project.get("views"), ",")
+    changelogs = changelog_utils.get_archived_changelogs(current_user.username)
 
     logger_utils.pagination(panel="archive", num=(len(posts) + len(projects)))
 
-    return render_template("backstage/archive.html", user=user, posts=posts, projects=projects)
+    return render_template("backstage/archive.html", user=user, posts=posts, projects=projects, changelogs=changelogs)
+
+@backstage.route("/changelog", methods=["GET", "POST"])
+@login_required
+def changelog_panel() -> str:
+    session["user_current_panel"] = "changelog"
+    logger_utils.backstage(username=current_user.username, panel="changelog")
+
+    current_page = request.args.get("page", default=1, type=int)
+    user = mongodb.user_info.find_one({"username": current_user.username})
+
+    form = NewChangelogForm()
+    if form.validate_on_submit():
+        changelog_uid = create_changelog(form)
+        if changelog_uid is not None:
+            logger.debug(f"Changelog {changelog_uid} has been created.")
+            flash("New changelog published successfully!", category="success")
+    flashing_if_errors(form.errors)
+
+    user = mongodb.user_info.find_one({"username": current_user.username})
+    CHANGELOGS_PER_PAGE = 10
+    changelogs = changelog_utils.get_changelogs_with_pagination(
+        current_user.username, current_page, CHANGELOGS_PER_PAGE
+    )
+    paging = Paging(mongodb)
+    paging.setup(current_user.username, "changelog", current_page, CHANGELOGS_PER_PAGE)
+
+    for changelog in changelogs:
+        changelog["title"] = slicing_title(changelog.get("title"), 40)
+
+    logger_utils.pagination(panel="changelog", num=len(changelogs))
+
+    return render_template("backstage/changelog.html", user=user, form=form, pagination=paging, changelogs=changelogs)
 
 
 @backstage.route("/theme", methods=["GET", "POST"])
@@ -170,6 +200,7 @@ def theme_panel() -> str:
         str: Rendered template of the theme settings panel with context.
 
     """
+    session["user_current_panel"] = "theme"
     logger_utils.backstage(username=current_user.username, panel="theme")
 
     user = mongodb.user_info.find_one({"username": current_user.username})
@@ -189,6 +220,7 @@ def settings_panel() -> str:
         str: Rendered template of the settings panel with context.
 
     """
+    session["user_current_panel"] = "settings"
     logger_utils.backstage(username=current_user.username, panel="settings")
 
     user = mongodb.user_info.find_one({"username": current_user.username})
@@ -210,6 +242,8 @@ def settings_panel() -> str:
         logger.debug(f"General settings for {current_user.username} have been updated.")
         flash("Update succeeded!", category="success")
         update_user_cache(cache, current_user.username)
+        user = mongodb.user_info.find_one({"username": current_user.username})
+
 
     if form_social.submit_links.data and form_social.validate_on_submit():
         updated_links = []
@@ -228,6 +262,7 @@ def settings_panel() -> str:
         logger.debug(f"Social links for {current_user.username} have been updated.")
         flash("Social Links updated!", category="success")
         update_user_cache(cache, current_user.username)
+        user = mongodb.user_info.find_one({"username": current_user.username})
 
     if form_update_pw.submit_pw.data and form_update_pw.validate_on_submit():
         current_pw = form_update_pw.current_pw.data
@@ -254,6 +289,7 @@ def settings_panel() -> str:
         )
         logger.debug(f"Password for user {current_user.username} has been updated.")
         flash("Password update succeeded!", category="success")
+        user = mongodb.user_info.find_one({"username": current_user.username})
 
     if form_deletion.submit_delete.data and form_deletion.validate_on_submit():
         pw = form_deletion.password.data
@@ -319,8 +355,8 @@ def edit_post(post_uid: str) -> str:
         update_post(post_uid, form)
         logger.debug(f"Post {post_uid} is updated.")
         title = mongodb.post_info.find_one({"post_uid": post_uid}).get("title")
-        title_truncated = string_truncate(title, max_len=20)
-        flash(f'Your post "{title_truncated}" has been updated!', category="success")
+        title_sliced = slicing_title(title, max_len=20)
+        flash(f'Your post "{title_sliced}" has been updated!', category="success")
 
     flashing_if_errors(form.errors)
 
@@ -392,41 +428,66 @@ def edit_project(project_uid: str) -> str:
     user = mongodb.user_info.find_one({"username": current_user.username})
     project = projects_utils.get_full_project(project_uid)
     project["tags"] = ", ".join(project.get("tags"))
-    form = EditProjectForm()
 
+    form = EditProjectForm()
     if form.validate_on_submit():
         update_project(project_uid, form)
         logger.debug(f"Project {project_uid} is updated.")
-        title_truncated = string_truncate(
+        title_sliced = slicing_title(
             mongodb.project_info.find_one({"project_uid": project_uid}).get("title"),
             max_len=20,
         )
-        flash(f'Your project "{title_truncated}" has been updated!', category="success")
+        flash(f'Your project "{title_sliced}" has been updated!', category="success")
         project = projects_utils.get_full_project(project_uid)
         project["tags"] = ", ".join(project.get("tags"))
-
     flashing_if_errors(form.errors)
 
     if request.method == "POST":
         return redirect(url_for("backstage.projects_panel"))
-
     return render_template("backstage/edit-project.html", project=project, user=user, form=form)
 
 
+@backstage.route("/edit/changelog/<changelog_uid>", methods=["GET", "POST"])
+@login_required
+def edit_changelog(changelog_uid: str) -> str:
+    logger_utils.backstage(username=current_user.username, panel="edit_changelog")
+
+    user = mongodb.user_info.find_one({"username": current_user.username})
+    changelog = mongodb.changelog.find_one({"changelog_uid": changelog_uid})
+    changelog["date"] = changelog.get("date").strftime("%m/%d/%Y")
+    changelog["tags"] = ", ".join(changelog.get("tags"))
+
+    form = EditChangelogForm()
+    if form.validate_on_submit():
+        update_changelog(changelog_uid, form)
+        logger.debug(f"Changelog {changelog_uid} is updated.")
+        title_sliced = slicing_title(
+            mongodb.changelog.find_one({"changelog_uid": changelog_uid}).get("title"),
+            max_len=20,
+        )
+        flash(f'Your changelog "{title_sliced}" has been updated!', category="success")
+        changelog = mongodb.changelog.find_one({"changelog_uid": changelog_uid})
+        changelog["tags"] = ", ".join(changelog.get("tags"))
+    flashing_if_errors(form.errors)
+
+    if request.method == "POST":
+        return redirect(url_for("backstage.changelog_panel"))
+    return render_template("backstage/edit-changelog.html", changelog=changelog, user=user, form=form)
+
 @backstage.route("/edit-featured", methods=["GET"])
 @login_required
-def toggle_featured() -> str:
+def toggle_featured() -> Response:
     """Toggles the featured status of a post.
 
     Args:
         None
 
     Returns:
-        str: Redirects to the posts panel page.
+        Response: Redirects to the posts panel page.
     """
     post_uid = request.args.get("uid")
     post_info = mongodb.post_info.find_one({"post_uid": post_uid})
-    truncated_post_title = string_truncate(post_info.get("title"), max_len=20)
+    truncated_post_title = slicing_title(post_info.get("title"), max_len=20)
 
     if request.args.get("featured") == "to_true":
         updated_featured_status = True
@@ -451,14 +512,14 @@ def toggle_featured() -> str:
 
 @backstage.route("/edit-archived", methods=["GET"])
 @login_required
-def toggle_archived() -> str:
+def toggle_archived() -> Response:
     """Toggles the archived status of posts or projects.
 
     Args:
         None
 
     Returns:
-        str: Redirects to the appropriate panel based on the current tab.
+        REsponse: Redirects to the appropriate panel based on the current tab.
     """
     content_type = request.args.get("type")
 
@@ -468,17 +529,17 @@ def toggle_archived() -> str:
 
         author = post_info.get("author")
         tags = post_info.get("tags")
-        title_truncated = string_truncate(post_info.get("title"), max_len=20)
+        title_sliced = slicing_title(post_info.get("title"), max_len=20)
 
         if request.args.get("archived") == "to_true":
             updated_archived_status = True
             tags_increment = {f"tags.{tag}": -1 for tag in tags}
-            flash(f'Your post "{title_truncated}" is now archived!', category="success")
+            flash(f'Your post "{title_sliced}" is now archived!', category="success")
         else:
             updated_archived_status = False
             tags_increment = {f"tags.{tag}": 1 for tag in tags}
             flash(
-                f'Your post "{title_truncated}" is now restored from the archive!',
+                f'Your post "{title_sliced}" is now restored from the archive!',
                 category="success",
             )
 
@@ -494,17 +555,15 @@ def toggle_archived() -> str:
     elif content_type == "project":
         project_uid = request.args.get("uid")
         project_info = mongodb.project_info.find_one({"project_uid": project_uid})
-
-        author = project_info.get("author")
-        title_truncated = string_truncate(project_info.get("title"), max_len=20)
+        title_sliced = slicing_title(project_info.get("title"), max_len=20)
 
         if request.args.get("archived") == "to_true":
             updated_archived_status = True
-            flash(f'Your project "{title_truncated}" is now archived!', category="success")
+            flash(f'Your project "{title_sliced}" is now archived!', category="success")
         else:
             updated_archived_status = False
             flash(
-                f'Your project "{title_truncated}" is now restored from the archive!',
+                f'Your project "{title_sliced}" is now restored from the archive!',
                 category="success",
             )
 
@@ -516,68 +575,112 @@ def toggle_archived() -> str:
             f"Archive status for project {project_uid} is now set to {updated_archived_status}."
         )
 
-    if session["user_current_tab"] == "posts":
-        return redirect(url_for("backstage.posts_panel"))
-    elif session["user_current_tab"] == "archive":
-        return redirect(url_for("backstage.archive_panel"))
-    elif session["user_current_tab"] == "projects":
-        return redirect(url_for("backstage.projects_panel"))
+    elif content_type == "changelog":
+        changelog_uid = request.args.get("uid")
+        changelog = mongodb.changelog.find_one({"changelog_uid": changelog_uid})
+        title_sliced = slicing_title(changelog.get("title"), max_len=20)
+
+        if request.args.get("archived") == "to_true":
+            updated_archived_status = True
+            flash(f'Your changelog "{title_sliced}" is now archived!', category="success")
+        else:
+            updated_archived_status = False
+            flash(
+                f'Your changelog "{title_sliced}" is now restored from the archive!',
+                category="success",
+            )
+
+        mongodb.changelog.update_values(
+            filter={"changelog_uid": changelog_uid},
+            update={"archived": updated_archived_status},
+        )
+        logger.debug(
+            f"Archive status for changelog {changelog_uid} is now set to {updated_archived_status}."
+        )
+   
+    redirect_mapping = {
+        "posts": redirect(url_for("backstage.posts_panel")),
+        "archive": redirect(url_for("backstage.archive_panel")),
+        "projects": redirect(url_for("backstage.projects_panel")),
+        "changelog": redirect(url_for("backstage.changelog_panel"))
+    }
+    return redirect_mapping.get(session["user_current_panel"])
 
 
 @backstage.route("/delete/post", methods=["GET"])
 @login_required
-def delete_post() -> str:
+def delete_post() -> Response:
     """Deletes a post.
 
     Args:
         None
 
     Returns:
-        str: Redirects to the archive panel page.
+        REsponse: Redirects to the archive panel page.
     """
     post_uid = request.args.get("uid")
     post_info = mongodb.post_info.find_one({"post_uid": post_uid})
-    title_truncated = string_truncate(post_info.get("title"), max_len=20)
+    title_sliced = slicing_title(post_info.get("title"), max_len=20)
     mongodb.post_info.delete_one({"post_uid": post_uid})
     mongodb.post_content.delete_one({"post_uid": post_uid})
     logger.debug(f"Post {post_uid} has been deleted.")
-    flash(f'Your post "{title_truncated}" has been deleted!', category="success")
+    flash(f'Your post "{title_sliced}" has been deleted!', category="success")
 
     return redirect(url_for("backstage.archive_panel"))
 
 
 @backstage.route("/delete/project", methods=["GET"])
 @login_required
-def delete_project() -> str:
+def delete_project() -> Response:
     """Deletes a project.
 
     Args:
         None
 
     Returns:
-        str: Redirects to the archive panel page.
+        Response: Redirects to the archive panel page.
     """
     project_uid = request.args.get("uid")
     project_info = mongodb.project_info.find_one({"project_uid": project_uid})
-    title_truncated = string_truncate(project_info.get("title"), max_len=20)
+    title_sliced = slicing_title(project_info.get("title"), max_len=20)
     mongodb.project_info.delete_one({"project_uid": project_uid})
     mongodb.project_content.delete_one({"project_uid": project_uid})
     logger.debug(f"Project {project_uid} has been deleted.")
-    flash(f'Your project "{title_truncated}" has been deleted!', category="success")
+    flash(f'Your project "{title_sliced}" has been deleted!', category="success")
+
+    return redirect(url_for("backstage.archive_panel"))
+
+@backstage.route("/delete/changelog", methods=["GET"])
+@login_required
+def delete_changelog() -> Response:
+    """Deletes a changelog.
+
+    Args:
+        None
+
+    Returns:
+        Response: Redirects to the archive panel page.
+    """
+    changelog_uid = request.args.get("uid")
+    changelog = mongodb.changelog.find_one({"changelog_uid": changelog_uid})
+    title_sliced = slicing_title(changelog.get("title"), max_len=20)
+    mongodb.changelog.delete_one({"changelog_uid": changelog_uid})
+    logger.debug(f"Changelog {changelog_uid} has been deleted.")
+    flash(f'Your changelog "{title_sliced}" has been deleted!', category="success")
 
     return redirect(url_for("backstage.archive_panel"))
 
 
 @backstage.route("/logout", methods=["GET"])
 @login_required
-def logout() -> str:
+def logout() -> Response:
     """Logs out the user and redirects to the home page.
 
     Args:
         None
 
     Returns:
-        str: Redirects to the home page.
+        Response: Redirects to the home page.
     """
     username = current_user.username
     logout_user()

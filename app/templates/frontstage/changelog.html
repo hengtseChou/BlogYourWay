@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block head %}{% endblock %}
+{% block title %}Changelog - {{ user.blogname }}{% endblock %}
+{% block body %}
+  {% include 'frontstage/navbar.html' %}
+  <div class="container-fluid">
+    <div class="row content-min-height">
+      <div class="col-lg-8 col-12 mx-auto">
+        <div class="my-3 pt-5 pb-4 text-center border-bottom">
+          <h1 class="disply-4 mb-3">Changelog</h1>
+          <h5 class="text-grey fw-light">Discover new updates from {{ user.username }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include 'frontstage/footer.html' %}
+{% endblock %}
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"
+          async=""></script>
+{% endblock %}

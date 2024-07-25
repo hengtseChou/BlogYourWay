@@ -89,7 +89,7 @@ class NewProjectSetup:
         )
         return asdict(new_project_content)
 
-    def create_project(self, author_name: str, form: NewProjectForm) -> str | None:
+    def create_project(self, form: NewProjectForm, author_name: str) -> str | None:
         """
         Create a new project in the database.
 
