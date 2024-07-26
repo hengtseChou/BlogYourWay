@@ -110,12 +110,12 @@ img.profile-sm {
 
 /* blogpost */
 
-.main-theme-link {
-  text-decoration: underline;
+.title-link {
+  text-decoration: none;
   color: #000000;
 }
 
-.main-theme-link:hover {
+.title-link:hover {
   text-decoration: underline;
   color: #f7966b;
 }
@@ -140,6 +140,16 @@ img.profile-sm {
 
 .tag-count-badge {
   background-color: #535353;
+}
+
+.in-content-link {
+  text-decoration: underline;
+  color: #000000;
+}
+
+.in-content-link:hover {
+  text-decoration: underline;
+  color: #f7966b;
 }
 
 /* text style */

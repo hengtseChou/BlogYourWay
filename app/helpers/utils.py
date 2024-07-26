@@ -171,7 +171,7 @@ class HTMLFormatter:
         links = self._soup.find_all("a")
         for link in links:
             current_class = link.get("class", [])
-            current_class.extend(["main-theme-link"])
+            current_class.extend(["in-content-link"])
             link["class"] = current_class
 
         return self
