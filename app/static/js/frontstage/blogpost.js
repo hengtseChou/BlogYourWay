@@ -34,7 +34,7 @@ hljs.highlightAll();
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".ajax-profile-pic").forEach(fetchReplacementImage);
-  setTimeout(sendReadCountRequest, 30000);
+  setTimeout(sendReadCountRequest, 60);
   document
     .getElementById("comment-form")
     .addEventListener("keypress", preventFormEnter);
