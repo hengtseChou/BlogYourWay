@@ -1,7 +1,7 @@
 import random
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
+from typing import Optional, Tuple
 
 from flask import url_for
 from flask_login import UserMixin
@@ -29,11 +29,11 @@ class UserInfo(UserMixin):
         cover_url (str): URL to the user's cover image. Defaults to an empty string.
         created_at (datetime): Timestamp when the user was created. Defaults to the current UTC time if None.
         short_bio (str): Short biography of the user. Defaults to an empty string.
-        social_links (List[Tuple[str, str]]): List of social media links as tuples (name, URL). Defaults to five empty tuples.
+        social_links (list[Tuple[str, str]]): list of social media links as tuples (name, URL). Defaults to five empty tuples.
         changelog_enabled (bool): Flag indicating if the changelog feature is enabled. Defaults to False.
         gallery_enabled (bool): Flag indicating if the gallery feature is enabled. Defaults to False.
         total_views (int): Total number of views. Defaults to 0.
-        tags (Dict[str, int]): Dictionary of tags and their associated counts. Defaults to an empty dictionary.
+        tags (dict[str, int]): Dictionary of tags and their associated counts. Defaults to an empty dictionary.
     """
 
     username: str
@@ -43,11 +43,11 @@ class UserInfo(UserMixin):
     cover_url: str = ""
     created_at: Optional[datetime] = None
     short_bio: str = ""
-    social_links: List[Tuple[str, str]] = None
+    social_links: list[Tuple[str, str]] = None
     changelog_enabled: bool = False
     gallery_enabled: bool = False
     total_views: int = 0
-    tags: Dict[str, int] = field(default_factory=dict)
+    tags: dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.profile_img_url:

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import List
+from typing import list
 
 
 @dataclass
@@ -12,7 +12,7 @@ class PostInfo:
         title (str): Title of the post.
         subtitle (str): Subtitle of the post.
         author (str): Author of the post.
-        tags (List[str]): List of tags associated with the post.
+        tags (list[str]): List of tags associated with the post.
         cover_url (str): URL of the cover image for the post.
         custom_slug (str): Custom URL slug for the post.
         created_at (datetime): Timestamp when the post was created. Defaults to the current UTC time.
@@ -27,7 +27,7 @@ class PostInfo:
     title: str
     subtitle: str
     author: str
-    tags: List[str]
+    tags: list[str]
     cover_url: str
     custom_slug: str
     created_at: datetime = datetime.now(timezone.utc)

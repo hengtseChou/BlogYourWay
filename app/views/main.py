@@ -1,4 +1,3 @@
-from typing import Dict
 from urllib.parse import urlparse
 
 import bcrypt
@@ -16,11 +15,11 @@ from app.mongo import mongodb
 main = Blueprint("main", __name__, template_folder=TEMPLATE_FOLDER)
 
 
-def flashing_if_errors(form_errors: Dict[str, list[str]]) -> None:
+def flashing_if_errors(form_errors: dict[str, list[str]]) -> None:
     """Flash error messages if form validation errors exist.
 
     Args:
-        form_errors (Dict[str, list[str]]): Pass in a form.errors from a wtform class.
+        form_errors (dict[str, list[str]]): Pass in a form.errors from a wtform class.
     """
     if form_errors:
         for field, errors in form_errors.items():

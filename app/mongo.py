@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -17,60 +17,60 @@ class ExtendedCollection:
         """
         self._col = collection
 
-    def find(self, filter: Dict[str, Any]) -> "ExtendedCursor":
+    def find(self, filter: dict[str, Any]) -> "ExtendedCursor":
         """Find documents in the collection based on a filter.
 
         Args:
-            filter (Dict[str, Any]): The filter criteria.
+            filter (dict[str, Any]): The filter criteria.
 
         Returns:
             ExtendedCursor: Custom cursor for further operations.
         """
         return ExtendedCursor(self._col, filter)
 
-    def insert_one(self, document: Dict[str, Any]) -> None:
+    def insert_one(self, document: dict[str, Any]) -> None:
         """Insert a single document into the collection.
 
         Args:
-            document (Dict[str, Any]): The document to insert.
+            document (dict[str, Any]): The document to insert.
         """
         self._col.insert_one(document)
 
-    def count_documents(self, filter: Dict[str, Any]) -> int:
+    def count_documents(self, filter: dict[str, Any]) -> int:
         """Count documents in the collection matching the filter.
 
         Args:
-            filter (Dict[str, Any]): The filter criteria.
+            filter (dict[str, Any]): The filter criteria.
 
         Returns:
             int: The count of matching documents.
         """
         return self._col.count_documents(filter)
 
-    def delete_one(self, filter: Dict[str, Any]) -> None:
+    def delete_one(self, filter: dict[str, Any]) -> None:
         """Delete a single document matching the filter.
 
         Args:
-            filter (Dict[str, Any]): The filter criteria.
+            filter (dict[str, Any]): The filter criteria.
         """
         self._col.delete_one(filter)
 
-    def delete_many(self, filter: Dict[str, Any]) -> None:
+    def delete_many(self, filter: dict[str, Any]) -> None:
         """Delete multiple documents matching the filter.
 
         Args:
-            filter (Dict[str, Any]): The filter criteria.
+            filter (dict[str, Any]): The filter criteria.
         """
         self._col.delete_many(filter)
 
-    def find_one(self, filter: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def find_one(self, filter: dict[str, Any]) -> Optional[dict[str, Any]]:
         """Find a single document matching the filter.
 
         Args:
-            filter (Dict[str, Any]): The filter criteria.
+            filter (dict[str, Any]): The filter criteria.
 
         Returns:
-            Optional[Dict[str, Any]]: The found document or None if not found.
+            Optional[dict[str, Any]]: The found document or None if not found.
         """
         result = self._col.find_one(filter)
         return dict(result) if result else None
@@ -88,46 +88,46 @@ class ExtendedCollection:
         return self.find_one({key: value}) is not None
 
     def update_one(
-        self, filter: Dict[str, Any], update: Dict[str, Any], upsert: bool = False
+        self, filter: dict[str, Any], update: dict[str, Any], upsert: bool = False
     ) -> None:
         """Update a single document matching the filter.
 
         Args:
-            filter (Dict[str, Any]): The filter criteria.
-            update (Dict[str, Any]): The update operations.
+            filter (dict[str, Any]): The filter criteria.
+            update (dict[str, Any]): The update operations.
             upsert (bool): If True, create a new document if no document matches the filter.
         """
         self._col.update_one(filter, update, upsert=upsert)
 
-    def update_values(self, filter: Dict[str, Any], update: Dict[str, Any]) -> None:
+    def update_values(self, filter: dict[str, Any], update: dict[str, Any]) -> None:
         """Update fields in a document using the $set operator.
 
         Args:
-            filter (Dict[str, Any]): The filter criteria.
-            update (Dict[str, Any]): The fields to update.
+            filter (dict[str, Any]): The filter criteria.
+            update (dict[str, Any]): The fields to update.
         """
         self.update_one(filter=filter, update={"$set": update})
 
     def make_increments(
-        self, filter: Dict[str, Any], increments: Dict[str, int], upsert: bool = False
+        self, filter: dict[str, Any], increments: dict[str, int], upsert: bool = False
     ) -> None:
         """Increment fields in a document using the $inc operator.
 
         Args:
-            filter (Dict[str, Any]): The filter criteria.
-            increments (Dict[str, int]): The fields to increment.
+            filter (dict[str, Any]): The filter criteria.
+            increments (dict[str, int]): The fields to increment.
             upsert (bool): If True, create a new document if no document matches the filter.
         """
         self.update_one(filter=filter, update={"$inc": increments}, upsert=upsert)
 
 
 class ExtendedCursor(Cursor):
-    def __init__(self, collection: ExtendedCollection, filter: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, collection: ExtendedCollection, filter: Optional[dict[str, Any]] = None) -> None:
         """Initialize the ExtendedCursor with a MongoDB collection and filter.
 
         Args:
             collection (Collection): The MongoDB collection instance.
-            filter (Optional[Dict[str, Any]]): The filter criteria, if any.
+            filter (Optional[dict[str, Any]]): The filter criteria, if any.
         """
         super().__init__(collection, filter)
 
@@ -168,11 +168,11 @@ class ExtendedCursor(Cursor):
         super().limit(limit)
         return self
 
-    def as_list(self) -> List[Dict[str, Any]]:
+    def as_list(self) -> list[dict[str, Any]]:
         """Convert the cursor to a list of documents.
 
         Returns:
-            List[Dict[str, Any]]: List of documents from the cursor.
+            list[dict[str, Any]]: list of documents from the cursor.
         """
         self.__check_okay_to_chain()
         return list(self)

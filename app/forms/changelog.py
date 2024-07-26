@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, DateField, SelectField
+from wtforms import StringField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import URL, InputRequired, Optional
 
 CATEGORY_CHOICES = ["Career", "Personal", "About this site", "Others"]

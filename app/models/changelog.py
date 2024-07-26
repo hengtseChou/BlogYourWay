@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import List
 
 
 @dataclass
@@ -12,7 +11,7 @@ class Changelog:
     date: datetime
     category: str
     content: str
-    tags: List[str]
+    tags: list[str]
     link: str = ""
     link_description: str = ""
     created_at: datetime = None
