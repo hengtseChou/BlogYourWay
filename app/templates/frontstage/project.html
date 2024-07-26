@@ -14,14 +14,14 @@
   {% include 'frontstage/navbar.html' %}
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-6 col-11 mx-auto">
+      <div class="col-lg-6 col-11 mx-auto mb-5">
         <div class="border-bottom mt-5">
           <h1>{{ project.title }}</h1>
         </div>
         <div class="text-grey fst-italic my-3">
           Last Updated: <span class="utc-to-local-short">{{ project.last_updated }}</span>
-          by <a class="text-grey"
-    href="{{ url_for('frontstage.about', username=project.author) }}">{{ project.author }}</a>
+          by 
+          <a class="text-grey" href="{{ url_for('frontstage.about', username=project.author) }}">{{ project.author }}</a>
         </div>
         <div id="carousel" class="carousel slide">
           <div class="carousel-inner" id="carousel">

@@ -102,12 +102,12 @@
           <div class="row">
             <div class="col-10">
               <a href="{{ url_for('frontstage.project', username=user.username, project_uid=project.project_uid) }}"
-                 class="text-black">{{ project.title }}</a>
+                 class="text-black text-truncate">{{ project.title }}</a>
               <p class="text-grey mb-2" class="backstage-mobile-time">
                 Created at <span class="utc-to-local-long">{{ project.created_at }}</span>
               </p>
               <div>
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i></span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer"></i></span>
                 <span class="count">{{ project.views }}</span>
               </div>
             </div>

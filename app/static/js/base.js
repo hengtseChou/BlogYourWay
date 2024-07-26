@@ -87,6 +87,7 @@ function convertUTCToLocal() {
   });
 }
 
+// format count numbers of views, comments
 function formatCounts() {
   const elements = document.querySelectorAll(".count");
 

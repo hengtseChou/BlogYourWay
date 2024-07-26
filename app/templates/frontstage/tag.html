@@ -17,7 +17,7 @@
           <h5 class="mx-2 mt-5 fw-bold text-dark-grey">Found {{ posts|length }} posts</h5>
         {% endif %}
         {% for post in posts %}
-          <div class="ms-lg-2 ms-0 my-4 p-4 border rounded-2">
+          <div class="ms-lg-2 ms-0 my-4 p-4 bg-white border rounded-3">
             <a href="{{ url_for('frontstage.blogpost', username=user.username, post_uid=post.post_uid) }}"
                class="main-theme-link">
               <h3 class="fw-bold">{{ post.title }}</h3>
@@ -44,7 +44,7 @@
           <h5 class="mx-2 mt-5 fw-bold text-dark-grey">Found {{ projects|length }} projects</h5>
         {% endif %}
         {% for project in projects %}
-          <div class="ms-lg-2 ms-0 my-4 p-4 border rounded-2">
+          <div class="ms-lg-2 ms-0 my-4 p-4 bg-white border rounded-3">
             <a href="{{ url_for('frontstage.project', username=user.username, project_uid=project.project_uid) }}"
                class="main-theme-link">
               <h3 class="fw-bold">{{ project.title }}</h3>

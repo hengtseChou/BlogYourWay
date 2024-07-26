@@ -1,5 +1,10 @@
-const mobileNavBtn = document.getElementById("mobile-nav-posts");
-mobileNavBtn.style.color = "white";
+// enable tooltip feature
+const tooltipTriggerList = document.querySelectorAll(
+  '[data-bs-toggle="tooltip"]',
+);
+const tooltipList = [...tooltipTriggerList].map(
+  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
+);
 
 const easyMDE = new EasyMDE({
   element: document.getElementById("editor"),
