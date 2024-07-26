@@ -19,6 +19,11 @@ blockquote p {
   display: inline;
 }
 
+.hljs {
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px; /* Optional: space inside the border */
+}
+
 /* TOC container */
 .toc {
   background: #f9f9f9;

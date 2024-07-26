@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 1.0.2 (2024-07-26)
+
+### Fixed:
+
+- Add back highlight.js dependencies to projects and changelog.
+- Highlight.js code block styles.
+
 ## Version 1.0.1 (2024-07-26)
 
 ### Fixed:

@@ -1,3 +1,5 @@
+hljs.highlightAll();
+
 document.addEventListener("DOMContentLoaded", function () {
   function setCarouselImageHeight() {
     var carousel = document.getElementById("carousel");

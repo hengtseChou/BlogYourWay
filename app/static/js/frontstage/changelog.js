@@ -18,6 +18,8 @@ function convertUTCToLocalMonthDay() {
   });
 }
 
+hljs.highlightAll();
+
 // Call the functions after the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   convertUTCToLocalYear();
