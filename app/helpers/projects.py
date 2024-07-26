@@ -212,7 +212,7 @@ class ProjectsUtils:
             result = self._db_handler.project_info.find({"archived": False}).as_list()
         return result
 
-    def get_projects_info(self, username: str) -> list[dict]:
+    def get_project_infos(self, username: str) -> list[dict]:
         """
         Get information about projects for a specific user.
 
@@ -228,8 +228,25 @@ class ProjectsUtils:
             .as_list()
         )
         return result
+    
+    def get_archived_project_infos(self, username: str) -> list[dict]:
+        """
+        Get information about archived projects for a specific user.
 
-    def get_projects_info_with_pagination(
+        Args:
+            username (str): The username of the project author.
+
+        Returns:
+            list[dict]: A list of dictionaries containing project information.
+        """
+        result = (
+            self._db_handler.project_info.find({"author": username, "archived": True})
+            .sort("created_at", -1)
+            .as_list()
+        )
+        return result
+    
+    def get_project_infos_with_pagination(
         self, username: str, page_number: int, projects_per_page: int
     ) -> list[dict]:
         """
@@ -258,23 +275,6 @@ class ProjectsUtils:
                 .limit(projects_per_page)
                 .as_list()
             )
-        return result
-
-    def get_archived_projects_info(self, username: str) -> list[dict]:
-        """
-        Get information about archived projects for a specific user.
-
-        Args:
-            username (str): The username of the project author.
-
-        Returns:
-            list[dict]: A list of dictionaries containing project information.
-        """
-        result = (
-            self._db_handler.project_info.find({"author": username, "archived": True})
-            .sort("created_at", -1)
-            .as_list()
-        )
         return result
 
     def get_full_project(self, project_uid: str) -> dict:

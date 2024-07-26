@@ -29,7 +29,7 @@ backstage = Blueprint("backstage", __name__, template_folder=TEMPLATE_FOLDER)
 
 @backstage.route("/", methods=["GET"])
 @login_required
-def backstage_root() -> Response:
+def root() -> Response:
     """Redirects to the posts panel.
 
     Returns:
@@ -69,7 +69,7 @@ def posts_panel() -> str:
     POSTS_EACH_PAGE = 20
     paging = Paging(db_handler=mongodb)
     pagination = paging.setup(current_user.username, "post_info", current_page, POSTS_EACH_PAGE)
-    posts = post_utils.get_posts_info_with_pagination(
+    posts = post_utils.get_post_infos_with_pagination(
         username=current_user.username,
         page_number=current_page,
         posts_per_page=POSTS_EACH_PAGE,
@@ -112,7 +112,7 @@ def projects_panel() -> str:
 
     user = mongodb.user_info.find_one({"username": current_user.username})
     PROJECTS_PER_PAGE = 10
-    projects = projects_utils.get_projects_info_with_pagination(
+    projects = projects_utils.get_project_infos_with_pagination(
         current_user.username, current_page, PROJECTS_PER_PAGE
     )
     paging = Paging(mongodb)
@@ -121,7 +121,7 @@ def projects_panel() -> str:
     for project in projects:
         project["title"] = slicing_title(project.get("title"), 40)
 
-    logger_utils.pagination(panel="posts", num=len(projects))
+    logger_utils.pagination(panel="projects", num=len(projects))
 
     return render_template(
         "backstage/projects.html", user=user, projects=projects, pagination=paging, form=form
@@ -145,11 +145,11 @@ def archive_panel() -> str:
     logger_utils.backstage(username=current_user.username, panel="archive")
 
     user = mongodb.user_info.find_one({"username": current_user.username})
-    posts = post_utils.get_archived_posts_info(current_user.username)
+    posts = post_utils.get_archived_post_infos(current_user.username)
     for post in posts:
         post["views"] = format(post.get("views"), ",")
         post["comments"] = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
-    projects = projects_utils.get_archived_projects_info(current_user.username)
+    projects = projects_utils.get_archived_project_infos(current_user.username)
     changelogs = changelog_utils.get_archived_changelogs(current_user.username)
 
     logger_utils.pagination(panel="archive", num=(len(posts) + len(projects)))

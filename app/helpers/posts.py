@@ -249,7 +249,7 @@ class PostUtils:
         )
         return result
 
-    def get_posts_info(self, username: str) -> list[dict]:
+    def get_post_infos(self, username: str) -> list[dict]:
         """
         Get information about posts for a specific user.
 
@@ -266,7 +266,7 @@ class PostUtils:
         )
         return result
 
-    def get_archived_posts_info(self, username: str) -> list[dict]:
+    def get_archived_post_infos(self, username: str) -> list[dict]:
         """
         Get information about archived posts for a specific user.
 
@@ -283,7 +283,7 @@ class PostUtils:
         )
         return result
 
-    def get_posts_info_with_pagination(
+    def get_post_infos_with_pagination(
         self, username: str, page_number: int, posts_per_page: int
     ) -> list[dict]:
         """

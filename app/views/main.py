@@ -79,7 +79,7 @@ def login() -> str:
         login_user(user_info)
         logger_utils.login_succeeded(request=request, username=username)
         flash("Login Succeeded.", category="success")
-        return redirect(url_for("frontstage.home", username=username))
+        return redirect(url_for("backstage.root"))
 
     flashing_if_errors(form.errors)
     logger_utils.page_visited(request)
