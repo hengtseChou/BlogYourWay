@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 1.0.1 (2024-07-26)
+
+### Fixed:
+
+- Message when no changelog available.
+- Style fix for changelog.
+
 ## Version 1.0.0 (2024-07-26)
 
 ### New Features

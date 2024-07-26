@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}Changelog - {{ user.blogname }}{% endblock %}
 {% block meta_tags %}
-  <meta name="description" content="View new updates from {{ user.username }} over BlogYourWay">
+  <meta name="description"
+        content="View new updates from {{ user.username }} over BlogYourWay">
   <meta property="og:title" content="Changelog - {{ user.blogname }}">
-  <meta property="og:description" content="View new updates from {{ user.username }} over BlogYourWay">
+  <meta property="og:description"
+        content="View new updates from {{ user.username }} over BlogYourWay">
   <meta property="og:image" content="{{ user.cover_url }}">
-  <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}">  
+  <meta property="og:url"
+        content="{{ url_for(request.endpoint, **request.view_args) }}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BlogYourWay">
   <meta name="twitter:card" content="summary_large_image">
@@ -25,98 +28,104 @@
         </div>
         <!-- ref: https://www.bootdey.com/snippets/view/bs4-timeline -->
         <div class="d-none d-md-block">
+          {% if changelogs | length == 0 %}
+            <h5 class="mt-4 ms-2 fw-bold text-dark-grey">No changelog published yet!</h5>
+          {% endif %}
           <ul class="timeline">
             {% for changelog in changelogs %}
-            <li>
-              <!-- begin timeline-time -->
-              <div class="timeline-time">
-                <span class="utc-to-local-year year">{{ changelog.date }}</span>
-                <span class="utc-to-local-month-day month-day">{{ changelog.date }}</span>
-              </div>
-              <!-- end timeline-time -->
-              <!-- begin timeline-icon -->
-              <div class="timeline-icon">
-                <span>&nbsp;</span>
-              </div>
-              <!-- end timeline-icon -->
-              <!-- begin timeline-body -->
-              <div class="timeline-body">
-                <div class="timeline-header d-flex align-items-start pt-1 pb-3">
-                  <span class="rounded-icon">
-                    {% if changelog.category == "Career" %}
-                    <i class="fa-solid fa-building"></i>
-                    {% elif changelog.category == "Personal" %}
-                    <i class="fa-solid fa-mug-hot"></i>
-                    {% elif changelog.category == "About this site" %}
-                    <i class="fa-solid fa-pencil"></i>
-                    {% elif changelog.category == "Others" %}
-                    <i class="fa-solid fa-comment-dots"></i>
-                    {% endif %}
-                  </span>
-                  <h2 class="ms-3 my-0">{{ changelog.title }}</h2>
+              <li>
+                <!-- begin timeline-time -->
+                <div class="timeline-time">
+                  <span class="utc-to-local-year year">{{ changelog.date }}</span>
+                  <span class="utc-to-local-month-day month-day">{{ changelog.date }}</span>
                 </div>
-                <div class="timeline-content">
-                  {{ changelog.content | safe }}
-                  {% if changelog.link %}
-                  <div class="my-3">
-                    <a href="{{ changelog.link }}" class="btn bg-light-grey px-4"><span class="me-2"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                <!-- end timeline-time -->
+                <!-- begin timeline-icon -->
+                <div class="timeline-icon">
+                  <span>&nbsp;</span>
+                </div>
+                <!-- end timeline-icon -->
+                <!-- begin timeline-body -->
+                <div class="timeline-body">
+                  <div class="timeline-header d-flex align-items-start pt-1 pb-3">
+                    <span class="rounded-icon">
+                      {% if changelog.category == "Career" %}
+                        <i class="fa-solid fa-building"></i>
+                      {% elif changelog.category == "Personal" %}
+                        <i class="fa-solid fa-mug-hot"></i>
+                      {% elif changelog.category == "About this site" %}
+                        <i class="fa-solid fa-pencil"></i>
+                      {% elif changelog.category == "Others" %}
+                        <i class="fa-solid fa-comment-dots"></i>
+                      {% endif %}
+                    </span>
+                    <h2 class="ms-3 my-0">{{ changelog.title }}</h2>
+                  </div>
+                  <div class="timeline-content">
+                    {{ changelog.content | safe }}
+                    {% if changelog.link %}
+                      <div class="my-3">
+                      <a href="{{ changelog.link }}" class="btn bg-light-grey px-4"><span class="me-2"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
                       {% if changelog.link_description %}
-                      {{ changelog.link_description }}
+                        {{ changelog.link_description }}
                       {% else %}
-                      Learn More 
+                        Learn More
                       {% endif %}
                     </a>
                   </div>
-                  {% endif %}
-                </div>
-                <div class="timeline-footer">
-                  <div class="d-flex align-items-center text-dark-grey fs-large">
-                    <span><i class="fa-solid fa-tags"></i></span>
-                    {% for tag in changelog.tags %}
-                      <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-                        <span class="badge tag ms-2">{{ tag }}</span>
-                      </a>
-                    {% endfor %}
-                  </div>
+                {% endif %}
+              </div>
+              <div class="timeline-footer">
+                <div class="d-flex align-items-center text-dark-grey fs-large">
+                  <span><i class="fa-solid fa-tags"></i></span>
+                  {% for tag in changelog.tags %}
+                    <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
+                      <span class="badge tag ms-2">{{ tag }}</span>
+                    </a>
+                  {% endfor %}
                 </div>
               </div>
-              <!-- end timeline-body -->
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="d-block d-md-none">
-          {% for changelog in changelogs %}
-          <div class="ms-lg-2 ms-0 my-4 p-4 bg-white border rounded-3">
-            <small class="text-grey my-2"><span class="utc-to-local-short">{{ changelog.date }}</span> · {{ changelog.category }}</small>
-            <h2 class="border-bottom pb-3">{{ changelog.title }}</h2>
-            <div>{{ changelog.content | safe }}</div>
-            {% if changelog.link %}
+            </div>
+            <!-- end timeline-body -->
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="d-block d-md-none">
+      {% if changelogs | length == 0 %}
+        <h5 class="mt-4 ms-2 fw-bold text-dark-grey">No changelog published yet!</h5>
+      {% endif %}
+      {% for changelog in changelogs %}
+        <div class="ms-lg-2 ms-0 my-4 p-4 bg-white border rounded-3">
+          <small class="text-grey my-2"><span class="utc-to-local-short">{{ changelog.date }}</span> · {{ changelog.category }}</small>
+          <h2 class="border-bottom pb-3">{{ changelog.title }}</h2>
+          <div>{{ changelog.content | safe }}</div>
+          {% if changelog.link %}
             <div class="my-3">
-              <a href="{{ changelog.link }}" class="btn bg-light-grey px-4"><span class="me-2"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
-                {% if changelog.link_description %}
-                {{ changelog.link_description }}
-                {% else %}
-                Learn More 
-                {% endif %}
-              </a>
-            </div>
+            <a href="{{ changelog.link }}" class="btn bg-light-grey px-4"><span class="me-2"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+            {% if changelog.link_description %}
+              {{ changelog.link_description }}
+            {% else %}
+              Learn More
             {% endif %}
-            <div class="d-flex align-items-center border-top pt-3 text-dark-grey fs-large">
-              <span><i class="fa-solid fa-tags"></i></span>
-              {% for tag in changelog.tags %}
-                <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-                  <span class="badge tag ms-2">{{ tag }}</span>
-                </a>
-              {% endfor %}
-            </div>
-          </div>
-          {% endfor %}
+          </a>
         </div>
+      {% endif %}
+      <div class="d-flex align-items-center border-top pt-3 text-dark-grey fs-large">
+        <span><i class="fa-solid fa-tags"></i></span>
+        {% for tag in changelog.tags %}
+          <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
+            <span class="badge tag ms-2">{{ tag }}</span>
+          </a>
+        {% endfor %}
       </div>
     </div>
-  </div>
-  {% include 'frontstage/footer.html' %}
+  {% endfor %}
+</div>
+</div>
+</div>
+</div>
+{% include 'frontstage/footer.html' %}
 {% endblock %}
 {% block script %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"
