@@ -198,7 +198,7 @@ def convert_post_content(content: str) -> str:
         str: The converted HTML content.
     """
     md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes", "toc"])
-    html = md.convert("[TOC]\r\n" + content)
+    html = md.convert("[TOC]\r\n\r\n" + content)
     formatter = HTMLFormatter(html)
     html = formatter.add_padding().change_headings().modify_figure().modify_hyperlink().to_string()
 

@@ -31,8 +31,10 @@ function preventFormEnter(event) {
 }
 
 hljs.highlightAll();
+const tocContainer = document.querySelector(".toc");
+tocContainer.classList.add("d-none");
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".ajax-profile-pic").forEach(fetchReplacementImage);
   setTimeout(sendReadCountRequest, 60);
   document
@@ -41,10 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Select the TOC container
-  var tocContainer = document.querySelector(".toc");
-
-  if (tocContainer) {
+  var topLevelUl = tocContainer.querySelector("ul");
+  if (topLevelUl && topLevelUl.children.length > 0) {
+    tocContainer.classList.remove("d-none");
     // Add the Table of Contents heading
     var tocHeading = document.createElement("h3");
     tocHeading.textContent = "Table of Contents";
@@ -68,18 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Start the process from the top level UL
-    var topLevelUl = tocContainer.querySelector("ul");
-    if (topLevelUl) {
-      addTocLevelClass(topLevelUl, 1);
-    }
-  } else {
-    // Modify the first paragraph tag in the div with class 'blogpost-content'
-    var blogPostContent = document.querySelector(".blogpost-content");
-    if (blogPostContent) {
-      var firstParagraph = blogPostContent.querySelector("p");
-      if (firstParagraph && firstParagraph.textContent.length > 5) {
-        firstParagraph.textContent = firstParagraph.textContent.slice(5);
-      }
-    }
+    addTocLevelClass(topLevelUl, 1);
   }
 });

@@ -13,4 +13,4 @@ const navigation = {
 
 const currentPanel = document.getElementById("current-panel").innerHTML;
 const mobileNavBtn = document.getElementById(navigation[currentPanel]);
-mobileNavBtn.style.color = "white";
+mobileNavBtn.classList.add("text-white");

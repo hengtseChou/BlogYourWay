@@ -7,8 +7,11 @@
   <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"
           defer></script>
   <script src="{{ url_for('static', filename='js/backstage/posts.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/backstage/mobile-nav-btn.js') }}"
+  defer></script>
 {% endblock %}
 {% block panel %}
+  <div id="current-panel" class="d-none">posts</div>
   <!-- desktop view -->
   <div class="d-none d-md-block">
     <div class="d-flex main-panel-header-offset align-items-center">
