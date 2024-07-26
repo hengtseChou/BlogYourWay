@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% block title %}{{ project.title }} - {{ user.blogname }}{% endblock %}
-{% block meta_tags %}<meta property="og:image" content="{{ project.images[0][0] }}" />{% endblock %}
+{% block meta_tags %}
+  <meta name="description" content="{{ project.short_description }} - Project showcase on BlogYourWay" />
+  <meta property="og:title" content="{{ project.title }}">
+  <meta property="og:description" content="{{ project.short_description }} - Project showcase on BlogYourWay">
+  <meta property="og:type" content="article" />
+  <meta property="og:url"
+        content="{{ url_for(request.endpoint, **request.view_args) }}">
+  <meta property="og:image" content="{{ project.images[0][0] }}" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="zh_TW" />
+{% endblock %}
 {% block head %}
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/default.min.css">

@@ -1,9 +1,19 @@
 {% extends 'base.html' %}
+{% block title %}Gallery - {{ user.blogname }}{% endblock %}
+{% block meta_tags %}
+  <meta name="description" content="View project showcases from {{ user.username }} over BlogYourWay">
+  <meta property="og:title" content="Gallery - {{ user.blogname }}">
+  <meta property="og:description" content="View project showcases from {{ user.username }} over BlogYourWay">
+  <meta property="og:image" content="{{ user.cover_url }}">
+  <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}">  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BlogYourWay">
+  <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
 {% block head %}
   <link rel="stylesheet"
         href="{{ url_for('static', filename='css/frontstage/gallery.css') }}" />
 {% endblock %}
-{% block title %}Gallery - {{ user.blogname }}{% endblock %}
 {% block body %}
   {% include 'frontstage/navbar.html' %}
   <div class="container-fluid">

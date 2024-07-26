@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}{{ post.title }}{% endblock %}
 {% block meta_tags %}
-  <meta property="og:title" content="{{ post.title }}">
-  <meta name="description" content="{{ post.subtitle }}" />
+<meta name="description" content="{{ post.subtitle }} - Blogpost on BlogYourWay" />
+<meta property="og:title" content="{{ post.title }}">
+  <meta property="og:description" content="{{ post.subtitle }} - Blogpost on BlogYourWay">
   <meta property="og:type" content="article" />
   <meta property="og:url"
         content="{{ url_for(request.endpoint, **request.view_args) }}">

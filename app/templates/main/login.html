@@ -1,9 +1,19 @@
 {% extends 'base.html' %}
+{% block title %}Login - BlogYourWay{% endblock %}
+{% block meta_tags %}
+  <meta name="description" content="Host all your blogposts and projects at one place.">
+  <meta property="og:title" content="Login - BlogYourWay">
+  <meta property="og:description" content="Host all your blogposts and projects at one place.">
+  <meta property="og:image" content="{{ url_for('static', filename='img/landing.jpg') }}">
+  <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}">  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BlogYourWay">
+  <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
 {% block head %}
   <link rel="stylesheet"
         href="{{ url_for('static', filename='css/main/login.css') }}">
 {% endblock %}
-{% block title %}Login - BlogYourWay{% endblock %}
 {% block body %}
   <div class="container login-container">
     <div class="row">

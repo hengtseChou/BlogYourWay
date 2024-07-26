@@ -1,9 +1,19 @@
 {% extends 'base.html' %}
+{% block title %}Changelog - {{ user.blogname }}{% endblock %}
+{% block meta_tags %}
+  <meta name="description" content="View new updates from {{ user.username }} over BlogYourWay">
+  <meta property="og:title" content="Changelog - {{ user.blogname }}">
+  <meta property="og:description" content="View new updates from {{ user.username }} over BlogYourWay">
+  <meta property="og:image" content="{{ user.cover_url }}">
+  <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}">  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BlogYourWay">
+  <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
 {% block head %}
   <link rel="stylesheet"
         href="{{ url_for('static', filename='css/frontstage/changelog.css') }}">
 {% endblock %}
-{% block title %}Changelog - {{ user.blogname }}{% endblock %}
 {% block body %}
   {% include 'frontstage/navbar.html' %}
   <div class="container-fluid">

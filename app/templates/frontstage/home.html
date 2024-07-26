@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}{{ user.blogname }} - BlogYourWay{% endblock %}
 {% block meta_tags %}
-  <meta name="description"
-        content="Visit '{{ user.blogname }}' on BlogYourWay.">
+  <meta name="description" content="This is my website {{ user.blogname }} on BlogYourWay">
+  <meta property="og:title" content="{{ user.blogname }} - BlogYourWay">
+  <meta property="og:description" content="This is my website {{ user.blogname }} on BlogYourWay">
+  <meta property="og:image" content="{{ user.cover_url }}">
+  <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}">  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BlogYourWay">
+  <meta name="twitter:card" content="summary_large_image">
 {% endblock %}
 {% block body %}
   {% include 'frontstage/navbar.html' %}

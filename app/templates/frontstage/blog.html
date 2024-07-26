@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}Posts - {{ user.blogname }}{% endblock %}
+{% block meta_tags %}
+  <meta name="description" content="View blogposts from {{ user.username }} over BlogYourWay">
+  <meta property="og:title" content="Posts - {{ user.blogname }}">
+  <meta property="og:description" content="View blogposts from {{ user.username }} over BlogYourWay">
+  <meta property="og:image" content="{{ user.cover_url }}">
+  <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}">  
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BlogYourWay">
+  <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
 {% block body %}
   {% include 'frontstage/navbar.html' %}
   {% include 'frontstage/cover.html' %}
