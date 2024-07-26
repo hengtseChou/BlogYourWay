@@ -1,0 +1,140 @@
+/* body {
+  background: #eee;
+} */
+
+.timeline {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.timeline:before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  width: 5px;
+  background: #2d353c;
+  left: 20%;
+  margin-left: -2.5px;
+}
+
+.timeline > li {
+  position: relative;
+  min-height: 50px;
+  padding: 20px 0;
+}
+
+.timeline .timeline-time {
+  position: absolute;
+  left: 0;
+  width: 18%;
+  text-align: right;
+  top: 30px;
+}
+
+.timeline .timeline-time .year,
+.timeline .timeline-time .month-day {
+  display: block;
+  font-weight: 600;
+}
+
+.timeline .timeline-time .year {
+  line-height: 16px;
+  font-size: 12px;
+}
+
+.timeline .timeline-time .month-day {
+  line-height: 24px;
+  font-size: 20px;
+  color: #242a30;
+}
+
+.timeline .timeline-icon {
+  left: 15%;
+  position: absolute;
+  width: 10%;
+  text-align: center;
+  top: 40px;
+}
+
+.timeline .timeline-icon span {
+  text-decoration: none;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  border-radius: 20px;
+  background: #d9e0e7;
+  line-height: 10px;
+  color: #fff;
+  font-size: 14px;
+  border: 5px solid #2d353c;
+  transition: border-color 0.2s linear;
+}
+
+.timeline .timeline-body {
+  margin-left: 23%;
+  margin-right: 17%;
+  background: #fff;
+  position: relative;
+  padding: 20px 25px;
+  border-radius: 6px;
+}
+
+.timeline .timeline-body:before {
+  content: "";
+  display: block;
+  position: absolute;
+  border: 10px solid transparent;
+  border-right-color: #fff;
+  left: -20px;
+  top: 20px;
+}
+
+.timeline .timeline-body > div + div {
+  margin-top: 15px;
+}
+
+.timeline .timeline-body > div + div:last-child {
+  margin-bottom: -20px;
+  padding-bottom: 20px;
+  border-radius: 0 0 6px 6px;
+}
+
+.timeline-header {
+  border-bottom: 1px solid #e2e7eb;
+  line-height: 30px;
+}
+
+.timeline-content {
+  letter-spacing: 0.25px;
+  line-height: 18px;
+  font-size: 13px;
+}
+
+.timeline-content:after,
+.timeline-content:before {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.timeline-footer {
+  background: #fff;
+  border-top: 1px solid #e2e7ec;
+  padding-top: 15px;
+}
+
+.rounded-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px; /* Adjust the size as needed */
+  height: 38px; /* Adjust the size as needed */
+  min-width: 38px;
+  max-width: 38px;
+  border-radius: 50%;
+  background-color: #f1f1f1; /* Adjust the background color as needed */
+  color: #333; /* Adjust the icon color as needed */
+}

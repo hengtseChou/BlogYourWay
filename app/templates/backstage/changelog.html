@@ -38,7 +38,7 @@
                 <th style="width: 14%">Date</th>
                 <th style="width: 14%">Created At</th>
                 <th style="width: 14%">Last Updated</th>
-                <th style="width: 8%" class="text-center">Category</th>
+                <th style="width: 12%" class="text-center">Category</th>
                 <th style="width: 8%" class="text-center">Edit</th>
                 <th style="width: 8%" class="text-center">Archive</th>
               </tr>
@@ -46,7 +46,7 @@
             <tbody>
               {% for changelog in changelogs %}
                 <tr>
-                  <td class="align-middle">
+                  <td>
                     {{ changelog.title }}
                   </td>
                   <td>
@@ -74,16 +74,86 @@
         </div>
       </div>
     {% endif %}
+    <div class="row">
+      <div class="col-6 text-start">
+        {% if pagination.is_previous_page_allowed %}
+          <a href="{{ url_for('backstage.changelog_panel', page=(pagination.current_page - 1) ) }}"
+             class="btn">
+            <small class="mx-1"><i class="fa-solid fa-angles-left"></i></small> Prev
+          </a>
+        {% endif %}
+      </div>
+      <div class="col-5 me-auto text-end">
+        {% if pagination.is_next_page_allowed %}
+          <a href="{{ url_for('backstage.changelog_panel', page=(pagination.current_page + 1) ) }}"
+             class="btn">
+            Next <small class="mx-1"><i class="fa-solid fa-angles-right"></i></small>
+          </a>
+        {% endif %}
+      </div>
+    </div>
   </div>
   <!-- mobile view -->
   <div class="d-block d-md-none mt-2">
     <div class="d-flex align-items-center mb-3">
-      <h2 class="ms-2 mt-3">Projects</h2>
+      <h2 class="ms-2 mt-3">Changelog</h2>
       <button class="btn btn-panel ms-auto me-3"
               data-bs-toggle="modal"
-              data-bs-target="#newChangelogModal">+ New changelog</button>
+              data-bs-target="#newChangelogModal">+ New Changelog</button>
     </div>
     <hr />
+    {% for changelog in changelogs %}
+      <div class="card rounded-0 py-2 overflow-visible my-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-10">
+              <div class="text-truncate">{{ changelog.title }}</div>
+              <p class="text-grey mb-2" class="backstage-mobile-time">
+                Created at <span class="utc-to-local-long">{{ changelog.created_at }}</span>
+              </p>
+            </div>
+            <div class="col-2">
+              <div class="text-end dropdown">
+                <button class="btn dropdown-toggle"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"></button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item"
+                       href="{{ url_for('backstage.edit_changelog', changelog_uid=changelog.changelog_uid) }}">Edit</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item"
+                       href="{{ url_for('backstage.toggle_archived', type='changelog', uid=changelog.changelog_uid, archived='to_true') }}">Move to archive</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    <!-- pagination -->
+    <div class="row">
+      <div class="col-6 text-start">
+        {% if pagination.is_previous_page_allowed %}
+          <a href="{{ url_for(backstage.changelog_panel, page=(pagination.current_page - 1) ) }}"
+             class="btn">
+            <span class="mx-1"><i class="fa-solid fa-angles-left"></i></span> Prev
+          </a>
+        {% endif %}
+      </div>
+      <div class="col-6 text-end">
+        {% if pagination.is_next_page_allowed %}
+          <a href="{{ url_for(backstage.changelog_panel, page=(pagination.current_page + 1) ) }}"
+             class="btn">
+            Next
+            <span class="mx-1"><i class="fa-solid fa-angles-right"></i></span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
   </div>
   <!-- Modal -->
   <div class="modal fade"

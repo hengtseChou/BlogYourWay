@@ -15,6 +15,7 @@ from flask import (
 
 from app.config import TEMPLATE_FOLDER
 from app.forms.comments import CommentForm
+from app.helpers.changelog import changelog_utils
 from app.helpers.comments import comment_utils, create_comment
 from app.helpers.posts import post_utils
 from app.helpers.projects import projects_utils
@@ -24,6 +25,7 @@ from app.helpers.utils import (
     convert_about,
     convert_post_content,
     convert_project_content,
+    convert_changelog_content,
     sort_dict,
 )
 from app.logging import logger, logger_utils
@@ -75,7 +77,7 @@ def blog(username: str) -> str:
     paging = Paging(mongodb)
     pagination = paging.setup(username, "post_info", current_page, POSTS_EACH_PAGE)
 
-    posts = post_utils.get_posts_info_with_pagination(
+    posts = post_utils.get_post_infos_with_pagination(
         username=username, page_number=current_page, posts_per_page=POSTS_EACH_PAGE
     )
 
@@ -221,10 +223,10 @@ def tag(username: str) -> str:
     tag = unquote(tag_url_encoded)
     user = user_utils.get_user_info(username)
 
-    posts = post_utils.get_posts_info(username)
+    posts = post_utils.get_post_infos(username)
     posts_with_desired_tag = [post for post in posts if tag in post.get("tags")]
 
-    projects = projects_utils.get_projects_info(username)
+    projects = projects_utils.get_project_infos(username)
     projects_with_desired_tag = [project for project in projects if tag in project.get("tags")]
 
     logger_utils.page_visited(request)
@@ -262,7 +264,7 @@ def gallery(username: str) -> str:
     paging = Paging(mongodb)
     pagination = paging.setup(username, "project_info", current_page, PROJECTS_EACH_PAGE)
 
-    projects = projects_utils.get_projects_info_with_pagination(
+    projects = projects_utils.get_project_infos_with_pagination(
         username=username,
         page_number=current_page,
         projects_per_page=PROJECTS_EACH_PAGE,
@@ -393,7 +395,11 @@ def changelog(username: str) -> str:
         logger.debug(f"User {username} did not enable changelog feature.")
         abort(404)
 
-    return render_template("frontstage/changelog.html", user=user)
+    changelogs = changelog_utils.get_changelogs(username, by_date=True)
+    for changelog in changelogs:
+        changelog["content"] = convert_changelog_content(changelog.get("content"))
+
+    return render_template("frontstage/changelog.html", user=user, changelogs=changelogs)
 
 
 @frontstage.route("/@<username>/about", methods=["GET"])

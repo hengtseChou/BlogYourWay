@@ -117,7 +117,7 @@
           <div class="row">
             <div class="col-10">
               <a href="{{ url_for('frontstage.blogpost', username=post.author, post_uid=post.post_uid) }}"
-                 class="text-black">{{ post.title }}</a>
+                 class="text-black text-truncate">{{ post.title }}</a>
               <p class="text-grey mb-2 backstage-mobile-time">
                 Created at <span class="utc-to-local-long">{{ post.created_at }}</span>
               </p>
@@ -128,10 +128,10 @@
                           data-bs-placement="top"
                           data-bs-title="Featured posts will be on your home page">Featured</button>
                 {% endif %}
-                <span class="me-2"><i class="fa-regular fa-hand-pointer me-2"></i></span>
-                <span class="count">{{ post.views }}</span>
-                <span><i class="fa-regular fa-comment me-2"></i></span>
-                <span class="count">{{ post.comments }}</span>
+                <span class="me-2"><i class="fa-regular fa-hand-pointer"></i></span>
+                <span class="count me-2">{{ post.views }}</span>
+                <span class="me-2"><i class="fa-regular fa-comment"></i></span>
+                <span class="count me-2">{{ post.comments }}</span>
               </div>
             </div>
             <div class="col-2">

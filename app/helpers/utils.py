@@ -240,6 +240,15 @@ def convert_project_content(content: str) -> str:
 
     return html
 
+def convert_changelog_content(content: str) -> str:
+
+    md = Markdown(extensions=["markdown_captions", "fenced_code", "footnotes"])
+    html = md.convert(content)
+    formatter = HTMLFormatter(html)
+    html = formatter.add_padding().change_headings().modify_figure().to_string()
+
+    return html
+
 
 ##################################################################################################
 

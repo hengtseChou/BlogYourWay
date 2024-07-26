@@ -65,6 +65,21 @@ class ChangelogUtils:
     def __init__(self, db_handler: Database) -> None:
         self._db_handler = db_handler
 
+    def get_changelogs(self, username: str, by_date=False) -> list[dict]:
+        if by_date:
+            result = (
+                self._db_handler.changelog.find({"author": username, "archived": False})
+                .sort("date", -1)
+                .as_list()
+            )
+        else:
+            result = (
+                self._db_handler.changelog.find({"author": username, "archived": False})
+                .sort("created_at", -1)
+                .as_list()
+            )
+        return result
+
     def get_archived_changelogs(self, username: str) -> list[dict]:
         result = (
             self._db_handler.changelog.find({"author": username, "archived": True})
