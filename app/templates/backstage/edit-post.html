@@ -47,4 +47,4 @@
     </div>
   </form>
 {% endblock %}
-{% block script %}<script>var postContent = {{ post.content | tojson | safe }};</script>{% endblock %}
+{% block script %}<script>const postContent = {{ post.content | tojson | safe }};</script>{% endblock %}

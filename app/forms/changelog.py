@@ -20,7 +20,7 @@ class NewChangelogForm(FlaskForm):
     link_description = StringField(
         render_kw={"placeholder": "Link description"}, validators=[Optional()]
     )
-    submit_ = SubmitField(label="Submit")
+    submit_ = SubmitField(label="Submit", render_kw={"onclick": "return validateNewChangelog()"})
 
 
 class EditChangelogForm(FlaskForm):
@@ -34,4 +34,4 @@ class EditChangelogForm(FlaskForm):
     editor = TextAreaField()
     link = StringField(render_kw={"placeholder": "Link"}, validators=[Optional(), URL()])
     link_description = StringField(render_kw={"placeholder": "Link description"}, validators=[Optional()])
-    submit_ = SubmitField(label="Submit")
+    submit_ = SubmitField(label="Submit", render_kw={"onclick": "return validateUpdate()"})

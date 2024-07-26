@@ -1,5 +1,5 @@
-// notification (toast) from flask
-document.addEventListener("DOMContentLoaded", function () {
+// Function to handle notification (toast) from Flask
+function handleNotification() {
   setTimeout(function () {
     var notification = document.getElementById("notification");
     if (notification) {
@@ -9,9 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 300);
     }
   }, 3000);
-});
+}
 
-// update year tag in the footer
+// Function to update the year tag in the footer
 function updateCurrentYear() {
   var currentDate = new Date();
   var currentYear = currentDate.getFullYear();
@@ -25,7 +25,7 @@ function updateCurrentYear() {
   }
 }
 
-// convert utc time from server side to local time from client side
+// Function to convert UTC time from server side to local time from client side
 function convertUTCToLocal() {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const formatSettings = {
@@ -87,7 +87,7 @@ function convertUTCToLocal() {
   });
 }
 
-// format count numbers of views, comments
+// Function to format count numbers of views, comments
 function formatCounts() {
   const elements = document.querySelectorAll(".count");
 
@@ -100,6 +100,7 @@ function formatCounts() {
   });
 }
 
+// Function to set content container height
 function setContentContainerHeight() {
   const navbar = document.querySelector(".navbar");
   const cover = document.querySelector(".cover");
@@ -143,6 +144,7 @@ function setContentContainerHeight() {
   }
 }
 
+// Function to set cover container height
 function setCoverContainerHeight() {
   const coverContainers = document.querySelectorAll(".cover-container");
 
@@ -153,11 +155,15 @@ function setCoverContainerHeight() {
   });
 }
 
-updateCurrentYear();
-convertUTCToLocal();
-formatCounts();
-setCoverContainerHeight();
-setContentContainerHeight();
+// Attach all event listeners and initializations inside DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function () {
+  handleNotification();
+  updateCurrentYear();
+  convertUTCToLocal();
+  formatCounts();
+  setCoverContainerHeight();
+  setContentContainerHeight();
 
-window.addEventListener("resize", setContentContainerHeight);
-window.addEventListener("resize", setCoverContainerHeight);
+  window.addEventListener("resize", setContentContainerHeight);
+  window.addEventListener("resize", setCoverContainerHeight);
+});

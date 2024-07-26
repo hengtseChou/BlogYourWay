@@ -91,4 +91,4 @@
     </div>
   </form>
 {% endblock %}
-{% block script %}<script>var projectContent = {{ project.content | tojson | safe }};</script>{% endblock %}
+{% block script %}<script>const projectContent = {{ project.content | tojson | safe }};</script>{% endblock %}

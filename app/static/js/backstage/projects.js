@@ -54,6 +54,7 @@ function clearInputGroupThenHide(button) {
     selects.forEach((select) => (select.value = select.options[0].value));
   }
 }
+
 function validateNewProject() {
   var title = document.getElementById("title").value;
   if (title.trim() === "") {
@@ -115,21 +116,26 @@ function validateNewProject() {
   return true;
 }
 
+// Define event listener functions outside of DOMContentLoaded
+function preventFormEnterKey(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+  }
+}
+
+function resetModalFields() {
+  var slugSection = document.getElementById("slug-section");
+  var addButton = document.getElementById("add-slug-button");
+
+  slugSection.classList.add("d-none");
+  addButton.classList.remove("d-none");
+}
+
+// Add event listeners inside DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form");
-  form.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-    }
-  });
+  form.addEventListener("keypress", preventFormEnterKey);
 
   var modal = document.getElementById("newProjectModal");
-  // Listen for the 'hidden.bs.modal' event, which is fired after the modal has been hidden
-  modal.addEventListener("hidden.bs.modal", function () {
-    var slugSection = document.getElementById("slug-section");
-    var addButton = document.getElementById("add-slug-button");
-
-    slugSection.classList.add("d-none");
-    addButton.classList.remove("d-none");
-  });
+  modal.addEventListener("hidden.bs.modal", resetModalFields);
 });

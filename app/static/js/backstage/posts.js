@@ -105,26 +105,30 @@ function toggleSlug() {
   addButton.classList.add("d-none");
 }
 
+function preventFormEnterKey(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+  }
+}
+
+function resetModalFields() {
+  var slugSection = document.getElementById("slug-section");
+  var slugAddButton = document.getElementById("add-slug-button");
+
+  var coverSection = document.getElementById("cover-section");
+  var coverAddButton = document.getElementById("add-cover-button");
+
+  slugSection.classList.add("d-none");
+  slugAddButton.classList.remove("d-none");
+  coverSection.classList.add("d-none");
+  coverAddButton.classList.remove("d-none");
+}
+
+// Add event listeners inside DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form");
-  form.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-    }
-  });
+  form.addEventListener("keypress", preventFormEnterKey);
 
   var modal = document.getElementById("newPostModal");
-  // Listen for the 'hidden.bs.modal' event, which is fired after the modal has been hidden
-  modal.addEventListener("hidden.bs.modal", function () {
-    var slugSection = document.getElementById("slug-section");
-    var slugAddButton = document.getElementById("add-slug-button");
-
-    var coverSection = document.getElementById("cover-section");
-    var coverAddButton = document.getElementById("add-cover-button");
-
-    slugSection.classList.add("d-none");
-    slugAddButton.classList.remove("d-none");
-    coverSection.classList.add("d-none");
-    coverAddButton.classList.remove("d-none");
-  });
+  modal.addEventListener("hidden.bs.modal", resetModalFields);
 });

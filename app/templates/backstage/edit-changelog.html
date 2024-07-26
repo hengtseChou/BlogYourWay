@@ -32,7 +32,7 @@
             <label class="form-label ms-2 fst-italic text-black">· Date</label>
             <div class="d-flex">
               {{ form.date(class="form-control border-underline", value=changelog.date) }}
-              <button type="button" class="btn btn-panel ms-2">Today</button>
+              <button type="button" class="btn btn-panel ms-2" id="today">Today</button>
             </div>
           </div>
           <div class="col-6">
@@ -62,4 +62,4 @@
     </div>
   </form>
 {% endblock %}
-{% block script %}<script>var changelogContent = {{ changelog.content | tojson | safe }};</script>{% endblock %}
+{% block script %}<script>const changelogContent = {{ changelog.content | tojson | safe }};</script>{% endblock %}

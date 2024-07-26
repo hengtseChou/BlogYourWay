@@ -36,7 +36,7 @@ class NewPostForm(FlaskForm):
         validators=[Optional(), Regexp(slug_pattern, message="Slug must be URL-friendly.")],
     )
     editor = TextAreaField()
-    submit_ = SubmitField(label="Submit")
+    submit_ = SubmitField(label="Submit", render_kw={"onclick": "return validateNewPost()"})
 
 
 class EditPostForm(FlaskForm):

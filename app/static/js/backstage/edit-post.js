@@ -35,7 +35,7 @@ function validateUpdate() {
 
   var subtitle = document.getElementById("subtitle").value;
   if (subtitle.trim() === "") {
-    alert("Add a short description for this post as a subtitle.");
+    alert("Add a short description as a subtitle for this post.");
     return false;
   }
 

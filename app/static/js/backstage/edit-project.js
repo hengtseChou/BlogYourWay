@@ -55,7 +55,7 @@ function validateUpdate() {
 
   var desc = document.getElementById("desc").value;
   if (desc.trim() === "") {
-    alert("You must a short description for the project.");
+    alert("Add a short description for the project.");
     return false;
   }
 
@@ -100,32 +100,3 @@ function validateUpdate() {
 
   return true;
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-  const maxInputs = 5;
-  const inputWrapper = document.querySelector("#inputContainer");
-  const addButton = document.querySelector("#add-more-image");
-  let inputCount = 1;
-
-  function addInputField(orderNumber) {
-    const inputGroup = createInputGroup(orderNumber);
-    inputWrapper.appendChild(inputGroup);
-    updateOrderNumbers();
-  }
-
-  addButton.addEventListener("click", function (e) {
-    e.preventDefault();
-    if (inputCount < maxInputs) {
-      addInputField(++inputCount);
-    }
-  });
-
-  inputWrapper.addEventListener("click", function (e) {
-    if (e.target.classList.contains("btn-remove")) {
-      e.preventDefault();
-      e.target.closest(".input-group").remove();
-      inputCount--;
-      updateOrderNumbers();
-    }
-  });
-});

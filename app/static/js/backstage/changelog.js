@@ -30,6 +30,55 @@ const datepicker = new Datepicker(elem, {
   buttonClass: "btn",
 });
 
+function validateNewChangelog() {
+  var title = document.getElementById("title").value;
+  if (title.trim() === "") {
+    alert("You must enter the title for the changelog.");
+    return false;
+  }
+
+  var date = document.getElementById("date").value;
+  if (date.trim() === "") {
+    alert("You must enter the date for the changelog.");
+    return false;
+  }
+
+  var category = document.getElementById("category").value;
+  if (category.trim() === "") {
+    alert("You must select a category for the changelog.");
+    return false;
+  }
+
+  var tags = document.getElementById("tags").value;
+  if (tags.trim() === "") {
+    alert("You must add one tag to the changelog at least.");
+    return false;
+  }
+  const tagRegex = /^[\u4e00-\u9fa5a-zA-Z\s]+(,\s*[\u4e00-\u9fa5a-zA-Z\s]+)*$/;
+  if (!tagRegex.test(tags)) {
+    alert("You must separate tags with a comma (',').");
+    return false;
+  }
+
+  var link = document.getElementById("link").value;
+  if (link.trim() !== "") {
+    // Only validate non-empty URLs
+    const urlRegex =
+      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+    if (!urlRegex.test(link)) {
+      alert("Please enter a valid URL.");
+      return false;
+    }
+  }
+
+  if (easyMDE.value().trim() === "") {
+    alert("The changelog content cannot be empty!");
+    return false;
+  }
+
+  return true;
+}
+
 function toggleLink() {
   var linkSection = document.getElementById("link-section");
   var addButton = document.getElementById("add-link-button");
@@ -38,26 +87,21 @@ function toggleLink() {
   addButton.classList.add("d-none");
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("form");
-  form.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-    }
-  });
+function preventFormEnterKey(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+  }
+}
 
-  var modal = document.getElementById("newChangelogModal");
-  // Listen for the 'hidden.bs.modal' event, which is fired after the modal has been hidden
-  modal.addEventListener("hidden.bs.modal", function () {
-    var linkSection = document.getElementById("link-section");
-    var addButton = document.getElementById("add-link-button");
+function resetModalFields() {
+  var linkSection = document.getElementById("link-section");
+  var addButton = document.getElementById("add-link-button");
 
-    linkSection.classList.add("d-none");
-    addButton.classList.remove("d-none");
-  });
-});
+  linkSection.classList.add("d-none");
+  addButton.classList.remove("d-none");
+}
 
-document.getElementById("today").addEventListener("click", function () {
+function setTodayDate() {
   const today = new Date();
   const day = String(today.getDate()).padStart(2, "0");
   const month = String(today.getMonth() + 1).padStart(2, "0");
@@ -65,4 +109,16 @@ document.getElementById("today").addEventListener("click", function () {
 
   const formattedDate = `${month}/${day}/${year}`;
   document.getElementById("date").value = formattedDate;
+}
+
+// Add event listener inside DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function () {
+  const todayBtn = document.getElementById("today");
+  todayBtn.addEventListener("click", setTodayDate);
+
+  const form = document.getElementById("form");
+  form.addEventListener("keypress", preventFormEnterKey);
+
+  const modal = document.getElementById("newChangelogModal");
+  modal.addEventListener("hidden.bs.modal", resetModalFields);
 });

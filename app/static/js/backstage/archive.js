@@ -1,28 +1,46 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const deletePostBtn = document.querySelectorAll(".delete-post-btn");
+// Function to add delete post event listeners
+function addDeletePostEventListeners() {
+  const deletePostBtns = document.querySelectorAll(".delete-post-btn");
   const deletePostModal = document.getElementById("deletePostBtn");
-  deletePostBtn.forEach((button) => {
+
+  deletePostBtns.forEach((button) => {
     button.addEventListener("click", function () {
       const postUid = this.dataset.postUid;
-      deletePostModal.href = `/backstage/delete/post?&uid=${postUid}`; // Update the modal's delete link
+      deletePostModal.href = `/backstage/delete/post?&uid=${postUid}`;
     });
   });
+}
 
-  const deleteProjectBtn = document.querySelectorAll(".delete-project-btn");
+// Function to add delete project event listeners
+function addDeleteProjectEventListeners() {
+  const deleteProjectBtns = document.querySelectorAll(".delete-project-btn");
   const deleteProjectModal = document.getElementById("deleteProjectBtn");
-  deleteProjectBtn.forEach((button) => {
+
+  deleteProjectBtns.forEach((button) => {
     button.addEventListener("click", function () {
       const projectUid = this.dataset.projectUid;
-      deleteProjectModal.href = `/backstage/delete/project?&uid=${projectUid}`; // Update the modal's delete link
+      deleteProjectModal.href = `/backstage/delete/project?&uid=${projectUid}`;
     });
   });
+}
 
-  const deleteChangelogBtn = document.querySelectorAll(".delete-changelog-btn");
+// Function to add delete changelog event listeners
+function addDeleteChangelogEventListeners() {
+  const deleteChangelogBtns = document.querySelectorAll(
+    ".delete-changelog-btn",
+  );
   const deleteChangelogModal = document.getElementById("deleteChangelogBtn");
-  deleteChangelogBtn.forEach((button) => {
+
+  deleteChangelogBtns.forEach((button) => {
     button.addEventListener("click", function () {
       const changelogUid = this.dataset.changelogUid;
-      deleteChangelogModal.href = `/backstage/delete/changelog?&uid=${changelogUid}`; // Update the modal's delete link
+      deleteChangelogModal.href = `/backstage/delete/changelog?&uid=${changelogUid}`;
     });
   });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  addDeletePostEventListeners();
+  addDeleteProjectEventListeners();
+  addDeleteChangelogEventListeners();
 });

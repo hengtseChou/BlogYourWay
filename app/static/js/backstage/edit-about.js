@@ -26,9 +26,14 @@ const easyMDE = new EasyMDE({
 });
 easyMDE.value(userAbout);
 
-const form = document.getElementById("form");
-form.addEventListener("keypress", function (event) {
+function preventFormEnterKey(event) {
   if (event.key === "Enter") {
     event.preventDefault();
   }
+}
+
+// Add event listeners inside DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("form");
+  form.addEventListener("keypress", preventFormEnterKey);
 });
