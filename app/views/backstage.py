@@ -1,11 +1,10 @@
 from bcrypt import checkpw, gensalt, hashpw
-from datetime import datetime
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for, Response
+from flask import Blueprint, Response, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
 from app.cache import cache, update_user_cache
 from app.config import TEMPLATE_FOLDER
-from app.forms.changelog import NewChangelogForm, EditChangelogForm
+from app.forms.changelog import EditChangelogForm, NewChangelogForm
 from app.forms.posts import EditPostForm, NewPostForm
 from app.forms.projects import EditProjectForm, NewProjectForm
 from app.forms.users import (
@@ -15,7 +14,7 @@ from app.forms.users import (
     UpdateSocialLinksForm,
     UserDeletionForm,
 )
-from app.helpers.changelog import create_changelog, changelog_utils, update_changelog
+from app.helpers.changelog import changelog_utils, create_changelog, update_changelog
 from app.helpers.posts import create_post, post_utils, update_post
 from app.helpers.projects import create_project, projects_utils, update_project
 from app.helpers.users import user_utils
@@ -154,11 +153,24 @@ def archive_panel() -> str:
 
     logger_utils.pagination(panel="archive", num=(len(posts) + len(projects)))
 
-    return render_template("backstage/archive.html", user=user, posts=posts, projects=projects, changelogs=changelogs)
+    return render_template(
+        "backstage/archive.html", user=user, posts=posts, projects=projects, changelogs=changelogs
+    )
+
 
 @backstage.route("/changelog", methods=["GET", "POST"])
 @login_required
 def changelog_panel() -> str:
+    """Render the changelog panel for the backstage section.
+
+    This route handles both GET and POST requests. It displays the changelog panel,
+    processes the submission of a new changelog if present, and handles pagination
+    for viewing changelogs.
+
+    Returns:
+        str: The rendered HTML template for the changelog panel.
+
+    """
     session["user_current_panel"] = "changelog"
     logger_utils.backstage(username=current_user.username, panel="changelog")
 
@@ -186,7 +198,9 @@ def changelog_panel() -> str:
 
     logger_utils.pagination(panel="changelog", num=len(changelogs))
 
-    return render_template("backstage/changelog.html", user=user, form=form, pagination=paging, changelogs=changelogs)
+    return render_template(
+        "backstage/changelog.html", user=user, form=form, pagination=paging, changelogs=changelogs
+    )
 
 
 @backstage.route("/theme", methods=["GET", "POST"])
@@ -243,7 +257,6 @@ def settings_panel() -> str:
         flash("Update succeeded!", category="success")
         update_user_cache(cache, current_user.username)
         user = mongodb.user_info.find_one({"username": current_user.username})
-
 
     if form_social.submit_links.data and form_social.validate_on_submit():
         updated_links = []
@@ -472,7 +485,10 @@ def edit_changelog(changelog_uid: str) -> str:
 
     if request.method == "POST":
         return redirect(url_for("backstage.changelog_panel"))
-    return render_template("backstage/edit-changelog.html", changelog=changelog, user=user, form=form)
+    return render_template(
+        "backstage/edit-changelog.html", changelog=changelog, user=user, form=form
+    )
+
 
 @backstage.route("/edit-featured", methods=["GET"])
 @login_required
@@ -597,12 +613,12 @@ def toggle_archived() -> Response:
         logger.debug(
             f"Archive status for changelog {changelog_uid} is now set to {updated_archived_status}."
         )
-   
+
     redirect_mapping = {
         "posts": redirect(url_for("backstage.posts_panel")),
         "archive": redirect(url_for("backstage.archive_panel")),
         "projects": redirect(url_for("backstage.projects_panel")),
-        "changelog": redirect(url_for("backstage.changelog_panel"))
+        "changelog": redirect(url_for("backstage.changelog_panel")),
     }
     return redirect_mapping.get(session["user_current_panel"])
 
@@ -649,6 +665,7 @@ def delete_project() -> Response:
     flash(f'Your project "{title_sliced}" has been deleted!', category="success")
 
     return redirect(url_for("backstage.archive_panel"))
+
 
 @backstage.route("/delete/changelog", methods=["GET"])
 @login_required
