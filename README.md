@@ -54,7 +54,7 @@ It is built with Flask and Bootstrap 5, along with some useful javascript librar
 
 - **Custom Slugs**: Define unique URLs for better SEO.
 
-## 🌒 Future Works
+## 🌙 Future Works
 
 We’re working on these upcoming features:
 
