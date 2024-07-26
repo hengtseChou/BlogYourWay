@@ -111,7 +111,7 @@ img.profile-sm {
 /* blogpost */
 
 .main-theme-link {
-  text-decoration: none;
+  text-decoration: underline;
   color: #000000;
 }
 
