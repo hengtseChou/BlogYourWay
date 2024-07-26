@@ -79,8 +79,7 @@ tocContainer.classList.add("d-none");
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".ajax-profile-pic").forEach(fetchReplacementImage);
   setTimeout(sendReadCountRequest, 60);
-  document
-    .getElementById("comment-form")
-    .addEventListener("keypress", preventFormEnter);
+  const form = document.getElementById("comment-form");
+  form.addEventListener("keypress", preventFormEnter);
   setupTableOfContents();
 });
