@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}About - {{ user.blogname }}{% endblock %}
 {% block meta_tags %}
-  <meta name="description" content="Check about me on BlogYourWay">
+  <meta name="description" content="Know {{ user.username }} better on BlogYourWay">
   <meta property="og:title" content="About - {{ user.blogname }}">
-  <meta property="og:description" content="Check about me on BlogYourWay">
+  <meta property="og:description" content="Know {{ user.username }} better on BlogYourWay">
   <meta property="og:image" content="{{ user.cover_url }}">
   <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}">  
   <meta property="og:type" content="website">

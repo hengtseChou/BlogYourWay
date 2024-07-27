@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}{{ project.title }} - {{ user.blogname }}{% endblock %}
 {% block meta_tags %}
-  <meta name="description" content="{{ project.short_description }} - Project showcase on BlogYourWay" />
+  <meta name="description" content="{{ project.short_description }} - project showcase on BlogYourWay" />
   <meta property="og:title" content="{{ project.title }}">
-  <meta property="og:description" content="{{ project.short_description }} - Project showcase on BlogYourWay">
+  <meta property="og:description" content="{{ project.short_description }} - project showcase on BlogYourWay">
   <meta property="og:type" content="article" />
   <meta property="og:url"
         content="{{ url_for(request.endpoint, **request.view_args) }}">
