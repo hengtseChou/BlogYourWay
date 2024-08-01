@@ -15,7 +15,7 @@
   {% include 'frontstage/cover.html' %}
   <div class="container-fluid">
     <div class="row content-min-height">
-      <div class="col-lg-8 col-12 mx-auto">
+      <div class="col-md-9 col-lg-8 col-12 mx-auto">
         <div class="row mb-5">
           <!-- post column -->
           <div class="col-lg-8 col-12 mx-auto mt-4">
@@ -32,11 +32,11 @@
                     </div>
                   </div>
                   <div class="mb-3">{{ post.subtitle }}</div>
-                  <div class="d-flex align-items-center text-dark-grey">
+                  <div class="d-flex align-items-center text-dark-grey flex-wrap">
                     <span><i class="fa-solid fa-tags"></i></span>
                     {% for tag in post.tags %}
                       <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-                        <span class="badge tag ms-2">{{ tag }}</span>
+                        <span class="badge tag ms-2 mb-1">{{ tag }}</span>
                       </a>
                     {% endfor %}
                   </div>

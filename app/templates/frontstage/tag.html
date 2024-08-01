@@ -15,7 +15,7 @@
   {% include 'frontstage/cover.html' %}
   <div class="container-fluid">
     <div class="row content-min-height">
-      <div class="col-lg-5 col-11 mx-auto mb-5">
+      <div class="col-md-7 col-lg-5 col-11 mx-auto mb-5">
         <h1 class="fw-bold text-center py-5"># {{ tag }}</h1>
         <hr />
         {% if (posts | length == 0) and (projects | length == 0) %}
@@ -38,11 +38,11 @@
               </div>
             </div>
             <div class="mb-3">{{ post.subtitle }}</div>
-            <div class="d-flex align-items-center text-dark-grey">
+            <div class="d-flex align-items-center text-dark-grey flex-wrap">
               <span><i class="fa-solid fa-tags"></i></span>
               {% for tag in post.tags %}
                 <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-                  <span class="badge tag ms-2">{{ tag }}</span>
+                  <span class="badge tag ms-2 mb-1">{{ tag }}</span>
                 </a>
               {% endfor %}
             </div>

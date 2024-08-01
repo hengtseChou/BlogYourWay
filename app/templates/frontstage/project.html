@@ -105,11 +105,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/agate.m
           </button>
         </div>
         <div class="my-3">{{ project.content|safe }}</div>
-        <div class="d-flex align-items-center mb-5 text-dark-grey fs-large">
+        <div class="d-flex align-items-center mb-5 text-dark-grey fs-large flex-wrap">
           <span><i class="fa-solid fa-tags"></i></span>
           {% for tag in project.tags %}
             <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-              <span class="badge tag ms-2">{{ tag }}</span>
+              <span class="badge tag ms-2 mb-1">{{ tag }}</span>
             </a>
           {% endfor %}
         </div>

@@ -14,9 +14,9 @@
   {% include 'frontstage/cover.html' %}
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-6 col-10 mx-auto mt-16">
+      <div class="col-md-7 col-lg-7 col-xl-6 col-10 mx-auto mt-16">
         <div class="row content-min-height">
-          <div class="col-lg-8 col-10">
+          <div class="col-lg-8 col-12">
             <div class="display-2 fw-bold">about.</div>
             {% if about | length == 0 %}
               <div class="mt-5 mb-3">Well... Looks like there's nothing here yet.</div>
@@ -29,7 +29,7 @@
             <div class="d-flex justify-content-center">
               <img src="{{ user.profile_img_url }}"
                    alt="profile-img"
-                   class="profile-xxl img-thumbnail">
+                   class="profile-xxl img-thumbnail mx-auto">
             </div>
             <div class="text-center mt-4">
               <h3>{{ user.blogname }}</h3>
