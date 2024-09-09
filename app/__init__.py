@@ -6,7 +6,7 @@ from flask_login import LoginManager
 from pymongo.errors import ServerSelectionTimeoutError
 
 from app.cache import cache
-from app.config import APP_SECRET, CACHE_TIMEOUT, ENV
+from app.config import APP_SECRET, CACHE_TIMEOUT, ENV, REDIS_URL
 from app.helpers.users import user_utils
 from app.logging import logger, return_client_ip
 from app.models.users import UserInfo
@@ -37,13 +37,15 @@ def create_app() -> Flask:
         app.config["DEBUG"] = True
 
         from flask_debugtoolbar import DebugToolbarExtension
+
         toolbar = DebugToolbarExtension()
         toolbar.init_app(app)
         app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
         logger.debug("Debugtoolbar initialized.")
 
     # Cache configuration
-    app.config["CACHE_TYPE"] = "SimpleCache"
+    app.config["CACHE_TYPE"] = "RedisCache"
+    app.config["CACHE_REDIS_URL"] = REDIS_URL
     app.config["CACHE_DEFAULT_TIMEOUT"] = CACHE_TIMEOUT
     cache.init_app(app)
     logger.debug(f"{app.config['CACHE_TYPE']} initialized.")
