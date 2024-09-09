@@ -6,7 +6,7 @@ from flask_login import LoginManager
 from pymongo.errors import ServerSelectionTimeoutError
 
 from app.cache import cache
-from app.config import APP_SECRET, CACHE_TIMEOUT, ENV, REDIS_URL
+from app.config import APP_SECRET, CACHE_TIMEOUT, ENV, REDIS_URL, REDISHOST, REDISPORT
 from app.helpers.users import user_utils
 from app.logging import logger, return_client_ip
 from app.models.users import UserInfo
@@ -45,6 +45,9 @@ def create_app() -> Flask:
 
     # Cache configuration
     app.config["CACHE_TYPE"] = "RedisCache"
+    app.config["CACHE_REDIS_HOST"] = REDISHOST
+    app.config["CACHE_REDIS_PORT"] = REDISPORT
+    app.config["CACHE_REDIS_DB"] = 0
     app.config["CACHE_REDIS_URL"] = REDIS_URL
     app.config["CACHE_DEFAULT_TIMEOUT"] = CACHE_TIMEOUT
     cache.init_app(app)

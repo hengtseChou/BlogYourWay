@@ -11,6 +11,8 @@ APP_SECRET: str = os.getenv("APP_SECRET")  # Application secret key
 MONGO_URL: str = os.getenv("MONGO_URL")  # MongoDB connection URL
 RECAPTCHA_KEY: str = os.getenv("RECAPTCHA_KEY")  # reCAPTCHA public key
 RECAPTCHA_SECRET: str = os.getenv("RECAPTCHA_SECRET")  # reCAPTCHA secret key
+REDISHOST: str = os.getenv("REDISHOST")
+REDISPORT: str = os.getenv("REDISPORT")
 REDIS_URL: str = os.getenv("REDIS_URL")
 
 # Application settings
