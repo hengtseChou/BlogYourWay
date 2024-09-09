@@ -72,46 +72,36 @@ footer p {
 /* profile img */
 
 img.profile-xxl {
-  max-width: 12rem;
-  max-height: 12rem;
-  width: 100%;
-  height: auto;
+  width: 12rem;
+  height: 12rem;
   object-fit: cover;
   border-radius: 50%;
 }
 
 img.profile-xl {
-  max-width: 4rem;
-  max-height: 4rem;
-  width: 100%;
-  height: auto;
+  width: 4rem;
+  height: 4rem;
   object-fit: cover;
   border-radius: 50%;
 }
 
 img.profile-lg {
-  max-width: 3.7rem;
-  max-height: 3.7rem;
-  width: 100%;
-  height: auto;
+  width: 3.7rem;
+  height: 3.7rem;
   object-fit: cover;
   border-radius: 50%;
 }
 
 img.profile-md {
-  max-width: 3rem;
-  max-height: 3rem;
-  width: 100%;
-  height: auto;
+  width: 3rem;
+  height: 3rem;
   object-fit: cover;
   border-radius: 50%;
 }
 
 img.profile-sm {
-  max-width: 2.5rem;
-  max-height: 2.5rem;
-  width: 100%;
-  height: auto;
+  width: 2.5rem;
+  height: 2.5rem;
   object-fit: cover;
   border-radius: 50%;
 }
