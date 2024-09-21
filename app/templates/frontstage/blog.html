@@ -1,11 +1,19 @@
 {% extends 'base.html' %}
 {% block title %}Posts - {{ user.blogname }}{% endblock %}
 {% block meta_tags %}
-  <meta name="description" content="View blogposts from {{ user.username }} over BlogYourWay">
+  <meta name="description"
+        content="BlogYourWay, the all-in-1 blogging platform.">
   <meta property="og:title" content="Posts - {{ user.blogname }}">
-  <meta property="og:description" content="View blogposts from {{ user.username }} over BlogYourWay">
+  <meta property="og:description"
+        content="BlogYourWay, the all-in-1 blogging platform.">
   <meta property="og:image" content="{{ user.cover_url }}">
-  <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}">  
+  {% if "localhost" in request.host %}
+    <meta property="og:url"
+          content="{{ request.host }}{{ url_for(request.endpoint, **request.view_args) }}">
+  {% else %}
+    <meta property="og:url"
+          content="https://{{ request.host }}{{ url_for(request.endpoint, **request.view_args) }}">
+  {% endif %}
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="BlogYourWay">
   <meta name="twitter:card" content="summary_large_image">

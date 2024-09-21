@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 {% block title %}{{ post.title }}{% endblock %}
 {% block meta_tags %}
-<meta name="description" content="{{ post.subtitle }} - blog post on BlogYourWay" />
-<meta property="og:title" content="{{ post.title }}">
-  <meta property="og:description" content="{{ post.subtitle }} - blog post on BlogYourWay">
+  <meta name="description" content="{{ post.subtitle }}" />
+  <meta property="og:title" content="{{ post.title }}">
+  <meta property="og:description" content="{{ post.subtitle }}">
   <meta property="og:type" content="article" />
-  <meta property="og:url"
-        content="{{ url_for(request.endpoint, **request.view_args) }}">
+  {% if "localhost" in request.host %}
+    <meta property="og:url"
+          content="{{ request.host }}{{ url_for(request.endpoint, **request.view_args) }}">
+  {% else %}
+    <meta property="og:url"
+          content="https://{{ request.host }}{{ url_for(request.endpoint, **request.view_args) }}">
+  {% endif %}
   {% if post.cover_url != "" %}
     <meta property="og:image" content="{{ post.cover_url }}" />
   {% else %}
@@ -25,7 +30,7 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/agate.min.css">
   <link rel="stylesheet"
-        href="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.css"/>
+        href="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
   <script src="https://unpkg.com/highlightjs-copy/dist/highlightjs-copy.min.js"></script>
   <script src="{{ url_for('static', filename='js/frontstage/blogpost.js') }}"

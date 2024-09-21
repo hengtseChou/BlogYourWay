@@ -1,21 +1,28 @@
 {% extends 'base.html' %}
 {% block title %}{{ project.title }} - {{ user.blogname }}{% endblock %}
 {% block meta_tags %}
-  <meta name="description" content="{{ project.short_description }} - project showcase on BlogYourWay" />
+  <meta name="description"
+        content="BlogYourWay, the all-in-1 blogging platform." />
   <meta property="og:title" content="{{ project.title }}">
-  <meta property="og:description" content="{{ project.short_description }} - project showcase on BlogYourWay">
+  <meta property="og:description"
+        content="BlogYourWay, the all-in-1 blogging platform.">
   <meta property="og:type" content="article" />
-  <meta property="og:url"
-        content="{{ url_for(request.endpoint, **request.view_args) }}">
+  {% if "localhost" in request.host %}
+    <meta property="og:url"
+          content="{{ request.host }}{{ url_for(request.endpoint, **request.view_args) }}">
+  {% else %}
+    <meta property="og:url"
+          content="https://{{ request.host }}{{ url_for(request.endpoint, **request.view_args) }}">
+  {% endif %}
   <meta property="og:image" content="{{ project.images[0][0] }}" />
   <meta name="twitter:card" content="summary_large_image">
   <meta property="og:locale" content="en_US" />
   <meta property="og:locale:alternate" content="zh_TW" />
 {% endblock %}
 {% block head %}
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/agate.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/agate.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
   <link rel="stylesheet"
         href="{{ url_for('static', filename='css/frontstage/project.css') }}">
   <script src="{{ url_for('static', filename='js/frontstage/project.js') }}"
@@ -31,8 +38,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/agate.m
         </div>
         <div class="text-grey fst-italic my-3">
           Last Updated: <span class="utc-to-local-short">{{ project.last_updated }}</span>
-          by 
-          <a class="text-grey" href="{{ url_for('frontstage.about', username=project.author) }}">{{ project.author }}</a>
+          by
+          <a class="text-grey"
+             href="{{ url_for('frontstage.about', username=project.author) }}">{{ project.author }}</a>
         </div>
         <div id="carousel" class="carousel slide">
           <div class="carousel-inner" id="carousel">
