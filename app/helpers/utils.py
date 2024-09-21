@@ -125,7 +125,7 @@ class HTMLFormatter:
         big_headings = self._soup.find_all("h1")
         for heading in big_headings:
             heading.name = "h2"
-            heading["class"] = "pt-4 py-1 fw-bold"
+            heading["class"] = "pt-4 pb-1 fw-bold"
 
         return self
 
