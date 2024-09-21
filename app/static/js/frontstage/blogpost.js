@@ -69,6 +69,7 @@ function setupTableOfContents() {
 }
 
 // Attach syntax highlighting
+hljs.addPlugin(new CopyButtonPlugin());
 hljs.highlightAll();
 
 // Initialize Table of Contents container as hidden
