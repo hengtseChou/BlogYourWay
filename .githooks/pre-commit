@@ -1,6 +1,6 @@
 #!/bin/bash
 cd "$(git rev-parse --show-toplevel)"
-source .debug/bin/activate
+source .dev/bin/activate
 reformat=false
 
 # Function to handle Python files
