@@ -78,6 +78,15 @@ function validateUpdate() {
     alert("Your post cannot be empty!");
     return false;
   }
-
   return true;
 }
+
+function preventFormEnter(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  form.addEventListener("keypress", preventFormEnter);
+});

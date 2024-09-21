@@ -9,7 +9,6 @@ from typing_extensions import Self
 
 from app.mongo import Database
 
-
 ##################################################################################################
 
 # uid generator
@@ -65,14 +64,13 @@ class UIDGenerator:
             project_uid = "".join(random.choices(alphabet, k=8))
             if not self._db_handler.project_info.exists("project_uid", project_uid):
                 return project_uid
-    
+
     def generate_changelog_uid(self) -> str:
         alphabet = string.ascii_lowercase + string.digits
         while True:
             changelog_uid = "".join(random.choices(alphabet, k=8))
             if not self._db_handler.changelog.exists("changelog_uid", changelog_uid):
                 return changelog_uid
-
 
 
 ##################################################################################################
@@ -99,9 +97,7 @@ class HTMLFormatter:
         Returns:
             HTMLFormatter: The formatter instance.
         """
-        blocks = self._soup.find_all(
-            lambda tag: tag.name not in ["figure", "img"], recursive=False
-        )
+        blocks = self._soup.find_all(lambda tag: tag.name not in ["figure", "img"], recursive=False)
         for block in blocks:
             current_class = block.get("class", [])
             current_class.append("py-1")
@@ -118,16 +114,18 @@ class HTMLFormatter:
         """
         small_headings = self._soup.find_all("h3")
         for heading in small_headings:
-            heading.name = "h5"
+            heading.name = "h6"
+            heading["class"] = "pt-2 pb-1 fw-bold"
 
         medium_headings = self._soup.find_all("h2")
         for heading in medium_headings:
-            heading.name = "h3"
+            heading.name = "h5"
+            heading["class"] = "pt-3 pb-1 fw-bold"
 
         big_headings = self._soup.find_all("h1")
         for heading in big_headings:
             heading.name = "h2"
-            heading["class"] = "py-3"
+            heading["class"] = "pt-4 py-1 fw-bold"
 
         return self
 
@@ -160,7 +158,7 @@ class HTMLFormatter:
             caption["class"] = current_class
 
         return self
-    
+
     def modify_hyperlink(self) -> Self:
         """
         Apply color theme to hyperlinks in the post.
@@ -175,7 +173,6 @@ class HTMLFormatter:
             link["class"] = current_class
 
         return self
-        
 
     def to_string(self) -> str:
         """
@@ -239,6 +236,7 @@ def convert_project_content(content: str) -> str:
     html = formatter.add_padding().change_headings().modify_figure().to_string()
 
     return html
+
 
 def convert_changelog_content(content: str) -> str:
 

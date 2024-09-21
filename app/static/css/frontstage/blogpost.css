@@ -85,5 +85,5 @@ blockquote p {
 }
 
 .toc ul li.toclevel-3 > a {
-  font-weight: lighter;
+  font-weight: normal;
 }
