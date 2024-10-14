@@ -4,55 +4,30 @@ BlogYourWay is a hobby project for creating a self-hosted blogging service to **
 
 It is built with Flask and Bootstrap 5, along with some useful javascript libraries, such as [easy-markdown-editor](https://github.com/Ionaru/easy-markdown-editor).
 
-## 🚀 What’s New
+## 🚀 Features
 
-### **User Profile Management**
+### **User Profile**
 
-- **Edit Your Bio**: Update your short and long bios to reflect who you are.
-- **Profile Picture**: Upload your personal profile picture.
-- **Site Cover Image**: Set a cover image for your site.
-- **Social Links**: Connect your social media accounts.
+- **Customization**: Upload profile picture and blog cover that fits your characteristic the best.
+- **Featured Posts**: Highlighting your posts over homepage.
+- **Social Links**: Attach your favorite social platform at the footer.
 
-### **Homepage**
-
-- **Featured Posts**: View the posts you’ve highlighted.
-- **User Info**: Check out your profile picture and bio.
 
 ### **Blogpost Management**
 
 - **Markdown Editor**: Create, edit, and delete blog posts with ease.
-- **Custom Slugs**: Define custom URLs for your posts.
-
-### **Comment System**
-
-- **Anonymous & Authenticated Comments**: Readers can comment without registering or sign up for an authenticated experience.
-- **Spam Protection**: Both types of comments use Google reCAPTCHA to keep things secure.
+- **Commenting:** Anonymous or Authenticated comments are both possible.
+- **Custom Slugs**: Define unique URLs for better SEO.
 
 ### **Project Showcases**
 
 - **Manage Projects**: Create, edit, and delete your project showcases.
-- **Image Carousel**: Add an image carousel to highlight your projects.
-- **Custom Slugs**: Define custom URLs for your projects.
+- **Image Carousel**: Utilize an image carousel to highlight your projects.
+- **Custom Slugs**: Define unique URLs for your projects.
 
-### **Tag System**
-
-- **Filter Content**: Use tags to easily find blog posts and projects.
-
-### **Changelog**
+### **Personal Changelog**
 
 - **Track Your Growth**: Upload and showcase your personal growth and updates.
-
-### **Design System**
-
-- **Bootstrap 5**: Enjoy a minimalistic and responsive design that looks great on any device.
-
-### **Forms**
-
-- **CSRF Protection**: Forms are protected against cross-site request forgery using WTForms.
-
-### **SEO Enhancements**
-
-- **Custom Slugs**: Define unique URLs for better SEO.
 
 ## 🌙 Future Works
 
