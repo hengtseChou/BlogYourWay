@@ -57,7 +57,7 @@ class UserInfo(UserMixin):
         if self.created_at is None:
             self.created_at = datetime.now(timezone.utc)
         if self.social_links is None:
-            self.social_links = [("", "")] * 5
+            self.social_links = [[]] * 5
 
     def get_id(self) -> str:
         """Overrides the get_id method from UserMixin to return the username.

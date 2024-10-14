@@ -258,6 +258,12 @@ def settings_panel() -> str:
         update_user_cache(cache, current_user.username)
         user = mongodb.user_info.find_one({"username": current_user.username})
 
+    if request.method == "GET":
+        for i in range(len(user.get("social_links"))):
+            if user.get("social_links")[i]:
+                form_social[f"platform{i}"].default = user.get("social_links")[i][1]
+        form_social.process()
+
     if form_social.submit_links.data and form_social.validate_on_submit():
         updated_links = []
         for i in range(5):

@@ -48,7 +48,7 @@
           <div class="input-group mb-2 {% if not user.social_links[0] %}d-none{% endif %}">
             <span class="input-group-text">Link</span>
             {{ form_social.url0(class="form-control", value=user.social_links[0][0]) }}
-            {{ form_social.platform0(class="form-select", default=user.social_links[0][1]) }}
+            {{ form_social.platform0(class="form-select") }}
             <button class="btn btn-panel"
                     type="button"
                     onclick="clearInputGroupThenHide(this)">Remove</button>
@@ -56,7 +56,7 @@
           <div class="input-group mb-2 {% if not user.social_links[1] %}d-none{% endif %}">
             <span class="input-group-text">Link</span>
             {{ form_social.url1(class="form-control", value=user.social_links[1][0]) }}
-            {{ form_social.platform1(class="form-select", default=user.social_links[1][1]) }}
+            {{ form_social.platform1(class="form-select") }}
             <button class="btn btn-panel"
                     type="button"
                     onclick="clearInputGroupThenHide(this)">Remove</button>
@@ -64,7 +64,7 @@
           <div class="input-group mb-2 {% if not user.social_links[2] %}d-none{% endif %}">
             <span class="input-group-text">Link</span>
             {{ form_social.url2(class="form-control", value=user.social_links[2][0]) }}
-            {{ form_social.platform2(class="form-select", default=user.social_links[2][1]) }}
+            {{ form_social.platform2(class="form-select") }}
             <button class="btn btn-panel"
                     type="button"
                     onclick="clearInputGroupThenHide(this)">Remove</button>
@@ -72,7 +72,7 @@
           <div class="input-group mb-2 {% if not user.social_links[3] %}d-none{% endif %}">
             <span class="input-group-text">Link</span>
             {{ form_social.url3(class="form-control", value=user.social_links[3][0]) }}
-            {{ form_social.platform3(class="form-select", default=user.social_links[3][1]) }}
+            {{ form_social.platform3(class="form-select") }}
             <button class="btn btn-panel"
                     type="button"
                     onclick="clearInputGroupThenHide(this)">Remove</button>
@@ -80,7 +80,7 @@
           <div class="input-group mb-2 {% if not user.social_links[4] %}d-none{% endif %}">
             <span class="input-group-text">Link</span>
             {{ form_social.url4(class="form-control", value=user.social_links[4][0]) }}
-            {{ form_social.platform4(class="form-select", default=user.social_links[4][1]) }}
+            {{ form_social.platform4(class="form-select") }}
             <button class="btn btn-panel"
                     type="button"
                     onclick="clearInputGroupThenHide(this)">Remove</button>
