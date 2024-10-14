@@ -170,7 +170,7 @@ def sitemap() -> str:
         slug = post.get("custom_slug")
         url = {
             "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug if slug else ''}",
-            "lastmod": post.get("last_updated"),
+            "lastmod": post.get("last_updated").strftime("%Y-%m-%dT%H:%M:%S%z"),
         }
         dynamic_urls.append(url)
 
@@ -178,7 +178,7 @@ def sitemap() -> str:
         slug = project.get("custom_slug")
         url = {
             "loc": f"{host_base}/@{project.get('author')}/projects/{project.get('project_uid')}/{slug if slug else ''}",
-            "lastmod": project.get("last_updated"),
+            "lastmod": project.get("last_updated").strftime("%Y-%m-%dT%H:%M:%S%z"),
         }
         dynamic_urls.append(url)
 
