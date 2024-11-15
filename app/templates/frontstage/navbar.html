@@ -38,11 +38,10 @@
                href="#"
                role="button"
                data-bs-toggle="dropdown"
-               aria-expanded="false">@{{ user.username }}</a>
+               aria-expanded="false">@{{ current_user.username }}</a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item"
-                   href="{{ url_for("backstage.root") }}">Backstage</a>
+                <a class="dropdown-item" href="{{ url_for("backstage.root") }}">Backstage</a>
               </li>
               <li>
                 <a class="dropdown-item" href="{{ url_for("backstage.logout") }}">Logout</a>
