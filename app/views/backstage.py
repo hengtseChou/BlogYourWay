@@ -425,7 +425,9 @@ def edit_about() -> str:
 
     flashing_if_errors(form.errors)
 
-    return render_template("backstage/edit-about.html", user=user, about=about, form=form)
+    if request.method == "GET":
+        return render_template("backstage/edit-about.html", user=user, about=about, form=form)
+    return redirect(url_for("frontstage.about", username=current_user.username))
 
 
 @backstage.route("/edit/project/<project_uid>", methods=["GET", "POST"])
