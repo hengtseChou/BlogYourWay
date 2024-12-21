@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".ajax-profile-pic").forEach(fetchReplacementImage);
 
   const postUid = document.getElementById("post-uid").dataset.postUid;
-  setTimeout(() => sendReadCountRequest(postUid), 30);
+  setTimeout(() => sendReadCountRequest(postUid), 30000);
 
   const form = document.getElementById("comment-form");
   form.addEventListener("keypress", preventFormEnter);
