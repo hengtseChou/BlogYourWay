@@ -22,7 +22,12 @@
         <div class="mb-4">
           <label for="cover_url" class="form-label ms-2 fst-italic text-black">· Change blog cover image</label>
           <div class="ms-2 my-2 text-grey fw-light">We recommend using 21:9 image, as cover will be automatically cropped.</div>
-          {{ form_general.cover_url(class="form-control border-underline", value=user.cover_url) }}
+          {% if 'static' in user.cover_url %}
+            {% set cover_url = "" %}
+          {% else %}
+            {% set cover_url = user.cover_url %}
+          {% endif %}
+          {{ form_general.cover_url(class="form-control border-underline", value=cover_url) }}
         </div>
         <div class="mb-4">
           <label for="blogname" class="form-label ms-2 fst-italic text-black">· Change blog name</label>
@@ -113,7 +118,15 @@
           <div class="col-md-3 col-6 text-end mb-4 ms-auto">{{ form_update_pw.submit_pw(class="btn btn-panel w-100") }}</div>
         </div>
       </form>
-      <hr />
+      <hr>
+      <!-- export data -->
+      <div class="row">
+        <div class="col-md-3 col-6 text-end mt-4 mb-4 ms-auto">
+          <button class="btn btn-panel w-100"
+                  onclick="window.location.href='/backstage/export'">Export Your Data</button>
+        </div>
+      </div>
+      <hr>
       <!-- delete -->
       <div class="row">
         <div class="col-md-3 col-6 text-end mt-4 mb-5 ms-auto">

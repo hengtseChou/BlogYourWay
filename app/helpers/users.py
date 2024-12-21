@@ -248,6 +248,22 @@ class UserUtils:
         user_info.pop("_id", None)
         return UserInfo(**user_info)
 
+    def get_user_about(self, username: str) -> UserAbout:
+        """
+        Get user about information by username.
+
+        Args:
+            username (str): The username.
+
+        Returns:
+            UserAbout: The user about information.
+        """
+        user_about = self._db_handler.user_about.find_one({"username": username})
+        if user_about is None:
+            return None
+        user_about.pop("_id", None)
+        return UserAbout(**user_about)
+
     def get_user_creds(self, email: str) -> UserCreds:
         """
         Get user credentials by email.

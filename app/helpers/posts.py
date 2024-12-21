@@ -249,38 +249,35 @@ class PostUtils:
         )
         return result
 
-    def get_post_infos(self, username: str) -> list[dict]:
+    def get_post_infos(self, username: str, archive="exclude") -> list[dict]:
         """
         Get information about posts for a specific user.
 
         Args:
             username (str): The username of the post author.
+            archive (str, optional): Whether to include archived posts. Defaults to "exclude". Possible values: "exclude", "include", "only".
 
         Returns:
             list[dict]: A list of dictionaries containing post information.
         """
-        result = (
-            self._db_handler.post_info.find({"author": username, "archived": False})
-            .sort("created_at", -1)
-            .as_list()
-        )
-        return result
-
-    def get_archived_post_infos(self, username: str) -> list[dict]:
-        """
-        Get information about archived posts for a specific user.
-
-        Args:
-            username (str): The username of the post author.
-
-        Returns:
-            list[dict]: A list of dictionaries containing archived post information.
-        """
-        result = (
-            self._db_handler.post_info.find({"author": username, "archived": True})
-            .sort("created_at", -1)
-            .as_list()
-        )
+        if archive == "exclude":
+            result = (
+                self._db_handler.post_info.find({"author": username, "archived": False})
+                .sort("created_at", -1)
+                .as_list()
+            )
+        elif archive == "include":
+            result = (
+                self._db_handler.post_info.find({"author": username})
+                .sort("created_at", -1)
+                .as_list()
+            )
+        elif archive == "only":
+            result = (
+                self._db_handler.post_info.find({"author": username, "archived": True})
+                .sort("created_at", -1)
+                .as_list()
+            )
         return result
 
     def get_post_infos_with_pagination(

@@ -22,8 +22,8 @@ class Changelog:
     """
 
     changelog_uid: str
-    title: str
     author: str
+    title: str
     date: datetime
     category: str
     content: str

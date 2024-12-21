@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
+    HiddenField,
     PasswordField,
     SelectField,
     StringField,
@@ -132,11 +133,11 @@ class UpdateSocialLinksForm(FlaskForm):
         submit_links (SubmitField): Save links button.
     """
 
-    url0 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "URL"})
-    url1 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "URL"})
-    url2 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "URL"})
-    url3 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "URL"})
-    url4 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "URL"})
+    url0 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "https://..."})
+    url1 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "https://..."})
+    url2 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "https://..."})
+    url3 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "https://..."})
+    url4 = StringField(validators=[Optional(), URL()], render_kw={"placeholder": "https://..."})
     platform0 = SelectField(choices=SOCIAL_LINK_PLATFORM_CHOICES, validate_choice=False)
     platform1 = SelectField(choices=SOCIAL_LINK_PLATFORM_CHOICES, validate_choice=False)
     platform2 = SelectField(choices=SOCIAL_LINK_PLATFORM_CHOICES, validate_choice=False)

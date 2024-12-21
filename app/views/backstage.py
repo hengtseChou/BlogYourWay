@@ -1,5 +1,18 @@
+import io
+import json
+
 from bcrypt import checkpw, gensalt, hashpw
-from flask import Blueprint, Response, flash, redirect, render_template, request, session, url_for
+from flask import (
+    Blueprint,
+    Response,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for,
+)
 from flask_login import current_user, login_required, logout_user
 
 from app.cache import cache, update_user_cache
@@ -144,11 +157,11 @@ def archive_panel() -> str:
     logger_utils.backstage(username=current_user.username, panel="archive")
 
     user = mongodb.user_info.find_one({"username": current_user.username})
-    posts = post_utils.get_archived_post_infos(current_user.username)
+    posts = post_utils.get_post_infos(current_user.username, archive="only")
     for post in posts:
         post["views"] = format(post.get("views"), ",")
         post["comments"] = mongodb.comment.count_documents({"post_uid": post.get("post_uid")})
-    projects = projects_utils.get_archived_project_infos(current_user.username)
+    projects = projects_utils.get_project_infos(current_user.username, archive="only")
     changelogs = changelog_utils.get_archived_changelogs(current_user.username)
 
     logger_utils.pagination(panel="archive", num=(len(posts) + len(projects)))
@@ -244,10 +257,13 @@ def settings_panel() -> str:
     form_deletion = UserDeletionForm(prefix="deletion")
 
     if form_general.submit_settings.data and form_general.validate_on_submit():
+        cover_url = (
+            form_general.cover_url.data if form_general.cover_url.data else user.get("cover_url")
+        )
         mongodb.user_info.update_values(
             filter={"username": current_user.username},
             update={
-                "cover_url": form_general.cover_url.data,
+                "cover_url": cover_url,
                 "blogname": form_general.blogname.data,
                 "gallery_enabled": form_general.gallery_enabled.data,
                 "changelog_enabled": form_general.changelog_enabled.data,
@@ -391,7 +407,7 @@ def edit_post(post_uid: str) -> str:
 
 @backstage.route("/about", methods=["GET", "POST"])
 @login_required
-def edit_about() -> str:
+def about_panel() -> str:
     """Handles the editing of the user's 'About' section.
 
     Allows users to update their personal information and 'About' section. On successful update, flashes a success
@@ -407,8 +423,11 @@ def edit_about() -> str:
 
     form = EditAboutForm()
     if form.validate_on_submit():
+        profile_img_url = (
+            form.profile_img_url.data if form.profile_img_url.data else user.get("profile_img_url")
+        )
         updated_info = {
-            "profile_img_url": form.profile_img_url.data,
+            "profile_img_url": profile_img_url,
             "short_bio": form.short_bio.data,
         }
         updated_about = {"about": form.editor.data}
@@ -426,7 +445,7 @@ def edit_about() -> str:
     flashing_if_errors(form.errors)
 
     if request.method == "GET":
-        return render_template("backstage/edit-about.html", user=user, about=about, form=form)
+        return render_template("backstage/about.html", user=user, about=about, form=form)
     return redirect(url_for("frontstage.about", username=current_user.username))
 
 
@@ -712,3 +731,118 @@ def logout() -> Response:
     logger_utils.logout(request=request, username=username)
 
     return redirect(url_for("frontstage.home", username=username))
+
+
+@backstage.route("/export", methods=["GET"])
+@login_required
+def export_data():
+
+    result = {}
+
+    # export user data
+    user_data = {}
+    user_info = user_utils.get_user_info(current_user.username)
+    user_about = user_utils.get_user_about(current_user.username)
+    user_data["username"] = user_info.username
+    user_data["email"] = user_info.email
+    user_data["blogname"] = user_info.blogname
+    if "static" in user_info.profile_img_url:
+        user_data["profile_img_url"] = ""
+    else:
+        user_data["profile_img_url"] = user_info.profile_img_url
+    if "static" in user_info.cover_url:
+        user_data["cover_url"] = ""
+    else:
+        user_data["cover_url"] = user_info.cover_url
+    user_data["created_at"] = f"{user_info.created_at}"
+    user_data["short_bio"] = user_info.short_bio
+    user_data["about"] = user_about.about
+    i = 0
+    while user_info.social_links[i]:
+        user_data[f"social_link_{i}"] = (user_info.social_links[i][0], user_info.social_links[i][1])
+        i += 1
+    user_data["total_views"] = user_info.total_views
+    result["info"] = user_data
+
+    # export posts
+    post_data = {}
+    posts = post_utils.get_post_infos(current_user.username, archive="include")
+    for post in posts:
+        uid = post.get("post_uid")
+        post_data[uid] = {}
+        post_data[uid]["title"] = post.get("title")
+        post_data[uid]["subtitle"] = post.get("subtitle")
+        post_data[uid]["author"] = post.get("author")
+        post_data[uid]["content"] = mongodb.post_content.find_one({"post_uid": uid}).get("content")
+        post_data[uid]["tags"] = post.get("tags")
+        post_data[uid]["cover_url"] = post.get("cover_url")
+        post_data[uid]["custom_slug"] = post.get("custom_slug")
+        post_data[uid]["created_at"] = f"{post.get('created_at')}"
+        post_data[uid]["last_updated"] = f"{post.get('last_updated')}"
+        post_data[uid]["archived"] = post.get("archived")
+        post_data[uid]["featured"] = post.get("featured")
+        post_data[uid]["views"] = post.get("views")
+        post_data[uid]["reads"] = post.get("reads")
+    result["posts"] = post_data
+
+    # export projects
+    if user_info.gallery_enabled:
+        project_data = {}
+        projects = projects_utils.get_project_infos(current_user.username, archive="include")
+        for project in projects:
+            uid = project.get("project_uid")
+            project_data[uid] = {}
+            project_data[uid]["author"] = project.get("author")
+            project_data[uid]["title"] = project.get("title")
+            project_data[uid]["short_description"] = project.get("short_description")
+            project_data[uid]["content"] = mongodb.project_content.find_one(
+                {"project_uid": uid}
+            ).get("content")
+            project_data[uid]["tags"] = project.get("tags")
+            project_data[uid]["custom_slug"] = project.get("custom_slug")
+            i = 0
+            while project.get("images")[i]:
+                project_data[uid][f"image_{i}"] = (
+                    project.get("images")[i][0],
+                    project.get("images")[i][1],
+                )
+                i += 1
+            project_data[uid]["created_at"] = f"{project.get('created_at')}"
+            project_data[uid]["last_updated"] = f"{project.get('last_updated')}"
+            project_data[uid]["archived"] = project.get("archived")
+            project_data[uid]["views"] = project.get("views")
+            project_data[uid]["reads"] = project.get("reads")
+        result["projects"] = project_data
+
+    # export changelogs
+    if user_info.changelog_enabled:
+        changelog_data = {}
+        changelogs = changelog_utils.get_changelogs(current_user.username)
+        for changelog in changelogs:
+            uid = changelog.get("changelog_uid")
+            changelog_data[uid] = {}
+            changelog_data[uid]["author"] = changelog.get("author")
+            changelog_data[uid]["title"] = changelog.get("title")
+            changelog_data[uid]["date"] = changelog.get("date")
+            changelog_data[uid]["category"] = changelog.get("category")
+            changelog_data[uid]["content"] = changelog.get("content")
+            changelog_data[uid]["tags"] = changelog.get("tags")
+            changelog_data[uid]["link"] = changelog.get("link")
+            changelog_data[uid]["link_description"] = changelog.get("link_description")
+            changelog_data[uid]["created_at"] = f"{changelog.get('created_at')}"
+            changelog_data[uid]["last_updated"] = f"{changelog.get('last_updated')}"
+            changelog_data[uid]["archived"] = changelog.get("archived")
+        result["changelogs"] = changelog_data
+
+    json_data = json.dumps(result, indent=4)
+
+    # Create a virtual file to serve as a download
+    buffer = io.BytesIO()
+    buffer.write(json_data.encode("utf-8"))
+    buffer.seek(0)
+
+    # Serve the JSON file as an attachment
+    file_name = f"{current_user.username}_data.json"
+    return send_file(
+        buffer, mimetype="application/json", as_attachment=True, download_name=file_name
+    )

@@ -20,7 +20,12 @@
     <div class="col-12 col-md-9">
       <div class="mb-4">
         <label for="title" class="form-label ms-2 fst-italic text-black">· Change profile image</label>
-        {{ form.profile_img_url(class="form-control border-underline", value=user.profile_img_url) }}
+        {% if 'static' in user.profile_img_url %}
+          {% set profile_img_url = "" %}
+        {% else %}
+          {% set profile_img_url = user.profile_img_url %}
+        {% endif %}
+        {{ form.profile_img_url(class="form-control border-underline", value=profile_img_url) }}
       </div>
       <div class="mb-4">
         <label for="short_bio" class="form-label ms-2 fst-italic text-black">· Edit short bio</label>
