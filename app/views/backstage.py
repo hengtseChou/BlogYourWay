@@ -2,17 +2,8 @@ import io
 import json
 
 from bcrypt import checkpw, gensalt, hashpw
-from flask import (
-    Blueprint,
-    Response,
-    flash,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    session,
-    url_for,
-)
+from flask import (Blueprint, Response, flash, redirect, render_template,
+                   request, send_file, session, url_for)
 from flask_login import current_user, login_required, logout_user
 
 from app.cache import cache, update_user_cache
@@ -20,14 +11,11 @@ from app.config import TEMPLATE_FOLDER
 from app.forms.changelog import EditChangelogForm, NewChangelogForm
 from app.forms.posts import EditPostForm, NewPostForm
 from app.forms.projects import EditProjectForm, NewProjectForm
-from app.forms.users import (
-    EditAboutForm,
-    GeneralSettingsForm,
-    UpdatePasswordForm,
-    UpdateSocialLinksForm,
-    UserDeletionForm,
-)
-from app.helpers.changelog import changelog_utils, create_changelog, update_changelog
+from app.forms.users import (EditAboutForm, GeneralSettingsForm,
+                             UpdatePasswordForm, UpdateSocialLinksForm,
+                             UserDeletionForm)
+from app.helpers.changelog import (changelog_utils, create_changelog,
+                                   update_changelog)
 from app.helpers.posts import create_post, post_utils, update_post
 from app.helpers.projects import create_project, projects_utils, update_project
 from app.helpers.users import user_utils
@@ -834,7 +822,7 @@ def export_data():
             changelog_data[uid]["archived"] = changelog.get("archived")
         result["changelogs"] = changelog_data
 
-    json_data = json.dumps(result, indent=4)
+    json_data = json.dumps(result, indent=4, ensure_ascii=False)
 
     # Create a virtual file to serve as a download
     buffer = io.BytesIO()
