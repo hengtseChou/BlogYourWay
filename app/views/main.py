@@ -1,3 +1,4 @@
+from datetime import timezone
 from urllib.parse import urlparse
 
 import bcrypt
@@ -168,17 +169,26 @@ def sitemap() -> str:
 
     for post in post_utils.get_all_posts_info():
         slug = post.get("custom_slug")
+        lastmod = (
+            post.get("last_updated").replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        )
+        lastmod = lastmod[:-2] + ":" + lastmod[-2:]
         url = {
             "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug if slug else ''}",
-            "lastmod": post.get("last_updated").strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "lastmod": lastmod,
         }
         dynamic_urls.append(url)
 
     for project in projects_utils.get_all_projects_info():
         slug = project.get("custom_slug")
+        logger.debug(project.get("last_updated"))
+        lastmod = (
+            project.get("last_updated").replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        )
+        lastmod = lastmod[:-2] + ":" + lastmod[-2:]
         url = {
             "loc": f"{host_base}/@{project.get('author')}/projects/{project.get('project_uid')}/{slug if slug else ''}",
-            "lastmod": project.get("last_updated").strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "lastmod": lastmod,
         }
         dynamic_urls.append(url)
 
