@@ -21,8 +21,8 @@ function fetchReplacementImage(imgElement) {
 }
 
 // Define the function to send the read count request
-function sendReadCountRequest() {
-  fetch("/readcount-increment?post_uid={{ post.post_uid }}").catch((error) =>
+function sendReadCountRequest(postUid) {
+  fetch(`/readcount-increment?post_uid=${postUid}`).catch((error) =>
     console.error(`Error incrementing read count: ${error}`),
   );
 }
@@ -79,7 +79,10 @@ tocContainer.classList.add("d-none");
 // Attach all event listeners and initializations inside DOMContentLoaded
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".ajax-profile-pic").forEach(fetchReplacementImage);
-  setTimeout(sendReadCountRequest, 60);
+
+  const postUid = document.getElementById("post-uid").dataset.postUid;
+  setTimeout(() => sendReadCountRequest(postUid), 30);
+
   const form = document.getElementById("comment-form");
   form.addEventListener("keypress", preventFormEnter);
   setupTableOfContents();
