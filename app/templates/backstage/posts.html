@@ -8,7 +8,7 @@
           defer></script>
   <script src="{{ url_for('static', filename='js/backstage/posts.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/backstage/mobile-nav-btn.js') }}"
-  defer></script>
+          defer></script>
 {% endblock %}
 {% block panel %}
   <div id="current-panel" class="d-none">posts</div>
@@ -33,7 +33,9 @@
                 <th style="width: 14%">Created At</th>
                 <th style="width: 14%">Last Updated</th>
                 <th style="width: 8%" class="text-center">Views</th>
-                <th style="width: 8%" class="text-center">Reads</th>
+                <th style="width: 8%" class="text-center">
+                  <abbr title="Views that stayed more than 30 seconds">Reads</abbr>
+                </th>
                 <th style="width: 8%" class="text-center">Comments</th>
                 <th style="width: 8%" class="text-center">Edit</th>
                 <th style="width: 8%" class="text-center">Feature</th>
