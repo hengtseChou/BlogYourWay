@@ -44,7 +44,7 @@
                   <div class="d-flex align-items-center text-dark-grey fs-large flex-wrap">
                     <span><i class="fa-solid fa-tags"></i></span>
                     {% for tag in post.tags %}
-                      <a href="{{ url_for('frontstage.tag', username=post.author, tags=tag) }}"><span class="badge tag ms-2 mb-1">{{ tag }}</span></a>
+                      <a href="{{ url_for('frontstage.tag', username=post.author, tags=tag) }}"><span class="badge tag bg-grey ms-2 mb-1">{{ tag }}</span></a>
                     {% endfor %}
                   </div>
                 </div>

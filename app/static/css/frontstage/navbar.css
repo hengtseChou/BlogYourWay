@@ -3,7 +3,7 @@
 }
 
 .nav-item.dropdown .dropdown-item:active {
-  background-color: #e4622f !important;
+  background-color: #535353 !important;
 }
 
 @media (max-width: 768px) {

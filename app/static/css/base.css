@@ -134,15 +134,15 @@ img.profile-sm {
   color: #000000;
 }
 
-.tag {
-  background-color: #787878;
-}
-
 .tag:hover {
   background-color: #f7966b;
 }
 
-.tag-count-badge {
+.bg-grey {
+  background-color: #787878;
+}
+
+.bg-dark-grey {
   background-color: #535353;
 }
 
@@ -163,7 +163,7 @@ img.profile-sm {
 }
 
 .text-dark-grey {
-  color: #646464;
+  color: #535353;
 }
 
 .text-light-grey {

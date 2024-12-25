@@ -88,7 +88,7 @@
                   <span><i class="fa-solid fa-tags"></i></span>
                   {% for tag in changelog.tags %}
                     <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-                      <span class="badge tag ms-2">{{ tag }}</span>
+                      <span class="badge tag bg-grey ms-2">{{ tag }}</span>
                     </a>
                   {% endfor %}
                 </div>
@@ -123,7 +123,7 @@
         <span><i class="fa-solid fa-tags"></i></span>
         {% for tag in changelog.tags %}
           <a href="{{ url_for('frontstage.tag', username=user.username, tag=tag) }}">
-            <span class="badge tag ms-2">{{ tag }}</span>
+            <span class="badge tag bg-grey ms-2">{{ tag }}</span>
           </a>
         {% endfor %}
       </div>
