@@ -424,4 +424,4 @@ def process_tags(tag_string: str) -> list[str]:
     """
     if tag_string == "":
         return []
-    return [tag.strip().replace(" ", "-") for tag in tag_string.split(",")]
+    return [tag.strip(" ") for tag in tag_string.split(",")]
