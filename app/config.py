@@ -7,6 +7,7 @@ load_dotenv()
 
 # Environment variables
 ENV: str = os.getenv("ENV")  # Environment mode (dev or prod)
+DOMAIN: str = os.getenv("DOMAIN")  # Website domain
 APP_SECRET: str = os.getenv("APP_SECRET")  # Application secret key
 MONGO_URL: str = os.getenv("MONGO_URL")  # MongoDB connection URL
 RECAPTCHA_KEY: str = os.getenv("RECAPTCHA_KEY")  # reCAPTCHA public key

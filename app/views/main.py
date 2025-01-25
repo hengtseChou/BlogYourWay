@@ -1,11 +1,10 @@
 from datetime import timezone
-from urllib.parse import urlparse
 
 import bcrypt
 from flask import Blueprint, flash, make_response, redirect, render_template, request, url_for
 from flask_login import current_user, login_user
 
-from app.config import TEMPLATE_FOLDER
+from app.config import DOMAIN, TEMPLATE_FOLDER
 from app.forms.users import LoginForm, SignUpForm
 from app.helpers.posts import post_utils
 from app.helpers.projects import projects_utils
@@ -146,26 +145,25 @@ def sitemap() -> str:
     Returns:
         str: XML content of the sitemap.
     """
-    host_components = urlparse(request.host_url)
-    host_base = f"{host_components.scheme}://{host_components.netloc}"
+    base_url = f"https://{DOMAIN}"
 
     # Static routes
-    static_urls = [{"loc": f"{host_base}{route}"} for route in ["/", "/login", "/register"]]
+    static_urls = [{"loc": f"{base_url}/{route}"} for route in ["", "login", "register"]]
 
     # Dynamic routes
     dynamic_urls = []
     for username in user_utils.get_all_username():
         dynamic_urls.extend(
             [
-                {"loc": f"{host_base}/@{username}"},
-                {"loc": f"{host_base}/@{username}/blog"},
-                {"loc": f"{host_base}/@{username}/about"},
+                {"loc": f"{base_url}@{username}"},
+                {"loc": f"{base_url}/@{username}/blog"},
+                {"loc": f"{base_url}/@{username}/about"},
             ]
         )
     for username in user_utils.get_all_username_gallery_enabled():
-        dynamic_urls.append({"loc": f"{host_base}/@{username}/gallery"})
+        dynamic_urls.append({"loc": f"{base_url}/@{username}/gallery"})
     for username in user_utils.get_all_username_changelog_enabled():
-        dynamic_urls.append({"loc": f"{host_base}/@{username}/changelog"})
+        dynamic_urls.append({"loc": f"{base_url}/@{username}/changelog"})
 
     for post in post_utils.get_all_posts_info():
         slug = post.get("custom_slug")
@@ -174,7 +172,7 @@ def sitemap() -> str:
         )
         lastmod = lastmod[:-2] + ":" + lastmod[-2:]
         url = {
-            "loc": f"{host_base}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug if slug else ''}",
+            "loc": f"{base_url}/@{post.get('author')}/posts/{post.get('post_uid')}/{slug if slug else ''}",
             "lastmod": lastmod,
         }
         dynamic_urls.append(url)
@@ -187,16 +185,13 @@ def sitemap() -> str:
         )
         lastmod = lastmod[:-2] + ":" + lastmod[-2:]
         url = {
-            "loc": f"{host_base}/@{project.get('author')}/projects/{project.get('project_uid')}/{slug if slug else ''}",
+            "loc": f"{base_url}/@{project.get('author')}/projects/{project.get('project_uid')}/{slug if slug else ''}",
             "lastmod": lastmod,
         }
         dynamic_urls.append(url)
 
     xml_sitemap = render_template(
-        "main/sitemap.xml",
-        static_urls=static_urls,
-        dynamic_urls=dynamic_urls,
-        host_base=host_base,
+        "main/sitemap.xml", static_urls=static_urls, dynamic_urls=dynamic_urls
     )
     response = make_response(xml_sitemap)
     response.headers["Content-Type"] = "application/xml"
